@@ -117,40 +117,41 @@ public class Vector<T> implements Entity {
             ContentParser<T> parser) {
 
         List<T> objects = new ArrayList<>();
-        buffer = ByteBuffer.wrap(parseOpaque(buffer, lengthBytes));
+        buffer = ByteBuffer.wrap(getVectorBytes(buffer, lengthBytes));
         while (buffer.remaining() > 0) {
             objects.add(parser.parse(buffer));
         }
 
         return new Vector<>(lengthBytes, objects);
     }
-
-    public static byte[] parseOpaque(ByteBuffer buffer, int lengthBytes) {
-        byte[] encodedLength = new byte[lengthBytes];
-        buffer.get(encodedLength);
-        int length = Convertor.bytes2int(encodedLength);
+    
+    public static Vector<Byte> parseOpaqueVector(ByteBuffer buffer, int lengthBytes) {
+        return parse(buffer, lengthBytes, b -> b.get());
+    }
+    
+    public static byte[] getVectorBytes(ByteBuffer buffer, int lengthBytes) {
+        byte[] lengthEncoding = new byte[lengthBytes];
+        buffer.get(lengthEncoding);
+        int length = Convertor.bytes2int(lengthEncoding);
+        
         byte[] bytes = new byte[length];
         buffer.get(bytes);
 
         return bytes;
     }
 
-    public static <T> Vector<T> create(int maxLength) {
-        return new Vector<>(lengthBytes(maxLength));
+    public static <T> Vector<T> wrap(int lengthBytes, List<T> objects) {
+        return new Vector<>(lengthBytes, objects);
     }
 
-    public static <T> Vector<T> wrap(int maxLength, List<T> objects) {
-        return new Vector<>(lengthBytes(maxLength), objects);
-    }
-
-    public static <T> Vector<T> wrap(int maxLength, T... objects) {
+    public static <T> Vector<T> wrap(int lengthBytes, T... objects) {
         List<T> objectList = new ArrayList<>();
         objectList.addAll(Arrays.asList(objects));
-        return wrap(maxLength, objectList);
+        return wrap(lengthBytes, objectList);
     }
 
-    public static Vector<Byte> wrap(int maxLength, byte[] bytes) {
-        return new Vector<>(lengthBytes(maxLength), toList(bytes));
+    public static Vector<Byte> wrap(int lengthBytes, byte[] bytes) {
+        return new Vector<>(lengthBytes, toList(bytes));
     }
 
     private static List<Byte> toList(byte[] bytes) {
@@ -160,22 +161,6 @@ public class Vector<T> implements Entity {
         }
 
         return objects;
-    }
-
-    private static int lengthBytes(int length) {
-        if (length < 256) {
-            return 1;
-        }
-        
-        if (length < 65536) {
-            return 2;
-        }
-        
-        if (length < 16777216) {
-            return 3;
-        }
-        
-        throw new IllegalArgumentException();
     }
 
 }
