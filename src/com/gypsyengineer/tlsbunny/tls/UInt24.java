@@ -10,6 +10,7 @@ public class UInt24 implements Entity {
     public static final int BASE_POW_2 = BASE_POW_1 * BASE_POW_1;
     public static final int MAX = 16777215;
     public static final int MIN = 0;
+    public static final UInt24 ZERO = new UInt24(0);
 
     public final int value;
 

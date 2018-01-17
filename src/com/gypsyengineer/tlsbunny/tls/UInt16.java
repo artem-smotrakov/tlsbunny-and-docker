@@ -7,6 +7,7 @@ public class UInt16 implements Entity {
     public static final int ENCODING_LENGTH = 2;
     public static final int MAX = 65535;
     public static final int MIN = 0;
+    public static final UInt16 ZERO = new UInt16(0);
 
     public final int value;
 

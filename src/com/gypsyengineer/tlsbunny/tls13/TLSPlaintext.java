@@ -1,5 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls13;
 
+import com.gypsyengineer.tlsbunny.tls.Bytes;
 import com.gypsyengineer.tlsbunny.tls.Entity;
 import com.gypsyengineer.tlsbunny.tls.UInt16;
 import java.io.IOException;
@@ -8,8 +9,6 @@ import java.nio.ByteBuffer;
 public class TLSPlaintext implements Entity {
     
     public static final int MAX_ALLOWED_LENGTH = 16384;
-    public static final UInt16 ZERO_LENGTH = new UInt16(0);
-    public static final byte[] EMPTY_FRAGMENT = new byte[0];
 
     private ContentType type;
     private ProtocolVersion legacy_record_version;
@@ -17,7 +16,7 @@ public class TLSPlaintext implements Entity {
     private Entity fragment;
 
     public TLSPlaintext() {
-        this(ContentType.HANDSHAKE, ProtocolVersion.TLSv10, ZERO_LENGTH, EMPTY_FRAGMENT);
+        this(ContentType.HANDSHAKE, ProtocolVersion.TLSv10, UInt16.ZERO, Bytes.EMPTY);
     }
 
     public TLSPlaintext(
