@@ -49,5 +49,11 @@ public class SignatureSchemeList implements Entity {
         return new SignatureSchemeList(
                 Vector.parse(buffer, LENGTH_BYTES, buf -> SignatureScheme.parse(buf)));
     }
+    
+    public static SignatureSchemeList parse(Vector<Byte> extenstion_data) 
+            throws IOException {
+        
+        return parse(ByteBuffer.wrap(extenstion_data.bytes()));
+    }
 
 }

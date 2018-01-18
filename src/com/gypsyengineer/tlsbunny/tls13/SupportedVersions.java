@@ -3,6 +3,7 @@ package com.gypsyengineer.tlsbunny.tls13;
 import com.gypsyengineer.tlsbunny.tls.Entity;
 import com.gypsyengineer.tlsbunny.tls.Vector;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 public class SupportedVersions {
 
@@ -34,6 +35,18 @@ public class SupportedVersions {
         @Override
         public byte[] encoding() throws IOException {
             return versions.encoding();
+        }
+        
+        public static ClientHello parse(Vector<Byte> extension_data) throws IOException {
+            return parse(ByteBuffer.wrap(extension_data.bytes()));
+        }
+        
+        public static ClientHello parse(ByteBuffer buffer) {
+            return new ClientHello(
+                    Vector.parse(
+                            buffer, 
+                            VERSIONS_LENGTH_BYTES, 
+                            buf -> ProtocolVersion.parse(buf)));
         }
     }
     

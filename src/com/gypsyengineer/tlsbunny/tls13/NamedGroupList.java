@@ -48,5 +48,11 @@ public class NamedGroupList implements Entity {
 
         return new NamedGroupList(named_group_list);
     }
+    
+    public static NamedGroupList parse(Vector<Byte> extension_data) 
+            throws IOException {
+        
+        return parse(ByteBuffer.wrap(extension_data.bytes()));
+    }
 
 }
