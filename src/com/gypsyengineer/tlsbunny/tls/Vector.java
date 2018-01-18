@@ -55,6 +55,31 @@ public class Vector<T> implements Entity {
     public List<T> toList() {
         return objects;
     }
+    
+    public byte[] bytes() throws IOException {
+        int encodingsLength = 0;
+        List<byte[]> encodings = new ArrayList<>();
+        for (T value : objects) {
+            byte[] encoding;
+            if (value instanceof Entity) {
+                encoding = ((Entity) value).encoding();
+            } else if (value instanceof Byte) {
+                encoding = new byte[] { (Byte) value };
+            } else {
+                throw new IllegalArgumentException();
+            }
+            
+            encodings.add(encoding);
+            encodingsLength += encoding.length;
+        }
+
+        ByteBuffer buffer = ByteBuffer.allocate(encodingsLength);
+        encodings.forEach((encoding) -> {
+            buffer.put(encoding);
+        });
+
+        return buffer.array();
+    }
 
     @Override
     public int encodingLength() {
