@@ -55,6 +55,12 @@ public class KeyShare {
 
             return new ClientHello(client_shares);
         }
+        
+        public static ClientHello parse(Vector<Byte> extenstion_data) 
+                throws IOException {
+            
+            return parse(ByteBuffer.wrap(extenstion_data.bytes()));
+        }
     
     }
     
@@ -87,6 +93,12 @@ public class KeyShare {
         public static ServerHello parse(ByteBuffer buffer) {
             return new ServerHello(KeyShareEntry.parse(buffer));
         }
+        
+        public static ServerHello parse(Vector<Byte> extenstion_data) 
+                throws IOException {
+            
+            return parse(ByteBuffer.wrap(extenstion_data.bytes()));
+        }
 
     }
     
@@ -118,6 +130,12 @@ public class KeyShare {
 
         public static HelloRetryRequest parse(ByteBuffer buffer) {
             return new HelloRetryRequest(NamedGroup.parse(buffer));
+        }
+        
+        public static HelloRetryRequest parse(Vector<Byte> extenstion_data) 
+                throws IOException {
+            
+            return parse(ByteBuffer.wrap(extenstion_data.bytes()));
         }
 
     }
