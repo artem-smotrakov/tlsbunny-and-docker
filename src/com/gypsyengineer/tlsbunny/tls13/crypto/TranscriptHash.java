@@ -1,0 +1,62 @@
+package com.gypsyengineer.tlsbunny.tls13.crypto;
+
+import com.gypsyengineer.tlsbunny.tls13.Handshake;
+import com.gypsyengineer.tlsbunny.tls13.HandshakeMessage;
+import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
+public class TranscriptHash {
+
+    private final MessageDigest md;
+
+    private TranscriptHash(MessageDigest md) {
+        this.md = md;
+    }
+
+    public void update(Handshake message) throws IOException {
+        update(message.encoding());
+    }
+
+    public byte[] get() {
+        return md.digest();
+    }
+
+    public void update(byte[] bytes) {
+        md.update(bytes);
+    }
+
+    public static TranscriptHash create(String algorithm) 
+            throws NoSuchAlgorithmException {
+        
+        return new TranscriptHash(MessageDigest.getInstance(algorithm));
+    }
+
+    public static byte[] compute(String algorithm, Handshake... messages)
+            throws NoSuchAlgorithmException, IOException {
+
+        TranscriptHash hash = create(algorithm);
+       
+        if (messages != null) {
+            for (Handshake message : messages) {
+                hash.update(message);
+            } 
+        } else {
+            hash.update(new byte[0]);
+        }
+        
+        return hash.get();
+    }
+
+    public static byte[] compute(String algorithm, HandshakeMessage... messages)
+            throws NoSuchAlgorithmException, IOException {
+
+        Handshake[] wrapped = new Handshake[messages.length];
+        for (int i=0; i < messages.length; i++) {
+            wrapped[i] = Handshake.wrap(messages[i]);
+        }
+
+        return compute(algorithm, wrapped);
+    }
+
+}

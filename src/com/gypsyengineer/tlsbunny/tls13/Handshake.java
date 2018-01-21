@@ -110,5 +110,11 @@ public class Handshake implements Entity {
 
         return new Handshake(msg_type, length, new Bytes(body));
     }
+    
+    
+    public static Handshake wrap(HandshakeMessage message) throws IOException {
+        return new Handshake(message.type(), 
+                message.encodingLength(), message.encoding());
+    }
 
 }
