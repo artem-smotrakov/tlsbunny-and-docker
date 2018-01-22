@@ -10,6 +10,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import javax.crypto.Mac;
 import static com.gypsyengineer.tlsbunny.utils.Utils.concatenate;
+import javax.crypto.spec.SecretKeySpec;
 
 public class HKDF {
 
@@ -43,7 +44,7 @@ public class HKDF {
         ByteBuffer T = ByteBuffer.allocate(N * hashLen);
         byte[] t = new byte[0];
         mac.reset();
-        mac.init(new RawKey(PRK, mac.getAlgorithm()));
+        mac.init(new SecretKeySpec(PRK, mac.getAlgorithm()));
         for (int i = 1; i <= N; i++) {
             t = mac.doFinal(concatenate(t, info, new byte[] { (byte) i }));
             T.put(t);
@@ -74,7 +75,7 @@ public class HKDF {
     // HMAC-Hash() function
     public byte[] hmac(byte[] key, byte[] input) throws InvalidKeyException {
         mac.reset();
-        mac.init(new RawKey(key, mac.getAlgorithm()));
+        mac.init(new SecretKeySpec(key, mac.getAlgorithm()));
         return mac.doFinal(input);
     }
 
