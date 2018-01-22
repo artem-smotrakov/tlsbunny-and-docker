@@ -14,8 +14,18 @@ public class TranscriptHash {
         this.md = md;
     }
 
-    public void update(Handshake message) throws IOException {
-        update(message.encoding());
+    public void update(Handshake... messages) throws IOException {
+        if (messages != null) {
+            for (Handshake message : messages) {
+                update(message.encoding());
+            }
+        }
+    }
+    
+    public byte[] compute(Handshake... messages) throws IOException {
+        reset();
+        update(messages);
+        return get();
     }
 
     public byte[] get() {
@@ -24,6 +34,10 @@ public class TranscriptHash {
 
     public void update(byte[] bytes) {
         md.update(bytes);
+    }
+    
+    public void reset() {
+        md.reset();
     }
 
     public static TranscriptHash create(String algorithm) 
