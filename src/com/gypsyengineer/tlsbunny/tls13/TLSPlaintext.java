@@ -3,8 +3,10 @@ package com.gypsyengineer.tlsbunny.tls13;
 import com.gypsyengineer.tlsbunny.tls.Bytes;
 import com.gypsyengineer.tlsbunny.tls.Entity;
 import com.gypsyengineer.tlsbunny.tls.UInt16;
+import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.List;
 
 public class TLSPlaintext implements Entity {
     
@@ -17,6 +19,12 @@ public class TLSPlaintext implements Entity {
 
     public TLSPlaintext() {
         this(ContentType.HANDSHAKE, ProtocolVersion.TLSv10, UInt16.ZERO, Bytes.EMPTY);
+    }
+    
+    public TLSPlaintext(
+            ContentType type, ProtocolVersion version, byte[] fragment) {
+        
+        this(type, version, new UInt16(fragment.length), new Bytes(fragment));
     }
 
     public TLSPlaintext(
@@ -96,6 +104,10 @@ public class TLSPlaintext implements Entity {
         return type.isAlert();
     }
 
+    public static TLSPlaintext parse(byte[] bytes) {
+        return parse(ByteBuffer.wrap(bytes));
+    }
+    
     public static TLSPlaintext parse(ByteBuffer buffer) {
         ContentType type = ContentType.parse(buffer);
         ProtocolVersion legacy_record_version = ProtocolVersion.parse(buffer);
@@ -104,6 +116,24 @@ public class TLSPlaintext implements Entity {
         buffer.get(fragment);
 
         return new TLSPlaintext(type, legacy_record_version, length, fragment);
+    }
+    
+    public static TLSPlaintext[] wrap(
+            ContentType type, ProtocolVersion version, byte[] encoded) {
+        
+        if (encoded.length <= MAX_ALLOWED_LENGTH) {
+            return new TLSPlaintext[] {
+                new TLSPlaintext(type, version, encoded)
+            };
+        }
+
+        List<byte[]> fragments = Utils.split(encoded, MAX_ALLOWED_LENGTH);
+        TLSPlaintext[] tlsPlaintexts = new TLSPlaintext[fragments.size()];
+        for (int i=0; i < fragments.size(); i++) {
+            tlsPlaintexts[i] = new TLSPlaintext(type, version, fragments.get(i));
+        }
+
+        return tlsPlaintexts;
     }
 
 }

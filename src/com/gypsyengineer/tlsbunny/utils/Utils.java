@@ -9,6 +9,8 @@ import com.gypsyengineer.tlsbunny.tls.Entity;
 
 public class Utils {
     
+    public static final byte[] EMPTY_ARRAY = new byte[0];
+    
     public static List<byte[]> split(byte[] data, int length) {
         List<byte[]> fragments = new ArrayList<>();
         if (data.length <= length) {

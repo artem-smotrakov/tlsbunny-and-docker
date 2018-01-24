@@ -102,6 +102,10 @@ public class Handshake implements Entity {
         return HandshakeType.NEW_SESSION_TICKET.equals(msg_type);
     }
 
+    public static Handshake parse(byte[] bytes) {
+        return parse(ByteBuffer.wrap(bytes));
+    }
+    
     public static Handshake parse(ByteBuffer buffer) {
         HandshakeType msg_type = HandshakeType.parse(buffer);
         UInt24 length = UInt24.parse(buffer);
@@ -110,7 +114,6 @@ public class Handshake implements Entity {
 
         return new Handshake(msg_type, length, new Bytes(body));
     }
-    
     
     public static Handshake wrap(HandshakeMessage message) throws IOException {
         return new Handshake(message.type(), 

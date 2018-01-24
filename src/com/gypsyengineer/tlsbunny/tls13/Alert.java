@@ -70,12 +70,13 @@ public class Alert implements Entity {
         if (!Objects.equals(this.level, other.level)) {
             return false;
         }
-        if (!Objects.equals(this.description, other.description)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(this.description, other.description);
     }
 
+    public static Alert parse(byte[] bytes) {
+        return parse(ByteBuffer.wrap(bytes));
+    }
+    
     public static Alert parse(ByteBuffer buffer) {
         AlertLevel level = AlertLevel.parse(buffer);
         AlertDescription description = AlertDescription.parse(buffer);
