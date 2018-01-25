@@ -28,7 +28,7 @@ public class KeyShareEntry implements Entity {
         this.group = group;
     }
 
-    public Entity getKeyExchange() {
+    public Vector<Byte> getKeyExchange() {
         return key_exchange;
     }
 
@@ -52,6 +52,18 @@ public class KeyShareEntry implements Entity {
                 buffer, KEY_EXCHANGE_LENGTH_BYTES);
         
         return new KeyShareEntry(group, key_exchange);
+    }
+    
+    public static KeyShareEntry wrap(NamedGroup group, UncompressedPointRepresentation upr) {
+        return new KeyShareEntry(
+                group, 
+                Vector.wrap(KEY_EXCHANGE_LENGTH_BYTES, upr.encoding()));
+    }
+    
+    public static KeyShareEntry wrap(NamedGroup group, byte[] bytes) {
+        return new KeyShareEntry(
+                group, 
+                Vector.wrap(KEY_EXCHANGE_LENGTH_BYTES, bytes));
     }
 
 }

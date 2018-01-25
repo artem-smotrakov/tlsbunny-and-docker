@@ -29,7 +29,7 @@ public class UncompressedPointRepresentation implements Entity {
     }
 
     @Override
-    public byte[] encoding() throws IOException {
+    public byte[] encoding() {
         return ByteBuffer.allocate(encodingLength())
             .put(legacy_form)
             .put(X)
