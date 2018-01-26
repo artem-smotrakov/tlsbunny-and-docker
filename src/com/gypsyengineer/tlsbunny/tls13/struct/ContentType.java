@@ -1,4 +1,4 @@
-package com.gypsyengineer.tlsbunny.tls13;
+package com.gypsyengineer.tlsbunny.tls13.struct;
 
 import com.gypsyengineer.tlsbunny.tls.Entity;
 import java.nio.ByteBuffer;
@@ -7,10 +7,10 @@ public class ContentType implements Entity {
 
     public static final int ENCODING_LENGTH = 1;
     
-    public static final ContentType INVALID = new ContentType(0);
-    public static final ContentType ALERT = new ContentType(21);
-    public static final ContentType HANDSHAKE = new ContentType(22);
-    public static final ContentType APPLICATION_DATA = new ContentType(23);
+    public static final ContentType invalid = new ContentType(0);
+    public static final ContentType alert = new ContentType(21);
+    public static final ContentType handshake = new ContentType(22);
+    public static final ContentType application_data = new ContentType(23);
 
     private int code;
 
@@ -29,15 +29,15 @@ public class ContentType implements Entity {
     }
 
     public boolean isHandshake() {
-        return code == HANDSHAKE.code;
+        return code == handshake.code;
     }
 
     public boolean isApplicationData() {
-        return code == APPLICATION_DATA.code;
+        return code == application_data.code;
     }
 
     public boolean isAlert() {
-        return code == ALERT.code;
+        return code == alert.code;
     }
 
     @Override

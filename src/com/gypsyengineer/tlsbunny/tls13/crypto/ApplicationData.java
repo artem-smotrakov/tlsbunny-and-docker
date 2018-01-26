@@ -1,9 +1,9 @@
 package com.gypsyengineer.tlsbunny.tls13.crypto;
 
-import com.gypsyengineer.tlsbunny.tls13.Alert;
-import com.gypsyengineer.tlsbunny.tls13.ContentType;
-import com.gypsyengineer.tlsbunny.tls13.Handshake;
-import com.gypsyengineer.tlsbunny.tls13.TLSInnerPlaintext;
+import com.gypsyengineer.tlsbunny.tls13.struct.Alert;
+import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
+import com.gypsyengineer.tlsbunny.tls13.struct.Handshake;
+import com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext;
 import static com.gypsyengineer.tlsbunny.utils.Utils.EMPTY_ARRAY;
 
 public class ApplicationData {
@@ -68,7 +68,7 @@ public class ApplicationData {
 
     public byte[] encrypt(byte[] plaintext) throws Exception {
         return encryptor.encrypt(
-                TLSInnerPlaintext.noPadding(ContentType.APPLICATION_DATA, plaintext)
+                TLSInnerPlaintext.noPadding(ContentType.application_data, plaintext)
                         .encoding());
     }
 

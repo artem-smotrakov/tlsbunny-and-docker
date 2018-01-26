@@ -1,7 +1,6 @@
-package com.gypsyengineer.tlsbunny.tls13;
+package com.gypsyengineer.tlsbunny.tls13.struct;
 
 import com.gypsyengineer.tlsbunny.tls.Entity;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 
 public class UncompressedPointRepresentation implements Entity {

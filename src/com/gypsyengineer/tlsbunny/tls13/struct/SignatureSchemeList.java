@@ -1,4 +1,4 @@
-package com.gypsyengineer.tlsbunny.tls13;
+package com.gypsyengineer.tlsbunny.tls13.struct;
 
 import com.gypsyengineer.tlsbunny.tls.Entity;
 import com.gypsyengineer.tlsbunny.tls.Vector;
@@ -8,8 +8,6 @@ import java.nio.ByteBuffer;
 public class SignatureSchemeList implements Entity {
 
     public static final int LENGTH_BYTES = 2;
-    public static final int MIN_EXPECTED_LENGTH = 2;
-    public static final int MAX_EXPECTED_LENGTH = 65534;
 
     private Vector<SignatureScheme> supported_signature_algorithms;
 

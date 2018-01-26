@@ -1,7 +1,7 @@
 package com.gypsyengineer.tlsbunny.tls13.crypto;
 
-import com.gypsyengineer.tlsbunny.tls13.Handshake;
-import com.gypsyengineer.tlsbunny.tls13.HkdfLabel;
+import com.gypsyengineer.tlsbunny.tls13.struct.Handshake;
+import com.gypsyengineer.tlsbunny.tls13.struct.HkdfLabel;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.security.InvalidKeyException;

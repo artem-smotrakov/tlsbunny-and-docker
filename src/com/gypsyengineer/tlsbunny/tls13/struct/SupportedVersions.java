@@ -1,4 +1,4 @@
-package com.gypsyengineer.tlsbunny.tls13;
+package com.gypsyengineer.tlsbunny.tls13.struct;
 
 import com.gypsyengineer.tlsbunny.tls.Entity;
 import com.gypsyengineer.tlsbunny.tls.Vector;
@@ -10,8 +10,6 @@ public class SupportedVersions {
     public static class ClientHello implements Entity {
     
         public static final int VERSIONS_LENGTH_BYTES = 1;
-        public static final int MIN_EXPECTED_LENGTH = 2;
-        public static final int MAX_EXPECTED_LENGTH = 254;
         
         private Vector<ProtocolVersion> versions;
         

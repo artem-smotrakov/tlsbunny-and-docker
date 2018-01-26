@@ -1,4 +1,4 @@
-package com.gypsyengineer.tlsbunny.tls13;
+package com.gypsyengineer.tlsbunny.tls13.struct;
 
 import com.gypsyengineer.tlsbunny.tls.Random;
 import com.gypsyengineer.tlsbunny.tls.Vector;
@@ -12,14 +12,6 @@ public class ClientHello implements HandshakeMessage {
     public static final int CIPHER_SUITES_LENGTH_BYTES = 2;
     public static final int LEGACY_COMPRESSION_METHODS_LENGTH_BYTES = 1;
     public static final int EXTENSIONS_LENGTH_BYTES = 2;
-
-    public static final int MAX_EXPECTED_SESSION_ID_BYTES = 32;
-    public static final int MIN_EXPECTED_CIPHER_SUITES_BYTES = 2;
-    public static final int MAX_EXPECTED_CIPHER_SUITES_BYTES = 65534;
-    public static final int MAX_EXPECTED_COMPRESSION_METHODS_BYTES = 255;
-
-    public static final int MIN_EXPECTED_EXTENSIONS_BYTES = 8;
-    public static final int MAX_EXPECTED_EXTENSIONS_BYTES = 65535;
 
     private ProtocolVersion legacy_version = ProtocolVersion.TLSv12;
     private Random random = new Random();
@@ -132,7 +124,7 @@ public class ClientHello implements HandshakeMessage {
         this.extensions = extensions;
     }
 
-    public Extension getExtension(ExtensionType type) {
+    public Extension findExtension(ExtensionType type) {
         for (Extension extension : extensions.toList()) {
             if (type.equals(extension.getExtensionType())) {
                 return extension;
@@ -142,29 +134,29 @@ public class ClientHello implements HandshakeMessage {
         return null;
     }
 
-    public SupportedVersions.ClientHello getSupportedVersions() throws IOException {
+    public SupportedVersions.ClientHello findSupportedVersions() throws IOException {
         return SupportedVersions.ClientHello.parse(
-                getExtension(ExtensionType.SUPPORTED_VERSIONS).getExtensionData());
+                findExtension(ExtensionType.supported_versions).getExtensionData());
     }
 
-    public SignatureSchemeList getSignatureAlgorithms() throws IOException {
+    public SignatureSchemeList findSignatureAlgorithms() throws IOException {
         return SignatureSchemeList.parse(
-                getExtension(ExtensionType.SIGNATURE_ALGORITHMS).getExtensionData());
+                findExtension(ExtensionType.signature_algorithms).getExtensionData());
     }
 
-    public NamedGroupList getSupportedGroups() throws IOException {
+    public NamedGroupList findSupportedGroups() throws IOException {
         return NamedGroupList.parse(
-                getExtension(ExtensionType.SUPPORTED_GROUPS).getExtensionData());
+                findExtension(ExtensionType.supported_groups).getExtensionData());
     }
 
-    public KeyShare.ClientHello getKeyShare() throws IOException {
+    public KeyShare.ClientHello findKeyShare() throws IOException {
         return KeyShare.ClientHello.parse(
-                getExtension(ExtensionType.KEY_SHARE).getExtensionData());
+                findExtension(ExtensionType.key_share).getExtensionData());
     }
 
     @Override
     public HandshakeType type() {
-        return HandshakeType.CLIENT_HELLO;
+        return HandshakeType.cleint_hello;
     }
 
     public static ClientHello parse(byte[] data) {

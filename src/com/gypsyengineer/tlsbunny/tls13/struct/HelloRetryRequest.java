@@ -1,4 +1,4 @@
-package com.gypsyengineer.tlsbunny.tls13;
+package com.gypsyengineer.tlsbunny.tls13.struct;
 
 import com.gypsyengineer.tlsbunny.tls.Vector;
 import com.gypsyengineer.tlsbunny.utils.Utils;
@@ -77,7 +77,7 @@ public class HelloRetryRequest implements HandshakeMessage {
 
     @Override
     public HandshakeType type() {
-        return HandshakeType.HELLO_RETRY_REQUEST;
+        return HandshakeType.hello_retry_request;
     }
 
     public static HelloRetryRequest parse(ByteBuffer buffer) {

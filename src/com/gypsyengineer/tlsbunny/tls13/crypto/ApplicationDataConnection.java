@@ -1,10 +1,10 @@
 package com.gypsyengineer.tlsbunny.tls13.crypto;
 
-import com.gypsyengineer.tlsbunny.tls13.Alert;
-import com.gypsyengineer.tlsbunny.tls13.ContentType;
-import com.gypsyengineer.tlsbunny.tls13.ProtocolVersion;
-import com.gypsyengineer.tlsbunny.tls13.TLSInnerPlaintext;
-import com.gypsyengineer.tlsbunny.tls13.TLSPlaintext;
+import com.gypsyengineer.tlsbunny.tls13.struct.Alert;
+import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
+import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
+import com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext;
+import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
 import com.gypsyengineer.tlsbunny.utils.Connection;
 
 public class ApplicationDataConnection {
@@ -52,12 +52,9 @@ public class ApplicationDataConnection {
     }
 
     public void write(byte[] data) throws Exception {
-        TLSPlaintext[] tlsPlaintexts = TLSPlaintext.wrap(
-                ContentType.APPLICATION_DATA, 
+        TLSPlaintext[] tlsPlaintexts = TLSPlaintext.wrap(ContentType.application_data, 
                 ProtocolVersion.TLSv10, 
-                applicationData.encrypt(
-                        TLSInnerPlaintext.noPadding(
-                                ContentType.APPLICATION_DATA,
+                applicationData.encrypt(TLSInnerPlaintext.noPadding(ContentType.application_data,
                                 data
                         ).encoding())
                 );

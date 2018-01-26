@@ -1,4 +1,4 @@
-package com.gypsyengineer.tlsbunny.tls13;
+package com.gypsyengineer.tlsbunny.tls13.struct;
 
 import com.gypsyengineer.tlsbunny.tls.Entity;
 import com.gypsyengineer.tlsbunny.tls.Vector;
@@ -9,7 +9,6 @@ import java.nio.ByteBuffer;
 public class Extension implements Entity {
     
     public static final int EXTENSION_DATA_LENGTH_BYTES = 2;
-    public static final int MAX_EXPECTED_EXTENSION_DATA = 65535;
 
     private ExtensionType extension_type;
     private Vector<Byte> extension_data;

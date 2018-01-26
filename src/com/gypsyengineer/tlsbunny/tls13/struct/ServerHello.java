@@ -1,4 +1,4 @@
-package com.gypsyengineer.tlsbunny.tls13;
+package com.gypsyengineer.tlsbunny.tls13.struct;
 
 import com.gypsyengineer.tlsbunny.tls.Random;
 import com.gypsyengineer.tlsbunny.tls.Vector;
@@ -9,8 +9,6 @@ import java.nio.ByteBuffer;
 public class ServerHello implements HandshakeMessage {
 
     public static final int EXTENSIONS_LENGTH_BYTES = 2;
-    public static final int MIN_EXPECTED_EXTENSIONS_BYTES = 6;
-    public static final int MAX_EXPECTED_EXTENSIONS_BYTES = 65535;
 
     private ProtocolVersion version = ProtocolVersion.TLSv13;
     private Random random = new Random();
@@ -80,7 +78,7 @@ public class ServerHello implements HandshakeMessage {
         extensions.clear();
     }
 
-    public Extension getExtension(ExtensionType type) {
+    public Extension findExtension(ExtensionType type) {
         for (Extension extension : extensions.toList()) {
             if (type.equals(extension.getExtensionType())) {
                 return extension;
@@ -94,26 +92,25 @@ public class ServerHello implements HandshakeMessage {
         return extensions;
     }
 
-    public KeyShare.ServerHello getKeyShare() throws IOException {
+    public KeyShare.ServerHello findKeyShare() throws IOException {
         return KeyShare.ServerHello.parse(
-                getExtension(ExtensionType.KEY_SHARE).getExtensionData());
+                findExtension(ExtensionType.key_share).getExtensionData());
     }
 
     @Override
     public HandshakeType type() {
-        return HandshakeType.SERVER_HELLO;
+        return HandshakeType.server_hello;
     }
 
-    public static ServerHello parse(byte[] bytes) {
-        ByteBuffer buffer = ByteBuffer.wrap(bytes);
-        ProtocolVersion version = ProtocolVersion.parse(buffer);
-        Random random = Random.parse(buffer);
-        CipherSuite cipher_suite = CipherSuite.parse(buffer);
-        Vector<Extension> extensions = Vector.parse(
-                buffer,
-                EXTENSIONS_LENGTH_BYTES,
-                buf -> Extension.parse(buf));
-
-        return new ServerHello(version, random, cipher_suite, extensions);
+        
+    public static ServerHello parse(ByteBuffer buffer) {
+        return new ServerHello(
+                ProtocolVersion.parse(buffer), 
+                Random.parse(buffer), 
+                CipherSuite.parse(buffer), 
+                Vector.parse(
+                    buffer,
+                    EXTENSIONS_LENGTH_BYTES,
+                    buf -> Extension.parse(buf)));
     }
 }

@@ -1,4 +1,4 @@
-package com.gypsyengineer.tlsbunny.tls13;
+package com.gypsyengineer.tlsbunny.tls13.struct;
 
 import com.gypsyengineer.tlsbunny.tls.Vector;
 import com.gypsyengineer.tlsbunny.utils.Utils;
@@ -8,8 +8,6 @@ import java.nio.ByteBuffer;
 public class CertificateVerify implements HandshakeMessage {
 
     public static final int SIGNATURE_LENGTH_BYTES = 2;
-    public static final int MIN_EXTECTED_SIGNATURE_LENGTH = 0;
-    public static final int MAX_EXTECTED_SIGNATURE_LENGTH = 65535;
 
     private SignatureScheme algorithm;
     private Vector<Byte> signature;
@@ -47,7 +45,7 @@ public class CertificateVerify implements HandshakeMessage {
 
     @Override
     public HandshakeType type() {
-        return HandshakeType.CERTIFICATE_VERIFY;
+        return HandshakeType.certificate_verify;
     }
 
     public static CertificateVerify parse(ByteBuffer buffer) {

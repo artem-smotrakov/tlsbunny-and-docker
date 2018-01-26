@@ -1,4 +1,4 @@
-package com.gypsyengineer.tlsbunny.tls13;
+package com.gypsyengineer.tlsbunny.tls13.struct;
 
 import com.gypsyengineer.tlsbunny.tls.Bytes;
 import com.gypsyengineer.tlsbunny.tls.Entity;
@@ -6,7 +6,6 @@ import com.gypsyengineer.tlsbunny.tls.UInt16;
 import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.List;
 
 public class TLSPlaintext implements Entity {
     
@@ -18,7 +17,7 @@ public class TLSPlaintext implements Entity {
     private Entity fragment;
 
     public TLSPlaintext() {
-        this(ContentType.HANDSHAKE, ProtocolVersion.TLSv10, UInt16.ZERO, Bytes.EMPTY);
+        this(ContentType.handshake, ProtocolVersion.TLSv10, UInt16.ZERO, Bytes.EMPTY);
     }
     
     public TLSPlaintext(
@@ -27,8 +26,8 @@ public class TLSPlaintext implements Entity {
         this(type, version, new UInt16(fragment.length), new Bytes(fragment));
     }
 
-    public TLSPlaintext(
-            ContentType type, ProtocolVersion version, UInt16 length, Entity fragment) {
+    public TLSPlaintext(ContentType type, ProtocolVersion version, 
+            UInt16 length, Entity fragment) {
         
         this.type = type;
         this.legacy_record_version = version;
@@ -36,28 +35,20 @@ public class TLSPlaintext implements Entity {
         this.fragment = fragment;
     }
 
-    public TLSPlaintext(
-            ContentType type, ProtocolVersion version, UInt16 length, byte[] fragment) {
+    public TLSPlaintext(ContentType type, ProtocolVersion version, 
+            UInt16 length, byte[] fragment) {
         
         this(type, version, length, new Bytes(fragment));
     }
 
     @Override
     public int encodingLength() {
-        return type.encodingLength() 
-                + legacy_record_version.encodingLength()
-                + length.encodingLength() 
-                + fragment.encodingLength();
+        return Utils.getEncodingLength(type, legacy_record_version, length, fragment);
     }
 
     @Override
     public byte[] encoding() throws IOException {
-        return ByteBuffer.allocate(encodingLength())
-                .put(type.encoding())
-                .put(legacy_record_version.encoding())
-                .put(length.encoding())
-                .put(fragment.encoding())
-                .array();
+        return Utils.encoding(type, legacy_record_version, length, fragment);
     }
 
     public void setType(ContentType type) {
@@ -127,10 +118,10 @@ public class TLSPlaintext implements Entity {
             };
         }
 
-        List<byte[]> fragments = Utils.split(encoded, MAX_ALLOWED_LENGTH);
-        TLSPlaintext[] tlsPlaintexts = new TLSPlaintext[fragments.size()];
-        for (int i=0; i < fragments.size(); i++) {
-            tlsPlaintexts[i] = new TLSPlaintext(type, version, fragments.get(i));
+        byte[][] fragments = Utils.split(encoded, MAX_ALLOWED_LENGTH);
+        TLSPlaintext[] tlsPlaintexts = new TLSPlaintext[fragments.length];
+        for (int i=0; i < fragments.length; i++) {
+            tlsPlaintexts[i] = new TLSPlaintext(type, version, fragments[i]);
         }
 
         return tlsPlaintexts;

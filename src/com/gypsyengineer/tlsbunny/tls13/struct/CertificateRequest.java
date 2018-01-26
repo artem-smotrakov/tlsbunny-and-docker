@@ -1,4 +1,4 @@
-package com.gypsyengineer.tlsbunny.tls13;
+package com.gypsyengineer.tlsbunny.tls13.struct;
 
 import com.gypsyengineer.tlsbunny.tls.Vector;
 import com.gypsyengineer.tlsbunny.utils.Utils;
@@ -48,7 +48,7 @@ public class CertificateRequest implements HandshakeMessage {
 
     @Override
     public HandshakeType type() {
-        return HandshakeType.CERTIFICATE_REQUEST;
+        return HandshakeType.certificate_request;
     }
 
     public static CertificateRequest parse(ByteBuffer buffer) {

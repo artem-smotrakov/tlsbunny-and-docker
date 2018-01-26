@@ -1,4 +1,4 @@
-package com.gypsyengineer.tlsbunny.tls13;
+package com.gypsyengineer.tlsbunny.tls13.struct;
 
 import com.gypsyengineer.tlsbunny.tls.Entity;
 import java.nio.ByteBuffer;
@@ -7,18 +7,18 @@ public class HandshakeType implements Entity {
 
     public static final int ENCODING_LENGTH = 1;
 
-    public static final HandshakeType CLIENT_HELLO          = new HandshakeType(1);
-    public static final HandshakeType SERVER_HELLO          = new HandshakeType(2);
-    public static final HandshakeType NEW_SESSION_TICKET    = new HandshakeType(4);
-    public static final HandshakeType END_OF_EARLY_DATA     = new HandshakeType(5);
-    public static final HandshakeType HELLO_RETRY_REQUEST   = new HandshakeType(6);
-    public static final HandshakeType ENCRYPTED_EXTENSIONS  = new HandshakeType(8);
-    public static final HandshakeType CERTIFICATE           = new HandshakeType(11);
-    public static final HandshakeType CERTIFICATE_REQUEST   = new HandshakeType(13);
-    public static final HandshakeType CERTIFICATE_VERIFY    = new HandshakeType(15);
-    public static final HandshakeType FINISHED              = new HandshakeType(20);
-    public static final HandshakeType KEY_UPDATE            = new HandshakeType(24);
-    public static final HandshakeType MESSAGE_HASH          = new HandshakeType(254);
+    public static final HandshakeType cleint_hello          = new HandshakeType(1);
+    public static final HandshakeType server_hello          = new HandshakeType(2);
+    public static final HandshakeType new_session_ticket    = new HandshakeType(4);
+    public static final HandshakeType end_of_early_data     = new HandshakeType(5);
+    public static final HandshakeType hello_retry_request   = new HandshakeType(6);
+    public static final HandshakeType encrypted_extensions  = new HandshakeType(8);
+    public static final HandshakeType certificate           = new HandshakeType(11);
+    public static final HandshakeType certificate_request   = new HandshakeType(13);
+    public static final HandshakeType certificate_verify    = new HandshakeType(15);
+    public static final HandshakeType finished              = new HandshakeType(20);
+    public static final HandshakeType key_update            = new HandshakeType(24);
+    public static final HandshakeType message_hash          = new HandshakeType(254);
 
     private int value;
 

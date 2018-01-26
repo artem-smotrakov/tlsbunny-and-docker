@@ -1,4 +1,4 @@
-package com.gypsyengineer.tlsbunny.tls13;
+package com.gypsyengineer.tlsbunny.tls13.struct;
 
 import com.gypsyengineer.tlsbunny.tls.Entity;
 import com.gypsyengineer.tlsbunny.tls.Vector;
@@ -10,7 +10,6 @@ public class KeyShare {
     public static class ClientHello implements Entity {
         
         public static final int LENGTH_BYTES = 2;
-        public static final int MAX_EXPECTED_LENGTH = 65535;
 
         private Vector<KeyShareEntry> client_shares;
 
@@ -23,7 +22,7 @@ public class KeyShare {
         }
 
         public void set(KeyShareEntry keyShareEntry) {
-            client_shares = Vector.wrap(MAX_EXPECTED_LENGTH, keyShareEntry);
+            client_shares = Vector.wrap(LENGTH_BYTES, keyShareEntry);
         }
 
         public void set(Vector<KeyShareEntry> client_shares) {

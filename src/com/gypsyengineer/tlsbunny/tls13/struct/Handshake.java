@@ -1,4 +1,4 @@
-package com.gypsyengineer.tlsbunny.tls13;
+package com.gypsyengineer.tlsbunny.tls13.struct;
 
 import com.gypsyengineer.tlsbunny.tls.Bytes;
 import com.gypsyengineer.tlsbunny.tls.Entity;
@@ -13,7 +13,7 @@ public class Handshake implements Entity {
     private Entity body;
 
     public Handshake() {
-        this(HandshakeType.CLIENT_HELLO, UInt24.ZERO, Bytes.EMPTY);
+        this(HandshakeType.cleint_hello, UInt24.ZERO, Bytes.EMPTY);
     }
 
     public Handshake(HandshakeType msg_type, UInt24 length, Entity body) {
@@ -67,39 +67,39 @@ public class Handshake implements Entity {
     }
 
     public boolean containsClientHello() {
-        return HandshakeType.CLIENT_HELLO.equals(msg_type);
+        return HandshakeType.cleint_hello.equals(msg_type);
     }
 
     public boolean containsHelloRetryRequest() {
-        return HandshakeType.HELLO_RETRY_REQUEST.equals(msg_type);
+        return HandshakeType.hello_retry_request.equals(msg_type);
     }
 
     public boolean containsServerHello() {
-        return HandshakeType.SERVER_HELLO.equals(msg_type);
+        return HandshakeType.server_hello.equals(msg_type);
     }
 
     public boolean containsEncryptedExtensions(){
-        return HandshakeType.ENCRYPTED_EXTENSIONS.equals(msg_type);
+        return HandshakeType.encrypted_extensions.equals(msg_type);
     }
 
     public boolean containsCertificateRequest() {
-        return HandshakeType.CERTIFICATE_REQUEST.equals(msg_type);
+        return HandshakeType.certificate_request.equals(msg_type);
     }
 
     public boolean containsCertificate() {
-        return HandshakeType.CERTIFICATE.equals(msg_type);
+        return HandshakeType.certificate.equals(msg_type);
     }
 
     public boolean containsCertificateVerify() {
-        return HandshakeType.CERTIFICATE_VERIFY.equals(msg_type);
+        return HandshakeType.certificate_verify.equals(msg_type);
     }
 
     public boolean containsFinished() {
-        return HandshakeType.FINISHED.equals(msg_type);
+        return HandshakeType.finished.equals(msg_type);
     }
 
     public boolean containsNewSessionTicket() {
-        return HandshakeType.NEW_SESSION_TICKET.equals(msg_type);
+        return HandshakeType.new_session_ticket.equals(msg_type);
     }
 
     public static Handshake parse(byte[] bytes) {

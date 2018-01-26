@@ -1,4 +1,4 @@
-package com.gypsyengineer.tlsbunny.tls13;
+package com.gypsyengineer.tlsbunny.tls13.struct;
 
 import com.gypsyengineer.tlsbunny.tls.Entity;
 import com.gypsyengineer.tlsbunny.tls.Vector;
@@ -11,13 +11,6 @@ public class Certificate implements Entity, HandshakeMessage {
 
     public static final int CONTEXT_LENGTH_BYTES = 1;
     public static final int CERTIFICATE_LIST_LENGTH_BYTES = 3;
-
-    public static final int MIN_CONTEXT_LENGTH = 0;
-    public static final int MAX_CONTEXT_LENGTH = 255;
-    public static final int MIN_EXPECTED_CONTEXT_LENGTH = 0;
-    public static final int MAX_EXPECTED_CONTEXT_LENGTH = 255;
-    public static final int MIN_EXPECTED_CERTIFICATE_LIST_LENGTH = 0;
-    public static final int MAX_EXPECTED_CERTIFICATE_LIST_LENGTH = 16777215;
 
     private Vector<Byte> certificate_request_context;
     private Vector<CertificateEntry> certificate_list;
@@ -57,7 +50,7 @@ public class Certificate implements Entity, HandshakeMessage {
 
     @Override
     public HandshakeType type() {
-        return HandshakeType.CERTIFICATE;
+        return HandshakeType.certificate;
     }
 
     public static Certificate parse(

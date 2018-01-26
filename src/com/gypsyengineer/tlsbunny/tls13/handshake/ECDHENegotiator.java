@@ -1,8 +1,8 @@
 package com.gypsyengineer.tlsbunny.tls13.handshake;
 
-import com.gypsyengineer.tlsbunny.tls13.KeyShareEntry;
-import com.gypsyengineer.tlsbunny.tls13.NamedGroup;
-import com.gypsyengineer.tlsbunny.tls13.UncompressedPointRepresentation;
+import com.gypsyengineer.tlsbunny.tls13.struct.KeyShareEntry;
+import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
+import com.gypsyengineer.tlsbunny.tls13.struct.UncompressedPointRepresentation;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.KeyFactory;

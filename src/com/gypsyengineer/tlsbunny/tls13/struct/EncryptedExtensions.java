@@ -1,4 +1,4 @@
-package com.gypsyengineer.tlsbunny.tls13;
+package com.gypsyengineer.tlsbunny.tls13.struct;
 
 import com.gypsyengineer.tlsbunny.tls.Vector;
 import java.io.IOException;
@@ -28,7 +28,7 @@ public class EncryptedExtensions implements HandshakeMessage {
 
     @Override
     public HandshakeType type() {
-        return HandshakeType.ENCRYPTED_EXTENSIONS;
+        return HandshakeType.encrypted_extensions;
     }
 
     public Vector<Extension> getExtensions() {

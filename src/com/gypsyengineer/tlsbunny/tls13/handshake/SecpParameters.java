@@ -1,6 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls13.handshake;
 
-import com.gypsyengineer.tlsbunny.tls13.NamedGroup;
+import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
 import static com.gypsyengineer.tlsbunny.utils.Convertor.hex2int;
 import java.math.BigInteger;
 import java.security.spec.ECField;

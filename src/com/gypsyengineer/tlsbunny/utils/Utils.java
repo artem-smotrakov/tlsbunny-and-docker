@@ -1,21 +1,21 @@
 package com.gypsyengineer.tlsbunny.utils;
 
+import com.gypsyengineer.tlsbunny.tls.Entity;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.gypsyengineer.tlsbunny.tls.Entity;
 
 public class Utils {
     
     public static final byte[] EMPTY_ARRAY = new byte[0];
     
-    public static List<byte[]> split(byte[] data, int length) {
+    public static byte[][] split(byte[] data, int length) {
         List<byte[]> fragments = new ArrayList<>();
         if (data.length <= length) {
             fragments.add(data);
-            return fragments;
+            return fragments.toArray(new byte[1][]);
         }
 
         int i = 0;
@@ -28,7 +28,7 @@ public class Utils {
             fragments.add(Arrays.copyOfRange(data, i, data.length));
         }
 
-        return fragments;
+        return fragments.toArray(new byte[fragments.size()][]);
     }
 
     public static byte[] concatenate(byte[]... arrays) {

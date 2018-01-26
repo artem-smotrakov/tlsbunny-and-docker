@@ -1,4 +1,4 @@
-package com.gypsyengineer.tlsbunny.tls13;
+package com.gypsyengineer.tlsbunny.tls13.struct;
 
 import com.gypsyengineer.tlsbunny.tls.Entity;
 import java.io.IOException;
@@ -7,6 +7,7 @@ import java.nio.ByteBuffer;
 public class ProtocolVersion implements Entity {
 
     public static final int ENCODING_LENGTH = 2;
+    
     public static final ProtocolVersion SSLv3  = new ProtocolVersion(3, 0);
     public static final ProtocolVersion TLSv10 = new ProtocolVersion(3, 1);
     public static final ProtocolVersion TLSv11 = new ProtocolVersion(3, 2);

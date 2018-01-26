@@ -1,4 +1,4 @@
-package com.gypsyengineer.tlsbunny.tls13;
+package com.gypsyengineer.tlsbunny.tls13.struct;
 
 import com.gypsyengineer.tlsbunny.tls.Vector;
 import com.gypsyengineer.tlsbunny.tls.Entity;
@@ -9,8 +9,6 @@ import java.nio.ByteBuffer;
 public class KeyShareEntry implements Entity {
 
     public static final int KEY_EXCHANGE_LENGTH_BYTES = 2;
-    public static final int MIN_EXPECTED_KEY_EXCHANGE_BYTES = 1;
-    public static final int MAX_EXPECTED_KEY_EXCHANGE_BYTES = 65535;
 
     private NamedGroup group;
     private Vector<Byte> key_exchange;

@@ -1,4 +1,4 @@
-package com.gypsyengineer.tlsbunny.tls13;
+package com.gypsyengineer.tlsbunny.tls13.struct;
 
 import com.gypsyengineer.tlsbunny.tls.Bytes;
 import java.nio.ByteBuffer;
@@ -35,7 +35,7 @@ public class Finished implements HandshakeMessage {
 
     @Override
     public HandshakeType type() {
-        return HandshakeType.FINISHED;
+        return HandshakeType.finished;
     }
 
     public static Finished parse(ByteBuffer buffer, int hashLen) {

@@ -1,4 +1,4 @@
-package com.gypsyengineer.tlsbunny.tls13;
+package com.gypsyengineer.tlsbunny.tls13.struct;
 
 import com.gypsyengineer.tlsbunny.tls.Entity;
 import java.io.IOException;
@@ -8,27 +8,27 @@ public class ExtensionType implements Entity {
 
     public static final int ENCODING_LENGTH = 2;
     
-    public static final ExtensionType SERVER_NAME = new ExtensionType(0);
-    public static final ExtensionType MAX_FRAGMENT_LENGTH = new ExtensionType(1);
-    public static final ExtensionType STATUS_REQUEST = new ExtensionType(5);
-    public static final ExtensionType SUPPORTED_GROUPS = new ExtensionType(10);
-    public static final ExtensionType SIGNATURE_ALGORITHMS = new ExtensionType(13);
-    public static final ExtensionType USE_SRTP = new ExtensionType(14);
-    public static final ExtensionType HEARTBEAT = new ExtensionType(15);
-    public static final ExtensionType APPLICATION_LAYER_PROTOCOL_NEGOTIATION = new ExtensionType(16);
-    public static final ExtensionType SIGNED_CERTIFICATE_TIMESTAMP = new ExtensionType(18);
-    public static final ExtensionType CLIENT_CERTIFICATE_TYPE = new ExtensionType(19);
-    public static final ExtensionType SERVER_CERTIFICATE_TYPE = new ExtensionType(20);
-    public static final ExtensionType PADDING = new ExtensionType(21);
-    public static final ExtensionType KEY_SHARE = new ExtensionType(40);
-    public static final ExtensionType PRE_SHARED_KEY = new ExtensionType(41);
-    public static final ExtensionType EARLY_DATA = new ExtensionType(42);
-    public static final ExtensionType SUPPORTED_VERSIONS = new ExtensionType(43);
-    public static final ExtensionType COOKIE = new ExtensionType(44);
-    public static final ExtensionType PSK_KEY_EXCHANGE_MODES = new ExtensionType(45);
-    public static final ExtensionType CERTIFICATE_AUTHORITIES = new ExtensionType(47);
-    public static final ExtensionType OID_FILTERS = new ExtensionType(48);
-    public static final ExtensionType POST_HANDSHAKE_AUTH = new ExtensionType(49);
+    public static final ExtensionType server_name = new ExtensionType(0);
+    public static final ExtensionType max_fragment_length = new ExtensionType(1);
+    public static final ExtensionType status_request = new ExtensionType(5);
+    public static final ExtensionType supported_groups = new ExtensionType(10);
+    public static final ExtensionType signature_algorithms = new ExtensionType(13);
+    public static final ExtensionType use_srtp = new ExtensionType(14);
+    public static final ExtensionType heartbeat = new ExtensionType(15);
+    public static final ExtensionType application_layer_protocol_negotiation = new ExtensionType(16);
+    public static final ExtensionType signed_certificate_timestamp = new ExtensionType(18);
+    public static final ExtensionType client_certificate_type = new ExtensionType(19);
+    public static final ExtensionType server_certificate_type = new ExtensionType(20);
+    public static final ExtensionType padding = new ExtensionType(21);
+    public static final ExtensionType key_share = new ExtensionType(40);
+    public static final ExtensionType pre_shared_key = new ExtensionType(41);
+    public static final ExtensionType early_data = new ExtensionType(42);
+    public static final ExtensionType supported_versions = new ExtensionType(43);
+    public static final ExtensionType cookie = new ExtensionType(44);
+    public static final ExtensionType psk_key_exchange_modes = new ExtensionType(45);
+    public static final ExtensionType certificate_authorities = new ExtensionType(47);
+    public static final ExtensionType oid_filters = new ExtensionType(48);
+    public static final ExtensionType post_handshake_auth = new ExtensionType(49);
 
     private int code;
 

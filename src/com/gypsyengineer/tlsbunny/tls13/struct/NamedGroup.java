@@ -1,4 +1,4 @@
-package com.gypsyengineer.tlsbunny.tls13;
+package com.gypsyengineer.tlsbunny.tls13.struct;
 
 import com.gypsyengineer.tlsbunny.tls.Entity;
 import java.io.IOException;
@@ -54,10 +54,7 @@ public class NamedGroup implements Entity {
             return false;
         }
         final NamedGroup other = (NamedGroup) obj;
-        if (this.code != other.code) {
-            return false;
-        }
-        return true;
+        return this.code == other.code;
     }
 
     public static NamedGroup parse(ByteBuffer buffer) {
