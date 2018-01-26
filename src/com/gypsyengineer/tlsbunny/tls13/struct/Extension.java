@@ -51,5 +51,25 @@ public class Extension implements Entity {
         
         return new Extension(extension_type, extension_data);
     }
+    
+    public static Extension wrap(SupportedVersions supportedVersions) throws IOException {
+        return wrap(ExtensionType.supported_groups, supportedVersions.encoding());
+    }
+    
+    public static Extension wrap(SignatureSchemeList signatureSchemeList) throws IOException {
+        return wrap(ExtensionType.signature_algorithms, signatureSchemeList.encoding());
+    }
+    
+    public static Extension wrap(NamedGroupList namedGroupList) throws IOException {
+        return wrap(ExtensionType.supported_groups, namedGroupList.encoding());
+    }
+    
+    public static Extension wrap(KeyShare keyShare) throws IOException {
+        return wrap(ExtensionType.key_share, keyShare.encoding());
+    }
+    
+    public static Extension wrap(ExtensionType type, byte[] bytes) {
+        return new Extension(type, Vector.wrap(EXTENSION_DATA_LENGTH_BYTES, bytes));
+    }
 
 }

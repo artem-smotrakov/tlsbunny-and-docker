@@ -5,9 +5,9 @@ import com.gypsyengineer.tlsbunny.tls.Vector;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-public class SupportedVersions {
+public abstract class SupportedVersions implements Entity {
 
-    public static class ClientHello implements Entity {
+    public static class ClientHello extends SupportedVersions {
     
         public static final int VERSIONS_LENGTH_BYTES = 1;
         
@@ -35,6 +35,10 @@ public class SupportedVersions {
             return versions.encoding();
         }
         
+        public static ClientHello create(ProtocolVersion version) {
+            return new ClientHello(Vector.wrap(VERSIONS_LENGTH_BYTES, version));
+        }
+        
         public static ClientHello parse(Vector<Byte> extension_data) throws IOException {
             return parse(ByteBuffer.wrap(extension_data.bytes()));
         }
@@ -48,7 +52,7 @@ public class SupportedVersions {
         }
     }
     
-    public class ServerHello implements Entity {
+    public static class ServerHello extends SupportedVersions {
         
         private ProtocolVersion selected_version;
 

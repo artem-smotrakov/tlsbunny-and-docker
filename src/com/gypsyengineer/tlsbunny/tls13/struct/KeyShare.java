@@ -5,9 +5,9 @@ import com.gypsyengineer.tlsbunny.tls.Vector;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-public class KeyShare {
+public abstract class KeyShare implements Entity {
     
-    public static class ClientHello implements Entity {
+    public static class ClientHello extends KeyShare {
         
         public static final int LENGTH_BYTES = 2;
 
@@ -63,7 +63,7 @@ public class KeyShare {
     
     }
     
-    public static class ServerHello implements Entity {
+    public static class ServerHello extends KeyShare {
 
         private KeyShareEntry server_share;
 
