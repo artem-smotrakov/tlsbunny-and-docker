@@ -3,6 +3,7 @@ package com.gypsyengineer.tlsbunny.tls13.struct;
 import com.gypsyengineer.tlsbunny.tls.Bytes;
 import com.gypsyengineer.tlsbunny.tls.Entity;
 import com.gypsyengineer.tlsbunny.tls.UInt24;
+import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
@@ -28,18 +29,12 @@ public class Handshake implements Entity {
 
     @Override
     public int encodingLength() {
-        return msg_type.encodingLength()
-                + length.encodingLength()
-                + body.encodingLength();
+        return Utils.getEncodingLength(msg_type, length, body);
     }
 
     @Override
     public byte[] encoding() throws IOException {
-        return ByteBuffer.allocate(encodingLength())
-                .put(msg_type.encoding())
-                .put(length.encoding())
-                .put(body.encoding())
-                .array();
+        return Utils.encoding(msg_type, length, body);
     }
 
     public void setMessageType(HandshakeType msg_type) {
@@ -116,8 +111,10 @@ public class Handshake implements Entity {
     }
     
     public static Handshake wrap(HandshakeMessage message) throws IOException {
-        return new Handshake(message.type(), 
-                message.encodingLength(), message.encoding());
+        return new Handshake(
+                message.type(), 
+                message.encodingLength(), 
+                message.encoding());
     }
 
 }

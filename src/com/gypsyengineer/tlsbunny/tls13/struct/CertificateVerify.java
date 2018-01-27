@@ -48,6 +48,10 @@ public class CertificateVerify implements HandshakeMessage {
         return HandshakeType.certificate_verify;
     }
 
+    public static CertificateVerify parse(byte[] bytes) {
+        return parse(ByteBuffer.wrap(bytes));
+    }
+    
     public static CertificateVerify parse(ByteBuffer buffer) {
         return new CertificateVerify(
                 SignatureScheme.parse(buffer), 

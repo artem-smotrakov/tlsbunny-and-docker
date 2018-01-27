@@ -7,8 +7,12 @@ public class Finished implements HandshakeMessage {
 
     private Bytes verify_data;
 
-    private Finished(Bytes verify_data) {
+    public Finished(Bytes verify_data) {
         this.verify_data = verify_data;
+    }
+    
+    public Finished(byte[] verify_data) {
+        this(new Bytes(verify_data));
     }
 
     public byte[] getVerifyData() {
@@ -38,6 +42,10 @@ public class Finished implements HandshakeMessage {
         return HandshakeType.finished;
     }
 
+    public static Finished parse(byte[] bytes, int hashLen) {
+        return parse(ByteBuffer.wrap(bytes), hashLen);
+    }
+    
     public static Finished parse(ByteBuffer buffer, int hashLen) {
         byte[] verify_data = new byte[hashLen];
         buffer.get(verify_data);

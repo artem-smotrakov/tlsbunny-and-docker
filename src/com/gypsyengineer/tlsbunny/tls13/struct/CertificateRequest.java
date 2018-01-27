@@ -50,6 +50,10 @@ public class CertificateRequest implements HandshakeMessage {
     public HandshakeType type() {
         return HandshakeType.certificate_request;
     }
+    
+    public static CertificateRequest parse(byte[] bytes) {
+        return parse(ByteBuffer.wrap(bytes));
+    }
 
     public static CertificateRequest parse(ByteBuffer buffer) {
         return new CertificateRequest(Vector.parse(

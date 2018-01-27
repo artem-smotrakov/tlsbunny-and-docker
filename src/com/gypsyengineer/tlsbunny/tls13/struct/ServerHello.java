@@ -102,7 +102,10 @@ public class ServerHello implements HandshakeMessage {
         return HandshakeType.server_hello;
     }
 
-        
+    public static ServerHello parse(byte[] bytes) {
+        return parse(ByteBuffer.wrap(bytes));
+    }
+    
     public static ServerHello parse(ByteBuffer buffer) {
         return new ServerHello(
                 ProtocolVersion.parse(buffer), 

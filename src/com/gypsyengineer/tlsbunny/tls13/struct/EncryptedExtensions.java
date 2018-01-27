@@ -7,8 +7,6 @@ import java.nio.ByteBuffer;
 public class EncryptedExtensions implements HandshakeMessage {
 
     public static final int EXTENSIONS_LENGTH_BYTES = 2;
-    public static final int MIN_EXTENSIONS_LENGTH = 0;
-    public static final int MAX_EXTENSIONS_LENGTH = 65535;
 
     private Vector<Extension> extensions;
 
@@ -37,6 +35,10 @@ public class EncryptedExtensions implements HandshakeMessage {
 
     public void setExtensions(Vector<Extension> extensions) {
         this.extensions = extensions;
+    }
+    
+    public static EncryptedExtensions parse(byte[] bytes) {
+        return parse(ByteBuffer.wrap(bytes));
     }
 
     public static EncryptedExtensions parse(ByteBuffer buffer) {

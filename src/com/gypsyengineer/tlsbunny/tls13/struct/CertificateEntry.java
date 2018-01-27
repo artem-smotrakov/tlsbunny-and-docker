@@ -79,6 +79,12 @@ public abstract class CertificateEntry implements Entity {
                         EXTENSIONS_LENGTH_BYTES,
                         buf -> Extension.parse(buf)));
         }
+        
+        public static X509 wrap(byte[] bytes) {
+            return new X509(
+                    Vector.wrap(LENGTH_BYTES, bytes), 
+                    Vector.wrap(EXTENSIONS_LENGTH_BYTES));
+        }
 
     }
 

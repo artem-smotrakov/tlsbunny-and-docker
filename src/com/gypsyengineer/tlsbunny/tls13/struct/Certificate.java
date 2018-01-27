@@ -1,13 +1,12 @@
 package com.gypsyengineer.tlsbunny.tls13.struct;
 
-import com.gypsyengineer.tlsbunny.tls.Entity;
 import com.gypsyengineer.tlsbunny.tls.Vector;
 import com.gypsyengineer.tlsbunny.tls.Vector.ContentParser;
 import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-public class Certificate implements Entity, HandshakeMessage {
+public class Certificate implements HandshakeMessage {
 
     public static final int CONTEXT_LENGTH_BYTES = 1;
     public static final int CERTIFICATE_LIST_LENGTH_BYTES = 3;
@@ -15,7 +14,7 @@ public class Certificate implements Entity, HandshakeMessage {
     private Vector<Byte> certificate_request_context;
     private Vector<CertificateEntry> certificate_list;
 
-    private Certificate(Vector<Byte> certificate_request_context,
+    public Certificate(Vector<Byte> certificate_request_context,
             Vector<CertificateEntry> certificate_list) {
 
         this.certificate_request_context = certificate_request_context;
@@ -53,8 +52,11 @@ public class Certificate implements Entity, HandshakeMessage {
         return HandshakeType.certificate;
     }
 
-    public static Certificate parse(
-            ByteBuffer buffer, ContentParser certificateEntiryParser) {
+    public static Certificate parse(byte[] bytes, ContentParser certificateEntityParser) {
+        return parse(ByteBuffer.wrap(bytes), certificateEntityParser);
+    }
+    
+    public static Certificate parse(ByteBuffer buffer, ContentParser certificateEntityParser) {
         
         return new Certificate(
                 Vector.parse(buffer,
@@ -63,7 +65,7 @@ public class Certificate implements Entity, HandshakeMessage {
                 Vector.parse(
                     buffer,
                     CERTIFICATE_LIST_LENGTH_BYTES,
-                    certificateEntiryParser));
+                    certificateEntityParser));
     }
 
 }

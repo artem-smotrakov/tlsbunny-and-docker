@@ -20,6 +20,8 @@ public class ClientHello implements HandshakeMessage {
     private Vector<CompressionMethod> legacy_compression_methods = Vector.wrap(LEGACY_COMPRESSION_METHODS_LENGTH_BYTES);
     private Vector<Extension> extensions = Vector.wrap(EXTENSIONS_LENGTH_BYTES);
 
+    public ClientHello() {}
+    
     public ClientHello(
             ProtocolVersion legacy_version,
             Random random,

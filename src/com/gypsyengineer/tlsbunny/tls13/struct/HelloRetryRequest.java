@@ -8,8 +8,6 @@ import java.nio.ByteBuffer;
 public class HelloRetryRequest implements HandshakeMessage {
 
     public static final int EXTENSIONS_LENGTH_BYTES = 2;
-    public static final int MIN_EXTENSIONS_LENGTH = 2;
-    public static final int MAX_EXTENSIONS_LENGTH = 65535;
 
     private ProtocolVersion server_version;
     private CipherSuite cipher_suite;
@@ -80,6 +78,10 @@ public class HelloRetryRequest implements HandshakeMessage {
         return HandshakeType.hello_retry_request;
     }
 
+    public static HelloRetryRequest parse(byte[] bytes) {
+        return parse(ByteBuffer.wrap(bytes));
+    }
+    
     public static HelloRetryRequest parse(ByteBuffer buffer) {
         return new HelloRetryRequest(
                 ProtocolVersion.parse(buffer), 
