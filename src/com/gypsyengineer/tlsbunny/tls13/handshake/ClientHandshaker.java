@@ -32,6 +32,7 @@ import com.gypsyengineer.tlsbunny.tls13.crypto.TranscriptHash;
 import com.gypsyengineer.tlsbunny.tls13.struct.CertificateEntry;
 import com.gypsyengineer.tlsbunny.tls13.struct.Extension;
 import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
+import com.gypsyengineer.tlsbunny.utils.CertificateHolder;
 import com.gypsyengineer.tlsbunny.utils.Connection;
 import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.nio.ByteBuffer;
@@ -63,9 +64,6 @@ public class ClientHandshaker {
     private static final byte[] iv              = "iv".getBytes();
     private static final byte[] finished        = "finished".getBytes();
 
-    public static final byte[] NO_CERT = null;
-    public static final byte[] NO_KEY = null;
-    
     private static final byte[] CERTIFICATE_VERIFY_PREFIX = new byte[64];
     static {
         for (int i=0; i<CERTIFICATE_VERIFY_PREFIX.length; i++) {
@@ -110,8 +108,7 @@ public class ClientHandshaker {
     private byte[] server_application_write_key;
     private byte[] server_application_write_iv;
 
-    private final byte[] client_cert_data;
-    private final byte[] client_key_data;
+    private final CertificateHolder clientCertificate;
     private Vector<Byte> certificate_request_context;
 
     private AEAD handshakeEncryptor;
@@ -121,15 +118,14 @@ public class ClientHandshaker {
 
     private ClientHandshaker(SignatureScheme scheme, NamedGroup group,
             Negotiator negotiator, CipherSuite ciphersuite, HKDF hkdf,
-            byte[] client_cert_data, byte[] client_key_data) {
+            CertificateHolder clientCertificate) {
 
         this.scheme = scheme;
         this.group = group;
         this.negotiator = negotiator;
         this.ciphersuite = ciphersuite;
         this.hkdf = hkdf;
-        this.client_cert_data = client_cert_data;
-        this.client_key_data = client_key_data;
+        this.clientCertificate = clientCertificate;
     }
 
     public void reset() {
@@ -222,7 +218,7 @@ public class ClientHandshaker {
         });
     }
 
-    public ApplicationData createApplicationData() throws Exception {
+    public ApplicationData applicationData() throws Exception {
         return new ApplicationData(
                 AEAD.createEncryptor(
                         ciphersuite.cipher(),
@@ -265,7 +261,7 @@ public class ClientHandshaker {
                     certificate_request_context, 
                     Vector.wrap(
                             Certificate.CERTIFICATE_LIST_LENGTH_BYTES, 
-                            CertificateEntry.X509.wrap(client_cert_data))));
+                            CertificateEntry.X509.wrap(clientCertificate.getCertData()))));
 
         return context.getClientCertificate();
     }
@@ -281,7 +277,7 @@ public class ClientHandshaker {
         Signature signature = Signature.getInstance("SHA256withECDSA");
         signature.initSign(
                 KeyFactory.getInstance("EC").generatePrivate(
-                        new PKCS8EncodedKeySpec(client_key_data)));
+                        new PKCS8EncodedKeySpec(clientCertificate.getKeyData())));
         signature.update(content);
 
         context.setClientCertificateVerify(
@@ -571,7 +567,7 @@ public class ClientHandshaker {
     }
     
     public ApplicationDataConnection wrap(Connection connection) throws Exception {
-        return new ApplicationDataConnection(createApplicationData(), connection);
+        return new ApplicationDataConnection(applicationData(), connection);
     }
 
     private boolean requestedClientAuth() {
@@ -602,11 +598,10 @@ public class ClientHandshaker {
     
     public static ClientHandshaker create(SignatureScheme scheme, NamedGroup group,
             Negotiator negotiator, CipherSuite ciphersuite,
-            byte[] client_cert_data, byte[] client_key_data) throws Exception {
+            CertificateHolder clientCertificate) throws Exception {
 
         return new ClientHandshaker(scheme, group, negotiator, ciphersuite, 
-                HKDF.create(ciphersuite.hash()), 
-                client_cert_data, client_key_data);
+                HKDF.create(ciphersuite.hash()), clientCertificate);
     }
 
     private static byte[] zeroes(int length) {
