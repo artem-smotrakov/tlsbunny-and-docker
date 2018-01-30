@@ -25,8 +25,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.SupportedVersions;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AEAD;
-import com.gypsyengineer.tlsbunny.tls13.crypto.ApplicationDataConnection;
-import com.gypsyengineer.tlsbunny.tls13.crypto.ApplicationData;
+import com.gypsyengineer.tlsbunny.tls13.crypto.ApplicationDataChannel;
 import com.gypsyengineer.tlsbunny.tls13.crypto.HKDF;
 import com.gypsyengineer.tlsbunny.tls13.crypto.TranscriptHash;
 import com.gypsyengineer.tlsbunny.tls13.struct.CertificateEntry;
@@ -115,6 +114,8 @@ public class ClientHandshaker {
     private AEAD handshakeDecryptor;
     
     private Alert receivedAlert;
+    
+    private ApplicationDataChannel applicationData;
 
     ClientHandshaker(SignatureScheme scheme, NamedGroup group,
             Negotiator negotiator, CipherSuite ciphersuite, HKDF hkdf,
@@ -218,17 +219,8 @@ public class ClientHandshaker {
         });
     }
 
-    public ApplicationData applicationData() throws Exception {
-        return new ApplicationData(
-                AEAD.createEncryptor(
-                        ciphersuite.cipher(),
-                        client_application_write_key, 
-                        client_application_write_iv),
-                AEAD.createDecryptor(
-                        ciphersuite.cipher(),
-                        server_application_write_key, 
-                        server_application_write_iv)
-        );
+    public ApplicationDataChannel applicationData() throws Exception {
+        return applicationData;
     }
 
     public ClientHello createClientHello() throws Exception {
@@ -541,7 +533,7 @@ public class ClientHandshaker {
         return handshakeEncryptor.encrypt(plaintext);
     }
 
-    public void run(Connection connection) throws Exception {
+    public ApplicationDataChannel start(Connection connection) throws Exception {
         reset();
 
         connection.send(TLSPlaintext.wrap(
@@ -549,7 +541,16 @@ public class ClientHandshaker {
                 ProtocolVersion.TLSv10, 
                 Handshake.wrap(createClientHello()).encoding()));
         
-        handleIncomingMessages(connection);
+        ByteBuffer buffer = ByteBuffer.wrap(connection.read());
+        if (buffer.remaining() == 0) {
+            throw new RuntimeException();
+        }
+
+        while (buffer.remaining() > 0) {
+            TLSPlaintext tlsPlaintext = TLSPlaintext.parse(buffer);
+            handle(tlsPlaintext);
+        }
+        
         if (receivedAlert()) {            
             throw new RuntimeException();
         }
@@ -560,10 +561,42 @@ public class ClientHandshaker {
         }
         
         connection.send(encrypt(createFinished()));
+        
+        applicationData = createApplicationDataChannel(connection);
+     
+        TLSInnerPlaintext tlsInnerPlaintext = TLSInnerPlaintext.parse(
+                applicationData.decrypt(
+                        TLSPlaintext.parse(connection.read()).getFragment()));
+        
+        if (tlsInnerPlaintext.containsHandshake()) {
+            Handshake handshake = Handshake.parse(tlsInnerPlaintext.getContent());
+            if (!handshake.containsNewSessionTicket()) {
+                throw new RuntimeException();
+            }
+            
+            // TODO: handle NewSessionTicket
+        }
+        
+        if (tlsInnerPlaintext.containsApplicationData()) {
+            throw new RuntimeException("Oops, I can't handle application data!");
+        }
+        
+        return applicationData;
     }
     
-    public ApplicationDataConnection wrap(Connection connection) throws Exception {
-        return new ApplicationDataConnection(applicationData(), connection);
+    ApplicationDataChannel createApplicationDataChannel(Connection connection) 
+            throws Exception {
+        
+        return new ApplicationDataChannel(
+                connection, 
+                AEAD.createEncryptor(
+                    ciphersuite.cipher(),
+                    client_application_write_key, 
+                    client_application_write_iv), 
+                AEAD.createDecryptor(
+                    ciphersuite.cipher(),
+                    server_application_write_key, 
+                    server_application_write_iv));
     }
     
     byte[] getCurrentHash() throws Exception {
@@ -650,18 +683,6 @@ public class ClientHandshaker {
     
     private boolean requestedClientAuth() {
         return certificate_request_context != null;
-    }
-
-    private void handleIncomingMessages(Connection connection) throws Exception {
-        ByteBuffer buffer = ByteBuffer.wrap(connection.read());
-        if (buffer.remaining() == 0) {
-            throw new RuntimeException();
-        }
-
-        while (buffer.remaining() > 0) {
-            TLSPlaintext tlsPlaintext = TLSPlaintext.parse(buffer);
-            handle(tlsPlaintext);
-        }
     }
     
     private static Random createRandom() {

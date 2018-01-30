@@ -1,6 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls13.client;
 
-import com.gypsyengineer.tlsbunny.tls13.crypto.ApplicationDataConnection;
+import com.gypsyengineer.tlsbunny.tls13.crypto.ApplicationDataChannel;
 import com.gypsyengineer.tlsbunny.tls13.handshake.ClientHandshaker;
 import com.gypsyengineer.tlsbunny.tls13.handshake.ECDHENegotiator;
 import com.gypsyengineer.tlsbunny.tls13.struct.CipherSuite;
@@ -23,19 +23,11 @@ public class SimpleClient {
                 System.getProperty("tlsbunny.host", "localhost"), 
                 Integer.getInteger("tlsbunny.port", 443))) {
             
-            handshaker.run(connection);
-            ApplicationDataConnection appDataConnection = 
-                    new ApplicationDataConnection(
-                            handshaker.applicationData(), connection);
+            ApplicationDataChannel applicationData = handshaker.start(connection);
             
-            appDataConnection.write("GET / HTTP/1.1\n\n".getBytes());
+            applicationData.send("GET / HTTP/1.1\n\n".getBytes());
             
-            byte[] bytes = appDataConnection.read();
-            if (appDataConnection.receivedNewSessionTicket()) {
-                System.out.println("[tlsbunny] received new session ticket");
-                bytes = appDataConnection.read();
-            }
-            
+            byte[] bytes = applicationData.receive();
             System.out.println("[tlsbunny] received data");
             System.out.println(new String(bytes));
         }
