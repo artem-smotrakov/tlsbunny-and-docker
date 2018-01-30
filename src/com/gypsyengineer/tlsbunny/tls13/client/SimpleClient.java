@@ -29,7 +29,15 @@ public class SimpleClient {
                             handshaker.applicationData(), connection);
             
             appDataConnection.write("GET / HTTP/1.1\n\n".getBytes());
-            System.out.println(new String(appDataConnection.read()));
+            
+            byte[] bytes = appDataConnection.read();
+            if (appDataConnection.receivedNewSessionTicket()) {
+                System.out.println("[tlsbunny] received new session ticket");
+                bytes = appDataConnection.read();
+            }
+            
+            System.out.println("[tlsbunny] received data");
+            System.out.println(new String(bytes));
         }
     }
 }

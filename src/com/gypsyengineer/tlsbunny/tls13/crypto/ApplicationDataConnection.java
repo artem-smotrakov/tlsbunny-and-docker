@@ -52,11 +52,12 @@ public class ApplicationDataConnection {
     }
 
     public void write(byte[] data) throws Exception {
-        TLSPlaintext[] tlsPlaintexts = TLSPlaintext.wrap(ContentType.application_data, 
+        TLSPlaintext[] tlsPlaintexts = TLSPlaintext.wrap(
+                ContentType.application_data, 
                 ProtocolVersion.TLSv10, 
-                applicationData.encrypt(TLSInnerPlaintext.noPadding(ContentType.application_data,
-                                data
-                        ).encoding())
+                applicationData.encrypt(
+                        TLSInnerPlaintext.noPadding(
+                                ContentType.application_data, data).encoding())
                 );
         
         if (applicationData.unexpectedResult()) {

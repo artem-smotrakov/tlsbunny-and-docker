@@ -14,7 +14,7 @@ public class Handshake implements Entity {
     private Entity body;
 
     public Handshake() {
-        this(HandshakeType.cleint_hello, UInt24.ZERO, Bytes.EMPTY);
+        this(HandshakeType.client_hello, UInt24.ZERO, Bytes.EMPTY);
     }
 
     public Handshake(HandshakeType msg_type, UInt24 length, Entity body) {
@@ -62,7 +62,7 @@ public class Handshake implements Entity {
     }
 
     public boolean containsClientHello() {
-        return HandshakeType.cleint_hello.equals(msg_type);
+        return HandshakeType.client_hello.equals(msg_type);
     }
 
     public boolean containsHelloRetryRequest() {

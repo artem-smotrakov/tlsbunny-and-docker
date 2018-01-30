@@ -110,7 +110,7 @@ public class ServerHello implements HandshakeMessage {
         return new ServerHello(
                 ProtocolVersion.parse(buffer), 
                 Random.parse(buffer), 
-                CipherSuite.parse(buffer), 
+                CipherSuite.parse(buffer),
                 Vector.parse(
                     buffer,
                     EXTENSIONS_LENGTH_BYTES,

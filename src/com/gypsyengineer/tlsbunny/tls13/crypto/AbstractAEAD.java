@@ -27,7 +27,7 @@ public abstract class AbstractAEAD implements AEAD {
 
     @Override
     public boolean supportEncryption() {
-        return true;
+        return false;
     }
 
     @Override

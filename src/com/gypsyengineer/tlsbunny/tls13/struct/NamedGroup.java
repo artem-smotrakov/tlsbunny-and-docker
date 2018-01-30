@@ -47,13 +47,16 @@ public class NamedGroup implements Entity {
         if (this == obj) {
             return true;
         }
+        
         if (obj == null) {
             return false;
         }
-        if (getClass() != obj.getClass()) {
+        
+        if (obj instanceof NamedGroup == false) {
             return false;
         }
-        final NamedGroup other = (NamedGroup) obj;
+        
+        NamedGroup other = (NamedGroup) obj;
         return this.code == other.code;
     }
 

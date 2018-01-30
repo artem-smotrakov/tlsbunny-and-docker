@@ -158,7 +158,7 @@ public class ClientHello implements HandshakeMessage {
 
     @Override
     public HandshakeType type() {
-        return HandshakeType.cleint_hello;
+        return HandshakeType.client_hello;
     }
 
     public static ClientHello parse(byte[] data) {

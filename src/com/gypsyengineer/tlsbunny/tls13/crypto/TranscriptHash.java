@@ -15,10 +15,12 @@ public class TranscriptHash {
     }
 
     public void update(Handshake... messages) throws IOException {
-        if (messages != null) {
+        if (messages != null && messages.length != 0) {
             for (Handshake message : messages) {
                 update(message.encoding());
             }
+        } else {
+            update(new byte[0]);
         }
     }
     

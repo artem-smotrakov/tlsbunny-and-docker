@@ -79,7 +79,7 @@ public class ExtensionType implements Entity {
     }
 
     public static ExtensionType parse(ByteBuffer buffer) {
-        return new ExtensionType(buffer.getShort());
+        return new ExtensionType(buffer.getShort() & 0xFFFF);
     }
     
     private static void check(int code) {

@@ -91,10 +91,11 @@ public class CipherSuite implements Entity {
             case 0x01:
             case 0x04:
             case 0x05:
-                return 16;
+                return 12;
             case 0x02:
             case 0x03:
-                return 32;
+                // TODO: fix it
+                throw new RuntimeException("I don't know!");
         }
         
         return 0;

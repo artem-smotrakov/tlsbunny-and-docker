@@ -75,7 +75,7 @@ public class HKDF {
     // HMAC-Hash() function
     public byte[] hmac(byte[] key, byte[] input) throws InvalidKeyException {
         mac.reset();
-        mac.init(new SecretKeySpec(key, mac.getAlgorithm()));
+        mac.init(new RawKey(key, mac.getAlgorithm()));
         return mac.doFinal(input);
     }
 
@@ -93,7 +93,7 @@ public class HKDF {
     }
 
     public static HkdfLabel createHkdfLabel(int length, byte[] label, byte[] hashValue) {
-        byte[] tls13_label = concatenate("tls13".getBytes(), label);
+        byte[] tls13_label = concatenate("tls13 ".getBytes(), label);
         if (tls13_label.length > HkdfLabel.MAX_LABEL_LENGTH) {
             throw new IllegalArgumentException();
         }

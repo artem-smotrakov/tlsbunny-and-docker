@@ -116,7 +116,7 @@ public class ClientHandshaker {
     
     private Alert receivedAlert;
 
-    private ClientHandshaker(SignatureScheme scheme, NamedGroup group,
+    ClientHandshaker(SignatureScheme scheme, NamedGroup group,
             Negotiator negotiator, CipherSuite ciphersuite, HKDF hkdf,
             CertificateHolder clientCertificate) {
 
@@ -555,21 +555,99 @@ public class ClientHandshaker {
         }
 
         if (requestedClientAuth()) {
-            connection.send(createCertificate());
-            connection.send(createCertificateVerify());
+            connection.send(encrypt(createCertificate()));
+            connection.send(encrypt(createCertificateVerify()));
         }
         
-        connection.send(createFinished());
-        handleIncomingMessages(connection);
-        if (receivedAlert()) {            
-            throw new RuntimeException();
-        }
+        connection.send(encrypt(createFinished()));
     }
     
     public ApplicationDataConnection wrap(Connection connection) throws Exception {
         return new ApplicationDataConnection(applicationData(), connection);
     }
+    
+    byte[] getCurrentHash() throws Exception {
+        return TranscriptHash.compute(
+                ciphersuite.hash(),
+                context.allMessages());
+    }
+    
+    Context getContext() {
+        return context;
+    }
+    
+    byte[] getEarlySecret() {
+        return early_secret.clone();
+    }
+    
+    byte[] getHandshakeSecret() {
+        return handshake_secret.clone();
+    }
+    
+    byte[] getHandshakeSecretSalt() {
+        return handshake_secret_salt.clone();
+    }
+    
+    byte[] getClientHandshakeTrafficSecret() {
+        return client_handshake_traffic_secret.clone();
+    }
+    
+    byte[] getServerHandshakeTrafficSecret() {
+        return server_handshake_traffic_secret.clone();
+    }
+    
+    byte[] getMasterSecret() {
+        return master_secret.clone();
+    }
 
+    byte[] getClientHandshakeWriteKey() {
+        return client_handshake_write_key.clone();
+    }
+    
+    byte[] getClientHandshakeWriteIv() {
+        return client_handshake_write_iv.clone();
+    }
+    
+    byte[] getServerHandshakeWriteKey() {
+        return server_handshake_write_key.clone();
+    }
+    
+    byte[] getServerHandshakeWriteIv() {
+        return server_handshake_write_iv.clone();
+    }
+    
+    byte[] getClientApplicationTrafficSecret0() {
+        return client_application_traffic_secret_0.clone();
+    }
+    
+    byte[] getServerApplicationTrafficSecret0() {
+        return server_application_traffic_secret_0.clone();
+    }
+    
+    byte[] getExporterMasterSecret() {
+        return exporter_master_secret.clone();
+    }
+    
+    byte[] getServerApplicationWriteKey() {
+        return server_application_write_key.clone();
+    }
+    
+    byte[] getServerApplicationWriteIv() {
+        return server_application_write_iv.clone();
+    }
+    
+    byte[] getClientApplicationWriteKey() {
+        return client_application_write_key.clone();
+    }
+    
+    byte[] getClientApplicationWriteIv() {
+        return client_application_write_iv.clone();
+    }
+    
+    byte[] getFinishedKey() {
+        return finished_key.clone();
+    }
+    
     private boolean requestedClientAuth() {
         return certificate_request_context != null;
     }
@@ -582,7 +660,7 @@ public class ClientHandshaker {
 
         while (buffer.remaining() > 0) {
             TLSPlaintext tlsPlaintext = TLSPlaintext.parse(buffer);
-            ClientHandshaker.this.handle(tlsPlaintext);
+            handle(tlsPlaintext);
         }
     }
     

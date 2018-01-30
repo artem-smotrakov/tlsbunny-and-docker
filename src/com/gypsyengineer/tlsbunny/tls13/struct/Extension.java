@@ -53,7 +53,7 @@ public class Extension implements Entity {
     }
     
     public static Extension wrap(SupportedVersions supportedVersions) throws IOException {
-        return wrap(ExtensionType.supported_groups, supportedVersions.encoding());
+        return wrap(ExtensionType.supported_versions, supportedVersions.encoding());
     }
     
     public static Extension wrap(SignatureSchemeList signatureSchemeList) throws IOException {

@@ -68,7 +68,7 @@ public class Convertor {
     }
 
     public static byte[] leftPadding(byte[] bytes, int length) {
-        if (length > bytes.length) {
+        if (length <= bytes.length) {
             return bytes;
         }
         

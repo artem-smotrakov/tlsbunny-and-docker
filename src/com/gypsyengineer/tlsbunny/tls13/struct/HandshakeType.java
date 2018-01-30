@@ -7,7 +7,7 @@ public class HandshakeType implements Entity {
 
     public static final int ENCODING_LENGTH = 1;
 
-    public static final HandshakeType cleint_hello          = new HandshakeType(1);
+    public static final HandshakeType client_hello          = new HandshakeType(1);
     public static final HandshakeType server_hello          = new HandshakeType(2);
     public static final HandshakeType new_session_ticket    = new HandshakeType(4);
     public static final HandshakeType end_of_early_data     = new HandshakeType(5);
