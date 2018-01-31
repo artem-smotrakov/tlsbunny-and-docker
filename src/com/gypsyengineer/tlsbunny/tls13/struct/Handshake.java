@@ -1,23 +1,23 @@
 package com.gypsyengineer.tlsbunny.tls13.struct;
 
 import com.gypsyengineer.tlsbunny.tls.Bytes;
-import com.gypsyengineer.tlsbunny.tls.Entity;
 import com.gypsyengineer.tlsbunny.tls.UInt24;
 import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import com.gypsyengineer.tlsbunny.tls.Struct;
 
-public class Handshake implements Entity {
+public class Handshake implements Struct {
 
     private HandshakeType msg_type;
     private UInt24 length;
-    private Entity body;
+    private Struct body;
 
     public Handshake() {
         this(HandshakeType.client_hello, UInt24.ZERO, Bytes.EMPTY);
     }
 
-    public Handshake(HandshakeType msg_type, UInt24 length, Entity body) {
+    public Handshake(HandshakeType msg_type, UInt24 length, Struct body) {
         this.msg_type = msg_type;
         this.length = length;
         this.body = body;

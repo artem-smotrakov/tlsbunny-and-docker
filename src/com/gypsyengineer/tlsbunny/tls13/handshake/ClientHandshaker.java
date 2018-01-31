@@ -30,6 +30,7 @@ import com.gypsyengineer.tlsbunny.tls13.crypto.TranscriptHash;
 import com.gypsyengineer.tlsbunny.tls13.struct.CertificateEntry;
 import com.gypsyengineer.tlsbunny.tls13.struct.Extension;
 import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
+import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.CertificateHolder;
 import com.gypsyengineer.tlsbunny.utils.Connection;
 import com.gypsyengineer.tlsbunny.utils.Utils;
@@ -47,11 +48,11 @@ public class ClientHandshaker extends AbstractHandshaker {
     private final CertificateHolder clientCertificate;
     private Vector<Byte> certificate_request_context;
 
-    ClientHandshaker(SignatureScheme scheme, NamedGroup group,
+    ClientHandshaker(StructFactory factory, SignatureScheme scheme, NamedGroup group,
             Negotiator negotiator, CipherSuite ciphersuite, HKDF hkdf,
             CertificateHolder clientCertificate) {
 
-        super(scheme, group, negotiator, ciphersuite, hkdf);
+        super(factory, scheme, group, negotiator, ciphersuite, hkdf);
         this.clientCertificate = clientCertificate;
     }
 
@@ -412,7 +413,7 @@ public class ClientHandshaker extends AbstractHandshaker {
     }
 
     public TLSPlaintext[] encrypt(TLSInnerPlaintext message) throws Exception {
-        return TLSPlaintext.wrap(
+        return factory.createTLSPlaintexts(
                 ContentType.application_data, 
                 ProtocolVersion.TLSv10, 
                 handshakeEncryptor.encrypt(message.encoding()));
@@ -430,7 +431,7 @@ public class ClientHandshaker extends AbstractHandshaker {
     public ApplicationDataChannel start(Connection connection) throws Exception {
         reset();
 
-        connection.send(TLSPlaintext.wrap(
+        connection.send(factory.createTLSPlaintexts(
                 ContentType.handshake, 
                 ProtocolVersion.TLSv10, 
                 Handshake.wrap(createClientHello()).encoding()));
@@ -482,11 +483,12 @@ public class ClientHandshaker extends AbstractHandshaker {
         return certificate_request_context != null;
     }
     
-    public static ClientHandshaker create(SignatureScheme scheme, NamedGroup group,
+    public static ClientHandshaker create(StructFactory factory, 
+            SignatureScheme scheme, NamedGroup group,
             Negotiator negotiator, CipherSuite ciphersuite,
             CertificateHolder clientCertificate) throws Exception {
 
-        return new ClientHandshaker(scheme, group, negotiator, ciphersuite, 
+        return new ClientHandshaker(factory, scheme, group, negotiator, ciphersuite, 
                 HKDF.create(ciphersuite.hash()), clientCertificate);
     }
 

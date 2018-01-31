@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import com.gypsyengineer.tlsbunny.tls.Entity;
+import com.gypsyengineer.tlsbunny.tls.Struct;
 
 public class Connection implements AutoCloseable {
 
@@ -28,8 +28,8 @@ public class Connection implements AutoCloseable {
         os.flush();
     }
 
-    public void send(Entity... objects) throws IOException {       
-        for (Entity object : objects) {
+    public void send(Struct... objects) throws IOException {       
+        for (Struct object : objects) {
             send(object.encoding());
         }
     }

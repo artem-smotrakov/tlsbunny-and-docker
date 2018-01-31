@@ -2,7 +2,7 @@ package com.gypsyengineer.tlsbunny.tls;
 
 import java.nio.ByteBuffer;
 
-public class UInt16 implements Entity {
+public class UInt16 implements Struct {
 
     public static final int ENCODING_LENGTH = 2;
     public static final int MAX = 65535;

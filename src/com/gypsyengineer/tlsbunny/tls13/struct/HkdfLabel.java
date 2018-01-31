@@ -1,12 +1,12 @@
 package com.gypsyengineer.tlsbunny.tls13.struct;
 
-import com.gypsyengineer.tlsbunny.tls.Entity;
 import com.gypsyengineer.tlsbunny.tls.Vector;
 import com.gypsyengineer.tlsbunny.tls.UInt16;
 import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.io.IOException;
+import com.gypsyengineer.tlsbunny.tls.Struct;
 
-public class HkdfLabel implements Entity {
+public class HkdfLabel implements Struct {
 
     public static final int LABEL_LENGTH_BYTES = 1;
     public static final int HASH_VALUE_LENGTH_BYTES = 1;

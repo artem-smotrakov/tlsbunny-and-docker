@@ -1,11 +1,11 @@
 package com.gypsyengineer.tlsbunny.tls13.struct;
 
-import com.gypsyengineer.tlsbunny.tls.Entity;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Objects;
+import com.gypsyengineer.tlsbunny.tls.Struct;
 
-public class Alert implements Entity {
+public class Alert implements Struct {
 
     private static final int ENCODING_LENGTH = 2;
 

@@ -1,44 +1,28 @@
 package com.gypsyengineer.tlsbunny.tls13.struct;
 
 import com.gypsyengineer.tlsbunny.tls.Bytes;
-import com.gypsyengineer.tlsbunny.tls.Entity;
 import com.gypsyengineer.tlsbunny.tls.UInt16;
 import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import com.gypsyengineer.tlsbunny.tls.Struct;
 
-public class TLSPlaintext implements Entity {
+public class TLSPlaintext implements Struct {
     
     public static final int MAX_ALLOWED_LENGTH = 16384;
 
     private ContentType type;
     private ProtocolVersion legacy_record_version;
     private UInt16 length;
-    private Entity fragment;
+    private Bytes fragment;
 
-    public TLSPlaintext() {
-        this(ContentType.handshake, ProtocolVersion.TLSv10, UInt16.ZERO, Bytes.EMPTY);
-    }
-    
-    public TLSPlaintext(
-            ContentType type, ProtocolVersion version, byte[] fragment) {
-        
-        this(type, version, new UInt16(fragment.length), new Bytes(fragment));
-    }
-
-    public TLSPlaintext(ContentType type, ProtocolVersion version, 
-            UInt16 length, Entity fragment) {
+    TLSPlaintext(ContentType type, ProtocolVersion version, 
+            UInt16 length, Bytes fragment) {
         
         this.type = type;
         this.legacy_record_version = version;
         this.length = length;
         this.fragment = fragment;
-    }
-
-    public TLSPlaintext(ContentType type, ProtocolVersion version, 
-            UInt16 length, byte[] fragment) {
-        
-        this(type, version, length, new Bytes(fragment));
     }
 
     @Override
@@ -63,8 +47,8 @@ public class TLSPlaintext implements Entity {
         this.length = length;
     }
 
-    public void setFragment(byte[] fragment) {
-        this.fragment = new Bytes(fragment);
+    public void setFragment(Bytes fragment) {
+        this.fragment = fragment;
     }
 
     public ContentType getType() {
@@ -79,7 +63,7 @@ public class TLSPlaintext implements Entity {
         return length;
     }
 
-    public byte[] getFragment() throws IOException {
+    public byte[] getFragment() {
         return fragment.encoding();
     }
 
@@ -103,28 +87,9 @@ public class TLSPlaintext implements Entity {
         ContentType type = ContentType.parse(buffer);
         ProtocolVersion legacy_record_version = ProtocolVersion.parse(buffer);
         UInt16 length = UInt16.parse(buffer);
-        byte[] fragment = new byte[length.value];
-        buffer.get(fragment);
-
-        return new TLSPlaintext(type, legacy_record_version, length, fragment);
-    }
-    
-    public static TLSPlaintext[] wrap(
-            ContentType type, ProtocolVersion version, byte[] encoded) {
+        Bytes fragment = Bytes.parse(buffer, length.value);
         
-        if (encoded.length <= MAX_ALLOWED_LENGTH) {
-            return new TLSPlaintext[] {
-                new TLSPlaintext(type, version, encoded)
-            };
-        }
-
-        byte[][] fragments = Utils.split(encoded, MAX_ALLOWED_LENGTH);
-        TLSPlaintext[] tlsPlaintexts = new TLSPlaintext[fragments.length];
-        for (int i=0; i < fragments.length; i++) {
-            tlsPlaintexts[i] = new TLSPlaintext(type, version, fragments[i]);
-        }
-
-        return tlsPlaintexts;
+        return new TLSPlaintext(type, legacy_record_version, length, fragment);
     }
 
 }

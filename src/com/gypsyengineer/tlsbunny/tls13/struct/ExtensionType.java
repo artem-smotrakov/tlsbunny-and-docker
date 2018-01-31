@@ -1,10 +1,10 @@
 package com.gypsyengineer.tlsbunny.tls13.struct;
 
-import com.gypsyengineer.tlsbunny.tls.Entity;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import com.gypsyengineer.tlsbunny.tls.Struct;
 
-public class ExtensionType implements Entity {
+public class ExtensionType implements Struct {
 
     public static final int ENCODING_LENGTH = 2;
     

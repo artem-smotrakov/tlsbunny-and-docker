@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Vector<T> implements Entity {
+public class Vector<T> implements Struct {
 
     public static interface ContentParser<T> {
         T parse(ByteBuffer buffer);
@@ -61,8 +61,8 @@ public class Vector<T> implements Entity {
         List<byte[]> encodings = new ArrayList<>();
         for (T value : objects) {
             byte[] encoding;
-            if (value instanceof Entity) {
-                encoding = ((Entity) value).encoding();
+            if (value instanceof Struct) {
+                encoding = ((Struct) value).encoding();
             } else if (value instanceof Byte) {
                 encoding = new byte[] { (Byte) value };
             } else {
@@ -89,8 +89,8 @@ public class Vector<T> implements Entity {
 
         int encodingLength = lengthBytes;
         for (T object : objects) {
-            if (object instanceof Entity) {
-                encodingLength += ((Entity) object).encodingLength();
+            if (object instanceof Struct) {
+                encodingLength += ((Struct) object).encodingLength();
             } else if (object instanceof Byte) {
                 encodingLength++;
             } else {
@@ -111,8 +111,8 @@ public class Vector<T> implements Entity {
         List<byte[]> encodings = new ArrayList<>();
         for (T value : objects) {
             byte[] encoding;
-            if (value instanceof Entity) {
-                encoding = ((Entity) value).encoding();
+            if (value instanceof Struct) {
+                encoding = ((Struct) value).encoding();
             } else if (value instanceof Byte) {
                 encoding = new byte[] { (Byte) value };
             } else {

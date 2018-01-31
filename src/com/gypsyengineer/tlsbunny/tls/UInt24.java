@@ -3,7 +3,7 @@ package com.gypsyengineer.tlsbunny.tls;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-public class UInt24 implements Entity {
+public class UInt24 implements Struct {
 
     public static final int ENCODING_LENGTH = 3;
     public static final int BASE_POW_1 = 256;

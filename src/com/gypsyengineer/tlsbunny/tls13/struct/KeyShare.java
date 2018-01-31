@@ -1,11 +1,11 @@
 package com.gypsyengineer.tlsbunny.tls13.struct;
 
-import com.gypsyengineer.tlsbunny.tls.Entity;
 import com.gypsyengineer.tlsbunny.tls.Vector;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import com.gypsyengineer.tlsbunny.tls.Struct;
 
-public abstract class KeyShare implements Entity {
+public abstract class KeyShare implements Struct {
     
     public static class ClientHello extends KeyShare {
         
@@ -101,7 +101,7 @@ public abstract class KeyShare implements Entity {
 
     }
     
-    public static class HelloRetryRequest implements Entity {
+    public static class HelloRetryRequest implements Struct {
 
         private NamedGroup selected_group;
 

@@ -1,12 +1,12 @@
 package com.gypsyengineer.tlsbunny.tls13.struct;
 
 import com.gypsyengineer.tlsbunny.tls.Vector;
-import com.gypsyengineer.tlsbunny.tls.Entity;
 import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import com.gypsyengineer.tlsbunny.tls.Struct;
 
-public class KeyShareEntry implements Entity {
+public class KeyShareEntry implements Struct {
 
     public static final int KEY_EXCHANGE_LENGTH_BYTES = 2;
 

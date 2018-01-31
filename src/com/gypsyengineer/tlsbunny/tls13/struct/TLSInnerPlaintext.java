@@ -1,12 +1,12 @@
 package com.gypsyengineer.tlsbunny.tls13.struct;
 
 import com.gypsyengineer.tlsbunny.tls.Bytes;
-import com.gypsyengineer.tlsbunny.tls.Entity;
 import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.io.IOException;
 import java.util.Arrays;
+import com.gypsyengineer.tlsbunny.tls.Struct;
 
-public class TLSInnerPlaintext implements Entity {
+public class TLSInnerPlaintext implements Struct {
 
     private Bytes content;
     private ContentType type;
@@ -17,7 +17,7 @@ public class TLSInnerPlaintext implements Entity {
         this.type = type;
         this.zeros = zeros;
     }
-
+    
     public byte[] getContent() {
         return content.encoding();
     }

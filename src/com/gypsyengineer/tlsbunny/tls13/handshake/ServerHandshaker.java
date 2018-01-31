@@ -12,15 +12,17 @@ import com.gypsyengineer.tlsbunny.tls13.struct.HelloRetryRequest;
 import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
 import com.gypsyengineer.tlsbunny.tls13.struct.ServerHello;
 import com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme;
+import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
 import com.gypsyengineer.tlsbunny.utils.Connection;
 
 public class ServerHandshaker extends AbstractHandshaker {
 
-    public ServerHandshaker(SignatureScheme scheme, NamedGroup group, 
+    public ServerHandshaker(StructFactory factory,
+            SignatureScheme scheme, NamedGroup group, 
             Negotiator negotiator, CipherSuite ciphersuite, HKDF hkdf) {
         
-        super(scheme, group, negotiator, ciphersuite, hkdf);
+        super(factory, scheme, group, negotiator, ciphersuite, hkdf);
     }
     
     @Override

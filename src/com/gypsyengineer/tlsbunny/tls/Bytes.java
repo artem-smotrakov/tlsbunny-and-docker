@@ -1,8 +1,8 @@
 package com.gypsyengineer.tlsbunny.tls;
 
-import com.gypsyengineer.tlsbunny.tls.Entity;
+import java.nio.ByteBuffer;
 
-public class Bytes implements Entity {
+public class Bytes implements Struct {
 
     public static final Bytes EMPTY = new Bytes(new byte[0]);
 
@@ -20,5 +20,12 @@ public class Bytes implements Entity {
     @Override
     public byte[] encoding() {
         return bytes;
+    }
+    
+    public static Bytes parse(ByteBuffer buffer, int length) {
+        byte[] body = new byte[length];
+        buffer.get(body);
+        
+        return new Bytes(body);
     }
 }

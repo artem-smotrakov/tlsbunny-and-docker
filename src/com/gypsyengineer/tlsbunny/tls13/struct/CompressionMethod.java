@@ -1,9 +1,9 @@
 package com.gypsyengineer.tlsbunny.tls13.struct;
 
-import com.gypsyengineer.tlsbunny.tls.Entity;
 import java.nio.ByteBuffer;
+import com.gypsyengineer.tlsbunny.tls.Struct;
 
-public class CompressionMethod implements Entity {
+public class CompressionMethod implements Struct {
 
     public static final int ENCODING_LENGTH = 1;
 

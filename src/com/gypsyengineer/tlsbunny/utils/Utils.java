@@ -1,11 +1,15 @@
 package com.gypsyengineer.tlsbunny.utils;
 
-import com.gypsyengineer.tlsbunny.tls.Entity;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import com.gypsyengineer.tlsbunny.tls.Struct;
+import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
+import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
+import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
+import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
 
 public class Utils {
     
@@ -66,17 +70,17 @@ public class Utils {
         }
     }
 
-    public static int getEncodingLength(Entity... objects) {
+    public static int getEncodingLength(Struct... objects) {
         return Arrays.stream(objects)
                 .map(object -> object.encodingLength())
                 .reduce(0, Integer::sum);
     }
 
-    public static byte[] encoding(Entity... objects) throws IOException {
+    public static byte[] encoding(Struct... objects) throws IOException {
         List<byte[]> encodings = new ArrayList<>(objects.length);
 
         int total = 0;
-        for (Entity object : objects) {
+        for (Struct object : objects) {
             byte[] encoding = object.encoding();
             encodings.add(encoding);
             total += encoding.length;
@@ -87,4 +91,5 @@ public class Utils {
 
         return buffer.array();
     }
+
 }

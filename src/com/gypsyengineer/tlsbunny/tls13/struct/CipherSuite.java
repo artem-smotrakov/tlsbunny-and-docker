@@ -1,10 +1,10 @@
 package com.gypsyengineer.tlsbunny.tls13.struct;
 
-import com.gypsyengineer.tlsbunny.tls.Entity;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AEAD;
 import java.nio.ByteBuffer;
+import com.gypsyengineer.tlsbunny.tls.Struct;
 
-public class CipherSuite implements Entity {
+public class CipherSuite implements Struct {
 
     public static final int ENCODING_LENGTH = 2;
     public static final String UNKNOWN = "unknown";

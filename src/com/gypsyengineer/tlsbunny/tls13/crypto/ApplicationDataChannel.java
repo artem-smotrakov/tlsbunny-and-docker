@@ -2,6 +2,7 @@ package com.gypsyengineer.tlsbunny.tls13.crypto;
 
 import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
 import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
+import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
 import com.gypsyengineer.tlsbunny.utils.Connection;
@@ -11,11 +12,15 @@ public class ApplicationDataChannel {
     private final AEAD encryptor;
     private final AEAD decryptor;
     private final Connection connection;
+    private final StructFactory factory;
     
-    public ApplicationDataChannel(Connection connection, AEAD enctyptor, AEAD decryptor) {
+    public ApplicationDataChannel(StructFactory factory, Connection connection, 
+            AEAD enctyptor, AEAD decryptor) {
+        
         this.connection = connection;
         this.encryptor = enctyptor;
         this.decryptor = decryptor;
+        this.factory = factory;
     }
     
     public byte[] receive() throws Exception {
@@ -29,7 +34,7 @@ public class ApplicationDataChannel {
     }
 
     public void send(byte[] data) throws Exception {
-        TLSPlaintext[] tlsPlaintexts = TLSPlaintext.wrap(
+        TLSPlaintext[] tlsPlaintexts = factory.createTLSPlaintexts(
                 ContentType.application_data, 
                 ProtocolVersion.TLSv10, 
                 encrypt(TLSInnerPlaintext.noPadding(

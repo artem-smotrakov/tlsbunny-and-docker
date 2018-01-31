@@ -11,13 +11,16 @@ import com.gypsyengineer.tlsbunny.tls13.struct.CertificateRequest;
 import com.gypsyengineer.tlsbunny.tls13.struct.CertificateVerify;
 import com.gypsyengineer.tlsbunny.tls13.struct.CipherSuite;
 import com.gypsyengineer.tlsbunny.tls13.struct.ClientHello;
+import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
 import com.gypsyengineer.tlsbunny.tls13.struct.EncryptedExtensions;
 import com.gypsyengineer.tlsbunny.tls13.struct.EndOfEarlyData;
 import com.gypsyengineer.tlsbunny.tls13.struct.Finished;
 import com.gypsyengineer.tlsbunny.tls13.struct.HelloRetryRequest;
 import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
+import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
 import com.gypsyengineer.tlsbunny.tls13.struct.ServerHello;
 import com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme;
+import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
 import com.gypsyengineer.tlsbunny.utils.Connection;
 
@@ -54,6 +57,7 @@ public abstract class AbstractHandshaker implements Handshaker {
     static final long DEFAULT_SEED = 0;
     static final long SEED = Long.getLong("tlsbunny.seed", DEFAULT_SEED);
     
+    final StructFactory factory;
     final SignatureScheme scheme;
     final NamedGroup group;
     final Negotiator negotiator;
@@ -92,9 +96,10 @@ public abstract class AbstractHandshaker implements Handshaker {
     
     ApplicationDataChannel applicationData;
 
-    AbstractHandshaker(SignatureScheme scheme, NamedGroup group, 
+    AbstractHandshaker(StructFactory factory, SignatureScheme scheme, NamedGroup group, 
             Negotiator negotiator, CipherSuite ciphersuite, HKDF hkdf) {
         
+        this.factory = factory;
         this.scheme = scheme;
         this.group = group;
         this.negotiator = negotiator;
@@ -200,6 +205,8 @@ public abstract class AbstractHandshaker implements Handshaker {
 
         handshakeEncryptor = null;
         handshakeDecryptor = null;
+        
+        applicationData = null;
 
         context.reset();
     }
@@ -208,6 +215,7 @@ public abstract class AbstractHandshaker implements Handshaker {
             throws Exception {
         
         return new ApplicationDataChannel(
+                factory,
                 connection, 
                 AEAD.createEncryptor(
                     ciphersuite.cipher(),

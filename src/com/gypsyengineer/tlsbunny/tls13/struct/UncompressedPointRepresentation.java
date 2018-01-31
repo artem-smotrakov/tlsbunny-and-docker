@@ -1,9 +1,9 @@
 package com.gypsyengineer.tlsbunny.tls13.struct;
 
-import com.gypsyengineer.tlsbunny.tls.Entity;
 import java.nio.ByteBuffer;
+import com.gypsyengineer.tlsbunny.tls.Struct;
 
-public class UncompressedPointRepresentation implements Entity {
+public class UncompressedPointRepresentation implements Struct {
 
     private final byte legacy_form = 4;
     private final byte[] X;

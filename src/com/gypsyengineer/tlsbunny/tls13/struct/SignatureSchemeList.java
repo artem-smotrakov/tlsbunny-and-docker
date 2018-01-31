@@ -1,11 +1,11 @@
 package com.gypsyengineer.tlsbunny.tls13.struct;
 
-import com.gypsyengineer.tlsbunny.tls.Entity;
 import com.gypsyengineer.tlsbunny.tls.Vector;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import com.gypsyengineer.tlsbunny.tls.Struct;
 
-public class SignatureSchemeList implements Entity {
+public class SignatureSchemeList implements Struct {
 
     public static final int LENGTH_BYTES = 2;
 

@@ -3,7 +3,7 @@ package com.gypsyengineer.tlsbunny.tls;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-public class Random implements Entity {
+public class Random implements Struct {
 
     public static final int LENGTH = 32;
 
