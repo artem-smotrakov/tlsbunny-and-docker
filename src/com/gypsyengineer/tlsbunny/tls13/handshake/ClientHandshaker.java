@@ -1,6 +1,5 @@
 package com.gypsyengineer.tlsbunny.tls13.handshake;
 
-import com.gypsyengineer.tlsbunny.tls.Random;
 import com.gypsyengineer.tlsbunny.tls.Vector;
 import com.gypsyengineer.tlsbunny.tls13.struct.Alert;
 import com.gypsyengineer.tlsbunny.tls13.struct.Certificate;
@@ -43,122 +42,23 @@ import java.util.Arrays;
 import java.util.List;
 import static com.gypsyengineer.tlsbunny.utils.Utils.concatenate;
 
-public class ClientHandshaker {
-
-    private static final byte[] ZERO_HASH_VALUE = new byte[0];
-    private static final byte[] ZERO_SALT = new byte[0];
-
-    private static final byte[] ext_binder      = "ext binder".getBytes();
-    private static final byte[] res_binder      = "res binder".getBytes();
-    private static final byte[] c_e_traffic     = "c e traffic".getBytes();
-    private static final byte[] e_exp_master    = "e exp master".getBytes();
-    private static final byte[] derived         = "derived".getBytes();
-    private static final byte[] c_hs_traffic    = "c hs traffic".getBytes();
-    private static final byte[] s_hs_traffic    = "s hs traffic".getBytes();
-    private static final byte[] c_ap_traffic    = "c ap traffic".getBytes();
-    private static final byte[] s_ap_traffic    = "s ap traffic".getBytes();
-    private static final byte[] exp_master      = "exp master".getBytes();
-    private static final byte[] res_master      = "res master".getBytes();
-    private static final byte[] key             = "key".getBytes();
-    private static final byte[] iv              = "iv".getBytes();
-    private static final byte[] finished        = "finished".getBytes();
-
-    private static final byte[] CERTIFICATE_VERIFY_PREFIX = new byte[64];
-    static {
-        for (int i=0; i<CERTIFICATE_VERIFY_PREFIX.length; i++) {
-            CERTIFICATE_VERIFY_PREFIX[i] = 32;
-        }
-    }
-
-    private static final byte[] CERTIFICATE_VERIFY_CONTEXT_STRING =
-            "TLS 1.3, client CertificateVerify".getBytes();
-
-    public static final long DEFAULT_SEED = 0;
-    public static final long SEED = Long.getLong("tlsbunny.seed", DEFAULT_SEED);
-    
-    private final SignatureScheme scheme;
-    private final NamedGroup group;
-    private final Negotiator negotiator;
-    private final CipherSuite ciphersuite;
-    private final HKDF hkdf;
-    private final Context context = new Context();
-
-    private byte[] dh_shared_secret;
-    private byte[] early_secret;
-    private byte[] binder_key;
-    private byte[] client_early_traffic_secret;
-    private byte[] early_exporter_master_secret;
-    private byte[] handshake_secret_salt;
-    private byte[] handshake_secret;
-    private byte[] client_handshake_traffic_secret;
-    private byte[] server_handshake_traffic_secret;
-    private byte[] master_secret;
-    private byte[] client_application_traffic_secret_0;
-    private byte[] server_application_traffic_secret_0;
-    private byte[] exporter_master_secret;
-    private byte[] resumption_master_secret;
-    private byte[] client_handshake_write_key;
-    private byte[] client_handshake_write_iv;
-    private byte[] server_handshake_write_key;
-    private byte[] server_handshake_write_iv;
-    private byte[] finished_key;
-    private byte[] client_application_write_key;
-    private byte[] client_application_write_iv;
-    private byte[] server_application_write_key;
-    private byte[] server_application_write_iv;
+public class ClientHandshaker extends AbstractHandshaker {
 
     private final CertificateHolder clientCertificate;
     private Vector<Byte> certificate_request_context;
-
-    private AEAD handshakeEncryptor;
-    private AEAD handshakeDecryptor;
-    
-    private Alert receivedAlert;
-    
-    private ApplicationDataChannel applicationData;
 
     ClientHandshaker(SignatureScheme scheme, NamedGroup group,
             Negotiator negotiator, CipherSuite ciphersuite, HKDF hkdf,
             CertificateHolder clientCertificate) {
 
-        this.scheme = scheme;
-        this.group = group;
-        this.negotiator = negotiator;
-        this.ciphersuite = ciphersuite;
-        this.hkdf = hkdf;
+        super(scheme, group, negotiator, ciphersuite, hkdf);
         this.clientCertificate = clientCertificate;
     }
 
+    @Override
     public void reset() {
-        dh_shared_secret = null;
-        early_secret = null;
-        binder_key = null;
-        client_early_traffic_secret = null;
-        early_exporter_master_secret = null;
-        handshake_secret_salt = null;
-        handshake_secret = null;
-        client_handshake_traffic_secret = null;
-        server_handshake_traffic_secret = null;
-        master_secret = null;
-        client_application_traffic_secret_0 = null;
-        server_application_traffic_secret_0 = null;
-        exporter_master_secret = null;
-        resumption_master_secret = null;
-        client_handshake_write_key = null;
-        client_handshake_write_iv = null;
-        server_handshake_write_key = null;
-        server_handshake_write_iv = null;
-        finished_key = null;
-        client_application_write_key = null;
-        client_application_write_iv = null;
-        server_application_write_key = null;
-        server_application_write_iv = null;
-
-        handshakeEncryptor = null;
-        handshakeDecryptor = null;
+        super.reset();
         certificate_request_context = null;
-
-        context.reset();
     }
 
     public void updateFirstClientHello(ClientHello clientHello) {
@@ -179,14 +79,6 @@ public class ClientHandshaker {
 
     public void update(Finished finished) {
         context.setClientFinished(finished);
-    }
-    
-    public boolean receivedAlert() {
-        return receivedAlert != null;
-    }
-
-    public Alert getReceivedAlert() {
-        return receivedAlert;
     }
 
     public boolean receivedHelloRetryRequest() {
@@ -219,10 +111,7 @@ public class ClientHandshaker {
         });
     }
 
-    public ApplicationDataChannel applicationData() throws Exception {
-        return applicationData;
-    }
-
+    @Override
     public ClientHello createClientHello() throws Exception {
         ClientHello hello = new ClientHello();
         hello.setRandom(createRandom());
@@ -247,6 +136,7 @@ public class ClientHandshaker {
         return hello;
     }
 
+    @Override
     public Certificate createCertificate() {
         context.setClientCertificate(
                 new Certificate(
@@ -258,6 +148,7 @@ public class ClientHandshaker {
         return context.getClientCertificate();
     }
 
+    @Override
     public CertificateVerify createCertificateVerify() throws Exception {
         byte[] content = Utils.concatenate(
                 CERTIFICATE_VERIFY_PREFIX,
@@ -280,6 +171,7 @@ public class ClientHandshaker {
         return context.getClientCertificateVerify();
     }
 
+    @Override
     public Finished createFinished() throws Exception {
         byte[] verify_data = hkdf.hmac(
                 finished_key,
@@ -457,6 +349,7 @@ public class ClientHandshaker {
                 context.allMessages());
     }
 
+    @Override
     public void handle(TLSPlaintext tlsPlaintext) throws Exception {
         ContentType type;
         byte[] content;
@@ -533,6 +426,7 @@ public class ClientHandshaker {
         return handshakeEncryptor.encrypt(plaintext);
     }
 
+    @Override
     public ApplicationDataChannel start(Connection connection) throws Exception {
         reset();
 
@@ -584,115 +478,8 @@ public class ClientHandshaker {
         return applicationData;
     }
     
-    ApplicationDataChannel createApplicationDataChannel(Connection connection) 
-            throws Exception {
-        
-        return new ApplicationDataChannel(
-                connection, 
-                AEAD.createEncryptor(
-                    ciphersuite.cipher(),
-                    client_application_write_key, 
-                    client_application_write_iv), 
-                AEAD.createDecryptor(
-                    ciphersuite.cipher(),
-                    server_application_write_key, 
-                    server_application_write_iv));
-    }
-    
-    byte[] getCurrentHash() throws Exception {
-        return TranscriptHash.compute(
-                ciphersuite.hash(),
-                context.allMessages());
-    }
-    
-    Context getContext() {
-        return context;
-    }
-    
-    byte[] getEarlySecret() {
-        return early_secret.clone();
-    }
-    
-    byte[] getHandshakeSecret() {
-        return handshake_secret.clone();
-    }
-    
-    byte[] getHandshakeSecretSalt() {
-        return handshake_secret_salt.clone();
-    }
-    
-    byte[] getClientHandshakeTrafficSecret() {
-        return client_handshake_traffic_secret.clone();
-    }
-    
-    byte[] getServerHandshakeTrafficSecret() {
-        return server_handshake_traffic_secret.clone();
-    }
-    
-    byte[] getMasterSecret() {
-        return master_secret.clone();
-    }
-
-    byte[] getClientHandshakeWriteKey() {
-        return client_handshake_write_key.clone();
-    }
-    
-    byte[] getClientHandshakeWriteIv() {
-        return client_handshake_write_iv.clone();
-    }
-    
-    byte[] getServerHandshakeWriteKey() {
-        return server_handshake_write_key.clone();
-    }
-    
-    byte[] getServerHandshakeWriteIv() {
-        return server_handshake_write_iv.clone();
-    }
-    
-    byte[] getClientApplicationTrafficSecret0() {
-        return client_application_traffic_secret_0.clone();
-    }
-    
-    byte[] getServerApplicationTrafficSecret0() {
-        return server_application_traffic_secret_0.clone();
-    }
-    
-    byte[] getExporterMasterSecret() {
-        return exporter_master_secret.clone();
-    }
-    
-    byte[] getServerApplicationWriteKey() {
-        return server_application_write_key.clone();
-    }
-    
-    byte[] getServerApplicationWriteIv() {
-        return server_application_write_iv.clone();
-    }
-    
-    byte[] getClientApplicationWriteKey() {
-        return client_application_write_key.clone();
-    }
-    
-    byte[] getClientApplicationWriteIv() {
-        return client_application_write_iv.clone();
-    }
-    
-    byte[] getFinishedKey() {
-        return finished_key.clone();
-    }
-    
     private boolean requestedClientAuth() {
         return certificate_request_context != null;
-    }
-    
-    private static Random createRandom() {
-        java.util.Random generator = new java.util.Random(SEED);
-        byte[] random_bytes = new byte[Random.LENGTH];
-        generator.nextBytes(random_bytes);
-        Random random = new Random();
-        random.setBytes(random_bytes);
-       
-        return random;
     }
     
     public static ClientHandshaker create(SignatureScheme scheme, NamedGroup group,
