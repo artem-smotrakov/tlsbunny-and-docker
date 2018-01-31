@@ -2,6 +2,7 @@ package com.gypsyengineer.tlsbunny.tls13.struct;
 
 import com.gypsyengineer.tlsbunny.tls.Bytes;
 import com.gypsyengineer.tlsbunny.tls.UInt16;
+import com.gypsyengineer.tlsbunny.tls.UInt24;
 import com.gypsyengineer.tlsbunny.utils.Utils;
 
 public class StructFactory {
@@ -32,5 +33,13 @@ public class StructFactory {
         }
 
         return tlsPlaintexts;
+    }
+    
+    public TLSInnerPlaintext createTLSInnerPlaintext(ContentType type, byte[] content, byte[] zeros) {
+        return new TLSInnerPlaintext(new Bytes(content), type, new Bytes(zeros));
+    }
+    
+    public Handshake createHandshake(HandshakeType type, byte[] content) {
+        return new Handshake(type, new UInt24(content.length), new Bytes(content));
     }
 }

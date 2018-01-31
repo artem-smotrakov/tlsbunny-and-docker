@@ -11,18 +11,21 @@ import com.gypsyengineer.tlsbunny.tls13.struct.CertificateRequest;
 import com.gypsyengineer.tlsbunny.tls13.struct.CertificateVerify;
 import com.gypsyengineer.tlsbunny.tls13.struct.CipherSuite;
 import com.gypsyengineer.tlsbunny.tls13.struct.ClientHello;
-import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
 import com.gypsyengineer.tlsbunny.tls13.struct.EncryptedExtensions;
 import com.gypsyengineer.tlsbunny.tls13.struct.EndOfEarlyData;
 import com.gypsyengineer.tlsbunny.tls13.struct.Finished;
+import com.gypsyengineer.tlsbunny.tls13.struct.Handshake;
+import com.gypsyengineer.tlsbunny.tls13.struct.HandshakeMessage;
 import com.gypsyengineer.tlsbunny.tls13.struct.HelloRetryRequest;
 import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
-import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
 import com.gypsyengineer.tlsbunny.tls13.struct.ServerHello;
 import com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
 import com.gypsyengineer.tlsbunny.utils.Connection;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class AbstractHandshaker implements Handshaker {
 
@@ -64,6 +67,7 @@ public abstract class AbstractHandshaker implements Handshaker {
     final CipherSuite ciphersuite;
     final HKDF hkdf;
     final Context context = new Context();
+    // TODO: add TranscriptHash field
     
     byte[] dh_shared_secret;
     byte[] early_secret;
@@ -227,10 +231,23 @@ public abstract class AbstractHandshaker implements Handshaker {
                     server_application_write_iv));
     }
     
+    Handshake[] allMessages() throws IOException {
+        List<Handshake> list = new ArrayList<>();
+        for (HandshakeMessage message : context.allMessages()) {
+            list.add(toHandshake(message));
+        }
+        
+        return list.toArray(new Handshake[list.size()]);
+    }
+    
+    Handshake toHandshake(HandshakeMessage message) throws IOException {
+        return factory.createHandshake(message.type(), message.encoding());
+    }
+    
     byte[] getCurrentHash() throws Exception {
         return TranscriptHash.compute(
                 ciphersuite.hash(),
-                context.allMessages());
+                allMessages());
     }
     
     Context getContext() {

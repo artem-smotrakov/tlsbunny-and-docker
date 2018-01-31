@@ -7,11 +7,9 @@ import com.gypsyengineer.tlsbunny.tls13.struct.ClientHello;
 import com.gypsyengineer.tlsbunny.tls13.struct.EncryptedExtensions;
 import com.gypsyengineer.tlsbunny.tls13.struct.EndOfEarlyData;
 import com.gypsyengineer.tlsbunny.tls13.struct.Finished;
-import com.gypsyengineer.tlsbunny.tls13.struct.Handshake;
 import com.gypsyengineer.tlsbunny.tls13.struct.HandshakeMessage;
 import com.gypsyengineer.tlsbunny.tls13.struct.HelloRetryRequest;
 import com.gypsyengineer.tlsbunny.tls13.struct.ServerHello;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -159,7 +157,7 @@ public class Context {
         this.clientFinished = clientFinished;
     }
 
-    public Handshake[] allMessages() throws IOException {
+    public HandshakeMessage[] allMessages() {
         HandshakeMessage[] messages = new HandshakeMessage[] {
                 firstClientHello,
                 helloRetryRequest,
@@ -176,13 +174,13 @@ public class Context {
                 clientFinished
         };
 
-        List<Handshake> list = new ArrayList<>();
+        List<HandshakeMessage> list = new ArrayList<>();
         for (HandshakeMessage message : messages) {
             if (message != null) {
-                list.add(Handshake.wrap(message));
+                list.add(message);
             }
         }
 
-        return list.toArray(new Handshake[list.size()]);
+        return list.toArray(new HandshakeMessage[list.size()]);
     }
 }

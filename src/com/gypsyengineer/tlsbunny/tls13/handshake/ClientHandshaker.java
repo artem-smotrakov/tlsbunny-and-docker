@@ -31,6 +31,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.CertificateEntry;
 import com.gypsyengineer.tlsbunny.tls13.struct.Extension;
 import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
+import static com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext.NO_PADDING;
 import com.gypsyengineer.tlsbunny.utils.CertificateHolder;
 import com.gypsyengineer.tlsbunny.utils.Connection;
 import com.gypsyengineer.tlsbunny.utils.Utils;
@@ -38,9 +39,7 @@ import java.nio.ByteBuffer;
 import java.security.KeyFactory;
 import java.security.Signature;
 import java.security.spec.PKCS8EncodedKeySpec;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import static com.gypsyengineer.tlsbunny.utils.Utils.concatenate;
 
 public class ClientHandshaker extends AbstractHandshaker {
@@ -62,56 +61,6 @@ public class ClientHandshaker extends AbstractHandshaker {
         certificate_request_context = null;
     }
 
-    public void updateFirstClientHello(ClientHello clientHello) {
-        context.setFirstClientHello(clientHello);
-    }
-
-    public void updateSecondClientHello(ClientHello clientHello) {
-        context.setSecondClientHello(clientHello);
-    }
-
-    public void update(Certificate certificate) {
-        context.setClientCertificate(certificate);
-    }
-
-    public void update(CertificateVerify certificateVerify) {
-        context.setClientCertificateVerify(certificateVerify);
-    }
-
-    public void update(Finished finished) {
-        context.setClientFinished(finished);
-    }
-
-    public boolean receivedHelloRetryRequest() {
-        return context.getHelloRetryRequest() != null;
-    }
-
-    public HelloRetryRequest getReceivedHelloRetryRequest() {
-        return context.getHelloRetryRequest();
-    }
-
-    public HandshakeMessage[] getReceivedHandshakeMessages() {
-        return notNulls(new HandshakeMessage[] {
-                context.getServerHello(),
-                context.getHelloRetryRequest(),
-                context.getEncryptedExtensions(),
-                context.getServerCertificate(),
-                context.getServerCertificateVerify(),
-                context.getServerCertificateRequest(),
-                context.getServerFinished()
-        });
-    }
-
-    public HandshakeMessage[] getSentHandshakeMessages() {
-        return notNulls(new HandshakeMessage[] {
-                context.getFirstClientHello(),
-                context.getSecondClientHello(),
-                context.getClientCertificate(),
-                context.getClientCertificateVerify(),
-                context.getClientFinished()
-        });
-    }
-
     @Override
     public ClientHello createClientHello() throws Exception {
         ClientHello hello = new ClientHello();
@@ -129,7 +78,7 @@ public class ClientHandshaker extends AbstractHandshaker {
         if (!context.hasFirstClientHello()) {
             context.setFirstClientHello(hello);
         } else if (!context.hasSecondClientHello()) {
-            context.setSecondClientHello(hello);
+            context.setSecondClientHello(hello); 
         } else {
             throw new RuntimeException();
         }
@@ -155,8 +104,7 @@ public class ClientHandshaker extends AbstractHandshaker {
                 CERTIFICATE_VERIFY_PREFIX,
                 CERTIFICATE_VERIFY_CONTEXT_STRING,
                 new byte[] { 0 },
-                TranscriptHash.compute(ciphersuite.hash(),
-                        context.allMessages()));
+                TranscriptHash.compute(ciphersuite.hash(), allMessages()));
 
         Signature signature = Signature.getInstance("SHA256withECDSA");
         signature.initSign(
@@ -176,14 +124,14 @@ public class ClientHandshaker extends AbstractHandshaker {
     public Finished createFinished() throws Exception {
         byte[] verify_data = hkdf.hmac(
                 finished_key,
-                TranscriptHash.compute(ciphersuite.hash(), context.allMessages()));
+                TranscriptHash.compute(ciphersuite.hash(), allMessages()));
 
         context.setClientFinished(new Finished(verify_data));
 
         resumption_master_secret = hkdf.deriveSecret(
                 master_secret,
                 res_master,
-                context.allMessages());
+                allMessages());
         client_application_write_key = hkdf.expandLabel(
                 client_application_traffic_secret_0,
                 key,
@@ -208,23 +156,23 @@ public class ClientHandshaker extends AbstractHandshaker {
         return context.getClientFinished();
     }
 
-    public TLSPlaintext[] createEncryptedCertificate() throws Exception {
+    private TLSPlaintext[] createEncryptedCertificate() throws Exception {
         return encrypt(createCertificate());
     }
 
-    public TLSPlaintext[] createEncryptedCertificateVerify() throws Exception {
+    private TLSPlaintext[] createEncryptedCertificateVerify() throws Exception {
         return encrypt(createCertificateVerify());
     }
 
-    public TLSPlaintext[] createEnctyptedFinished() throws Exception {
+    TLSPlaintext[] createEnctyptedFinished() throws Exception {
         return encrypt(createFinished());
     }
 
-    public void handleHelloRetryRequest(HelloRetryRequest helloRetryRequest) {
+    private void handleHelloRetryRequest(HelloRetryRequest helloRetryRequest) {
         context.setHelloRetryRequest(helloRetryRequest);
     }
 
-    public void handleServerHello(ServerHello serverHello) throws Exception {
+    void handleServerHello(ServerHello serverHello) throws Exception {
         KeyShare.ServerHello keyShare = serverHello.findKeyShare();
 
         negotiator.processKeyShareEntry(keyShare.getServerShare());
@@ -237,7 +185,7 @@ public class ClientHandshaker extends AbstractHandshaker {
 
         byte[] psk = zeroes(hkdf.getHashLength());
 
-        Handshake wrappedClientHello = Handshake.wrap(context.getFirstClientHello());
+        Handshake wrappedClientHello = toHandshake(context.getFirstClientHello());
 
         early_secret = hkdf.extract(ZERO_SALT, psk);
         binder_key = hkdf.deriveSecret(
@@ -254,7 +202,7 @@ public class ClientHandshaker extends AbstractHandshaker {
 
         handshake_secret_salt = hkdf.deriveSecret(early_secret, derived);
 
-        Handshake wrappedServerHello = Handshake.wrap(serverHello);
+        Handshake wrappedServerHello = toHandshake(serverHello);
 
         handshake_secret = hkdf.extract(handshake_secret_salt, dh_shared_secret);
         client_handshake_traffic_secret = hkdf.deriveSecret(
@@ -305,24 +253,24 @@ public class ClientHandshaker extends AbstractHandshaker {
                 server_handshake_write_iv);
     }
 
-    public void handleCertificateRequest(CertificateRequest certificateRequest) {
+    private void handleCertificateRequest(CertificateRequest certificateRequest) {
         certificate_request_context = certificateRequest.getCertificateRequestContext();
         context.setServerCertificateRequest(certificateRequest);
     }
 
-    public void handleCertificate(Certificate certificate) {
+    private void handleCertificate(Certificate certificate) {
          context.setServerCertificate(certificate);
     }
 
-    public void handleCertificateVerify(CertificateVerify certificateVerify) {
+    private void handleCertificateVerify(CertificateVerify certificateVerify) {
         context.setServerCertificateVerify(certificateVerify);
     }
 
-    public void handleEncryptedExtensions(EncryptedExtensions encryptedExtensions) {
+    private void handleEncryptedExtensions(EncryptedExtensions encryptedExtensions) {
         context.setEncryptedExtensions(encryptedExtensions);
     }
 
-    public void handleFinished(Finished message) throws Exception {
+    private void handleFinished(Finished message) throws Exception {
         byte[] verify_key = hkdf.expandLabel(
                 server_handshake_traffic_secret,
                 finished,
@@ -330,7 +278,7 @@ public class ClientHandshaker extends AbstractHandshaker {
                 hkdf.getHashLength());
 
         byte[] verify_data = hkdf.hmac(verify_key,
-                TranscriptHash.compute(ciphersuite.hash(), context.allMessages()));
+                TranscriptHash.compute(ciphersuite.hash(), allMessages()));
 
         boolean success = Arrays.equals(verify_data, message.getVerifyData());
         if (!success) {
@@ -339,15 +287,18 @@ public class ClientHandshaker extends AbstractHandshaker {
 
         context.setServerFinished(message);
 
-        client_application_traffic_secret_0 = hkdf.deriveSecret(master_secret,
+        client_application_traffic_secret_0 = hkdf.deriveSecret(
+                master_secret,
                 c_ap_traffic,
-                context.allMessages());
-        server_application_traffic_secret_0 = hkdf.deriveSecret(master_secret,
+                allMessages());
+        server_application_traffic_secret_0 = hkdf.deriveSecret(
+                master_secret,
                 s_ap_traffic,
-                context.allMessages());
-        exporter_master_secret = hkdf.deriveSecret(master_secret,
+                allMessages());
+        exporter_master_secret = hkdf.deriveSecret(
+                master_secret,
                 exp_master,
-                context.allMessages());
+                allMessages());
     }
 
     @Override
@@ -376,7 +327,7 @@ public class ClientHandshaker extends AbstractHandshaker {
         }
     }
 
-    public void handle(Handshake handshake) throws Exception {
+    void handle(Handshake handshake) throws Exception {
         if (handshake.containsHelloRetryRequest()) {
             handleHelloRetryRequest(HelloRetryRequest.parse(handshake.getBody()));
         } else if (handshake.containsServerHello()) {
@@ -398,33 +349,25 @@ public class ClientHandshaker extends AbstractHandshaker {
         }
     }
 
-    public TLSInnerPlaintext decrypt(TLSPlaintext tlsPlaintext) throws Exception {
+    TLSInnerPlaintext decrypt(TLSPlaintext tlsPlaintext) throws Exception {
         return TLSInnerPlaintext.parse(
-                decryptHandshakeData(tlsPlaintext.getFragment()));
+                handshakeDecryptor.decrypt(tlsPlaintext.getFragment()));
     }
 
-    public TLSPlaintext[] encrypt(HandshakeMessage message) throws Exception {
-        return encrypt(Handshake.wrap(message));
+    private TLSPlaintext[] encrypt(HandshakeMessage message) throws Exception {
+        return encrypt(toHandshake(message));
     }
 
-    public TLSPlaintext[] encrypt(Handshake message) throws Exception {
-        return encrypt(TLSInnerPlaintext.noPadding(
-                ContentType.handshake, message.encoding()));
+    private TLSPlaintext[] encrypt(Handshake message) throws Exception {
+        return encrypt(factory.createTLSInnerPlaintext(
+                ContentType.handshake, message.encoding(), NO_PADDING));
     }
 
-    public TLSPlaintext[] encrypt(TLSInnerPlaintext message) throws Exception {
+    private TLSPlaintext[] encrypt(TLSInnerPlaintext message) throws Exception {
         return factory.createTLSPlaintexts(
                 ContentType.application_data, 
                 ProtocolVersion.TLSv10, 
                 handshakeEncryptor.encrypt(message.encoding()));
-    }
-    
-    public byte[] decryptHandshakeData(byte[] ciphertext) throws Exception {
-        return handshakeDecryptor.decrypt(ciphertext);
-    }
-
-    public byte[] encryptHandshakeData(byte[] plaintext) throws Exception {
-        return handshakeEncryptor.encrypt(plaintext);
     }
 
     @Override
@@ -434,7 +377,7 @@ public class ClientHandshaker extends AbstractHandshaker {
         connection.send(factory.createTLSPlaintexts(
                 ContentType.handshake, 
                 ProtocolVersion.TLSv10, 
-                Handshake.wrap(createClientHello()).encoding()));
+                toHandshake(createClientHello()).encoding()));
         
         ByteBuffer buffer = ByteBuffer.wrap(connection.read());
         if (buffer.remaining() == 0) {
@@ -494,17 +437,6 @@ public class ClientHandshaker extends AbstractHandshaker {
 
     private static byte[] zeroes(int length) {
         return new byte[length];
-    }
-
-    private static HandshakeMessage[] notNulls(HandshakeMessage[] objects) {
-        List<HandshakeMessage> messages = new ArrayList<>();
-        for (HandshakeMessage object : objects) {
-            if (object != null) {
-                messages.add(object);
-            }
-        }
-
-        return messages.toArray(new HandshakeMessage[messages.size()]);
     }
 
 }

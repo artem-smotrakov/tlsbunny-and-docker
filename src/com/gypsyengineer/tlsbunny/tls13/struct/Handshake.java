@@ -11,13 +11,9 @@ public class Handshake implements Struct {
 
     private HandshakeType msg_type;
     private UInt24 length;
-    private Struct body;
+    private Bytes body;
 
-    public Handshake() {
-        this(HandshakeType.client_hello, UInt24.ZERO, Bytes.EMPTY);
-    }
-
-    public Handshake(HandshakeType msg_type, UInt24 length, Struct body) {
+    Handshake(HandshakeType msg_type, UInt24 length, Bytes body) {
         this.msg_type = msg_type;
         this.length = length;
         this.body = body;
@@ -45,8 +41,8 @@ public class Handshake implements Struct {
         this.length = length;
     }
 
-    public void setBody(byte[] body) {
-        this.body = new Bytes(body);
+    public void setBody(Bytes body) {
+        this.body = body;
     }
 
     public HandshakeType getMessageType() {
@@ -57,7 +53,7 @@ public class Handshake implements Struct {
         return length;
     }
 
-    public byte[] getBody() throws IOException {
+    public byte[] getBody() {
         return body.encoding();
     }
 
@@ -104,17 +100,9 @@ public class Handshake implements Struct {
     public static Handshake parse(ByteBuffer buffer) {
         HandshakeType msg_type = HandshakeType.parse(buffer);
         UInt24 length = UInt24.parse(buffer);
-        byte[] body = new byte[length.value];
-        buffer.get(body);
+        Bytes body = Bytes.parse(buffer, length.value);
 
-        return new Handshake(msg_type, length, new Bytes(body));
+        return new Handshake(msg_type, length, body);
     }
     
-    public static Handshake wrap(HandshakeMessage message) throws IOException {
-        return new Handshake(
-                message.type(), 
-                message.encodingLength(), 
-                message.encoding());
-    }
-
 }

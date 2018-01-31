@@ -1,7 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls13.crypto;
 
 import com.gypsyengineer.tlsbunny.tls13.struct.Handshake;
-import com.gypsyengineer.tlsbunny.tls13.struct.HandshakeMessage;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -62,17 +61,6 @@ public class TranscriptHash {
         }
         
         return hash.get();
-    }
-
-    public static byte[] compute(String algorithm, HandshakeMessage... messages)
-            throws NoSuchAlgorithmException, IOException {
-
-        Handshake[] wrapped = new Handshake[messages.length];
-        for (int i=0; i < messages.length; i++) {
-            wrapped[i] = Handshake.wrap(messages[i]);
-        }
-
-        return compute(algorithm, wrapped);
     }
 
 }

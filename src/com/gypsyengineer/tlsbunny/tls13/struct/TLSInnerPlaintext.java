@@ -8,11 +8,13 @@ import com.gypsyengineer.tlsbunny.tls.Struct;
 
 public class TLSInnerPlaintext implements Struct {
 
+    public final static byte[] NO_PADDING = Utils.EMPTY_ARRAY;
+    
     private Bytes content;
     private ContentType type;
     private Bytes zeros;
 
-    public TLSInnerPlaintext(Bytes content, ContentType type, Bytes zeros) {
+    TLSInnerPlaintext(Bytes content, ContentType type, Bytes zeros) {
         this.content = content;
         this.type = type;
         this.zeros = zeros;
@@ -62,10 +64,6 @@ public class TLSInnerPlaintext implements Struct {
     @Override
     public byte[] encoding() throws IOException {
         return Utils.encoding(content, type, zeros);
-    }
-
-    public static TLSInnerPlaintext noPadding(ContentType type, byte[] content) {
-        return new TLSInnerPlaintext(new Bytes(content), type, Bytes.EMPTY);
     }
 
     public static TLSInnerPlaintext parse(byte[] bytes) {

@@ -4,6 +4,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
 import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext;
+import static com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext.NO_PADDING;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
 import com.gypsyengineer.tlsbunny.utils.Connection;
 
@@ -37,8 +38,8 @@ public class ApplicationDataChannel {
         TLSPlaintext[] tlsPlaintexts = factory.createTLSPlaintexts(
                 ContentType.application_data, 
                 ProtocolVersion.TLSv10, 
-                encrypt(TLSInnerPlaintext.noPadding(
-                        ContentType.application_data, data).encoding()));
+                encrypt(factory.createTLSInnerPlaintext(
+                        ContentType.application_data, data, NO_PADDING).encoding()));
         
         for (TLSPlaintext tlsPlaintext : tlsPlaintexts) {
             connection.send(tlsPlaintext.encoding());
@@ -51,7 +52,7 @@ public class ApplicationDataChannel {
 
     public byte[] encrypt(byte[] plaintext) throws Exception {
         return encryptor.encrypt(
-                TLSInnerPlaintext.noPadding(ContentType.application_data, plaintext)
-                        .encoding());
+                factory.createTLSInnerPlaintext(
+                        ContentType.application_data, plaintext, NO_PADDING).encoding());
     }
 }
