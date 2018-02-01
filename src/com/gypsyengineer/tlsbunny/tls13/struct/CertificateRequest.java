@@ -13,7 +13,7 @@ public class CertificateRequest implements HandshakeMessage {
     private Vector<Byte> certificate_request_context;
     private Vector<Extension> extensions;
 
-    public CertificateRequest(Vector<Byte> certificate_request_context, 
+    CertificateRequest(Vector<Byte> certificate_request_context, 
             Vector<Extension> extensions) {
 
         this.certificate_request_context = certificate_request_context;

@@ -12,7 +12,7 @@ public class CertificateVerify implements HandshakeMessage {
     private SignatureScheme algorithm;
     private Vector<Byte> signature;
 
-    public CertificateVerify(SignatureScheme algorithm, Vector<Byte> signature) {
+    CertificateVerify(SignatureScheme algorithm, Vector<Byte> signature) {
         this.algorithm = algorithm;
         this.signature = signature;
     }
@@ -56,12 +56,6 @@ public class CertificateVerify implements HandshakeMessage {
         return new CertificateVerify(
                 SignatureScheme.parse(buffer), 
                 Vector.parseOpaqueVector(buffer, SIGNATURE_LENGTH_BYTES));
-    }
-
-    public static CertificateVerify create(SignatureScheme algorithm, byte[] signature) {
-        return new CertificateVerify(
-                algorithm,
-                Vector.wrap(SIGNATURE_LENGTH_BYTES, signature));
     }
 
 }

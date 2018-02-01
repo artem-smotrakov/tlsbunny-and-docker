@@ -15,7 +15,7 @@ public class ServerHello implements HandshakeMessage {
     private CipherSuite cipher_suite = CipherSuite.TLS_AES_128_GCM_SHA256;
     private Vector<Extension> extensions = Vector.wrap(EXTENSIONS_LENGTH_BYTES);
 
-    private ServerHello(ProtocolVersion version, Random random,
+    ServerHello(ProtocolVersion version, Random random,
             CipherSuite cipher_suite, Vector<Extension> extensions) {
 
         this.version = version;
@@ -116,4 +116,5 @@ public class ServerHello implements HandshakeMessage {
                     EXTENSIONS_LENGTH_BYTES,
                     buf -> Extension.parse(buf)));
     }
+    
 }

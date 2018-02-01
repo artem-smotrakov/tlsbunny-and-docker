@@ -13,7 +13,7 @@ public class HelloRetryRequest implements HandshakeMessage {
     private CipherSuite cipher_suite;
     private Vector<Extension> extensions;
 
-    private HelloRetryRequest(ProtocolVersion server_version,
+    HelloRetryRequest(ProtocolVersion server_version,
             CipherSuite cipher_suite, Vector<Extension> extensions) {
 
         this.server_version = server_version;

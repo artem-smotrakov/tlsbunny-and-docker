@@ -4,6 +4,10 @@ import java.io.IOException;
 
 public class EndOfEarlyData implements HandshakeMessage {
 
+    EndOfEarlyData() {
+    
+    }
+
     @Override
     public int encodingLength() {
         throw new UnsupportedOperationException();

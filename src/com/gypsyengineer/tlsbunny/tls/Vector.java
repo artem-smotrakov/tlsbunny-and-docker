@@ -166,7 +166,9 @@ public class Vector<T> implements Struct {
     }
 
     public static <T> Vector<T> wrap(int lengthBytes, List<T> objects) {
-        return new Vector<>(lengthBytes, objects);
+        List<T> objectList = new ArrayList<>();
+        objectList.addAll(objects);
+        return new Vector<>(lengthBytes, objectList);
     }
 
     public static <T> Vector<T> wrap(int lengthBytes, T... objects) {

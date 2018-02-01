@@ -7,12 +7,8 @@ public class Finished implements HandshakeMessage {
 
     private Bytes verify_data;
 
-    public Finished(Bytes verify_data) {
+    Finished(Bytes verify_data) {
         this.verify_data = verify_data;
-    }
-    
-    public Finished(byte[] verify_data) {
-        this(new Bytes(verify_data));
     }
 
     public byte[] getVerifyData() {

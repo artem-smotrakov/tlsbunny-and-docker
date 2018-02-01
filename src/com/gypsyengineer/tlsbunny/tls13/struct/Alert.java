@@ -12,7 +12,7 @@ public class Alert implements Struct {
     private AlertLevel level;
     private AlertDescription description;
 
-    public Alert() {
+    Alert() {
         this(AlertLevel.FATAL, AlertDescription.INTERNAL_ERROR);
     }
 

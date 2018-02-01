@@ -14,7 +14,7 @@ public class Certificate implements HandshakeMessage {
     private Vector<Byte> certificate_request_context;
     private Vector<CertificateEntry> certificate_list;
 
-    public Certificate(Vector<Byte> certificate_request_context,
+    Certificate(Vector<Byte> certificate_request_context,
             Vector<CertificateEntry> certificate_list) {
 
         this.certificate_request_context = certificate_request_context;
@@ -52,11 +52,14 @@ public class Certificate implements HandshakeMessage {
         return HandshakeType.certificate;
     }
 
-    public static Certificate parse(byte[] bytes, ContentParser certificateEntityParser) {
+    public static Certificate parse(
+            byte[] bytes, ContentParser certificateEntityParser) {
+        
         return parse(ByteBuffer.wrap(bytes), certificateEntityParser);
     }
     
-    public static Certificate parse(ByteBuffer buffer, ContentParser certificateEntityParser) {
+    public static Certificate parse(
+            ByteBuffer buffer, ContentParser certificateEntityParser) {
         
         return new Certificate(
                 Vector.parse(buffer,

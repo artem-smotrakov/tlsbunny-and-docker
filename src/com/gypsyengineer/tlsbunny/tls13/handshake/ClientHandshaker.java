@@ -41,6 +41,8 @@ import java.security.Signature;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Arrays;
 import static com.gypsyengineer.tlsbunny.utils.Utils.concatenate;
+import java.io.IOException;
+import java.util.List;
 
 public class ClientHandshaker extends AbstractHandshaker {
 
@@ -63,11 +65,14 @@ public class ClientHandshaker extends AbstractHandshaker {
 
     @Override
     public ClientHello createClientHello() throws Exception {
-        ClientHello hello = new ClientHello();
-        hello.setRandom(createRandom());
+        ClientHello hello = factory.createClientHello(
+                ProtocolVersion.TLSv12, 
+                createRandom(), 
+                StructFactory.EMPTY_SESSION_ID, 
+                List.of(CipherSuite.TLS_AES_128_GCM_SHA256), 
+                List.of(CompressionMethod.createNull()), 
+                StructFactory.NO_EXTENSIONS);
         
-        hello.addCompressionMethod(CompressionMethod.createNull());
-        hello.addCipherSuite(CipherSuite.TLS_AES_128_GCM_SHA256);
         hello.addExtension(Extension.wrap(
                 SupportedVersions.ClientHello.create(ProtocolVersion.TLSv13)));
         hello.addExtension(Extension.wrap(SignatureSchemeList.create(scheme)));
@@ -87,13 +92,11 @@ public class ClientHandshaker extends AbstractHandshaker {
     }
 
     @Override
-    public Certificate createCertificate() {
+    public Certificate createCertificate() throws IOException {
         context.setClientCertificate(
-                new Certificate(
-                    certificate_request_context, 
-                    Vector.wrap(
-                            Certificate.CERTIFICATE_LIST_LENGTH_BYTES, 
-                            CertificateEntry.X509.wrap(clientCertificate.getCertData()))));
+                factory.createCertificate(
+                    certificate_request_context.bytes(), 
+                    CertificateEntry.X509.wrap(clientCertificate.getCertData())));
 
         return context.getClientCertificate();
     }
@@ -113,7 +116,7 @@ public class ClientHandshaker extends AbstractHandshaker {
         signature.update(content);
 
         context.setClientCertificateVerify(
-                CertificateVerify.create(
+                factory.createCertificateVerify(
                     SignatureScheme.ecdsa_secp256r1_sha256,
                     signature.sign()));
 
@@ -126,7 +129,7 @@ public class ClientHandshaker extends AbstractHandshaker {
                 finished_key,
                 TranscriptHash.compute(ciphersuite.hash(), allMessages()));
 
-        context.setClientFinished(new Finished(verify_data));
+        context.setClientFinished(factory.createFinished(verify_data));
 
         resumption_master_secret = hkdf.deriveSecret(
                 master_secret,
@@ -156,15 +159,7 @@ public class ClientHandshaker extends AbstractHandshaker {
         return context.getClientFinished();
     }
 
-    private TLSPlaintext[] createEncryptedCertificate() throws Exception {
-        return encrypt(createCertificate());
-    }
-
-    private TLSPlaintext[] createEncryptedCertificateVerify() throws Exception {
-        return encrypt(createCertificateVerify());
-    }
-
-    TLSPlaintext[] createEnctyptedFinished() throws Exception {
+    private TLSPlaintext[] createEnctyptedFinished() throws Exception {
         return encrypt(createFinished());
     }
 
@@ -354,7 +349,7 @@ public class ClientHandshaker extends AbstractHandshaker {
                 handshakeDecryptor.decrypt(tlsPlaintext.getFragment()));
     }
 
-    private TLSPlaintext[] encrypt(HandshakeMessage message) throws Exception {
+    TLSPlaintext[] encrypt(HandshakeMessage message) throws Exception {
         return encrypt(toHandshake(message));
     }
 

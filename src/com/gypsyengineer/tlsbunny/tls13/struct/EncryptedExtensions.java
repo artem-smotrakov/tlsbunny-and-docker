@@ -10,7 +10,7 @@ public class EncryptedExtensions implements HandshakeMessage {
 
     private Vector<Extension> extensions;
 
-    private EncryptedExtensions(Vector<Extension> extensions) {
+    EncryptedExtensions(Vector<Extension> extensions) {
         this.extensions = extensions;
     }
 

@@ -7,12 +7,12 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 public class ClientHello implements HandshakeMessage {
-
+    
     public static final int LEGACY_SESSION_ID_LENGTH_BYTES = 1;
     public static final int CIPHER_SUITES_LENGTH_BYTES = 2;
     public static final int LEGACY_COMPRESSION_METHODS_LENGTH_BYTES = 1;
     public static final int EXTENSIONS_LENGTH_BYTES = 2;
-
+    
     private ProtocolVersion legacy_version = ProtocolVersion.TLSv12;
     private Random random = new Random();
     private Vector<Byte> legacy_session_id = Vector.wrap(LEGACY_SESSION_ID_LENGTH_BYTES);
@@ -20,9 +20,7 @@ public class ClientHello implements HandshakeMessage {
     private Vector<CompressionMethod> legacy_compression_methods = Vector.wrap(LEGACY_COMPRESSION_METHODS_LENGTH_BYTES);
     private Vector<Extension> extensions = Vector.wrap(EXTENSIONS_LENGTH_BYTES);
 
-    public ClientHello() {}
-    
-    public ClientHello(
+    ClientHello(
             ProtocolVersion legacy_version,
             Random random,
             Vector<Byte> legacy_session_id,

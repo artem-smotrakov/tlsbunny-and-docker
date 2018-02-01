@@ -137,7 +137,7 @@ public abstract class AbstractHandshaker implements Handshaker {
     }
 
     @Override
-    public Certificate createCertificate() {
+    public Certificate createCertificate() throws Exception {
         throw new UnsupportedOperationException(); 
     }
 
