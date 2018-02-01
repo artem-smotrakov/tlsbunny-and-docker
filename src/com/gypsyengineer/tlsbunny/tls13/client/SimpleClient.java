@@ -9,8 +9,11 @@ import com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.CertificateHolder;
 import com.gypsyengineer.tlsbunny.utils.Connection;
+import com.gypsyengineer.tlsbunny.utils.Parameters;
 
 public class SimpleClient {
+    
+    public static final byte[] HTTP_GET_REQUEST = "GET / HTTP/1.1\n\n".getBytes();
 
     public static void main(String[] args) throws Exception {
         ClientHandshaker handshaker = ClientHandshaker.create(
@@ -22,15 +25,12 @@ public class SimpleClient {
                 CertificateHolder.NO_CERTIFICATE);
         
         try (Connection connection = Connection.create(
-                System.getProperty("tlsbunny.host", "localhost"), 
-                Integer.getInteger("tlsbunny.port", 443))) {
+                Parameters.getHost(), Parameters.getPort())) {
             
             ApplicationDataChannel applicationData = handshaker.start(connection);
-            
-            applicationData.send("GET / HTTP/1.1\n\n".getBytes());
-            
+            applicationData.send(HTTP_GET_REQUEST);
             byte[] bytes = applicationData.receive();
-            System.out.println("[tlsbunny] received data");
+            System.out.printf("[tlsbunny] received data (%d bytes)%n", bytes.length);
             System.out.println(new String(bytes));
         }
     }

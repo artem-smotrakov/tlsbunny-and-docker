@@ -159,10 +159,6 @@ public class ClientHandshaker extends AbstractHandshaker {
         return context.getClientFinished();
     }
 
-    private TLSPlaintext[] createEnctyptedFinished() throws Exception {
-        return encrypt(createFinished());
-    }
-
     private void handleHelloRetryRequest(HelloRetryRequest helloRetryRequest) {
         context.setHelloRetryRequest(helloRetryRequest);
     }
