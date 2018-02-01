@@ -1,69 +1,36 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package com.gypsyengineer.tlsbunny.tls13.struct;
 
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.HandshakeTypeImpl;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.ExtensionImpl;
 import com.gypsyengineer.tlsbunny.tls.Vector;
-import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
-public class CertificateRequest implements HandshakeMessage {
+/**
+ *
+ * @author artem
+ */
+public interface CertificateRequest extends HandshakeMessage {
 
-    public static final int CERTIFICATE_REQUEST_CONTEXT_LENGTH_BYTES = 1;
-    public static final int EXTENSIONS_LENGTH_BYTES = 2;
+    int CERTIFICATE_REQUEST_CONTEXT_LENGTH_BYTES = 1;
+    int EXTENSIONS_LENGTH_BYTES = 2;
 
-    private Vector<Byte> certificate_request_context;
-    private Vector<Extension> extensions;
+    byte[] encoding() throws IOException;
 
-    CertificateRequest(Vector<Byte> certificate_request_context, 
-            Vector<Extension> extensions) {
+    int encodingLength();
 
-        this.certificate_request_context = certificate_request_context;
-        this.extensions = extensions;
-    }
+    Vector<Byte> getCertificateRequestContext();
 
-    @Override
-    public int encodingLength() {
-        return Utils.getEncodingLength(certificate_request_context, extensions);
-    }
+    Vector<ExtensionImpl> getExtensions();
 
-    @Override
-    public byte[] encoding() throws IOException {
-        return Utils.encoding(certificate_request_context, extensions);
-    }
+    void setCertificateRequestContext(Vector<Byte> certificate_request_context);
 
-    public Vector<Byte> getCertificateRequestContext() {
-        return certificate_request_context;
-    }
+    void setExtensions(Vector<ExtensionImpl> extensions);
 
-    public void setCertificateRequestContext(Vector<Byte> certificate_request_context) {
-        this.certificate_request_context = certificate_request_context;
-    }
-
-    public Vector<Extension> getExtensions() {
-        return extensions;
-    }
-
-    public void setExtensions(Vector<Extension> extensions) {
-        this.extensions = extensions;
-    }
-
-    @Override
-    public HandshakeType type() {
-        return HandshakeType.certificate_request;
-    }
+    HandshakeTypeImpl type();
     
-    public static CertificateRequest parse(byte[] bytes) {
-        return parse(ByteBuffer.wrap(bytes));
-    }
-
-    public static CertificateRequest parse(ByteBuffer buffer) {
-        return new CertificateRequest(Vector.parse(
-                    buffer,
-                    CERTIFICATE_REQUEST_CONTEXT_LENGTH_BYTES,
-                    buf -> buf.get()), 
-                Vector.parse(
-                    buffer,
-                    EXTENSIONS_LENGTH_BYTES,
-                    buf -> Extension.parse(buf)));
-    }
-
 }

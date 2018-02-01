@@ -1,7 +1,7 @@
 package com.gypsyengineer.tlsbunny.tls13.crypto;
 
-import com.gypsyengineer.tlsbunny.tls13.struct.Handshake;
-import com.gypsyengineer.tlsbunny.tls13.struct.HkdfLabel;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.HandshakeImpl;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.HkdfLabelImpl;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.security.InvalidKeyException;
@@ -66,7 +66,7 @@ public class HKDF {
     // Derive-Secret(Secret, Label, Messages) =
     //        HKDF-Expand-Label(Secret, Label,
     //                          Transcript-Hash(Messages), Hash.length)
-    public byte[] deriveSecret(byte[] secret, byte[] label, Handshake... messages)
+    public byte[] deriveSecret(byte[] secret, byte[] label, HandshakeImpl... messages)
             throws IOException, InvalidKeyException {
 
         return expandLabel(secret, label, transcriptHash.compute(messages), hashLen);
@@ -92,17 +92,17 @@ public class HKDF {
         return Mac.getInstance("Hmac" + hashAlgorithm.replace("-", ""));
     }
 
-    public static HkdfLabel createHkdfLabel(int length, byte[] label, byte[] hashValue) {
+    public static HkdfLabelImpl createHkdfLabel(int length, byte[] label, byte[] hashValue) {
         byte[] tls13_label = concatenate("tls13 ".getBytes(), label);
-        if (tls13_label.length > HkdfLabel.MAX_LABEL_LENGTH) {
+        if (tls13_label.length > HkdfLabelImpl.MAX_LABEL_LENGTH) {
             throw new IllegalArgumentException();
         }
 
-        if (hashValue.length > HkdfLabel.MAX_HASH_VALUE_LENGTH) {
+        if (hashValue.length > HkdfLabelImpl.MAX_HASH_VALUE_LENGTH) {
             throw new IllegalArgumentException();
         }
 
-        return HkdfLabel.create(length, tls13_label, hashValue);
+        return HkdfLabelImpl.create(length, tls13_label, hashValue);
     }
 
 }

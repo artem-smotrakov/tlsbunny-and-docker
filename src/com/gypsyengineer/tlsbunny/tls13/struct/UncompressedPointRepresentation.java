@@ -1,61 +1,24 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package com.gypsyengineer.tlsbunny.tls13.struct;
 
-import java.nio.ByteBuffer;
 import com.gypsyengineer.tlsbunny.tls.Struct;
 
-public class UncompressedPointRepresentation implements Struct {
+/**
+ *
+ * @author artem
+ */
+public interface UncompressedPointRepresentation extends Struct {
 
-    private final byte legacy_form = 4;
-    private final byte[] X;
-    private final byte[] Y;
+    byte[] encoding();
 
-    public UncompressedPointRepresentation(byte[] X, byte[] Y) {
-        this.X = X;
-        this.Y = Y;
-    }
+    int encodingLength();
 
-    public byte[] getX() {
-        return X;
-    }
+    byte[] getX();
 
-    public byte[] getY() {
-        return Y;
-    }
-
-    @Override
-    public int encodingLength() {
-        return 1 + X.length + Y.length;
-    }
-
-    @Override
-    public byte[] encoding() {
-        return ByteBuffer.allocate(encodingLength())
-            .put(legacy_form)
-            .put(X)
-            .put(Y)
-            .array();
-    }
+    byte[] getY();
     
-    public static UncompressedPointRepresentation parse(
-            byte[] bytes, int coordinate_length) {
-
-        return parse(ByteBuffer.wrap(bytes), coordinate_length);
-    }
-
-    public static UncompressedPointRepresentation parse(
-            ByteBuffer buffer, int coordinate_length) {
-
-        byte legacy_form = buffer.get();
-        if (legacy_form != 4) {
-            throw new IllegalArgumentException();
-        }
-
-        byte[] X = new byte[coordinate_length];
-        byte[] Y = new byte[coordinate_length];
-        buffer.get(X);
-        buffer.get(Y);
-
-        return new UncompressedPointRepresentation(X, Y);
-    }
-
 }

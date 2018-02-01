@@ -1,67 +1,33 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package com.gypsyengineer.tlsbunny.tls13.struct;
 
-import com.gypsyengineer.tlsbunny.tls.Vector;
-import com.gypsyengineer.tlsbunny.utils.Utils;
-import java.io.IOException;
-import java.nio.ByteBuffer;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.NamedGroupImpl;
 import com.gypsyengineer.tlsbunny.tls.Struct;
+import com.gypsyengineer.tlsbunny.tls.Vector;
+import java.io.IOException;
 
-public class KeyShareEntry implements Struct {
+/**
+ *
+ * @author artem
+ */
+public interface KeyShareEntry extends Struct {
 
-    public static final int KEY_EXCHANGE_LENGTH_BYTES = 2;
+    int KEY_EXCHANGE_LENGTH_BYTES = 2;
 
-    private NamedGroup group;
-    private Vector<Byte> key_exchange;
+    byte[] encoding() throws IOException;
 
-    private KeyShareEntry(NamedGroup group, Vector<Byte> key_exchange) {
-        this.group = group;
-        this.key_exchange = key_exchange;
-    }
+    int encodingLength();
 
-    public NamedGroup getNamedGroup() {
-        return group;
-    }
+    Vector<Byte> getKeyExchange();
 
-    public void setNamedGroup(NamedGroup group) {
-        this.group = group;
-    }
+    NamedGroupImpl getNamedGroup();
 
-    public Vector<Byte> getKeyExchange() {
-        return key_exchange;
-    }
+    void setKeyExchange(Vector<Byte> key_exchange);
 
-    public void setKeyExchange(Vector<Byte> key_exchange) {
-        this.key_exchange = key_exchange;
-    }
-
-    @Override
-    public int encodingLength() {
-        return Utils.getEncodingLength(group, key_exchange);
-    }
-
-    @Override
-    public byte[] encoding() throws IOException {
-        return Utils.encoding(group, key_exchange);
-    }
-
-    public static KeyShareEntry parse(ByteBuffer buffer) {
-        NamedGroup group = NamedGroup.parse(buffer);
-        Vector<Byte> key_exchange = Vector.parseOpaqueVector(
-                buffer, KEY_EXCHANGE_LENGTH_BYTES);
-        
-        return new KeyShareEntry(group, key_exchange);
-    }
+    void setNamedGroup(NamedGroupImpl group);
     
-    public static KeyShareEntry wrap(NamedGroup group, UncompressedPointRepresentation upr) {
-        return new KeyShareEntry(
-                group, 
-                Vector.wrap(KEY_EXCHANGE_LENGTH_BYTES, upr.encoding()));
-    }
-    
-    public static KeyShareEntry wrap(NamedGroup group, byte[] bytes) {
-        return new KeyShareEntry(
-                group, 
-                Vector.wrap(KEY_EXCHANGE_LENGTH_BYTES, bytes));
-    }
-
 }

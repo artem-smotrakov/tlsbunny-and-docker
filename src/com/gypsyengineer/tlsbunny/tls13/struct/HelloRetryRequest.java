@@ -1,95 +1,48 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package com.gypsyengineer.tlsbunny.tls13.struct;
 
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.CipherSuiteImpl;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.HandshakeTypeImpl;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.ExtensionTypeImpl;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.ExtensionImpl;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.ProtocolVersionImpl;
 import com.gypsyengineer.tlsbunny.tls.Vector;
-import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
-public class HelloRetryRequest implements HandshakeMessage {
+/**
+ *
+ * @author artem
+ */
+public interface HelloRetryRequest extends HandshakeMessage {
 
-    public static final int EXTENSIONS_LENGTH_BYTES = 2;
+    int EXTENSIONS_LENGTH_BYTES = 2;
 
-    private ProtocolVersion server_version;
-    private CipherSuite cipher_suite;
-    private Vector<Extension> extensions;
+    void addExtension(ExtensionImpl extension);
 
-    HelloRetryRequest(ProtocolVersion server_version,
-            CipherSuite cipher_suite, Vector<Extension> extensions) {
+    void clearExtensions();
 
-        this.server_version = server_version;
-        this.cipher_suite = cipher_suite;
-        this.extensions = extensions;
-    }
+    byte[] encoding() throws IOException;
 
-    public void setCipherSuite(CipherSuite cipher_suite) {
-        this.cipher_suite = cipher_suite;
-    }
+    int encodingLength();
 
-    public CipherSuite getCipherSuite() {
-        return cipher_suite;
-    }
+    CipherSuiteImpl getCipherSuite();
 
-    public void setProtocolVersion(ProtocolVersion server_version) {
-        this.server_version = server_version;
-    }
+    ExtensionImpl getExtension(ExtensionTypeImpl type);
 
-    public ProtocolVersion getProtocolVersion() {
-        return server_version;
-    }
+    Vector<ExtensionImpl> getExtensions();
 
-    public void setExtensions(Vector<Extension> extensions) {
-        this.extensions = extensions;
-    }
+    ProtocolVersionImpl getProtocolVersion();
 
-    public void addExtension(Extension extension) {
-        extensions.add(extension);
-    }
+    void setCipherSuite(CipherSuiteImpl cipher_suite);
 
-    public void clearExtensions() {
-        extensions.clear();
-    }
+    void setExtensions(Vector<ExtensionImpl> extensions);
 
-    public Extension getExtension(ExtensionType type) {
-        for (Extension extension : extensions.toList()) {
-            if (type.equals(extension.getExtensionType())) {
-                return extension;
-            }
-        }
+    void setProtocolVersion(ProtocolVersionImpl server_version);
 
-        return null;
-    }
-
-    public Vector<Extension> getExtensions() {
-        return extensions;
-    }
-
-    @Override
-    public int encodingLength() {
-        return Utils.getEncodingLength(server_version, cipher_suite, extensions);
-    }
-
-    @Override
-    public byte[] encoding() throws IOException {
-        return Utils.encoding(server_version, cipher_suite, extensions);
-    }
-
-    @Override
-    public HandshakeType type() {
-        return HandshakeType.hello_retry_request;
-    }
-
-    public static HelloRetryRequest parse(byte[] bytes) {
-        return parse(ByteBuffer.wrap(bytes));
-    }
+    HandshakeTypeImpl type();
     
-    public static HelloRetryRequest parse(ByteBuffer buffer) {
-        return new HelloRetryRequest(
-                ProtocolVersion.parse(buffer), 
-                CipherSuite.parse(buffer), 
-                Vector.parse(
-                    buffer,
-                    EXTENSIONS_LENGTH_BYTES,
-                    buf -> Extension.parse(buf)));
-    }
-
 }

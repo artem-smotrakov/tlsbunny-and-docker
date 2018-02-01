@@ -1,98 +1,54 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package com.gypsyengineer.tlsbunny.tls13.struct;
 
-import java.io.IOException;
-import java.nio.ByteBuffer;
 import com.gypsyengineer.tlsbunny.tls.Struct;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.NamedGroupImpl.FFDHEImpl;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.NamedGroupImpl.SecpImpl;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.NamedGroupImpl.XImpl;
+import java.io.IOException;
 
-public class NamedGroup implements Struct {
+/**
+ *
+ * @author artem
+ */
+public interface NamedGroup extends Struct {
 
-    public static final int ENCODING_LENGTH = 2;
+    int ENCODING_LENGTH = 2;
+    FFDHEImpl ffdhe2048 = new FFDHEImpl(0x0100);
+    FFDHEImpl ffdhe3072 = new FFDHEImpl(0x0101);
+    FFDHEImpl ffdhe4096 = new FFDHEImpl(0x0102);
+    FFDHEImpl ffdhe6144 = new FFDHEImpl(0x0103);
+    FFDHEImpl ffdhe8192 = new FFDHEImpl(0x0104);
+    SecpImpl secp256r1 = new SecpImpl(0x0017, "secp256r1");
+    SecpImpl secp384r1 = new SecpImpl(0x0018, "secp384r1");
+    SecpImpl secp521r1 = new SecpImpl(0x0019, "secp521r1");
+    XImpl x25519 = new XImpl(0x001D);
+    XImpl x448 = new XImpl(0x001E);
 
-    public static final Secp    secp256r1    = new Secp(0x0017, "secp256r1");
-    public static final Secp    secp384r1    = new Secp(0x0018, "secp384r1");
-    public static final Secp    secp521r1    = new Secp(0x0019, "secp521r1");
-    public static final X       x25519       = new X(0x001D);
-    public static final X       x448         = new X(0x001E);
-    public static final FFDHE   ffdhe2048    = new FFDHE(0x0100);
-    public static final FFDHE   ffdhe3072    = new FFDHE(0x0101);
-    public static final FFDHE   ffdhe4096    = new FFDHE(0x0102);
-    public static final FFDHE   ffdhe6144    = new FFDHE(0x0103);
-    public static final FFDHE   ffdhe8192    = new FFDHE(0x0104);
+    byte[] encoding() throws IOException;
 
-    public final int code;
+    int encodingLength();
 
-    private NamedGroup(int code) {
-        this.code = code;
-    }
+    boolean equals(Object obj);
 
-    @Override
-    public int encodingLength() {
-        return ENCODING_LENGTH;
-    }
+    int hashCode();
+    
+    public static interface Secp extends NamedGroup {
 
-    @Override
-    public byte[] encoding() throws IOException {
-        return ByteBuffer.allocate(ENCODING_LENGTH).putShort((short) code).array();
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 3;
-        hash = 31 * hash + this.code;
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
+        String getCurve();
         
-        if (obj == null) {
-            return false;
-        }
-        
-        if (obj instanceof NamedGroup == false) {
-            return false;
-        }
-        
-        NamedGroup other = (NamedGroup) obj;
-        return this.code == other.code;
-    }
-
-    public static NamedGroup parse(ByteBuffer buffer) {
-        return new NamedGroup(buffer.getShort());
     }
     
-    public static class Secp extends NamedGroup {
-
-        private final String curve;
+    public static interface X extends NamedGroup {
         
-        public Secp(int code, String curve) {
-            super(code);
-            this.curve = curve;
-        }
-
-        public String getCurve() {
-            return curve;
-        }
-
     }
-
-    public static class X extends NamedGroup {
-
-        public X(int code) {
-            super(code);
-        }
-
+    
+    public static interface FFDHE extends NamedGroup {
+        
     }
-
-    public static class FFDHE extends NamedGroup {
-
-        public FFDHE(int code) {
-            super(code);
-        }
-
-    }
-
+    
 }

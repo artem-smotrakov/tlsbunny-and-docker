@@ -1,141 +1,60 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package com.gypsyengineer.tlsbunny.tls13.struct;
 
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.KeyShareEntryImpl;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.NamedGroupImpl;
+import com.gypsyengineer.tlsbunny.tls.Struct;
 import com.gypsyengineer.tlsbunny.tls.Vector;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import com.gypsyengineer.tlsbunny.tls.Struct;
 
-public abstract class KeyShare implements Struct {
+/**
+ *
+ * @author artem
+ */
+public interface KeyShare {
     
-    public static class ClientHello extends KeyShare {
-        
-        public static final int LENGTH_BYTES = 2;
+    public static interface ClientHello {
 
-        private Vector<KeyShareEntry> client_shares;
+        int LENGTH_BYTES = 2;
 
-        public ClientHello() {
-            this(Vector.wrap(LENGTH_BYTES));
-        }
+        void clear();
 
-        public ClientHello(Vector<KeyShareEntry> client_shares) {
-            this.client_shares = client_shares;
-        }
+        byte[] encoding() throws IOException;
 
-        public void set(KeyShareEntry keyShareEntry) {
-            client_shares = Vector.wrap(LENGTH_BYTES, keyShareEntry);
-        }
+        int encodingLength();
 
-        public void set(Vector<KeyShareEntry> client_shares) {
-            this.client_shares = client_shares;
-        }
+        void set(KeyShareEntryImpl keyShareEntry);
 
-        public void clear() {
-            client_shares.clear();
-        }
-        
-        @Override
-        public int encodingLength() {
-            return client_shares.encodingLength();
-        }
+        void set(Vector<KeyShareEntryImpl> client_shares);
 
-        @Override
-        public byte[] encoding() throws IOException {
-            return client_shares.encoding();
-        }
-
-        public static ClientHello create(KeyShareEntry... keyShareEntries) {
-            return new ClientHello(
-                    Vector.wrap(LENGTH_BYTES, keyShareEntries));
-        }
-
-        public static ClientHello parse(ByteBuffer buffer) {
-            Vector<KeyShareEntry> client_shares = Vector.parse(
-                    buffer, LENGTH_BYTES, (buf) -> KeyShareEntry.parse(buf));
-
-            return new ClientHello(client_shares);
-        }
-        
-        public static ClientHello parse(Vector<Byte> extenstion_data) 
-                throws IOException {
-            
-            return parse(ByteBuffer.wrap(extenstion_data.bytes()));
-        }
-    
     }
+
     
-    public static class ServerHello extends KeyShare {
+    public static interface ServerHello {
 
-        private KeyShareEntry server_share;
+        byte[] encoding() throws IOException;
 
-        public ServerHello(KeyShareEntry server_share) {
-            this.server_share = server_share;
-        }
+        int encodingLength();
 
-        public KeyShareEntry getServerShare() {
-            return server_share;
-        }
+        KeyShareEntryImpl getServerShare();
 
-        public void setServerShare(KeyShareEntry server_share) {
-            this.server_share = server_share;
-        }
-        
-        @Override
-        public int encodingLength() {
-            return server_share.encodingLength();
-        }
-
-        @Override
-        public byte[] encoding() throws IOException {
-            return server_share.encoding();
-        }
-
-        public static ServerHello parse(ByteBuffer buffer) {
-            return new ServerHello(KeyShareEntry.parse(buffer));
-        }
-        
-        public static ServerHello parse(Vector<Byte> extenstion_data) 
-                throws IOException {
-            
-            return parse(ByteBuffer.wrap(extenstion_data.bytes()));
-        }
+        void setServerShare(KeyShareEntryImpl server_share);
 
     }
     
-    public static class HelloRetryRequest implements Struct {
+    public interface HelloRetryRequest extends Struct {
 
-        private NamedGroup selected_group;
+        byte[] encoding() throws IOException;
 
-        private HelloRetryRequest(NamedGroup selected_group) {
-            this.selected_group = selected_group;
-        }
+        int encodingLength();
 
-        public NamedGroup getSelectedGroup() {
-            return selected_group;
-        }
+        NamedGroupImpl getSelectedGroup();
 
-        public void setSelectedGroup(NamedGroup selected_group) {
-            this.selected_group = selected_group;
-        }
-        
-        @Override
-        public int encodingLength() {
-            return selected_group.encodingLength();
-        }
-
-        @Override
-        public byte[] encoding() throws IOException {
-            return selected_group.encoding();
-        }
-
-        public static HelloRetryRequest parse(ByteBuffer buffer) {
-            return new HelloRetryRequest(NamedGroup.parse(buffer));
-        }
-        
-        public static HelloRetryRequest parse(Vector<Byte> extenstion_data) 
-                throws IOException {
-            
-            return parse(ByteBuffer.wrap(extenstion_data.bytes()));
-        }
+        void setSelectedGroup(NamedGroupImpl selected_group);
 
     }
 }

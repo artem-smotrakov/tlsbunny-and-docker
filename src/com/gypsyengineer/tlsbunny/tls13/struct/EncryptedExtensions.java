@@ -1,52 +1,31 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package com.gypsyengineer.tlsbunny.tls13.struct;
 
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.HandshakeTypeImpl;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.ExtensionImpl;
 import com.gypsyengineer.tlsbunny.tls.Vector;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
-public class EncryptedExtensions implements HandshakeMessage {
+/**
+ *
+ * @author artem
+ */
+public interface EncryptedExtensions extends HandshakeMessage {
 
-    public static final int EXTENSIONS_LENGTH_BYTES = 2;
+    int EXTENSIONS_LENGTH_BYTES = 2;
 
-    private Vector<Extension> extensions;
+    byte[] encoding() throws IOException;
 
-    EncryptedExtensions(Vector<Extension> extensions) {
-        this.extensions = extensions;
-    }
+    int encodingLength();
 
-    @Override
-    public int encodingLength() {
-        return extensions.encodingLength();
-    }
+    Vector<ExtensionImpl> getExtensions();
 
-    @Override
-    public byte[] encoding() throws IOException {
-        return extensions.encoding();
-    }
+    void setExtensions(Vector<ExtensionImpl> extensions);
 
-    @Override
-    public HandshakeType type() {
-        return HandshakeType.encrypted_extensions;
-    }
-
-    public Vector<Extension> getExtensions() {
-        return extensions;
-    }
-
-    public void setExtensions(Vector<Extension> extensions) {
-        this.extensions = extensions;
-    }
+    HandshakeTypeImpl type();
     
-    public static EncryptedExtensions parse(byte[] bytes) {
-        return parse(ByteBuffer.wrap(bytes));
-    }
-
-    public static EncryptedExtensions parse(ByteBuffer buffer) {
-        return new EncryptedExtensions(
-                Vector.parse(
-                    buffer,
-                    EXTENSIONS_LENGTH_BYTES,
-                    buf -> Extension.parse(buf)));
-    }
-
 }

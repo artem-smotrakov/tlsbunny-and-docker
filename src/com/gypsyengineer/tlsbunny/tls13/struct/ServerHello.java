@@ -1,120 +1,56 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package com.gypsyengineer.tlsbunny.tls13.struct;
 
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.CipherSuiteImpl;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.HandshakeTypeImpl;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.ExtensionTypeImpl;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.ExtensionImpl;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.ProtocolVersionImpl;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.KeyShareImpl;
 import com.gypsyengineer.tlsbunny.tls.Random;
 import com.gypsyengineer.tlsbunny.tls.Vector;
-import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
-public class ServerHello implements HandshakeMessage {
+/**
+ *
+ * @author artem
+ */
+public interface ServerHello extends HandshakeMessage {
 
-    public static final int EXTENSIONS_LENGTH_BYTES = 2;
+    int EXTENSIONS_LENGTH_BYTES = 2;
 
-    private ProtocolVersion version = ProtocolVersion.TLSv13;
-    private Random random = new Random();
-    private CipherSuite cipher_suite = CipherSuite.TLS_AES_128_GCM_SHA256;
-    private Vector<Extension> extensions = Vector.wrap(EXTENSIONS_LENGTH_BYTES);
+    void addExtension(ExtensionImpl extension);
 
-    ServerHello(ProtocolVersion version, Random random,
-            CipherSuite cipher_suite, Vector<Extension> extensions) {
+    void clearExtensions();
 
-        this.version = version;
-        this.random = random;
-        this.cipher_suite = cipher_suite;
-        this.extensions = extensions;
-    }
+    byte[] encoding() throws IOException;
 
-    @Override
-    public int encodingLength() {
-        return Utils.getEncodingLength(
-                version,
-                random,
-                cipher_suite,
-                extensions);
-    }
+    int encodingLength();
 
-    @Override
-    public byte[] encoding() throws IOException {
-        return Utils.encoding(
-                version,
-                random,
-                cipher_suite,
-                extensions);
-    }
+    ExtensionImpl findExtension(ExtensionTypeImpl type);
 
-    public void setProtocolVersion(ProtocolVersion version) {
-        this.version = version;
-    }
+    KeyShareImpl.ServerHelloImpl findKeyShare() throws IOException;
 
-    public ProtocolVersion getProtocolVersion() {
-        return version;
-    }
+    CipherSuiteImpl getCipherSuite();
 
-    public void setRandom(Random random) {
-        this.random = random;
-    }
+    Vector<ExtensionImpl> getExtensions();
 
-    public Random getRandom() {
-        return random;
-    }
+    ProtocolVersionImpl getProtocolVersion();
 
-    public void setCipherSuite(CipherSuite cipher_suite) {
-        this.cipher_suite = cipher_suite;
-    }
+    Random getRandom();
 
-    public CipherSuite getCipherSuite() {
-        return cipher_suite;
-    }
+    void setCipherSuite(CipherSuiteImpl cipher_suite);
 
-    public void setExtensions(Vector<Extension> extensions) {
-        this.extensions = extensions;
-    }
+    void setExtensions(Vector<ExtensionImpl> extensions);
 
-    public void addExtension(Extension extension) {
-        extensions.add(extension);
-    }
+    void setProtocolVersion(ProtocolVersionImpl version);
 
-    public void clearExtensions() {
-        extensions.clear();
-    }
+    void setRandom(Random random);
 
-    public Extension findExtension(ExtensionType type) {
-        for (Extension extension : extensions.toList()) {
-            if (type.equals(extension.getExtensionType())) {
-                return extension;
-            }
-        }
-
-        return null;
-    }
-
-    public Vector<Extension> getExtensions() {
-        return extensions;
-    }
-
-    public KeyShare.ServerHello findKeyShare() throws IOException {
-        return KeyShare.ServerHello.parse(
-                findExtension(ExtensionType.key_share).getExtensionData());
-    }
-
-    @Override
-    public HandshakeType type() {
-        return HandshakeType.server_hello;
-    }
-
-    public static ServerHello parse(byte[] bytes) {
-        return parse(ByteBuffer.wrap(bytes));
-    }
-    
-    public static ServerHello parse(ByteBuffer buffer) {
-        return new ServerHello(
-                ProtocolVersion.parse(buffer), 
-                Random.parse(buffer), 
-                CipherSuite.parse(buffer),
-                Vector.parse(
-                    buffer,
-                    EXTENSIONS_LENGTH_BYTES,
-                    buf -> Extension.parse(buf)));
-    }
+    HandshakeTypeImpl type();
     
 }

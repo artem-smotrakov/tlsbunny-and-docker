@@ -1,87 +1,35 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package com.gypsyengineer.tlsbunny.tls13.struct;
 
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.Objects;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.AlertDescriptionImpl;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.AlertLevelImpl;
 import com.gypsyengineer.tlsbunny.tls.Struct;
+import java.io.IOException;
 
-public class Alert implements Struct {
+/**
+ *
+ * @author artem
+ */
+public interface Alert extends Struct {
 
-    private static final int ENCODING_LENGTH = 2;
+    byte[] encoding() throws IOException;
 
-    private AlertLevel level;
-    private AlertDescription description;
+    int encodingLength();
 
-    Alert() {
-        this(AlertLevel.FATAL, AlertDescription.INTERNAL_ERROR);
-    }
+    boolean equals(Object obj);
 
-    public Alert(AlertLevel level, AlertDescription description) {
-        this.level = level;
-        this.description = description;
-    }
+    AlertDescriptionImpl getDescription();
 
-    @Override
-    public int encodingLength() {
-        return ENCODING_LENGTH;
-    }
+    AlertLevelImpl getLevel();
 
-    @Override
-    public byte[] encoding() throws IOException {
-        return new byte[] { level.getCode(), description.getCode() };
-    }
+    int hashCode();
 
-    public AlertLevel getLevel() {
-        return level;
-    }
+    void setDescription(AlertDescriptionImpl description);
 
-    public void setLevel(AlertLevel level) {
-        this.level = level;
-    }
-
-    public AlertDescription getDescription() {
-        return description;
-    }
-
-    public void setDescription(AlertDescription description) {
-        this.description = description;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 79 * hash + Objects.hashCode(this.level);
-        hash = 79 * hash + Objects.hashCode(this.description);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final Alert other = (Alert) obj;
-        if (!Objects.equals(this.level, other.level)) {
-            return false;
-        }
-        return Objects.equals(this.description, other.description);
-    }
-
-    public static Alert parse(byte[] bytes) {
-        return parse(ByteBuffer.wrap(bytes));
-    }
+    void setLevel(AlertLevelImpl level);
     
-    public static Alert parse(ByteBuffer buffer) {
-        AlertLevel level = AlertLevel.parse(buffer);
-        AlertDescription description = AlertDescription.parse(buffer);
-
-        return new Alert(level, description);
-    }
-
 }

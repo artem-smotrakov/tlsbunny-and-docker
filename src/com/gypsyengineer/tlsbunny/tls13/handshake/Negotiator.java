@@ -1,21 +1,21 @@
 package com.gypsyengineer.tlsbunny.tls13.handshake;
 
-import com.gypsyengineer.tlsbunny.tls13.struct.KeyShareEntry;
-import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.KeyShareEntryImpl;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.NamedGroupImpl;
 
 public interface Negotiator {
 
-    KeyShareEntry createKeyShareEntry() throws Exception;
-    void processKeyShareEntry(KeyShareEntry entry) throws Exception;
+    KeyShareEntryImpl createKeyShareEntry() throws Exception;
+    void processKeyShareEntry(KeyShareEntryImpl entry) throws Exception;
     byte[] generateSecret();
 
-    public static Negotiator create(NamedGroup group) throws Exception {
-        if (group instanceof NamedGroup.FFDHE) {
-            return FFDHENegotiator.create((NamedGroup.FFDHE) group);
+    public static Negotiator create(NamedGroupImpl group) throws Exception {
+        if (group instanceof NamedGroupImpl.FFDHEImpl) {
+            return FFDHENegotiator.create((NamedGroupImpl.FFDHEImpl) group);
         }
 
-        if (group instanceof NamedGroup.Secp) {
-            return ECDHENegotiator.create((NamedGroup.Secp) group);
+        if (group instanceof NamedGroupImpl.SecpImpl) {
+            return ECDHENegotiator.create((NamedGroupImpl.SecpImpl) group);
         }
 
         throw new IllegalArgumentException();

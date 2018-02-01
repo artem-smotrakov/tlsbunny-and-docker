@@ -2,61 +2,62 @@ package com.gypsyengineer.tlsbunny.tls13.handshake;
 
 import com.gypsyengineer.tlsbunny.tls13.crypto.ApplicationDataChannel;
 import com.gypsyengineer.tlsbunny.tls13.crypto.HKDF;
-import com.gypsyengineer.tlsbunny.tls13.struct.Certificate;
-import com.gypsyengineer.tlsbunny.tls13.struct.CertificateRequest;
-import com.gypsyengineer.tlsbunny.tls13.struct.CertificateVerify;
-import com.gypsyengineer.tlsbunny.tls13.struct.CipherSuite;
-import com.gypsyengineer.tlsbunny.tls13.struct.EncryptedExtensions;
-import com.gypsyengineer.tlsbunny.tls13.struct.Finished;
-import com.gypsyengineer.tlsbunny.tls13.struct.HelloRetryRequest;
-import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
-import com.gypsyengineer.tlsbunny.tls13.struct.ServerHello;
-import com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme;
-import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.CertificateImpl;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.CertificateRequestImpl;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.CertificateVerifyImpl;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.CipherSuiteImpl;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.EncryptedExtensionsImpl;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.FinishedImpl;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.HelloRetryRequestImpl;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.NamedGroupImpl;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.ServerHelloImpl;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.SignatureSchemeImpl;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.StructFactoryImpl;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.TLSPlaintextImpl;
 import com.gypsyengineer.tlsbunny.utils.Connection;
 
 public class ServerHandshaker extends AbstractHandshaker {
 
-    public ServerHandshaker(StructFactory factory,
-            SignatureScheme scheme, NamedGroup group, 
-            Negotiator negotiator, CipherSuite ciphersuite, HKDF hkdf) {
+    public ServerHandshaker(StructFactoryImpl factory,
+            SignatureSchemeImpl scheme, NamedGroupImpl group, 
+            Negotiator negotiator, CipherSuiteImpl ciphersuite, HKDF hkdf) {
         
         super(factory, scheme, group, negotiator, ciphersuite, hkdf);
     }
     
     @Override
-    public ServerHello createServerHello() throws Exception {
+    public ServerHelloImpl createServerHello() throws Exception {
         throw new UnsupportedOperationException(); 
     }
 
     @Override
-    public HelloRetryRequest createHelloRetryRequest() throws Exception {
+    public HelloRetryRequestImpl createHelloRetryRequest() throws Exception {
         throw new UnsupportedOperationException(); 
     }
 
     @Override
-    public EncryptedExtensions createEncryptedExtensions() throws Exception {
+    public EncryptedExtensionsImpl createEncryptedExtensions() throws Exception {
         throw new UnsupportedOperationException(); 
     }
 
     @Override
-    public CertificateRequest createCertificateRequest() throws Exception {
+    public CertificateRequestImpl createCertificateRequest() throws Exception {
         throw new UnsupportedOperationException(); 
     }
 
     @Override
-    public Certificate createCertificate() {
+    public CertificateImpl createCertificate() {
         throw new UnsupportedOperationException(); 
     }
 
     @Override
-    public CertificateVerify createCertificateVerify() throws Exception {
+    public CertificateVerifyImpl createCertificateVerify() throws Exception {
         throw new UnsupportedOperationException(); 
     }
 
     @Override
-    public Finished createFinished() throws Exception {
+    public FinishedImpl createFinished() throws Exception {
         throw new UnsupportedOperationException(); 
     }
 

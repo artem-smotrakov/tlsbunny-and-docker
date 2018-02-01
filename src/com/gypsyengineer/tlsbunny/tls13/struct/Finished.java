@@ -1,51 +1,29 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package com.gypsyengineer.tlsbunny.tls13.struct;
 
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.HandshakeTypeImpl;
 import com.gypsyengineer.tlsbunny.tls.Bytes;
-import java.nio.ByteBuffer;
 
-public class Finished implements HandshakeMessage {
+/**
+ *
+ * @author artem
+ */
+public interface Finished extends HandshakeMessage {
 
-    private Bytes verify_data;
+    byte[] encoding();
 
-    Finished(Bytes verify_data) {
-        this.verify_data = verify_data;
-    }
+    int encodingLength();
 
-    public byte[] getVerifyData() {
-        return verify_data.encoding();
-    }
+    byte[] getVerifyData();
 
-    public void setVerifyData(byte[] verify_data) {
-        this.verify_data = new Bytes(verify_data);
-    }
+    void setVerifyData(byte[] verify_data);
 
-    public void setVerifyData(Bytes verify_data) {
-        this.verify_data = verify_data;
-    }
+    void setVerifyData(Bytes verify_data);
 
-    @Override
-    public int encodingLength() {
-        return verify_data.encodingLength();
-    }
-
-    @Override
-    public byte[] encoding() {
-        return verify_data.encoding();
-    }
-
-    @Override
-    public HandshakeType type() {
-        return HandshakeType.finished;
-    }
-
-    public static Finished parse(byte[] bytes, int hashLen) {
-        return parse(ByteBuffer.wrap(bytes), hashLen);
-    }
+    HandshakeTypeImpl type();
     
-    public static Finished parse(ByteBuffer buffer, int hashLen) {
-        byte[] verify_data = new byte[hashLen];
-        buffer.get(verify_data);
-        return new Finished(new Bytes(verify_data));
-    }
-
 }

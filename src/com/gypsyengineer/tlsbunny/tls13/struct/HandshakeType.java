@@ -1,73 +1,43 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package com.gypsyengineer.tlsbunny.tls13.struct;
 
-import java.nio.ByteBuffer;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.HandshakeTypeImpl;
 import com.gypsyengineer.tlsbunny.tls.Struct;
 
-public class HandshakeType implements Struct {
+/**
+ *
+ * @author artem
+ */
+public interface HandshakeType extends Struct {
 
-    public static final int ENCODING_LENGTH = 1;
+    int ENCODING_LENGTH = 1;
+    HandshakeTypeImpl certificate = new HandshakeTypeImpl(11);
+    HandshakeTypeImpl certificate_request = new HandshakeTypeImpl(13);
+    HandshakeTypeImpl certificate_verify = new HandshakeTypeImpl(15);
+    HandshakeTypeImpl client_hello = new HandshakeTypeImpl(1);
+    HandshakeTypeImpl encrypted_extensions = new HandshakeTypeImpl(8);
+    HandshakeTypeImpl end_of_early_data = new HandshakeTypeImpl(5);
+    HandshakeTypeImpl finished = new HandshakeTypeImpl(20);
+    HandshakeTypeImpl hello_retry_request = new HandshakeTypeImpl(6);
+    HandshakeTypeImpl key_update = new HandshakeTypeImpl(24);
+    HandshakeTypeImpl message_hash = new HandshakeTypeImpl(254);
+    HandshakeTypeImpl new_session_ticket = new HandshakeTypeImpl(4);
+    HandshakeTypeImpl server_hello = new HandshakeTypeImpl(2);
 
-    public static final HandshakeType client_hello          = new HandshakeType(1);
-    public static final HandshakeType server_hello          = new HandshakeType(2);
-    public static final HandshakeType new_session_ticket    = new HandshakeType(4);
-    public static final HandshakeType end_of_early_data     = new HandshakeType(5);
-    public static final HandshakeType hello_retry_request   = new HandshakeType(6);
-    public static final HandshakeType encrypted_extensions  = new HandshakeType(8);
-    public static final HandshakeType certificate           = new HandshakeType(11);
-    public static final HandshakeType certificate_request   = new HandshakeType(13);
-    public static final HandshakeType certificate_verify    = new HandshakeType(15);
-    public static final HandshakeType finished              = new HandshakeType(20);
-    public static final HandshakeType key_update            = new HandshakeType(24);
-    public static final HandshakeType message_hash          = new HandshakeType(254);
+    byte[] encoding();
 
-    private int value;
+    int encodingLength();
 
-    public HandshakeType(int value) {
-        this.value = value;
-    }
+    boolean equals(Object obj);
 
-    @Override
-    public int encodingLength() {
-        return ENCODING_LENGTH;
-    }
+    int getValue();
 
-    @Override
-    public byte[] encoding() {
-        return ByteBuffer.allocate(ENCODING_LENGTH).put((byte) value).array();
-    }
+    int hashCode();
 
-    public int getValue() {
-        return value;
-    }
-
-    public void setValue(int value) {
-        this.value = value;
-    }
-
-    public static HandshakeType parse(ByteBuffer data) {
-        return new HandshakeType(data.get() & 0xFF);
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 31 * hash + this.value;
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final HandshakeType other = (HandshakeType) obj;
-        return this.value == other.value;
-    }
-
+    void setValue(int value);
+    
 }

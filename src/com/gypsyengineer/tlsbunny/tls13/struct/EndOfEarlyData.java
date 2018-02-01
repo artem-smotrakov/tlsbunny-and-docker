@@ -1,26 +1,23 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package com.gypsyengineer.tlsbunny.tls13.struct;
 
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.HandshakeTypeImpl;
 import java.io.IOException;
 
-public class EndOfEarlyData implements HandshakeMessage {
+/**
+ *
+ * @author artem
+ */
+public interface EndOfEarlyData extends HandshakeMessage {
 
-    EndOfEarlyData() {
+    byte[] encoding() throws IOException;
+
+    int encodingLength();
+
+    HandshakeTypeImpl type();
     
-    }
-
-    @Override
-    public int encodingLength() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public byte[] encoding() throws IOException {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public HandshakeType type() {
-        return HandshakeType.end_of_early_data;
-    }
-
 }

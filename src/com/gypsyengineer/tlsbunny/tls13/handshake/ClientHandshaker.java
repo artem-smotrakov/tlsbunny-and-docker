@@ -1,37 +1,37 @@
 package com.gypsyengineer.tlsbunny.tls13.handshake;
 
 import com.gypsyengineer.tlsbunny.tls.Vector;
-import com.gypsyengineer.tlsbunny.tls13.struct.Alert;
-import com.gypsyengineer.tlsbunny.tls13.struct.Certificate;
-import com.gypsyengineer.tlsbunny.tls13.struct.CertificateRequest;
-import com.gypsyengineer.tlsbunny.tls13.struct.CertificateVerify;
-import com.gypsyengineer.tlsbunny.tls13.struct.CipherSuite;
-import com.gypsyengineer.tlsbunny.tls13.struct.ClientHello;
-import com.gypsyengineer.tlsbunny.tls13.struct.KeyShare;
-import com.gypsyengineer.tlsbunny.tls13.struct.CompressionMethod;
-import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
-import com.gypsyengineer.tlsbunny.tls13.struct.EncryptedExtensions;
-import com.gypsyengineer.tlsbunny.tls13.struct.Finished;
-import com.gypsyengineer.tlsbunny.tls13.struct.Handshake;
-import com.gypsyengineer.tlsbunny.tls13.struct.HandshakeMessage;
-import com.gypsyengineer.tlsbunny.tls13.struct.HelloRetryRequest;
-import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
-import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroupList;
-import com.gypsyengineer.tlsbunny.tls13.struct.ServerHello;
-import com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme;
-import com.gypsyengineer.tlsbunny.tls13.struct.SignatureSchemeList;
-import com.gypsyengineer.tlsbunny.tls13.struct.SupportedVersions;
-import com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext;
-import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.AlertImpl;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.CertificateImpl;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.CertificateRequestImpl;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.CertificateVerifyImpl;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.CipherSuiteImpl;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.ClientHelloImpl;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.KeyShareImpl;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.CompressionMethodImpl;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.ContentTypeImpl;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.EncryptedExtensionsImpl;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.FinishedImpl;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.HandshakeImpl;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.HelloRetryRequestImpl;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.NamedGroupImpl;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.NamedGroupListImpl;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.ServerHelloImpl;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.SignatureSchemeImpl;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.SignatureSchemeListImpl;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.SupportedVersionsImpl;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.TLSInnerPlaintextImpl;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.TLSPlaintextImpl;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AEAD;
 import com.gypsyengineer.tlsbunny.tls13.crypto.ApplicationDataChannel;
 import com.gypsyengineer.tlsbunny.tls13.crypto.HKDF;
 import com.gypsyengineer.tlsbunny.tls13.crypto.TranscriptHash;
-import com.gypsyengineer.tlsbunny.tls13.struct.CertificateEntry;
-import com.gypsyengineer.tlsbunny.tls13.struct.Extension;
-import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
-import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
-import static com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext.NO_PADDING;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.CertificateEntryImpl;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.ExtensionImpl;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.ProtocolVersionImpl;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.StructFactoryImpl;
+import static com.gypsyengineer.tlsbunny.tls13.struct.impl.TLSInnerPlaintextImpl.NO_PADDING;
+import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
 import com.gypsyengineer.tlsbunny.utils.CertificateHolder;
 import com.gypsyengineer.tlsbunny.utils.Connection;
 import com.gypsyengineer.tlsbunny.utils.Utils;
@@ -43,14 +43,16 @@ import java.util.Arrays;
 import static com.gypsyengineer.tlsbunny.utils.Utils.concatenate;
 import java.io.IOException;
 import java.util.List;
+import com.gypsyengineer.tlsbunny.tls13.struct.HandshakeMessage;
+import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
 
 public class ClientHandshaker extends AbstractHandshaker {
 
     private final CertificateHolder clientCertificate;
     private Vector<Byte> certificate_request_context;
 
-    ClientHandshaker(StructFactory factory, SignatureScheme scheme, NamedGroup group,
-            Negotiator negotiator, CipherSuite ciphersuite, HKDF hkdf,
+    ClientHandshaker(StructFactoryImpl factory, SignatureSchemeImpl scheme, NamedGroupImpl group,
+            Negotiator negotiator, CipherSuiteImpl ciphersuite, HKDF hkdf,
             CertificateHolder clientCertificate) {
 
         super(factory, scheme, group, negotiator, ciphersuite, hkdf);
@@ -64,21 +66,19 @@ public class ClientHandshaker extends AbstractHandshaker {
     }
 
     @Override
-    public ClientHello createClientHello() throws Exception {
-        ClientHello hello = factory.createClientHello(
-                ProtocolVersion.TLSv12, 
+    public ClientHelloImpl createClientHello() throws Exception {
+        ClientHelloImpl hello = factory.createClientHello(ProtocolVersionImpl.TLSv12, 
                 createRandom(), 
-                StructFactory.EMPTY_SESSION_ID, 
-                List.of(CipherSuite.TLS_AES_128_GCM_SHA256), 
-                List.of(CompressionMethod.createNull()), 
-                StructFactory.NO_EXTENSIONS);
+                StructFactoryImpl.EMPTY_SESSION_ID, 
+                List.of(CipherSuiteImpl.TLS_AES_128_GCM_SHA256), 
+                List.of(CompressionMethodImpl.createNull()), 
+                StructFactoryImpl.NO_EXTENSIONS);
         
-        hello.addExtension(Extension.wrap(
-                SupportedVersions.ClientHello.create(ProtocolVersion.TLSv13)));
-        hello.addExtension(Extension.wrap(SignatureSchemeList.create(scheme)));
-        hello.addExtension(Extension.wrap(NamedGroupList.create(group)));
-        hello.addExtension(Extension.wrap(
-                KeyShare.ClientHello.create(negotiator.createKeyShareEntry())));
+        hello.addExtension(ExtensionImpl.wrap(
+                factory.createSupportedVersionForClientHello(ProtocolVersion.TLSv13)));
+        hello.addExtension(ExtensionImpl.wrap(SignatureSchemeListImpl.create(scheme)));
+        hello.addExtension(ExtensionImpl.wrap(NamedGroupListImpl.create(group)));
+        hello.addExtension(ExtensionImpl.wrap(KeyShareImpl.ClientHelloImpl.create(negotiator.createKeyShareEntry())));
 
         if (!context.hasFirstClientHello()) {
             context.setFirstClientHello(hello);
@@ -92,17 +92,15 @@ public class ClientHandshaker extends AbstractHandshaker {
     }
 
     @Override
-    public Certificate createCertificate() throws IOException {
-        context.setClientCertificate(
-                factory.createCertificate(
-                    certificate_request_context.bytes(), 
-                    CertificateEntry.X509.wrap(clientCertificate.getCertData())));
+    public CertificateImpl createCertificate() throws IOException {
+        context.setClientCertificate(factory.createCertificate(certificate_request_context.bytes(), 
+                    CertificateEntryImpl.X509.wrap(clientCertificate.getCertData())));
 
         return context.getClientCertificate();
     }
 
     @Override
-    public CertificateVerify createCertificateVerify() throws Exception {
+    public CertificateVerifyImpl createCertificateVerify() throws Exception {
         byte[] content = Utils.concatenate(
                 CERTIFICATE_VERIFY_PREFIX,
                 CERTIFICATE_VERIFY_CONTEXT_STRING,
@@ -115,16 +113,14 @@ public class ClientHandshaker extends AbstractHandshaker {
                         new PKCS8EncodedKeySpec(clientCertificate.getKeyData())));
         signature.update(content);
 
-        context.setClientCertificateVerify(
-                factory.createCertificateVerify(
-                    SignatureScheme.ecdsa_secp256r1_sha256,
+        context.setClientCertificateVerify(factory.createCertificateVerify(SignatureSchemeImpl.ecdsa_secp256r1_sha256,
                     signature.sign()));
 
         return context.getClientCertificateVerify();
     }
 
     @Override
-    public Finished createFinished() throws Exception {
+    public FinishedImpl createFinished() throws Exception {
         byte[] verify_data = hkdf.hmac(
                 finished_key,
                 TranscriptHash.compute(ciphersuite.hash(), allMessages()));
@@ -159,12 +155,12 @@ public class ClientHandshaker extends AbstractHandshaker {
         return context.getClientFinished();
     }
 
-    private void handleHelloRetryRequest(HelloRetryRequest helloRetryRequest) {
+    private void handleHelloRetryRequest(HelloRetryRequestImpl helloRetryRequest) {
         context.setHelloRetryRequest(helloRetryRequest);
     }
 
-    void handleServerHello(ServerHello serverHello) throws Exception {
-        KeyShare.ServerHello keyShare = serverHello.findKeyShare();
+    void handleServerHello(ServerHelloImpl serverHello) throws Exception {
+        KeyShareImpl.ServerHelloImpl keyShare = serverHello.findKeyShare();
 
         negotiator.processKeyShareEntry(keyShare.getServerShare());
         dh_shared_secret = negotiator.generateSecret();
@@ -176,7 +172,7 @@ public class ClientHandshaker extends AbstractHandshaker {
 
         byte[] psk = zeroes(hkdf.getHashLength());
 
-        Handshake wrappedClientHello = toHandshake(context.getFirstClientHello());
+        HandshakeImpl wrappedClientHello = toHandshake(context.getFirstClientHello());
 
         early_secret = hkdf.extract(ZERO_SALT, psk);
         binder_key = hkdf.deriveSecret(
@@ -193,7 +189,7 @@ public class ClientHandshaker extends AbstractHandshaker {
 
         handshake_secret_salt = hkdf.deriveSecret(early_secret, derived);
 
-        Handshake wrappedServerHello = toHandshake(serverHello);
+        HandshakeImpl wrappedServerHello = toHandshake(serverHello);
 
         handshake_secret = hkdf.extract(handshake_secret_salt, dh_shared_secret);
         client_handshake_traffic_secret = hkdf.deriveSecret(
@@ -244,24 +240,24 @@ public class ClientHandshaker extends AbstractHandshaker {
                 server_handshake_write_iv);
     }
 
-    private void handleCertificateRequest(CertificateRequest certificateRequest) {
+    private void handleCertificateRequest(CertificateRequestImpl certificateRequest) {
         certificate_request_context = certificateRequest.getCertificateRequestContext();
         context.setServerCertificateRequest(certificateRequest);
     }
 
-    private void handleCertificate(Certificate certificate) {
+    private void handleCertificate(CertificateImpl certificate) {
          context.setServerCertificate(certificate);
     }
 
-    private void handleCertificateVerify(CertificateVerify certificateVerify) {
+    private void handleCertificateVerify(CertificateVerifyImpl certificateVerify) {
         context.setServerCertificateVerify(certificateVerify);
     }
 
-    private void handleEncryptedExtensions(EncryptedExtensions encryptedExtensions) {
+    private void handleEncryptedExtensions(EncryptedExtensionsImpl encryptedExtensions) {
         context.setEncryptedExtensions(encryptedExtensions);
     }
 
-    private void handleFinished(Finished message) throws Exception {
+    private void handleFinished(FinishedImpl message) throws Exception {
         byte[] verify_key = hkdf.expandLabel(
                 server_handshake_traffic_secret,
                 finished,
@@ -294,11 +290,11 @@ public class ClientHandshaker extends AbstractHandshaker {
 
     @Override
     public void handle(TLSPlaintext tlsPlaintext) throws Exception {
-        ContentType type;
+        ContentTypeImpl type;
         byte[] content;
 
         if (tlsPlaintext.containsApplicationData()) {
-            TLSInnerPlaintext tlsInnerPlaintext = decrypt(tlsPlaintext);
+            TLSInnerPlaintextImpl tlsInnerPlaintext = decrypt(tlsPlaintext);
             type = tlsInnerPlaintext.getType();
             content = tlsInnerPlaintext.getContent();
         } else {
@@ -306,58 +302,55 @@ public class ClientHandshaker extends AbstractHandshaker {
             content = tlsPlaintext.getFragment();
         }
 
-        if (ContentType.alert.equals(type)) {
-            receivedAlert = Alert.parse(tlsPlaintext.getFragment());
-        } else if (ContentType.handshake.equals(type)) {
+        if (ContentTypeImpl.alert.equals(type)) {
+            receivedAlert = AlertImpl.parse(tlsPlaintext.getFragment());
+        } else if (ContentTypeImpl.handshake.equals(type)) {
             ByteBuffer buffer = ByteBuffer.wrap(content);
             while (buffer.remaining() > 0) {
-                handle(Handshake.parse(buffer));
+                handle(HandshakeImpl.parse(buffer));
             }
         } else {
             throw new RuntimeException();
         }
     }
 
-    void handle(Handshake handshake) throws Exception {
+    void handle(HandshakeImpl handshake) throws Exception {
         if (handshake.containsHelloRetryRequest()) {
-            handleHelloRetryRequest(HelloRetryRequest.parse(handshake.getBody()));
+            handleHelloRetryRequest(HelloRetryRequestImpl.parse(handshake.getBody()));
         } else if (handshake.containsServerHello()) {
-            handleServerHello(ServerHello.parse(handshake.getBody()));
+            handleServerHello(ServerHelloImpl.parse(handshake.getBody()));
         } else if (handshake.containsEncryptedExtensions()) {
-            handleEncryptedExtensions(EncryptedExtensions.parse(handshake.getBody()));
+            handleEncryptedExtensions(EncryptedExtensionsImpl.parse(handshake.getBody()));
         } else if (handshake.containsCertificateRequest()) {
-            handleCertificateRequest(CertificateRequest.parse(handshake.getBody()));
+            handleCertificateRequest(CertificateRequestImpl.parse(handshake.getBody()));
         } else if (handshake.containsCertificate()) {
-            handleCertificate(Certificate.parse(
-                    handshake.getBody(), 
-                    buf -> CertificateEntry.X509.parse(buf)));
+            handleCertificate(CertificateImpl.parse(handshake.getBody(), 
+                    buf -> CertificateEntryImpl.X509.parse(buf)));
         } else if (handshake.containsCertificateVerify()) {
-            handleCertificateVerify(CertificateVerify.parse(handshake.getBody()));
+            handleCertificateVerify(CertificateVerifyImpl.parse(handshake.getBody()));
         } else if (handshake.containsFinished()) {
-            handleFinished(Finished.parse(handshake.getBody(), ciphersuite.hashLength()));
+            handleFinished(FinishedImpl.parse(handshake.getBody(), ciphersuite.hashLength()));
         } else {
             throw new RuntimeException();
         }
     }
 
-    TLSInnerPlaintext decrypt(TLSPlaintext tlsPlaintext) throws Exception {
-        return TLSInnerPlaintext.parse(
+    TLSInnerPlaintextImpl decrypt(TLSPlaintext tlsPlaintext) throws Exception {
+        return TLSInnerPlaintextImpl.parse(
                 handshakeDecryptor.decrypt(tlsPlaintext.getFragment()));
     }
 
-    TLSPlaintext[] encrypt(HandshakeMessage message) throws Exception {
+    TLSPlaintextImpl[] encrypt(HandshakeMessage message) throws Exception {
         return encrypt(toHandshake(message));
     }
 
-    private TLSPlaintext[] encrypt(Handshake message) throws Exception {
-        return encrypt(factory.createTLSInnerPlaintext(
-                ContentType.handshake, message.encoding(), NO_PADDING));
+    private TLSPlaintextImpl[] encrypt(HandshakeImpl message) throws Exception {
+        return encrypt(factory.createTLSInnerPlaintext(ContentTypeImpl.handshake, message.encoding(), NO_PADDING));
     }
 
-    private TLSPlaintext[] encrypt(TLSInnerPlaintext message) throws Exception {
-        return factory.createTLSPlaintexts(
-                ContentType.application_data, 
-                ProtocolVersion.TLSv10, 
+    private TLSPlaintextImpl[] encrypt(TLSInnerPlaintextImpl message) throws Exception {
+        return factory.createTLSPlaintexts(ContentTypeImpl.application_data, 
+                ProtocolVersionImpl.TLSv10, 
                 handshakeEncryptor.encrypt(message.encoding()));
     }
 
@@ -365,9 +358,8 @@ public class ClientHandshaker extends AbstractHandshaker {
     public ApplicationDataChannel start(Connection connection) throws Exception {
         reset();
 
-        connection.send(factory.createTLSPlaintexts(
-                ContentType.handshake, 
-                ProtocolVersion.TLSv10, 
+        connection.send(factory.createTLSPlaintexts(ContentTypeImpl.handshake, 
+                ProtocolVersionImpl.TLSv10, 
                 toHandshake(createClientHello()).encoding()));
         
         ByteBuffer buffer = ByteBuffer.wrap(connection.read());
@@ -376,7 +368,7 @@ public class ClientHandshaker extends AbstractHandshaker {
         }
 
         while (buffer.remaining() > 0) {
-            TLSPlaintext tlsPlaintext = TLSPlaintext.parse(buffer);
+            TLSPlaintextImpl tlsPlaintext = TLSPlaintextImpl.parse(buffer);
             handle(tlsPlaintext);
         }
         
@@ -393,12 +385,10 @@ public class ClientHandshaker extends AbstractHandshaker {
         
         applicationData = createApplicationDataChannel(connection);
      
-        TLSInnerPlaintext tlsInnerPlaintext = TLSInnerPlaintext.parse(
-                applicationData.decrypt(
-                        TLSPlaintext.parse(connection.read()).getFragment()));
+        TLSInnerPlaintextImpl tlsInnerPlaintext = TLSInnerPlaintextImpl.parse(applicationData.decrypt(TLSPlaintextImpl.parse(connection.read()).getFragment()));
         
         if (tlsInnerPlaintext.containsHandshake()) {
-            Handshake handshake = Handshake.parse(tlsInnerPlaintext.getContent());
+            HandshakeImpl handshake = HandshakeImpl.parse(tlsInnerPlaintext.getContent());
             if (!handshake.containsNewSessionTicket()) {
                 throw new RuntimeException();
             }
@@ -417,9 +407,9 @@ public class ClientHandshaker extends AbstractHandshaker {
         return certificate_request_context != null;
     }
     
-    public static ClientHandshaker create(StructFactory factory, 
-            SignatureScheme scheme, NamedGroup group,
-            Negotiator negotiator, CipherSuite ciphersuite,
+    public static ClientHandshaker create(StructFactoryImpl factory, 
+            SignatureSchemeImpl scheme, NamedGroupImpl group,
+            Negotiator negotiator, CipherSuiteImpl ciphersuite,
             CertificateHolder clientCertificate) throws Exception {
 
         return new ClientHandshaker(factory, scheme, group, negotiator, ciphersuite, 

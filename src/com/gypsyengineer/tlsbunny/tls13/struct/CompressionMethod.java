@@ -1,50 +1,26 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package com.gypsyengineer.tlsbunny.tls13.struct;
 
-import java.nio.ByteBuffer;
 import com.gypsyengineer.tlsbunny.tls.Struct;
 
-public class CompressionMethod implements Struct {
+/**
+ *
+ * @author artem
+ */
+public interface CompressionMethod extends Struct {
 
-    public static final int ENCODING_LENGTH = 1;
+    int ENCODING_LENGTH = 1;
 
-    private int code;
+    byte[] encoding();
 
-    private CompressionMethod(int code) {
-        check(code);
-        this.code = code;
-    }
+    int encodingLength();
 
-    public int getCode() {
-        return code;
-    }
+    int getCode();
 
-    public void setCode(int code) {
-        check(code);
-        this.code = code;
-    }
-
-    @Override
-    public int encodingLength() {
-        return ENCODING_LENGTH;
-    }
-
-    @Override
-    public byte[] encoding() {
-        return new byte[] { (byte) code };
-    }
-
-    public static CompressionMethod createNull() {
-        return new CompressionMethod(0);
-    }
-
-    public static CompressionMethod parse(ByteBuffer buffer) {
-        return new CompressionMethod(buffer.get() & 0xFF);
-    }
-
-    private static void check(int code) {
-        if (code < 0 || code > 255) {
-            throw new IllegalArgumentException();
-        }
-    }
-
+    void setCode(int code);
+    
 }

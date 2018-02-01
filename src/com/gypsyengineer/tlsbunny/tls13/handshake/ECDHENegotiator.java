@@ -1,8 +1,8 @@
 package com.gypsyengineer.tlsbunny.tls13.handshake;
 
-import com.gypsyengineer.tlsbunny.tls13.struct.KeyShareEntry;
-import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
-import com.gypsyengineer.tlsbunny.tls13.struct.UncompressedPointRepresentation;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.KeyShareEntryImpl;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.NamedGroupImpl;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.UncompressedPointRepresentationImpl;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.InvalidAlgorithmParameterException;
@@ -20,12 +20,12 @@ import javax.crypto.KeyAgreement;
 
 public class ECDHENegotiator implements Negotiator {
 
-    private final NamedGroup.Secp group;
+    private final NamedGroupImpl.SecpImpl group;
     private final SecpParameters secpParameters;
     private final KeyAgreement keyAgreement;
     private final KeyPairGenerator generator;
 
-    private ECDHENegotiator(NamedGroup.Secp group, SecpParameters secpParameters, 
+    private ECDHENegotiator(NamedGroupImpl.SecpImpl group, SecpParameters secpParameters, 
             KeyAgreement keyAgreement, KeyPairGenerator generator) {
         
         this.group = group;
@@ -35,16 +35,16 @@ public class ECDHENegotiator implements Negotiator {
     }
 
     @Override
-    public KeyShareEntry createKeyShareEntry() throws Exception {
+    public KeyShareEntryImpl createKeyShareEntry() throws Exception {
         KeyPair kp = generator.generateKeyPair();
         keyAgreement.init(kp.getPrivate());
         
-        return KeyShareEntry.wrap(
+        return KeyShareEntryImpl.wrap(
                 group, createUPR(((ECPublicKey) kp.getPublic()).getW(), group));
     }
 
     @Override
-    public void processKeyShareEntry(KeyShareEntry entry) throws Exception {
+    public void processKeyShareEntry(KeyShareEntryImpl entry) throws Exception {
         if (!group.equals(entry.getNamedGroup())) {
             throw new IllegalArgumentException();
         }
@@ -62,7 +62,7 @@ public class ECDHENegotiator implements Negotiator {
         return keyAgreement.generateSecret();
     }
     
-    public static ECDHENegotiator create(NamedGroup.Secp group) 
+    public static ECDHENegotiator create(NamedGroupImpl.SecpImpl group) 
             throws NoSuchAlgorithmException, InvalidAlgorithmParameterException {
         
         KeyPairGenerator generator = KeyPairGenerator.getInstance("EC");
@@ -76,27 +76,27 @@ public class ECDHENegotiator implements Negotiator {
                 generator);
     }
 
-    public static ECPoint convertToECPoint(KeyShareEntry entry, NamedGroup.Secp group) 
+    public static ECPoint convertToECPoint(KeyShareEntryImpl entry, NamedGroupImpl.SecpImpl group) 
             throws IOException {
         
-        UncompressedPointRepresentation upr = 
-                UncompressedPointRepresentation.parse(
+        UncompressedPointRepresentationImpl upr = 
+                UncompressedPointRepresentationImpl.parse(
                         entry.getKeyExchange().bytes(), 
                         getCoordinateLength(group));
         
         return new ECPoint(new BigInteger(upr.getX()), new BigInteger(upr.getY()));
     }
 
-    public static UncompressedPointRepresentation createUPR(
-            ECPoint point, NamedGroup.Secp group) {
+    public static UncompressedPointRepresentationImpl createUPR(
+            ECPoint point, NamedGroupImpl.SecpImpl group) {
 
         int coordinate_length = getCoordinateLength(group);
-        return new UncompressedPointRepresentation(
+        return new UncompressedPointRepresentationImpl(
                 toBytes(point.getAffineX(), coordinate_length), 
                 toBytes(point.getAffineY(), coordinate_length));
     }
 
-    public static int getCoordinateLength(NamedGroup.Secp group) {
+    public static int getCoordinateLength(NamedGroupImpl.SecpImpl group) {
         switch (group.getCurve()) {
             case "secp256r1":
                 return 32;

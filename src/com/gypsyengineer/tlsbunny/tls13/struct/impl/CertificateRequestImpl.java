@@ -1,0 +1,74 @@
+package com.gypsyengineer.tlsbunny.tls13.struct.impl;
+
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.HandshakeTypeImpl;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.ExtensionImpl;
+import com.gypsyengineer.tlsbunny.tls.Vector;
+import com.gypsyengineer.tlsbunny.tls13.struct.CertificateRequest;
+import com.gypsyengineer.tlsbunny.utils.Utils;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+
+public class CertificateRequestImpl implements CertificateRequest {
+
+
+    private Vector<Byte> certificate_request_context;
+    private Vector<ExtensionImpl> extensions;
+
+    CertificateRequestImpl(Vector<Byte> certificate_request_context, 
+            Vector<ExtensionImpl> extensions) {
+
+        this.certificate_request_context = certificate_request_context;
+        this.extensions = extensions;
+    }
+
+    @Override
+    public int encodingLength() {
+        return Utils.getEncodingLength(certificate_request_context, extensions);
+    }
+
+    @Override
+    public byte[] encoding() throws IOException {
+        return Utils.encoding(certificate_request_context, extensions);
+    }
+
+    @Override
+    public Vector<Byte> getCertificateRequestContext() {
+        return certificate_request_context;
+    }
+
+    @Override
+    public void setCertificateRequestContext(Vector<Byte> certificate_request_context) {
+        this.certificate_request_context = certificate_request_context;
+    }
+
+    @Override
+    public Vector<ExtensionImpl> getExtensions() {
+        return extensions;
+    }
+
+    @Override
+    public void setExtensions(Vector<ExtensionImpl> extensions) {
+        this.extensions = extensions;
+    }
+
+    @Override
+    public HandshakeTypeImpl type() {
+        return HandshakeTypeImpl.certificate_request;
+    }
+    
+    public static CertificateRequestImpl parse(byte[] bytes) {
+        return parse(ByteBuffer.wrap(bytes));
+    }
+
+    public static CertificateRequestImpl parse(ByteBuffer buffer) {
+        return new CertificateRequestImpl(Vector.parse(
+                    buffer,
+                    CERTIFICATE_REQUEST_CONTEXT_LENGTH_BYTES,
+                    buf -> buf.get()), 
+                Vector.parse(
+                    buffer,
+                    EXTENSIONS_LENGTH_BYTES,
+                    buf -> ExtensionImpl.parse(buf)));
+    }
+
+}

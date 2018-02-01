@@ -1,61 +1,35 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package com.gypsyengineer.tlsbunny.tls13.struct;
 
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.HandshakeTypeImpl;
 import com.gypsyengineer.tlsbunny.tls.Vector;
-import com.gypsyengineer.tlsbunny.utils.Utils;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.SignatureSchemeImpl;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
-public class CertificateVerify implements HandshakeMessage {
+/**
+ *
+ * @author artem
+ */
+public interface CertificateVerify extends HandshakeMessage {
 
-    public static final int SIGNATURE_LENGTH_BYTES = 2;
+    int SIGNATURE_LENGTH_BYTES = 2;
 
-    private SignatureScheme algorithm;
-    private Vector<Byte> signature;
+    byte[] encoding() throws IOException;
 
-    CertificateVerify(SignatureScheme algorithm, Vector<Byte> signature) {
-        this.algorithm = algorithm;
-        this.signature = signature;
-    }
+    int encodingLength();
 
-    @Override
-    public int encodingLength() {
-        return Utils.getEncodingLength(algorithm, signature);
-    }
+    SignatureSchemeImpl getAlgorithm();
 
-    @Override
-    public byte[] encoding() throws IOException {
-        return Utils.encoding(algorithm, signature);
-    }
+    Vector<Byte> getSignature();
 
-    public SignatureScheme getAlgorithm() {
-        return algorithm;
-    }
+    void setAlgorithm(SignatureSchemeImpl algorithm);
 
-    public void setAlgorithm(SignatureScheme algorithm) {
-        this.algorithm = algorithm;
-    }
+    void setSignature(Vector<Byte> signature);
 
-    public Vector<Byte> getSignature() {
-        return signature;
-    }
-
-    public void setSignature(Vector<Byte> signature) {
-        this.signature = signature;
-    }
-
-    @Override
-    public HandshakeType type() {
-        return HandshakeType.certificate_verify;
-    }
-
-    public static CertificateVerify parse(byte[] bytes) {
-        return parse(ByteBuffer.wrap(bytes));
-    }
+    HandshakeTypeImpl type();
     
-    public static CertificateVerify parse(ByteBuffer buffer) {
-        return new CertificateVerify(
-                SignatureScheme.parse(buffer), 
-                Vector.parseOpaqueVector(buffer, SIGNATURE_LENGTH_BYTES));
-    }
-
 }
