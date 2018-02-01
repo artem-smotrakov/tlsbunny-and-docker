@@ -4,8 +4,8 @@ import com.gypsyengineer.tlsbunny.tls13.struct.KeyShareEntry;
 import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
 
 public interface Negotiator {
-    
-    KeyShareEntry createKeyShareEntry();
+
+    KeyShareEntry createKeyShareEntry() throws Exception;
     void processKeyShareEntry(KeyShareEntry entry) throws Exception;
     byte[] generateSecret();
 

@@ -5,9 +5,11 @@ import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
 import com.gypsyengineer.tlsbunny.tls13.struct.UncompressedPointRepresentation;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.interfaces.ECPublicKey;
 import java.security.spec.ECGenParameterSpec;
@@ -21,20 +23,24 @@ public class ECDHENegotiator implements Negotiator {
     private final NamedGroup.Secp group;
     private final SecpParameters secpParameters;
     private final KeyAgreement keyAgreement;
-    private final UncompressedPointRepresentation upr;
+    private final KeyPairGenerator generator;
 
     private ECDHENegotiator(NamedGroup.Secp group, SecpParameters secpParameters, 
-            KeyAgreement keyAgreement, UncompressedPointRepresentation upr) {
+            KeyAgreement keyAgreement, KeyPairGenerator generator) {
         
         this.group = group;
         this.secpParameters = secpParameters;
         this.keyAgreement = keyAgreement;
-        this.upr = upr;
+        this.generator = generator;
     }
 
     @Override
-    public KeyShareEntry createKeyShareEntry() {
-        return KeyShareEntry.wrap(group, upr);
+    public KeyShareEntry createKeyShareEntry() throws Exception {
+        KeyPair kp = generator.generateKeyPair();
+        keyAgreement.init(kp.getPrivate());
+        
+        return KeyShareEntry.wrap(
+                group, createUPR(((ECPublicKey) kp.getPublic()).getW(), group));
     }
 
     @Override
@@ -56,20 +62,18 @@ public class ECDHENegotiator implements Negotiator {
         return keyAgreement.generateSecret();
     }
     
-    public static ECDHENegotiator create(NamedGroup.Secp group) throws Exception {
+    public static ECDHENegotiator create(NamedGroup.Secp group) 
+            throws NoSuchAlgorithmException, InvalidAlgorithmParameterException {
+        
         KeyPairGenerator generator = KeyPairGenerator.getInstance("EC");
         ECGenParameterSpec spec = new ECGenParameterSpec(group.getCurve());
         generator.initialize(spec);
-        KeyPair kp = generator.generateKeyPair();
-
-        KeyAgreement keyAgreement = KeyAgreement.getInstance("ECDH");
-        keyAgreement.init(kp.getPrivate());
 
         return new ECDHENegotiator(
                 group, 
                 SecpParameters.create(group), 
-                keyAgreement, 
-                createUPR(((ECPublicKey) kp.getPublic()).getW(), group));
+                KeyAgreement.getInstance("ECDH"),
+                generator);
     }
 
     public static ECPoint convertToECPoint(KeyShareEntry entry, NamedGroup.Secp group) 
