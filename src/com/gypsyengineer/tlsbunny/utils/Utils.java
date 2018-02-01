@@ -6,14 +6,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import com.gypsyengineer.tlsbunny.tls.Struct;
-import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
-import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
-import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
-import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
 
 public class Utils {
     
     public static final byte[] EMPTY_ARRAY = new byte[0];
+    public static final String PREFIX = "[tlsbunny]";
     
     public static byte[][] split(byte[] data, int length) {
         List<byte[]> fragments = new ArrayList<>();
@@ -90,6 +87,14 @@ public class Utils {
         encodings.forEach(endoding -> buffer.put(endoding));
 
         return buffer.array();
+    }
+    
+    public static void info(String format, Object... values) {
+        System.out.printf("%s %s%n", PREFIX, String.format(format, values));
+    }
+    
+    public static void achtung(String format, Object... values) {
+        System.out.printf("%s achtung: %s%n", PREFIX, String.format(format, values));
     }
 
 }
