@@ -3,9 +3,9 @@ package com.gypsyengineer.tlsbunny.tls13.struct.impl;
 import com.gypsyengineer.tlsbunny.tls.Vector;
 import com.gypsyengineer.tlsbunny.tls13.struct.CertificateRequest;
 import com.gypsyengineer.tlsbunny.tls13.struct.Extension;
+import com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType;
 import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
 public class CertificateRequestImpl implements CertificateRequest {
 
@@ -50,23 +50,8 @@ public class CertificateRequestImpl implements CertificateRequest {
     }
 
     @Override
-    public HandshakeTypeImpl type() {
+    public HandshakeType type() {
         return HandshakeTypeImpl.certificate_request;
     }
     
-    public static CertificateRequestImpl parse(byte[] bytes) {
-        return parse(ByteBuffer.wrap(bytes));
-    }
-
-    public static CertificateRequestImpl parse(ByteBuffer buffer) {
-        return new CertificateRequestImpl(Vector.parse(
-                    buffer,
-                    CERTIFICATE_REQUEST_CONTEXT_LENGTH_BYTES,
-                    buf -> buf.get()), 
-                Vector.parse(
-                    buffer,
-                    EXTENSIONS_LENGTH_BYTES,
-                    buf -> ExtensionImpl.parse(buf)));
-    }
-
 }

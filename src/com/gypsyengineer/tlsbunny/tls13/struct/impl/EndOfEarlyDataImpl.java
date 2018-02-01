@@ -1,6 +1,7 @@
 package com.gypsyengineer.tlsbunny.tls13.struct.impl;
 
 import com.gypsyengineer.tlsbunny.tls13.struct.EndOfEarlyData;
+import com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType;
 import java.io.IOException;
 
 public class EndOfEarlyDataImpl implements EndOfEarlyData {
@@ -20,8 +21,8 @@ public class EndOfEarlyDataImpl implements EndOfEarlyData {
     }
 
     @Override
-    public HandshakeTypeImpl type() {
-        return HandshakeTypeImpl.end_of_early_data;
+    public HandshakeType type() {
+        return HandshakeType.end_of_early_data;
     }
 
 }

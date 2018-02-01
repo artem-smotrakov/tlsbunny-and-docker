@@ -2,11 +2,9 @@ package com.gypsyengineer.tlsbunny.tls13.struct.impl;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import com.gypsyengineer.tlsbunny.tls.Struct;
 import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
 
 public class ProtocolVersionImpl implements ProtocolVersion {
-
 
     private final int major;
     private final int minor;
@@ -53,10 +51,6 @@ public class ProtocolVersionImpl implements ProtocolVersion {
         return this.minor == other.minor;
     }
 
-    public static ProtocolVersionImpl parse(ByteBuffer data) {
-        return new ProtocolVersionImpl(data.get() & 0xFF, data.get() & 0xFF);
-    }
-    
     private static void check(int minor, int major) {
         if (major < 0 || major > 255 || minor < 0 || minor > 255) {
             throw new IllegalArgumentException();

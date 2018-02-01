@@ -1,7 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls13.struct.impl;
 
 import java.nio.ByteBuffer;
-import com.gypsyengineer.tlsbunny.tls.Struct;
 import com.gypsyengineer.tlsbunny.tls13.struct.UncompressedPointRepresentation;
 
 public class UncompressedPointRepresentationImpl implements UncompressedPointRepresentation {

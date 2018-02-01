@@ -2,7 +2,6 @@ package com.gypsyengineer.tlsbunny.tls13.struct.impl;
 
 import com.gypsyengineer.tlsbunny.tls.Vector;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
 import com.gypsyengineer.tlsbunny.tls13.struct.SupportedVersions;
 
@@ -36,34 +35,23 @@ public abstract class SupportedVersionsImpl implements SupportedVersions {
             return versions.encoding();
         }
         
-        public static ClientHelloImpl parse(Vector<Byte> extension_data) throws IOException {
-            return parse(ByteBuffer.wrap(extension_data.bytes()));
-        }
-        
-        public static ClientHelloImpl parse(ByteBuffer buffer) {
-            return new ClientHelloImpl(
-                    Vector.parse(
-                            buffer, 
-                            VERSIONS_LENGTH_BYTES, 
-                            buf -> ProtocolVersionImpl.parse(buf)));
-        }
     }
     
     public static class ServerHelloImpl implements SupportedVersions.ServerHello {
         
-        private ProtocolVersionImpl selected_version;
+        private ProtocolVersion selected_version;
 
-        public ServerHelloImpl(ProtocolVersionImpl selected_version) {
+        public ServerHelloImpl(ProtocolVersion selected_version) {
             this.selected_version = selected_version;
         }
 
         @Override
-        public ProtocolVersionImpl getSelectedVersion() {
+        public ProtocolVersion getSelectedVersion() {
             return selected_version;
         }
 
         @Override
-        public void setSelectedVersion(ProtocolVersionImpl selected_version) {
+        public void setSelectedVersion(ProtocolVersion selected_version) {
             this.selected_version = selected_version;
         }
 

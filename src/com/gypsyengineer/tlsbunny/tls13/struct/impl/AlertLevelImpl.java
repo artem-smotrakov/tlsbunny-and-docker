@@ -1,12 +1,10 @@
 package com.gypsyengineer.tlsbunny.tls13.struct.impl;
 
 import java.nio.ByteBuffer;
-import com.gypsyengineer.tlsbunny.tls.Struct;
 import com.gypsyengineer.tlsbunny.tls13.struct.AlertLevel;
 
 public class AlertLevelImpl implements AlertLevel {
 
-    
     public int code;
 
     public AlertLevelImpl(int code) {
@@ -55,10 +53,6 @@ public class AlertLevelImpl implements AlertLevel {
         }
         final AlertLevelImpl other = (AlertLevelImpl) obj;
         return this.code == other.code;
-    }
-
-    public static AlertLevelImpl parse(ByteBuffer data) {
-        return new AlertLevelImpl(data.get() & 0xFF);
     }
 
     private static void check(int code) {

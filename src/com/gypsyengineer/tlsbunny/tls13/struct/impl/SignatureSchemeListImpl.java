@@ -41,19 +41,4 @@ public class SignatureSchemeListImpl implements SignatureSchemeList {
         return supported_signature_algorithms.encoding();
     }
 
-    public static SignatureSchemeList create(SignatureScheme... signatureSchemes) {
-        return new SignatureSchemeListImpl(Vector.wrap(LENGTH_BYTES, signatureSchemes));
-    }
-
-    public static SignatureSchemeList parse(ByteBuffer buffer) {
-        return new SignatureSchemeListImpl(
-                Vector.parse(buffer, LENGTH_BYTES, buf -> SignatureSchemeImpl.parse(buf)));
-    }
-    
-    public static SignatureSchemeList parse(Vector<Byte> extenstion_data) 
-            throws IOException {
-        
-        return parse(ByteBuffer.wrap(extenstion_data.bytes()));
-    }
-
 }

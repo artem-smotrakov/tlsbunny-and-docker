@@ -1,11 +1,8 @@
 package com.gypsyengineer.tlsbunny.tls13.struct.impl;
 
-import java.nio.ByteBuffer;
-import com.gypsyengineer.tlsbunny.tls.Struct;
 import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
 
 public class ContentTypeImpl implements ContentType {
-
 
     private int code;
 
@@ -27,17 +24,17 @@ public class ContentTypeImpl implements ContentType {
 
     @Override
     public boolean isHandshake() {
-        return code == handshake.code;
+        return code == handshake.getCode();
     }
 
     @Override
     public boolean isApplicationData() {
-        return code == application_data.code;
+        return code == application_data.getCode();
     }
 
     @Override
     public boolean isAlert() {
-        return code == alert.code;
+        return code == alert.getCode();
     }
 
     @Override
@@ -72,10 +69,6 @@ public class ContentTypeImpl implements ContentType {
         return this.code == other.code;
     }
 
-    public static ContentTypeImpl parse(ByteBuffer data) {
-        return new ContentTypeImpl(data.get() & 0xFF);
-    }
-    
     private static void check(int code) {
         if (code < 0 || code > 255) {
             throw new IllegalArgumentException();

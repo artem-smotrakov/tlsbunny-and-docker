@@ -1,12 +1,11 @@
 package com.gypsyengineer.tlsbunny.tls13.struct.impl;
 
 import com.gypsyengineer.tlsbunny.tls.Vector;
-import com.gypsyengineer.tlsbunny.tls.Vector.ContentParser;
 import com.gypsyengineer.tlsbunny.tls13.struct.Certificate;
 import com.gypsyengineer.tlsbunny.tls13.struct.CertificateEntry;
+import com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType;
 import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
 public class CertificateImpl implements Certificate {
 
@@ -51,27 +50,8 @@ public class CertificateImpl implements Certificate {
     }
 
     @Override
-    public HandshakeTypeImpl type() {
+    public HandshakeType type() {
         return HandshakeTypeImpl.certificate;
-    }
-
-    public static CertificateImpl parse(
-            byte[] bytes, ContentParser certificateEntityParser) {
-        
-        return parse(ByteBuffer.wrap(bytes), certificateEntityParser);
-    }
-    
-    public static CertificateImpl parse(
-            ByteBuffer buffer, ContentParser certificateEntityParser) {
-        
-        return new CertificateImpl(
-                Vector.parse(buffer,
-                    CONTEXT_LENGTH_BYTES,
-                    buf -> buf.get()), 
-                Vector.parse(
-                    buffer,
-                    CERTIFICATE_LIST_LENGTH_BYTES,
-                    certificateEntityParser));
     }
 
 }

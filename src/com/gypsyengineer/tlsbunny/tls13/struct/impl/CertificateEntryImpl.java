@@ -1,14 +1,11 @@
 package com.gypsyengineer.tlsbunny.tls13.struct.impl;
 
-import com.gypsyengineer.tlsbunny.tls13.struct.impl.ExtensionTypeImpl;
-import com.gypsyengineer.tlsbunny.tls13.struct.impl.ExtensionImpl;
 import com.gypsyengineer.tlsbunny.tls.Vector;
+import com.gypsyengineer.tlsbunny.tls13.struct.CertificateEntry;
 import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import com.gypsyengineer.tlsbunny.tls.Struct;
-import com.gypsyengineer.tlsbunny.tls13.struct.*; // TODO
 import com.gypsyengineer.tlsbunny.tls13.struct.Extension;
+import com.gypsyengineer.tlsbunny.tls13.struct.ExtensionType;
 
 public abstract class CertificateEntryImpl implements CertificateEntry {
 
@@ -58,10 +55,12 @@ public abstract class CertificateEntryImpl implements CertificateEntry {
             this.cert_data = cert_data;
         }
 
+        @Override
         public Vector<Byte> getCertData() {
             return cert_data;
         }
 
+        @Override
         public void setCertData(Vector<Byte> cert_data) {
             this.cert_data = cert_data;
         }
@@ -76,24 +75,10 @@ public abstract class CertificateEntryImpl implements CertificateEntry {
             return Utils.encoding(cert_data, extensions);
         }       
 
-        public static X509 parse(ByteBuffer buffer) {
-            return new X509Impl(
-                    Vector.parseOpaqueVector(buffer, LENGTH_BYTES), 
-                    Vector.parse(
-                        buffer,
-                        EXTENSIONS_LENGTH_BYTES,
-                        buf -> ExtensionImpl.parse(buf)));
-        }
-        
-        public static X509 wrap(byte[] bytes) {
-            return new X509Impl(
-                    Vector.wrap(LENGTH_BYTES, bytes), 
-                    Vector.wrap(EXTENSIONS_LENGTH_BYTES));
-        }
-
     }
 
-    public static class RawPublicKeyImpl extends CertificateEntryImpl implements RawPublicKey {
+    public static class RawPublicKeyImpl extends CertificateEntryImpl 
+            implements RawPublicKey {
     
         private Vector<Byte> ASN1_subjectPublicKeyInfo;
         
@@ -104,10 +89,12 @@ public abstract class CertificateEntryImpl implements CertificateEntry {
             this.ASN1_subjectPublicKeyInfo = ASN1_subjectPublicKeyInfo;
         }
 
+        @Override
         public Vector<Byte> getASN1SubjectPublicKeyInfo() {
             return ASN1_subjectPublicKeyInfo;
         }
 
+        @Override
         public void setASN1SubjectPublicKeyInfo(Vector<Byte> ASN1_subjectPublicKeyInfo) {
             this.ASN1_subjectPublicKeyInfo = ASN1_subjectPublicKeyInfo;
         }
@@ -121,15 +108,6 @@ public abstract class CertificateEntryImpl implements CertificateEntry {
         public byte[] encoding() throws IOException {
             return Utils.encoding(ASN1_subjectPublicKeyInfo, extensions);
         }       
-
-        public static RawPublicKeyImpl parse(ByteBuffer buffer) {
-            return new RawPublicKeyImpl(
-                    Vector.parseOpaqueVector(buffer, LENGTH_BYTES), 
-                    Vector.parse(
-                        buffer,
-                        EXTENSIONS_LENGTH_BYTES,
-                        buf -> ExtensionImpl.parse(buf)));
-        }
 
     }
 

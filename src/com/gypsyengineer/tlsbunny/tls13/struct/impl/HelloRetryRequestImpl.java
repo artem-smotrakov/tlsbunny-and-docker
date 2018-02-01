@@ -4,7 +4,6 @@ import com.gypsyengineer.tlsbunny.tls.Vector;
 import com.gypsyengineer.tlsbunny.tls13.struct.*; // TODO
 import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
 public class HelloRetryRequestImpl implements HelloRetryRequest {
 
@@ -84,20 +83,6 @@ public class HelloRetryRequestImpl implements HelloRetryRequest {
     @Override
     public HandshakeType type() {
         return HandshakeType.hello_retry_request;
-    }
-
-    public static HelloRetryRequest parse(byte[] bytes) {
-        return parse(ByteBuffer.wrap(bytes));
-    }
-    
-    public static HelloRetryRequest parse(ByteBuffer buffer) {
-        return new HelloRetryRequestImpl(
-                ProtocolVersionImpl.parse(buffer), 
-                CipherSuiteImpl.parse(buffer), 
-                Vector.parse(
-                    buffer,
-                    EXTENSIONS_LENGTH_BYTES,
-                    buf -> ExtensionImpl.parse(buf)));
     }
 
 }

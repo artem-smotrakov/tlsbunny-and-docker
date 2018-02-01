@@ -15,7 +15,7 @@ public class AlertImpl implements Alert {
     private AlertDescription description;
 
     AlertImpl() {
-        this(AlertLevel.FATAL, AlertDescription.INTERNAL_ERROR);
+        this(AlertLevel.fatal, AlertDescription.INTERNAL_ERROR);
     }
 
     public AlertImpl(AlertLevel level, AlertDescription description) {
@@ -77,17 +77,6 @@ public class AlertImpl implements Alert {
             return false;
         }
         return Objects.equals(this.description, other.description);
-    }
-
-    public static AlertImpl parse(byte[] bytes) {
-        return parse(ByteBuffer.wrap(bytes));
-    }
-    
-    public static AlertImpl parse(ByteBuffer buffer) {
-        AlertLevel level = AlertLevelImpl.parse(buffer);
-        AlertDescription description = AlertDescriptionImpl.parse(buffer);
-
-        return new AlertImpl(level, description);
     }
 
 }

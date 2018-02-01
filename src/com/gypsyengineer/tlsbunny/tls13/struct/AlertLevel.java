@@ -9,8 +9,8 @@ public interface AlertLevel extends Struct {
     int MAX = 255;
     int MIN = 0;
     
-    AlertLevel FATAL = new AlertLevelImpl(2);
-    AlertLevel WARNING = new AlertLevelImpl(1);
+    AlertLevel fatal = new AlertLevelImpl(2);
+    AlertLevel warning = new AlertLevelImpl(1);
 
     byte getCode();
     void setCode(int code);

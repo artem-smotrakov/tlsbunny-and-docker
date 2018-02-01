@@ -1,8 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls13.struct.impl;
 
 import com.gypsyengineer.tlsbunny.tls13.crypto.AEAD;
-import java.nio.ByteBuffer;
-import com.gypsyengineer.tlsbunny.tls.Struct;
 import com.gypsyengineer.tlsbunny.tls13.struct.CipherSuite;
 
 public class CipherSuiteImpl implements CipherSuite {
@@ -175,10 +173,6 @@ public class CipherSuiteImpl implements CipherSuite {
         return this.second == other.second;
     }
     
-    public static CipherSuiteImpl parse(ByteBuffer buffer) {
-        return new CipherSuiteImpl(buffer.get() & 0xFF, buffer.get() & 0xFF);
-    }
-
     private static void check(int value) {
         if (value < 0 || value > 255) {
             throw new IllegalArgumentException();

@@ -3,11 +3,14 @@ package com.gypsyengineer.tlsbunny.tls13.struct.impl;
 import com.gypsyengineer.tlsbunny.tls.Random;
 import com.gypsyengineer.tlsbunny.tls.Vector;
 import com.gypsyengineer.tlsbunny.tls13.struct.CipherSuite;
+import com.gypsyengineer.tlsbunny.tls13.struct.Extension;
+import com.gypsyengineer.tlsbunny.tls13.struct.ExtensionType;
+import com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType;
+import com.gypsyengineer.tlsbunny.tls13.struct.KeyShare;
 import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
-import com.gypsyengineer.tlsbunny.tls13.struct.*; // TODO
+import com.gypsyengineer.tlsbunny.tls13.struct.ServerHello;
 import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
 public class ServerHelloImpl implements ServerHello {
 
@@ -115,19 +118,4 @@ public class ServerHelloImpl implements ServerHello {
         return HandshakeType.server_hello;
     }
 
-    public static ServerHello parse(byte[] bytes) {
-        return parse(ByteBuffer.wrap(bytes));
-    }
-    
-    public static ServerHello parse(ByteBuffer buffer) {
-        return new ServerHelloImpl(
-                ProtocolVersionImpl.parse(buffer), 
-                Random.parse(buffer), 
-                CipherSuiteImpl.parse(buffer),
-                Vector.parse(
-                    buffer,
-                    EXTENSIONS_LENGTH_BYTES,
-                    buf -> ExtensionImpl.parse(buf)));
-    }
-    
 }

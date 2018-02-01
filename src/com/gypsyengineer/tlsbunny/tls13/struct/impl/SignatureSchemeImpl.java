@@ -2,7 +2,6 @@ package com.gypsyengineer.tlsbunny.tls13.struct.impl;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import com.gypsyengineer.tlsbunny.tls.Struct;
 import com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme;
 
 public class SignatureSchemeImpl implements SignatureScheme {
@@ -56,10 +55,6 @@ public class SignatureSchemeImpl implements SignatureScheme {
         }
         final SignatureSchemeImpl other = (SignatureSchemeImpl) obj;
         return this.code == other.code;
-    }
-
-    public static SignatureSchemeImpl parse(ByteBuffer buffer) {
-        return new SignatureSchemeImpl(buffer.getShort());
     }
 
     private static void check(int code) {

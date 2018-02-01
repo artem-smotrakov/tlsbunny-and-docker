@@ -3,7 +3,6 @@ package com.gypsyengineer.tlsbunny.tls13.struct.impl;
 import com.gypsyengineer.tlsbunny.tls.Bytes;
 import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.io.IOException;
-import java.util.Arrays;
 import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext;
 
@@ -73,27 +72,5 @@ public class TLSInnerPlaintextImpl implements TLSInnerPlaintext {
     public byte[] encoding() throws IOException {
         return Utils.encoding(content, type, zeros);
     }
-
-    public static TLSInnerPlaintextImpl parse(byte[] bytes) {
-        int i = bytes.length - 1;
-        while (i > 0) {
-            if (bytes[i] != 0) {
-                break;
-            }
-            
-            i--;
-        }
-
-        if (i == 0) {
-            throw new IllegalArgumentException();
-        }
-
-        byte[] zeros = new byte[bytes.length - 1 - i];
-        byte[] content = Arrays.copyOfRange(bytes, 0, i);
-        
-        return new TLSInnerPlaintextImpl(
-                new Bytes(content), 
-                new ContentTypeImpl(bytes[i]), 
-                new Bytes(zeros));
-    }
+    
 }

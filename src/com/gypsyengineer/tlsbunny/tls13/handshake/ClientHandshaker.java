@@ -29,9 +29,6 @@ import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
 import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
 import com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
-import com.gypsyengineer.tlsbunny.tls13.struct.impl.CertificateEntryImpl;
-import com.gypsyengineer.tlsbunny.tls13.struct.impl.CertificateImpl;
-import com.gypsyengineer.tlsbunny.tls13.struct.impl.FinishedImpl;
 
 public class ClientHandshaker extends AbstractHandshaker {
 
@@ -81,7 +78,7 @@ public class ClientHandshaker extends AbstractHandshaker {
     @Override
     public Certificate createCertificate() throws IOException {
         context.setClientCertificate(factory.createCertificate(certificate_request_context.bytes(), 
-                    CertificateEntryImpl.X509Impl.wrap(clientCertificate.getCertData())));
+                    factory.createX509CertificateEntry(clientCertificate.getCertData())));
 
         return context.getClientCertificate();
     }
@@ -311,12 +308,15 @@ public class ClientHandshaker extends AbstractHandshaker {
         } else if (handshake.containsCertificateRequest()) {
             handleCertificateRequest(factory.parseCertificateRequest(handshake.getBody()));
         } else if (handshake.containsCertificate()) {
-            handleCertificate(CertificateImpl.parse(handshake.getBody(), 
-                    buf -> CertificateEntryImpl.X509Impl.parse(buf)));
+            handleCertificate(factory.parseCertificate(
+                    handshake.getBody(), 
+                    buf -> factory.parseX509CertificateEntry(buf)));
         } else if (handshake.containsCertificateVerify()) {
             handleCertificateVerify(factory.parseCertificateVerify(handshake.getBody()));
         } else if (handshake.containsFinished()) {
-            handleFinished(FinishedImpl.parse(handshake.getBody(), ciphersuite.hashLength()));
+            handleFinished(factory.parseFinished(
+                    handshake.getBody(), 
+                    ciphersuite.hashLength()));
         } else {
             throw new RuntimeException();
         }
@@ -393,6 +393,34 @@ public class ClientHandshaker extends AbstractHandshaker {
     
     private boolean requestedClientAuth() {
         return certificate_request_context != null;
+    }
+    
+    private SupportedVersions.ClientHello findSupportedVersions(ClientHello hello) 
+            throws IOException {
+        
+        return factory.parseSupportedVersionsClientHello(
+                hello.findExtension(ExtensionType.supported_versions)
+                        .getExtensionData().bytes());
+    }
+
+    private SignatureSchemeList findSignatureAlgorithms(ClientHello hello) 
+            throws IOException {
+        
+        return factory.parseSignatureSchemeList(
+                hello.findExtension(ExtensionType.signature_algorithms)
+                        .getExtensionData().bytes());
+    }
+
+    private NamedGroupList findSupportedGroups(ClientHello hello) throws IOException {
+        return factory.parseNamedGroupList(
+                hello.findExtension(ExtensionType.supported_groups)
+                        .getExtensionData().bytes());
+    }
+
+    private KeyShare.ClientHello findKeyShare(ClientHello hello) throws IOException {
+        return factory.parseKeyShareFromClientHello(
+                hello.findExtension(ExtensionType.key_share)
+                        .getExtensionData().bytes());
     }
     
     public static ClientHandshaker create(StructFactory factory, 

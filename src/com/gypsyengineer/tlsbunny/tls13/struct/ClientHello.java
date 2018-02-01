@@ -16,10 +16,6 @@ public interface ClientHello extends HandshakeMessage {
     void addExtension(Extension extension);
     void clearExtensions();
     Extension findExtension(ExtensionType type);
-    KeyShare.ClientHello findKeyShare() throws IOException;
-    SignatureSchemeList findSignatureAlgorithms() throws IOException;
-    NamedGroupList findSupportedGroups() throws IOException;
-    SupportedVersions.ClientHello findSupportedVersions() throws IOException;
     Vector<CipherSuite> getCipherSuites();
     Vector<Extension> getExtensions();
     Vector<CompressionMethod> getLegacyCompressionMethods();

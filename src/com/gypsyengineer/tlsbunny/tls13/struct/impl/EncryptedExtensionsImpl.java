@@ -3,8 +3,8 @@ package com.gypsyengineer.tlsbunny.tls13.struct.impl;
 import com.gypsyengineer.tlsbunny.tls.Vector;
 import com.gypsyengineer.tlsbunny.tls13.struct.EncryptedExtensions;
 import com.gypsyengineer.tlsbunny.tls13.struct.Extension;
+import com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
 public class EncryptedExtensionsImpl implements EncryptedExtensions {
 
@@ -25,7 +25,7 @@ public class EncryptedExtensionsImpl implements EncryptedExtensions {
     }
 
     @Override
-    public HandshakeTypeImpl type() {
+    public HandshakeType type() {
         return HandshakeTypeImpl.encrypted_extensions;
     }
 
@@ -39,16 +39,4 @@ public class EncryptedExtensionsImpl implements EncryptedExtensions {
         this.extensions = extensions;
     }
     
-    public static EncryptedExtensionsImpl parse(byte[] bytes) {
-        return parse(ByteBuffer.wrap(bytes));
-    }
-
-    public static EncryptedExtensionsImpl parse(ByteBuffer buffer) {
-        return new EncryptedExtensionsImpl(
-                Vector.parse(
-                    buffer,
-                    EXTENSIONS_LENGTH_BYTES,
-                    buf -> ExtensionImpl.parse(buf)));
-    }
-
 }

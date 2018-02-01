@@ -6,7 +6,6 @@ import com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType;
 import com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme;
 import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
 public class CertificateVerifyImpl implements CertificateVerify {
 
@@ -51,16 +50,6 @@ public class CertificateVerifyImpl implements CertificateVerify {
     @Override
     public HandshakeType type() {
         return HandshakeTypeImpl.certificate_verify;
-    }
-
-    public static CertificateVerify parse(byte[] bytes) {
-        return parse(ByteBuffer.wrap(bytes));
-    }
-    
-    public static CertificateVerify parse(ByteBuffer buffer) {
-        return new CertificateVerifyImpl(
-                SignatureSchemeImpl.parse(buffer), 
-                Vector.parseOpaqueVector(buffer, SIGNATURE_LENGTH_BYTES));
     }
 
 }

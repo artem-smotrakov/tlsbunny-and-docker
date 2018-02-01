@@ -4,7 +4,6 @@ import com.gypsyengineer.tlsbunny.tls.Bytes;
 import com.gypsyengineer.tlsbunny.tls.UInt24;
 import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import com.gypsyengineer.tlsbunny.tls13.struct.Handshake;
 import com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType;
 
@@ -109,16 +108,4 @@ public class HandshakeImpl implements Handshake {
         return HandshakeTypeImpl.new_session_ticket.equals(msg_type);
     }
 
-    public static HandshakeImpl parse(byte[] bytes) {
-        return parse(ByteBuffer.wrap(bytes));
-    }
-    
-    public static HandshakeImpl parse(ByteBuffer buffer) {
-        HandshakeTypeImpl msg_type = HandshakeTypeImpl.parse(buffer);
-        UInt24 length = UInt24.parse(buffer);
-        Bytes body = Bytes.parse(buffer, length.value);
-
-        return new HandshakeImpl(msg_type, length, body);
-    }
-    
 }

@@ -2,7 +2,7 @@ package com.gypsyengineer.tlsbunny.tls13.struct.impl;
 
 import com.gypsyengineer.tlsbunny.tls.Bytes;
 import com.gypsyengineer.tlsbunny.tls13.struct.Finished;
-import java.nio.ByteBuffer;
+import com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType;
 
 public class FinishedImpl implements Finished {
 
@@ -38,18 +38,8 @@ public class FinishedImpl implements Finished {
     }
 
     @Override
-    public HandshakeTypeImpl type() {
-        return HandshakeTypeImpl.finished;
-    }
-
-    public static FinishedImpl parse(byte[] bytes, int hashLen) {
-        return parse(ByteBuffer.wrap(bytes), hashLen);
-    }
-    
-    public static FinishedImpl parse(ByteBuffer buffer, int hashLen) {
-        byte[] verify_data = new byte[hashLen];
-        buffer.get(verify_data);
-        return new FinishedImpl(new Bytes(verify_data));
+    public HandshakeType type() {
+        return HandshakeType.finished;
     }
 
 }

@@ -4,8 +4,6 @@ import com.gypsyengineer.tlsbunny.tls.Bytes;
 import com.gypsyengineer.tlsbunny.tls.UInt16;
 import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import com.gypsyengineer.tlsbunny.tls.Struct;
 import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
 import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
@@ -89,19 +87,6 @@ public class TLSPlaintextImpl implements TLSPlaintext {
     @Override
     public boolean containsAlert() {
         return type.isAlert();
-    }
-
-    public static TLSPlaintextImpl parse(byte[] bytes) {
-        return parse(ByteBuffer.wrap(bytes));
-    }
-    
-    public static TLSPlaintextImpl parse(ByteBuffer buffer) {
-        ContentTypeImpl type = ContentTypeImpl.parse(buffer);
-        ProtocolVersionImpl legacy_record_version = ProtocolVersionImpl.parse(buffer);
-        UInt16 length = UInt16.parse(buffer);
-        Bytes fragment = Bytes.parse(buffer, length.value);
-        
-        return new TLSPlaintextImpl(type, legacy_record_version, length, fragment);
     }
 
 }

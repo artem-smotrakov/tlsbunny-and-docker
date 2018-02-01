@@ -10,7 +10,7 @@ public class NamedGroupListImpl implements NamedGroupList {
 
     private Vector<NamedGroup> named_group_list;
 
-    private NamedGroupListImpl(Vector<NamedGroup> named_group_list) {
+    NamedGroupListImpl(Vector<NamedGroup> named_group_list) {
         this.named_group_list = named_group_list;
     }
 
@@ -37,20 +37,6 @@ public class NamedGroupListImpl implements NamedGroupList {
     public static NamedGroupList create(NamedGroup... namedGroups) {
         return new NamedGroupListImpl(
                 Vector.wrap(LENGTH_BYTES, namedGroups));
-    }
-
-    public static NamedGroupList parse(ByteBuffer buffer) {
-        Vector<NamedGroup> named_group_list = Vector.parse(buffer,
-                LENGTH_BYTES,
-                buf -> NamedGroupImpl.parse(buf));
-
-        return new NamedGroupListImpl(named_group_list);
-    }
-    
-    public static NamedGroupList parse(Vector<Byte> extension_data) 
-            throws IOException {
-        
-        return parse(ByteBuffer.wrap(extension_data.bytes()));
     }
 
 }
