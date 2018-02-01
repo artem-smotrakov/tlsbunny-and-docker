@@ -1,7 +1,7 @@
 package com.gypsyengineer.tlsbunny.tls13.handshake;
 
+import com.gypsyengineer.tlsbunny.tls13.struct.*; // TODO
 import com.gypsyengineer.tlsbunny.tls13.struct.impl.KeyShareEntryImpl;
-import com.gypsyengineer.tlsbunny.tls13.struct.impl.NamedGroupImpl;
 import com.gypsyengineer.tlsbunny.utils.Convertor;
 import java.math.BigInteger;
 import java.security.KeyFactory;
@@ -18,7 +18,7 @@ public class FFDHENegotiator extends AbstractNegotiator {
     private final KeyAgreement keyAgreement;
     private final byte[] publicPart;
 
-    private FFDHENegotiator(NamedGroupImpl group, KeyAgreement keyAgreement, 
+    private FFDHENegotiator(NamedGroup  group, KeyAgreement keyAgreement, 
             FFDHEParemeters parameters, byte[] publicPart) {
 
         super(group);
@@ -27,7 +27,7 @@ public class FFDHENegotiator extends AbstractNegotiator {
         this.publicPart = publicPart;
     }
 
-    public static FFDHENegotiator create(NamedGroupImpl.FFDHEImpl group) throws Exception {
+    public static FFDHENegotiator create(NamedGroup.FFDHE  group) throws Exception {
         FFDHEParemeters parameters = FFDHEParemeters.create(group);
                 
         KeyPairGenerator generator = KeyPairGenerator.getInstance("DiffieHellman");
@@ -49,12 +49,12 @@ public class FFDHENegotiator extends AbstractNegotiator {
     }
 
     @Override
-    public KeyShareEntryImpl createKeyShareEntry() {
+    public KeyShareEntry  createKeyShareEntry() {
         return KeyShareEntryImpl.wrap(group, publicPart);
     }
 
     @Override
-    public void processKeyShareEntry(KeyShareEntryImpl entry) throws Exception {
+    public void processKeyShareEntry(KeyShareEntry  entry) throws Exception {
         if (!group.equals(entry.getNamedGroup())) {
             throw new IllegalArgumentException();
         }

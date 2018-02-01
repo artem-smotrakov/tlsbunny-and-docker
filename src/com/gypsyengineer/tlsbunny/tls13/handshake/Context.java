@@ -1,33 +1,24 @@
 package com.gypsyengineer.tlsbunny.tls13.handshake;
 
-import com.gypsyengineer.tlsbunny.tls13.struct.impl.CertificateImpl;
-import com.gypsyengineer.tlsbunny.tls13.struct.impl.CertificateRequestImpl;
-import com.gypsyengineer.tlsbunny.tls13.struct.impl.CertificateVerifyImpl;
-import com.gypsyengineer.tlsbunny.tls13.struct.impl.ClientHelloImpl;
-import com.gypsyengineer.tlsbunny.tls13.struct.impl.EncryptedExtensionsImpl;
-import com.gypsyengineer.tlsbunny.tls13.struct.impl.EndOfEarlyDataImpl;
-import com.gypsyengineer.tlsbunny.tls13.struct.impl.FinishedImpl;
-import com.gypsyengineer.tlsbunny.tls13.struct.impl.HelloRetryRequestImpl;
-import com.gypsyengineer.tlsbunny.tls13.struct.impl.ServerHelloImpl;
+import com.gypsyengineer.tlsbunny.tls13.struct.*; // TODO
 import java.util.ArrayList;
 import java.util.List;
-import com.gypsyengineer.tlsbunny.tls13.struct.HandshakeMessage;
 
 public class Context {
 
-    private ClientHelloImpl             firstClientHello;
-    private HelloRetryRequestImpl       helloRetryRequest;
-    private ClientHelloImpl             secondClientHello;
-    private ServerHelloImpl             serverHello;
-    private EncryptedExtensionsImpl     encryptedExtensions;
-    private CertificateRequestImpl      serverCertificateRequest;
-    private CertificateImpl             serverCertificate;
-    private CertificateVerifyImpl       serverCertificateVerify;
-    private FinishedImpl                serverFinished;
-    private EndOfEarlyDataImpl          endOfEarlyData;
-    private CertificateImpl             clientCertificate;
-    private CertificateVerifyImpl       clientCertificateVerify;
-    private FinishedImpl                clientFinished;
+    private ClientHello            firstClientHello;
+    private HelloRetryRequest      helloRetryRequest;
+    private ClientHello            secondClientHello;
+    private ServerHello            serverHello;
+    private EncryptedExtensions    encryptedExtensions;
+    private CertificateRequest     serverCertificateRequest;
+    private Certificate            serverCertificate;
+    private CertificateVerify      serverCertificateVerify;
+    private Finished               serverFinished;
+    private EndOfEarlyData         endOfEarlyData;
+    private Certificate            clientCertificate;
+    private CertificateVerify      clientCertificateVerify;
+    private Finished               clientFinished;
 
     public void reset() {
         firstClientHello = null;
@@ -53,107 +44,107 @@ public class Context {
         return secondClientHello != null;
     }
 
-    public ClientHelloImpl getFirstClientHello() {
+    public ClientHello getFirstClientHello() {
         return firstClientHello;
     }
 
-    public void setFirstClientHello(ClientHelloImpl firstClientHello) {
+    public void setFirstClientHello(ClientHello firstClientHello) {
         this.firstClientHello = firstClientHello;
     }
 
-    public HelloRetryRequestImpl getHelloRetryRequest() {
+    public HelloRetryRequest getHelloRetryRequest() {
         return helloRetryRequest;
     }
 
-    public void setHelloRetryRequest(HelloRetryRequestImpl helloRetryRequest) {
+    public void setHelloRetryRequest(HelloRetryRequest helloRetryRequest) {
         this.helloRetryRequest = helloRetryRequest;
     }
 
-    public ClientHelloImpl getSecondClientHello() {
+    public ClientHello getSecondClientHello() {
         return secondClientHello;
     }
 
-    public void setSecondClientHello(ClientHelloImpl secondClientHello) {
+    public void setSecondClientHello(ClientHello secondClientHello) {
         this.secondClientHello = secondClientHello;
     }
 
-    public ServerHelloImpl getServerHello() {
+    public ServerHello getServerHello() {
         return serverHello;
     }
 
-    public void setServerHello(ServerHelloImpl serverHello) {
+    public void setServerHello(ServerHello serverHello) {
         this.serverHello = serverHello;
     }
 
-    public EncryptedExtensionsImpl getEncryptedExtensions() {
+    public EncryptedExtensions getEncryptedExtensions() {
         return encryptedExtensions;
     }
 
-    public void setEncryptedExtensions(EncryptedExtensionsImpl encryptedExtensions) {
+    public void setEncryptedExtensions(EncryptedExtensions encryptedExtensions) {
         this.encryptedExtensions = encryptedExtensions;
     }
 
-    public CertificateRequestImpl getServerCertificateRequest() {
+    public CertificateRequest getServerCertificateRequest() {
         return serverCertificateRequest;
     }
 
-    public void setServerCertificateRequest(CertificateRequestImpl serverCertificateRequest) {
+    public void setServerCertificateRequest(CertificateRequest serverCertificateRequest) {
         this.serverCertificateRequest = serverCertificateRequest;
     }
 
-    public CertificateImpl getServerCertificate() {
+    public Certificate getServerCertificate() {
         return serverCertificate;
     }
 
-    public void setServerCertificate(CertificateImpl serverCertificate) {
+    public void setServerCertificate(Certificate serverCertificate) {
         this.serverCertificate = serverCertificate;
     }
 
-    public CertificateVerifyImpl getServerCertificateVerify() {
+    public CertificateVerify getServerCertificateVerify() {
         return serverCertificateVerify;
     }
 
-    public void setServerCertificateVerify(CertificateVerifyImpl serverCertificateVerify) {
+    public void setServerCertificateVerify(CertificateVerify serverCertificateVerify) {
         this.serverCertificateVerify = serverCertificateVerify;
     }
 
-    public FinishedImpl getServerFinished() {
+    public Finished getServerFinished() {
         return serverFinished;
     }
 
-    public void setServerFinished(FinishedImpl serverFinished) {
+    public void setServerFinished(Finished serverFinished) {
         this.serverFinished = serverFinished;
     }
 
-    public EndOfEarlyDataImpl getEndOfEarlyData() {
+    public EndOfEarlyData getEndOfEarlyData() {
         return endOfEarlyData;
     }
 
-    public void setEndOfEarlyData(EndOfEarlyDataImpl endOfEarlyData) {
+    public void setEndOfEarlyData(EndOfEarlyData endOfEarlyData) {
         this.endOfEarlyData = endOfEarlyData;
     }
 
-    public CertificateImpl getClientCertificate() {
+    public Certificate getClientCertificate() {
         return clientCertificate;
     }
 
-    public void setClientCertificate(CertificateImpl clientCertificate) {
+    public void setClientCertificate(Certificate clientCertificate) {
         this.clientCertificate = clientCertificate;
     }
 
-    public CertificateVerifyImpl getClientCertificateVerify() {
+    public CertificateVerify getClientCertificateVerify() {
         return clientCertificateVerify;
     }
 
-    public void setClientCertificateVerify(CertificateVerifyImpl clientCertificateVerify) {
+    public void setClientCertificateVerify(CertificateVerify clientCertificateVerify) {
         this.clientCertificateVerify = clientCertificateVerify;
     }
 
-    public FinishedImpl getClientFinished() {
+    public Finished getClientFinished() {
         return clientFinished;
     }
 
-    public void setClientFinished(FinishedImpl clientFinished) {
+    public void setClientFinished(Finished clientFinished) {
         this.clientFinished = clientFinished;
     }
 

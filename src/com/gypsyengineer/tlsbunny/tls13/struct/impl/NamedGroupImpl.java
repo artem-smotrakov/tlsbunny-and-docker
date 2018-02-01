@@ -2,11 +2,9 @@ package com.gypsyengineer.tlsbunny.tls13.struct.impl;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import com.gypsyengineer.tlsbunny.tls.Struct;
 import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
 
 public class NamedGroupImpl implements NamedGroup {
-
 
     public final int code;
 
@@ -49,7 +47,7 @@ public class NamedGroupImpl implements NamedGroup {
         return this.code == other.code;
     }
 
-    public static NamedGroupImpl parse(ByteBuffer buffer) {
+    public static NamedGroup parse(ByteBuffer buffer) {
         return new NamedGroupImpl(buffer.getShort());
     }
     

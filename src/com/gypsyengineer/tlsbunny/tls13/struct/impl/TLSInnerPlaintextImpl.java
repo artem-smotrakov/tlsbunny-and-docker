@@ -4,17 +4,16 @@ import com.gypsyengineer.tlsbunny.tls.Bytes;
 import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.io.IOException;
 import java.util.Arrays;
-import com.gypsyengineer.tlsbunny.tls.Struct;
+import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext;
 
 public class TLSInnerPlaintextImpl implements TLSInnerPlaintext {
 
-    
     private Bytes content;
-    private ContentTypeImpl type;
+    private ContentType type;
     private Bytes zeros;
 
-    TLSInnerPlaintextImpl(Bytes content, ContentTypeImpl type, Bytes zeros) {
+    TLSInnerPlaintextImpl(Bytes content, ContentType type, Bytes zeros) {
         this.content = content;
         this.type = type;
         this.zeros = zeros;
@@ -31,12 +30,12 @@ public class TLSInnerPlaintextImpl implements TLSInnerPlaintext {
     }
 
     @Override
-    public ContentTypeImpl getType() {
+    public ContentType getType() {
         return type;
     }
 
     @Override
-    public void setType(ContentTypeImpl type) {
+    public void setType(ContentType type) {
         this.type = type;
     }
 

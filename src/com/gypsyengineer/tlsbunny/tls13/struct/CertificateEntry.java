@@ -1,31 +1,31 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.gypsyengineer.tlsbunny.tls13.struct;
 
-import com.gypsyengineer.tlsbunny.tls13.struct.impl.ExtensionTypeImpl;
-import com.gypsyengineer.tlsbunny.tls13.struct.impl.ExtensionImpl;
 import com.gypsyengineer.tlsbunny.tls.Struct;
 import com.gypsyengineer.tlsbunny.tls.Vector;
 
-/**
- *
- * @author artem
- */
 public interface CertificateEntry extends Struct {
 
     int EXTENSIONS_LENGTH_BYTES = 2;
 
-    void addExtension(ExtensionImpl extension);
-
+    void addExtension(Extension extension);
     void clearExtensions();
-
-    ExtensionImpl getExtension(ExtensionTypeImpl type);
-
-    Vector<ExtensionImpl> getExtensions();
-
-    void setExtensions(Vector<ExtensionImpl> extensions);
+    Extension getExtension(ExtensionType type);
+    Vector<Extension> getExtensions();
+    void setExtensions(Vector<Extension> extensions);
     
+    public static interface X509 extends CertificateEntry {
+    
+        public static final int LENGTH_BYTES = 3;
+
+        public Vector<Byte> getCertData();
+        public void setCertData(Vector<Byte> cert_data);
+    }
+
+    public static interface RawPublicKey extends CertificateEntry {
+    
+        public static final int LENGTH_BYTES = 3;
+        
+        public Vector<Byte> getASN1SubjectPublicKeyInfo();
+        public void setASN1SubjectPublicKeyInfo(Vector<Byte> ASN1_subjectPublicKeyInfo);
+    }
 }

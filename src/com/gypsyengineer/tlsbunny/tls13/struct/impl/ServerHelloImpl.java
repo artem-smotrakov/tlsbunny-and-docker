@@ -2,21 +2,22 @@ package com.gypsyengineer.tlsbunny.tls13.struct.impl;
 
 import com.gypsyengineer.tlsbunny.tls.Random;
 import com.gypsyengineer.tlsbunny.tls.Vector;
-import com.gypsyengineer.tlsbunny.tls13.struct.ServerHello;
+import com.gypsyengineer.tlsbunny.tls13.struct.CipherSuite;
+import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
+import com.gypsyengineer.tlsbunny.tls13.struct.*; // TODO
 import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
 public class ServerHelloImpl implements ServerHello {
 
-
-    private ProtocolVersionImpl version = ProtocolVersionImpl.TLSv13;
+    private ProtocolVersion version = ProtocolVersion.TLSv13;
     private Random random = new Random();
-    private CipherSuiteImpl cipher_suite = CipherSuiteImpl.TLS_AES_128_GCM_SHA256;
-    private Vector<ExtensionImpl> extensions = Vector.wrap(EXTENSIONS_LENGTH_BYTES);
+    private CipherSuite cipher_suite = CipherSuite.TLS_AES_128_GCM_SHA256;
+    private Vector<Extension> extensions = Vector.wrap(EXTENSIONS_LENGTH_BYTES);
 
-    ServerHelloImpl(ProtocolVersionImpl version, Random random,
-            CipherSuiteImpl cipher_suite, Vector<ExtensionImpl> extensions) {
+    ServerHelloImpl(ProtocolVersion version, Random random,
+            CipherSuite cipher_suite, Vector<Extension> extensions) {
 
         this.version = version;
         this.random = random;
@@ -43,12 +44,12 @@ public class ServerHelloImpl implements ServerHello {
     }
 
     @Override
-    public void setProtocolVersion(ProtocolVersionImpl version) {
+    public void setProtocolVersion(ProtocolVersion version) {
         this.version = version;
     }
 
     @Override
-    public ProtocolVersionImpl getProtocolVersion() {
+    public ProtocolVersion getProtocolVersion() {
         return version;
     }
 
@@ -63,22 +64,22 @@ public class ServerHelloImpl implements ServerHello {
     }
 
     @Override
-    public void setCipherSuite(CipherSuiteImpl cipher_suite) {
+    public void setCipherSuite(CipherSuite cipher_suite) {
         this.cipher_suite = cipher_suite;
     }
 
     @Override
-    public CipherSuiteImpl getCipherSuite() {
+    public CipherSuite getCipherSuite() {
         return cipher_suite;
     }
 
     @Override
-    public void setExtensions(Vector<ExtensionImpl> extensions) {
+    public void setExtensions(Vector<Extension> extensions) {
         this.extensions = extensions;
     }
 
     @Override
-    public void addExtension(ExtensionImpl extension) {
+    public void addExtension(Extension extension) {
         extensions.add(extension);
     }
 
@@ -88,8 +89,8 @@ public class ServerHelloImpl implements ServerHello {
     }
 
     @Override
-    public ExtensionImpl findExtension(ExtensionTypeImpl type) {
-        for (ExtensionImpl extension : extensions.toList()) {
+    public Extension findExtension(ExtensionType type) {
+        for (Extension extension : extensions.toList()) {
             if (type.equals(extension.getExtensionType())) {
                 return extension;
             }
@@ -99,26 +100,26 @@ public class ServerHelloImpl implements ServerHello {
     }
 
     @Override
-    public Vector<ExtensionImpl> getExtensions() {
+    public Vector<Extension> getExtensions() {
         return extensions;
     }
 
     @Override
-    public KeyShareImpl.ServerHelloImpl findKeyShare() throws IOException {
+    public KeyShare.ServerHello findKeyShare() throws IOException {
         return KeyShareImpl.ServerHelloImpl.parse(
-                findExtension(ExtensionTypeImpl.key_share).getExtensionData());
+                findExtension(ExtensionType.key_share).getExtensionData());
     }
 
     @Override
-    public HandshakeTypeImpl type() {
-        return HandshakeTypeImpl.server_hello;
+    public HandshakeType type() {
+        return HandshakeType.server_hello;
     }
 
-    public static ServerHelloImpl parse(byte[] bytes) {
+    public static ServerHello parse(byte[] bytes) {
         return parse(ByteBuffer.wrap(bytes));
     }
     
-    public static ServerHelloImpl parse(ByteBuffer buffer) {
+    public static ServerHello parse(ByteBuffer buffer) {
         return new ServerHelloImpl(
                 ProtocolVersionImpl.parse(buffer), 
                 Random.parse(buffer), 

@@ -1,21 +1,20 @@
 package com.gypsyengineer.tlsbunny.tls13.struct.impl;
 
-import com.gypsyengineer.tlsbunny.tls13.struct.impl.HandshakeTypeImpl;
 import com.gypsyengineer.tlsbunny.tls.Vector;
 import com.gypsyengineer.tlsbunny.tls.Vector.ContentParser;
 import com.gypsyengineer.tlsbunny.tls13.struct.Certificate;
+import com.gypsyengineer.tlsbunny.tls13.struct.CertificateEntry;
 import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
 public class CertificateImpl implements Certificate {
 
-
     private Vector<Byte> certificate_request_context;
-    private Vector<CertificateEntryImpl> certificate_list;
+    private Vector<CertificateEntry> certificate_list;
 
     CertificateImpl(Vector<Byte> certificate_request_context,
-            Vector<CertificateEntryImpl> certificate_list) {
+            Vector<CertificateEntry> certificate_list) {
 
         this.certificate_request_context = certificate_request_context;
         this.certificate_list = certificate_list;
@@ -42,12 +41,12 @@ public class CertificateImpl implements Certificate {
     }
 
     @Override
-    public Vector<CertificateEntryImpl> getCertificateList() {
+    public Vector<CertificateEntry> getCertificateList() {
         return certificate_list;
     }
 
     @Override
-    public void setCertificateList(Vector<CertificateEntryImpl> certificate_list) {
+    public void setCertificateList(Vector<CertificateEntry> certificate_list) {
         this.certificate_list = certificate_list;
     }
 

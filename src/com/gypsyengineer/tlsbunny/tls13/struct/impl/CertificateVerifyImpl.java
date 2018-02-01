@@ -1,20 +1,19 @@
 package com.gypsyengineer.tlsbunny.tls13.struct.impl;
 
-import com.gypsyengineer.tlsbunny.tls13.struct.impl.HandshakeTypeImpl;
-import com.gypsyengineer.tlsbunny.tls13.struct.impl.SignatureSchemeImpl;
 import com.gypsyengineer.tlsbunny.tls.Vector;
 import com.gypsyengineer.tlsbunny.tls13.struct.CertificateVerify;
+import com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType;
+import com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme;
 import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
 public class CertificateVerifyImpl implements CertificateVerify {
 
-
-    private SignatureSchemeImpl algorithm;
+    private SignatureScheme algorithm;
     private Vector<Byte> signature;
 
-    CertificateVerifyImpl(SignatureSchemeImpl algorithm, Vector<Byte> signature) {
+    CertificateVerifyImpl(SignatureScheme algorithm, Vector<Byte> signature) {
         this.algorithm = algorithm;
         this.signature = signature;
     }
@@ -30,12 +29,12 @@ public class CertificateVerifyImpl implements CertificateVerify {
     }
 
     @Override
-    public SignatureSchemeImpl getAlgorithm() {
+    public SignatureScheme getAlgorithm() {
         return algorithm;
     }
 
     @Override
-    public void setAlgorithm(SignatureSchemeImpl algorithm) {
+    public void setAlgorithm(SignatureScheme algorithm) {
         this.algorithm = algorithm;
     }
 
@@ -50,15 +49,15 @@ public class CertificateVerifyImpl implements CertificateVerify {
     }
 
     @Override
-    public HandshakeTypeImpl type() {
+    public HandshakeType type() {
         return HandshakeTypeImpl.certificate_verify;
     }
 
-    public static CertificateVerifyImpl parse(byte[] bytes) {
+    public static CertificateVerify parse(byte[] bytes) {
         return parse(ByteBuffer.wrap(bytes));
     }
     
-    public static CertificateVerifyImpl parse(ByteBuffer buffer) {
+    public static CertificateVerify parse(ByteBuffer buffer) {
         return new CertificateVerifyImpl(
                 SignatureSchemeImpl.parse(buffer), 
                 Vector.parseOpaqueVector(buffer, SIGNATURE_LENGTH_BYTES));

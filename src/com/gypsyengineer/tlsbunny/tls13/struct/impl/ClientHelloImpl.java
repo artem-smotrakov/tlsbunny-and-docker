@@ -1,37 +1,37 @@
 package com.gypsyengineer.tlsbunny.tls13.struct.impl;
 
-import com.gypsyengineer.tlsbunny.tls13.struct.impl.HandshakeTypeImpl;
-import com.gypsyengineer.tlsbunny.tls13.struct.impl.ExtensionTypeImpl;
-import com.gypsyengineer.tlsbunny.tls13.struct.impl.ExtensionImpl;
-import com.gypsyengineer.tlsbunny.tls13.struct.impl.NamedGroupListImpl;
-import com.gypsyengineer.tlsbunny.tls13.struct.impl.ProtocolVersionImpl;
-import com.gypsyengineer.tlsbunny.tls13.struct.impl.KeyShareImpl;
-import com.gypsyengineer.tlsbunny.tls13.struct.impl.SignatureSchemeListImpl;
-import com.gypsyengineer.tlsbunny.tls13.struct.impl.SupportedVersionsImpl;
 import com.gypsyengineer.tlsbunny.tls.Random;
 import com.gypsyengineer.tlsbunny.tls.Vector;
+import com.gypsyengineer.tlsbunny.tls13.struct.CipherSuite;
 import com.gypsyengineer.tlsbunny.tls13.struct.ClientHello;
+import com.gypsyengineer.tlsbunny.tls13.struct.CompressionMethod;
+import com.gypsyengineer.tlsbunny.tls13.struct.Extension;
+import com.gypsyengineer.tlsbunny.tls13.struct.ExtensionType;
+import com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType;
+import com.gypsyengineer.tlsbunny.tls13.struct.KeyShare;
+import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroupList;
+import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
+import com.gypsyengineer.tlsbunny.tls13.struct.SignatureSchemeList;
 import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
 public class ClientHelloImpl implements ClientHello {
     
-    
-    private ProtocolVersionImpl legacy_version = ProtocolVersionImpl.TLSv12;
+    private ProtocolVersion legacy_version = ProtocolVersionImpl.TLSv12;
     private Random random = new Random();
-    private Vector<Byte> legacy_session_id = Vector.wrap(LEGACY_SESSION_ID_LENGTH_BYTES);
-    private Vector<CipherSuiteImpl> cipher_suites = Vector.wrap(CIPHER_SUITES_LENGTH_BYTES);
-    private Vector<CompressionMethodImpl> legacy_compression_methods = Vector.wrap(LEGACY_COMPRESSION_METHODS_LENGTH_BYTES);
-    private Vector<ExtensionImpl> extensions = Vector.wrap(EXTENSIONS_LENGTH_BYTES);
+    private Vector<Byte> legacy_session_id = Vector.wrap(ClientHello.LEGACY_SESSION_ID_LENGTH_BYTES);
+    private Vector<CipherSuite> cipher_suites = Vector.wrap(ClientHello.CIPHER_SUITES_LENGTH_BYTES);
+    private Vector<CompressionMethod> legacy_compression_methods = Vector.wrap(ClientHello.LEGACY_COMPRESSION_METHODS_LENGTH_BYTES);
+    private Vector<Extension> extensions = Vector.wrap(ClientHello.EXTENSIONS_LENGTH_BYTES);
 
     ClientHelloImpl(
-            ProtocolVersionImpl legacy_version,
+            ProtocolVersion legacy_version,
             Random random,
             Vector<Byte> legacy_session_id,
-            Vector<CipherSuiteImpl> cipher_suites,
-            Vector<CompressionMethodImpl> legacy_compression_methods,
-            Vector<ExtensionImpl> extensions) {
+            Vector<CipherSuite> cipher_suites,
+            Vector<CompressionMethod> legacy_compression_methods,
+            Vector<Extension> extensions) {
 
         this.legacy_version = legacy_version;
         this.random = random;
@@ -64,13 +64,13 @@ public class ClientHelloImpl implements ClientHello {
     }
 
     @Override
-    public void setCipherSuites(Vector<CipherSuiteImpl> cipher_suites) {
+    public void setCipherSuites(Vector<CipherSuite> cipher_suites) {
         this.cipher_suites = cipher_suites;
     }
 
     @Override
     public void setCompressionMethods(
-            Vector<CompressionMethodImpl> legacy_compression_methods) {
+            Vector<CompressionMethod> legacy_compression_methods) {
 
         this.legacy_compression_methods = legacy_compression_methods;
     }
@@ -86,32 +86,32 @@ public class ClientHelloImpl implements ClientHello {
     }
 
     @Override
-    public void addCompressionMethod(CompressionMethodImpl method) {
+    public void addCompressionMethod(CompressionMethod method) {
         legacy_compression_methods.add(method);
     }
 
     @Override
-    public Vector<CompressionMethodImpl> getLegacyCompressionMethods() {
+    public Vector<CompressionMethod> getLegacyCompressionMethods() {
         return legacy_compression_methods;
     }
 
     @Override
-    public void addCipherSuite(CipherSuiteImpl cipher_suite) {
+    public void addCipherSuite(CipherSuite cipher_suite) {
         cipher_suites.add(cipher_suite);
     }
 
     @Override
-    public Vector<CipherSuiteImpl> getCipherSuites() {
+    public Vector<CipherSuite> getCipherSuites() {
         return cipher_suites;
     }
 
     @Override
-    public void setProtocolVersion(ProtocolVersionImpl legacy_version) {
+    public void setProtocolVersion(ProtocolVersion legacy_version) {
         this.legacy_version = legacy_version;
     }
 
     @Override
-    public ProtocolVersionImpl getProtocolVersion() {
+    public ProtocolVersion getProtocolVersion() {
         return legacy_version;
     }
 
@@ -126,12 +126,12 @@ public class ClientHelloImpl implements ClientHello {
     }
 
     @Override
-    public Vector<ExtensionImpl> getExtensions() {
+    public Vector<Extension> getExtensions() {
         return extensions;
     }
 
     @Override
-    public void addExtension(ExtensionImpl extension) {
+    public void addExtension(Extension extension) {
         extensions.add(extension);
     }
 
@@ -141,13 +141,13 @@ public class ClientHelloImpl implements ClientHello {
     }
 
     @Override
-    public void setExtensions(Vector<ExtensionImpl> extensions) {
+    public void setExtensions(Vector<Extension> extensions) {
         this.extensions = extensions;
     }
 
     @Override
-    public ExtensionImpl findExtension(ExtensionTypeImpl type) {
-        for (ExtensionImpl extension : extensions.toList()) {
+    public Extension findExtension(ExtensionType type) {
+        for (Extension extension : extensions.toList()) {
             if (type.equals(extension.getExtensionType())) {
                 return extension;
             }
@@ -157,54 +157,54 @@ public class ClientHelloImpl implements ClientHello {
     }
 
     @Override
-    public SupportedVersionsImpl.ClientHelloImpl findSupportedVersions() throws IOException {
+    public SupportedVersionsImpl.ClientHello findSupportedVersions() throws IOException {
         return SupportedVersionsImpl.ClientHelloImpl.parse(
                 findExtension(ExtensionTypeImpl.supported_versions).getExtensionData());
     }
 
     @Override
-    public SignatureSchemeListImpl findSignatureAlgorithms() throws IOException {
+    public SignatureSchemeList findSignatureAlgorithms() throws IOException {
         return SignatureSchemeListImpl.parse(
                 findExtension(ExtensionTypeImpl.signature_algorithms).getExtensionData());
     }
 
     @Override
-    public NamedGroupListImpl findSupportedGroups() throws IOException {
+    public NamedGroupList findSupportedGroups() throws IOException {
         return NamedGroupListImpl.parse(
                 findExtension(ExtensionTypeImpl.supported_groups).getExtensionData());
     }
 
     @Override
-    public KeyShareImpl.ClientHelloImpl findKeyShare() throws IOException {
+    public KeyShare.ClientHello findKeyShare() throws IOException {
         return KeyShareImpl.ClientHelloImpl.parse(
                 findExtension(ExtensionTypeImpl.key_share).getExtensionData());
     }
 
     @Override
-    public HandshakeTypeImpl type() {
+    public HandshakeType type() {
         return HandshakeTypeImpl.client_hello;
     }
 
-    public static ClientHelloImpl parse(byte[] data) {
+    public static ClientHello parse(byte[] data) {
         return parse(ByteBuffer.wrap(data));
     }
 
-    public static ClientHelloImpl parse(ByteBuffer buffer) {
-        ProtocolVersionImpl legacy_version = ProtocolVersionImpl.parse(buffer);
+    public static ClientHello parse(ByteBuffer buffer) {
+        ProtocolVersion legacy_version = ProtocolVersionImpl.parse(buffer);
         Random random = Random.parse(buffer);
         Vector<Byte> legacy_session_id = Vector.parse(
                 buffer, 
                 LEGACY_SESSION_ID_LENGTH_BYTES, 
                 buf -> buf.get());
-        Vector<CipherSuiteImpl> cipher_suites = Vector.parse(
+        Vector<CipherSuite> cipher_suites = Vector.parse(
                 buffer, 
                 CIPHER_SUITES_LENGTH_BYTES, 
                 buf -> CipherSuiteImpl.parse(buf));
-        Vector<CompressionMethodImpl> legacy_compression_methods = Vector.parse(
+        Vector<CompressionMethod> legacy_compression_methods = Vector.parse(
                 buffer, 
                 LEGACY_COMPRESSION_METHODS_LENGTH_BYTES, 
                 buf -> CompressionMethodImpl.parse(buf));
-        Vector<ExtensionImpl> extensions = Vector.parse(
+        Vector<Extension> extensions = Vector.parse(
                 buffer,
                 EXTENSIONS_LENGTH_BYTES,
                 buf -> ExtensionImpl.parse(buf));

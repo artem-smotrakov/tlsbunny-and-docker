@@ -7,29 +7,29 @@ import com.gypsyengineer.tlsbunny.tls.Struct;
 import com.gypsyengineer.tlsbunny.tls13.struct.KeyShare.ClientHello;
 import com.gypsyengineer.tlsbunny.tls13.struct.KeyShare.ServerHello;
 import com.gypsyengineer.tlsbunny.tls13.struct.KeyShare.HelloRetryRequest;
+import com.gypsyengineer.tlsbunny.tls13.struct.*;
 
 public abstract class KeyShareImpl implements Struct {
     
     public static class ClientHelloImpl extends KeyShareImpl implements ClientHello {
-        
 
-        private Vector<KeyShareEntryImpl> client_shares;
+        private Vector<KeyShareEntry> client_shares;
 
         public ClientHelloImpl() {
             this(Vector.wrap(LENGTH_BYTES));
         }
 
-        public ClientHelloImpl(Vector<KeyShareEntryImpl> client_shares) {
+        public ClientHelloImpl(Vector<KeyShareEntry> client_shares) {
             this.client_shares = client_shares;
         }
 
         @Override
-        public void set(KeyShareEntryImpl keyShareEntry) {
+        public void set(KeyShareEntry keyShareEntry) {
             client_shares = Vector.wrap(LENGTH_BYTES, keyShareEntry);
         }
 
         @Override
-        public void set(Vector<KeyShareEntryImpl> client_shares) {
+        public void set(Vector<KeyShareEntry> client_shares) {
             this.client_shares = client_shares;
         }
 
@@ -48,19 +48,19 @@ public abstract class KeyShareImpl implements Struct {
             return client_shares.encoding();
         }
 
-        public static ClientHelloImpl create(KeyShareEntryImpl... keyShareEntries) {
+        public static ClientHello create(KeyShareEntry... keyShareEntries) {
             return new ClientHelloImpl(
                     Vector.wrap(LENGTH_BYTES, keyShareEntries));
         }
 
-        public static ClientHelloImpl parse(ByteBuffer buffer) {
-            Vector<KeyShareEntryImpl> client_shares = Vector.parse(
+        public static ClientHello parse(ByteBuffer buffer) {
+            Vector<KeyShareEntry> client_shares = Vector.parse(
                     buffer, LENGTH_BYTES, (buf) -> KeyShareEntryImpl.parse(buf));
 
             return new ClientHelloImpl(client_shares);
         }
         
-        public static ClientHelloImpl parse(Vector<Byte> extenstion_data) 
+        public static ClientHello parse(Vector<Byte> extenstion_data) 
                 throws IOException {
             
             return parse(ByteBuffer.wrap(extenstion_data.bytes()));
@@ -70,19 +70,19 @@ public abstract class KeyShareImpl implements Struct {
     
     public static class ServerHelloImpl extends KeyShareImpl implements ServerHello {
 
-        private KeyShareEntryImpl server_share;
+        private KeyShareEntry server_share;
 
-        public ServerHelloImpl(KeyShareEntryImpl server_share) {
+        public ServerHelloImpl(KeyShareEntry server_share) {
             this.server_share = server_share;
         }
 
         @Override
-        public KeyShareEntryImpl getServerShare() {
+        public KeyShareEntry getServerShare() {
             return server_share;
         }
 
         @Override
-        public void setServerShare(KeyShareEntryImpl server_share) {
+        public void setServerShare(KeyShareEntry server_share) {
             this.server_share = server_share;
         }
         
@@ -108,21 +108,21 @@ public abstract class KeyShareImpl implements Struct {
 
     }
     
-    public static class HelloRetryRequestImpl implements HelloRetryRequest {
+    public static class HelloRetryRequestImpl extends KeyShareImpl implements HelloRetryRequest {
 
-        private NamedGroupImpl selected_group;
+        private NamedGroup selected_group;
 
-        private HelloRetryRequestImpl(NamedGroupImpl selected_group) {
+        private HelloRetryRequestImpl(NamedGroup selected_group) {
             this.selected_group = selected_group;
         }
 
         @Override
-        public NamedGroupImpl getSelectedGroup() {
+        public NamedGroup getSelectedGroup() {
             return selected_group;
         }
 
         @Override
-        public void setSelectedGroup(NamedGroupImpl selected_group) {
+        public void setSelectedGroup(NamedGroup selected_group) {
             this.selected_group = selected_group;
         }
         

@@ -7,29 +7,29 @@ import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import com.gypsyengineer.tlsbunny.tls.Struct;
-import com.gypsyengineer.tlsbunny.tls13.struct.CertificateEntry;
+import com.gypsyengineer.tlsbunny.tls13.struct.*; // TODO
+import com.gypsyengineer.tlsbunny.tls13.struct.Extension;
 
 public abstract class CertificateEntryImpl implements CertificateEntry {
 
+    Vector<Extension> extensions;
 
-    Vector<ExtensionImpl> extensions;
-
-    CertificateEntryImpl(Vector<ExtensionImpl> extensions) {
+    CertificateEntryImpl(Vector<Extension> extensions) {
         this.extensions = extensions;
     }
 
     @Override
-    public Vector<ExtensionImpl> getExtensions() {
+    public Vector<Extension> getExtensions() {
         return extensions;
     }
 
     @Override
-    public void setExtensions(Vector<ExtensionImpl> extensions) {
+    public void setExtensions(Vector<Extension> extensions) {
         this.extensions = extensions;
     }
 
     @Override
-    public void addExtension(ExtensionImpl extension) {
+    public void addExtension(Extension extension) {
         extensions.add(extension);
     }
 
@@ -39,8 +39,8 @@ public abstract class CertificateEntryImpl implements CertificateEntry {
     }
 
     @Override
-    public ExtensionImpl getExtension(ExtensionTypeImpl type) {
-        for (ExtensionImpl extension : extensions.toList()) {
+    public Extension getExtension(ExtensionType type) {
+        for (Extension extension : extensions.toList()) {
             if (type.equals(extension.getExtensionType())) {
                 return extension;
             }
@@ -49,13 +49,11 @@ public abstract class CertificateEntryImpl implements CertificateEntry {
         return null;
     }
     
-    public static class X509 extends CertificateEntryImpl {
+    public static class X509Impl extends CertificateEntryImpl implements X509 {
     
-        public static final int LENGTH_BYTES = 3;
-        
         private Vector<Byte> cert_data;
         
-        public X509(Vector<Byte> cert_data, Vector<ExtensionImpl> extensions) {
+        public X509Impl(Vector<Byte> cert_data, Vector<Extension> extensions) {
             super(extensions);
             this.cert_data = cert_data;
         }
@@ -79,7 +77,7 @@ public abstract class CertificateEntryImpl implements CertificateEntry {
         }       
 
         public static X509 parse(ByteBuffer buffer) {
-            return new X509(
+            return new X509Impl(
                     Vector.parseOpaqueVector(buffer, LENGTH_BYTES), 
                     Vector.parse(
                         buffer,
@@ -88,21 +86,19 @@ public abstract class CertificateEntryImpl implements CertificateEntry {
         }
         
         public static X509 wrap(byte[] bytes) {
-            return new X509(
+            return new X509Impl(
                     Vector.wrap(LENGTH_BYTES, bytes), 
                     Vector.wrap(EXTENSIONS_LENGTH_BYTES));
         }
 
     }
 
-    public static class RawPublicKey extends CertificateEntryImpl {
+    public static class RawPublicKeyImpl extends CertificateEntryImpl implements RawPublicKey {
     
-        public static final int LENGTH_BYTES = 3;
-        
         private Vector<Byte> ASN1_subjectPublicKeyInfo;
         
-        public RawPublicKey(Vector<Byte> ASN1_subjectPublicKeyInfo, 
-                Vector<ExtensionImpl> extensions) {
+        public RawPublicKeyImpl(Vector<Byte> ASN1_subjectPublicKeyInfo, 
+                Vector<Extension> extensions) {
             
             super(extensions);
             this.ASN1_subjectPublicKeyInfo = ASN1_subjectPublicKeyInfo;
@@ -126,8 +122,8 @@ public abstract class CertificateEntryImpl implements CertificateEntry {
             return Utils.encoding(ASN1_subjectPublicKeyInfo, extensions);
         }       
 
-        public static RawPublicKey parse(ByteBuffer buffer) {
-            return new RawPublicKey(
+        public static RawPublicKeyImpl parse(ByteBuffer buffer) {
+            return new RawPublicKeyImpl(
                     Vector.parseOpaqueVector(buffer, LENGTH_BYTES), 
                     Vector.parse(
                         buffer,

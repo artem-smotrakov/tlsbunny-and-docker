@@ -1,12 +1,12 @@
 package com.gypsyengineer.tlsbunny.tls13.handshake;
 
-import com.gypsyengineer.tlsbunny.tls13.struct.impl.NamedGroupImpl;
+import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
 
 abstract class AbstractNegotiator implements Negotiator {
 
-    final NamedGroupImpl group;
+    final NamedGroup group;
 
-    AbstractNegotiator(NamedGroupImpl group) {
+    AbstractNegotiator(NamedGroup group) {
         this.group = group;
     }
 

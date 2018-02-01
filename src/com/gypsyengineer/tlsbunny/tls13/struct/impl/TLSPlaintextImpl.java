@@ -6,16 +6,18 @@ import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import com.gypsyengineer.tlsbunny.tls.Struct;
+import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
+import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
 
 public class TLSPlaintextImpl implements TLSPlaintext {
 
-    private ContentTypeImpl type;
-    private ProtocolVersionImpl legacy_record_version;
+    private ContentType type;
+    private ProtocolVersion legacy_record_version;
     private UInt16 length;
     private Bytes fragment;
 
-    TLSPlaintextImpl(ContentTypeImpl type, ProtocolVersionImpl version, 
+    TLSPlaintextImpl(ContentType type, ProtocolVersion version, 
             UInt16 length, Bytes fragment) {
         
         this.type = type;
@@ -35,12 +37,12 @@ public class TLSPlaintextImpl implements TLSPlaintext {
     }
 
     @Override
-    public void setType(ContentTypeImpl type) {
+    public void setType(ContentType type) {
         this.type = type;
     }
 
     @Override
-    public void setLegacyRecordVersion(ProtocolVersionImpl version) {
+    public void setLegacyRecordVersion(ProtocolVersion version) {
         this.legacy_record_version = version;
     }
 
@@ -55,12 +57,12 @@ public class TLSPlaintextImpl implements TLSPlaintext {
     }
 
     @Override
-    public ContentTypeImpl getType() {
+    public ContentType getType() {
         return type;
     }
 
     @Override
-    public ProtocolVersionImpl getLegacyRecordVersion() {
+    public ProtocolVersion getLegacyRecordVersion() {
         return legacy_record_version;
     }
 

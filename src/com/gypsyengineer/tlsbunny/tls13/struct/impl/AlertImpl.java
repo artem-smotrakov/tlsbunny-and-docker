@@ -3,21 +3,22 @@ package com.gypsyengineer.tlsbunny.tls13.struct.impl;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Objects;
-import com.gypsyengineer.tlsbunny.tls.Struct;
 import com.gypsyengineer.tlsbunny.tls13.struct.Alert;
+import com.gypsyengineer.tlsbunny.tls13.struct.AlertDescription;
+import com.gypsyengineer.tlsbunny.tls13.struct.AlertLevel;
 
 public class AlertImpl implements Alert {
 
     private static final int ENCODING_LENGTH = 2;
 
-    private AlertLevelImpl level;
-    private AlertDescriptionImpl description;
+    private AlertLevel level;
+    private AlertDescription description;
 
     AlertImpl() {
-        this(AlertLevelImpl.FATAL, AlertDescriptionImpl.INTERNAL_ERROR);
+        this(AlertLevel.FATAL, AlertDescription.INTERNAL_ERROR);
     }
 
-    public AlertImpl(AlertLevelImpl level, AlertDescriptionImpl description) {
+    public AlertImpl(AlertLevel level, AlertDescription description) {
         this.level = level;
         this.description = description;
     }
@@ -33,22 +34,22 @@ public class AlertImpl implements Alert {
     }
 
     @Override
-    public AlertLevelImpl getLevel() {
+    public AlertLevel getLevel() {
         return level;
     }
 
     @Override
-    public void setLevel(AlertLevelImpl level) {
+    public void setLevel(AlertLevel level) {
         this.level = level;
     }
 
     @Override
-    public AlertDescriptionImpl getDescription() {
+    public AlertDescription getDescription() {
         return description;
     }
 
     @Override
-    public void setDescription(AlertDescriptionImpl description) {
+    public void setDescription(AlertDescription description) {
         this.description = description;
     }
 
@@ -83,8 +84,8 @@ public class AlertImpl implements Alert {
     }
     
     public static AlertImpl parse(ByteBuffer buffer) {
-        AlertLevelImpl level = AlertLevelImpl.parse(buffer);
-        AlertDescriptionImpl description = AlertDescriptionImpl.parse(buffer);
+        AlertLevel level = AlertLevelImpl.parse(buffer);
+        AlertDescription description = AlertDescriptionImpl.parse(buffer);
 
         return new AlertImpl(level, description);
     }

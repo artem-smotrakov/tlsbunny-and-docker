@@ -1,5 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls13.handshake;
 
+import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
 import com.gypsyengineer.tlsbunny.tls13.struct.impl.NamedGroupImpl;
 import com.gypsyengineer.tlsbunny.utils.Convertor;
 import java.math.BigInteger;
@@ -34,13 +35,13 @@ class FFDHEParemeters {
 
     private static final BigInteger FFDHE2048_G = BigInteger.TWO;
 
-    private static final Map<NamedGroupImpl, FFDHEParemeters> PARAMETERS = new HashMap<>();
+    private static final Map<NamedGroup, FFDHEParemeters> PARAMETERS = new HashMap<>();
     static {
         PARAMETERS.put(NamedGroupImpl.ffdhe2048, 
                 new FFDHEParemeters(FFDHE2048_P, FFDHE2048_G));
     }
 
-    public static FFDHEParemeters create(NamedGroupImpl group) {
+    public static FFDHEParemeters create(NamedGroup group) {
         return PARAMETERS.get(group);
     }
     

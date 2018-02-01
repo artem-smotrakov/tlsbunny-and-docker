@@ -1,5 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls13.handshake;
 
+import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
 import com.gypsyengineer.tlsbunny.tls13.struct.impl.NamedGroupImpl;
 import static com.gypsyengineer.tlsbunny.utils.Convertor.hex2int;
 import java.math.BigInteger;
@@ -48,7 +49,7 @@ class SecpParameters {
 
     private static final int SECP256R1_H = 1;
 
-    private static final Map<NamedGroupImpl.SecpImpl, SecpParameters> PARAMETERS = new HashMap<>();
+    private static final Map<NamedGroup.Secp, SecpParameters> PARAMETERS = new HashMap<>();
     static {
         PARAMETERS.put(NamedGroupImpl.secp256r1,
                 new SecpParameters("secp256r1", 
@@ -60,7 +61,7 @@ class SecpParameters {
                         SECP256R1_H));
     }
 
-    public static SecpParameters create(NamedGroupImpl.SecpImpl group) {
+    public static SecpParameters create(NamedGroup.Secp group) {
         return PARAMETERS.get(group);
     }
     

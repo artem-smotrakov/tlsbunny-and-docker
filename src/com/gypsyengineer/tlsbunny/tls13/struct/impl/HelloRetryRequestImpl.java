@@ -1,20 +1,19 @@
 package com.gypsyengineer.tlsbunny.tls13.struct.impl;
 
 import com.gypsyengineer.tlsbunny.tls.Vector;
-import com.gypsyengineer.tlsbunny.tls13.struct.HelloRetryRequest;
+import com.gypsyengineer.tlsbunny.tls13.struct.*; // TODO
 import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
 public class HelloRetryRequestImpl implements HelloRetryRequest {
 
+    private ProtocolVersion server_version;
+    private CipherSuite cipher_suite;
+    private Vector<Extension> extensions;
 
-    private ProtocolVersionImpl server_version;
-    private CipherSuiteImpl cipher_suite;
-    private Vector<ExtensionImpl> extensions;
-
-    HelloRetryRequestImpl(ProtocolVersionImpl server_version,
-            CipherSuiteImpl cipher_suite, Vector<ExtensionImpl> extensions) {
+    HelloRetryRequestImpl(ProtocolVersion server_version,
+            CipherSuite cipher_suite, Vector<Extension> extensions) {
 
         this.server_version = server_version;
         this.cipher_suite = cipher_suite;
@@ -22,32 +21,32 @@ public class HelloRetryRequestImpl implements HelloRetryRequest {
     }
 
     @Override
-    public void setCipherSuite(CipherSuiteImpl cipher_suite) {
+    public void setCipherSuite(CipherSuite cipher_suite) {
         this.cipher_suite = cipher_suite;
     }
 
     @Override
-    public CipherSuiteImpl getCipherSuite() {
+    public CipherSuite getCipherSuite() {
         return cipher_suite;
     }
 
     @Override
-    public void setProtocolVersion(ProtocolVersionImpl server_version) {
+    public void setProtocolVersion(ProtocolVersion server_version) {
         this.server_version = server_version;
     }
 
     @Override
-    public ProtocolVersionImpl getProtocolVersion() {
+    public ProtocolVersion getProtocolVersion() {
         return server_version;
     }
 
     @Override
-    public void setExtensions(Vector<ExtensionImpl> extensions) {
+    public void setExtensions(Vector<Extension> extensions) {
         this.extensions = extensions;
     }
 
     @Override
-    public void addExtension(ExtensionImpl extension) {
+    public void addExtension(Extension extension) {
         extensions.add(extension);
     }
 
@@ -57,8 +56,8 @@ public class HelloRetryRequestImpl implements HelloRetryRequest {
     }
 
     @Override
-    public ExtensionImpl getExtension(ExtensionTypeImpl type) {
-        for (ExtensionImpl extension : extensions.toList()) {
+    public Extension getExtension(ExtensionType type) {
+        for (Extension extension : extensions.toList()) {
             if (type.equals(extension.getExtensionType())) {
                 return extension;
             }
@@ -68,7 +67,7 @@ public class HelloRetryRequestImpl implements HelloRetryRequest {
     }
 
     @Override
-    public Vector<ExtensionImpl> getExtensions() {
+    public Vector<Extension> getExtensions() {
         return extensions;
     }
 
@@ -83,15 +82,15 @@ public class HelloRetryRequestImpl implements HelloRetryRequest {
     }
 
     @Override
-    public HandshakeTypeImpl type() {
-        return HandshakeTypeImpl.hello_retry_request;
+    public HandshakeType type() {
+        return HandshakeType.hello_retry_request;
     }
 
-    public static HelloRetryRequestImpl parse(byte[] bytes) {
+    public static HelloRetryRequest parse(byte[] bytes) {
         return parse(ByteBuffer.wrap(bytes));
     }
     
-    public static HelloRetryRequestImpl parse(ByteBuffer buffer) {
+    public static HelloRetryRequest parse(ByteBuffer buffer) {
         return new HelloRetryRequestImpl(
                 ProtocolVersionImpl.parse(buffer), 
                 CipherSuiteImpl.parse(buffer), 

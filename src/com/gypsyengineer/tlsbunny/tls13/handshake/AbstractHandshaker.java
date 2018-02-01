@@ -5,28 +5,29 @@ import com.gypsyengineer.tlsbunny.tls13.crypto.AEAD;
 import com.gypsyengineer.tlsbunny.tls13.crypto.ApplicationDataChannel;
 import com.gypsyengineer.tlsbunny.tls13.crypto.HKDF;
 import com.gypsyengineer.tlsbunny.tls13.crypto.TranscriptHash;
-import com.gypsyengineer.tlsbunny.tls13.struct.impl.AlertImpl;
-import com.gypsyengineer.tlsbunny.tls13.struct.impl.CertificateImpl;
-import com.gypsyengineer.tlsbunny.tls13.struct.impl.CertificateRequestImpl;
-import com.gypsyengineer.tlsbunny.tls13.struct.impl.CertificateVerifyImpl;
-import com.gypsyengineer.tlsbunny.tls13.struct.impl.CipherSuiteImpl;
-import com.gypsyengineer.tlsbunny.tls13.struct.impl.ClientHelloImpl;
-import com.gypsyengineer.tlsbunny.tls13.struct.impl.EncryptedExtensionsImpl;
-import com.gypsyengineer.tlsbunny.tls13.struct.impl.EndOfEarlyDataImpl;
-import com.gypsyengineer.tlsbunny.tls13.struct.impl.FinishedImpl;
-import com.gypsyengineer.tlsbunny.tls13.struct.impl.HandshakeImpl;
-import com.gypsyengineer.tlsbunny.tls13.struct.impl.HelloRetryRequestImpl;
-import com.gypsyengineer.tlsbunny.tls13.struct.impl.NamedGroupImpl;
-import com.gypsyengineer.tlsbunny.tls13.struct.impl.ServerHelloImpl;
-import com.gypsyengineer.tlsbunny.tls13.struct.impl.SignatureSchemeImpl;
+import com.gypsyengineer.tlsbunny.tls13.struct.Alert;
+import com.gypsyengineer.tlsbunny.tls13.struct.Certificate;
+import com.gypsyengineer.tlsbunny.tls13.struct.CertificateRequest;
+import com.gypsyengineer.tlsbunny.tls13.struct.CertificateVerify;
+import com.gypsyengineer.tlsbunny.tls13.struct.CipherSuite;
+import com.gypsyengineer.tlsbunny.tls13.struct.ClientHello;
+import com.gypsyengineer.tlsbunny.tls13.struct.EncryptedExtensions;
+import com.gypsyengineer.tlsbunny.tls13.struct.EndOfEarlyData;
+import com.gypsyengineer.tlsbunny.tls13.struct.Finished;
+import com.gypsyengineer.tlsbunny.tls13.struct.Handshake;
+import com.gypsyengineer.tlsbunny.tls13.struct.HelloRetryRequest;
+import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
+import com.gypsyengineer.tlsbunny.tls13.struct.ServerHello;
+import com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
-import com.gypsyengineer.tlsbunny.tls13.struct.impl.StructFactoryImpl;
-import com.gypsyengineer.tlsbunny.tls13.struct.impl.TLSPlaintextImpl;
 import com.gypsyengineer.tlsbunny.utils.Connection;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import com.gypsyengineer.tlsbunny.tls13.struct.HandshakeMessage;
+import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
+import com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme;
+import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 
 public abstract class AbstractHandshaker implements Handshaker {
 
@@ -61,11 +62,11 @@ public abstract class AbstractHandshaker implements Handshaker {
     static final long DEFAULT_SEED = 0;
     static final long SEED = Long.getLong("tlsbunny.seed", DEFAULT_SEED);
     
-    final StructFactoryImpl factory;
-    final SignatureSchemeImpl scheme;
-    final NamedGroupImpl group;
+    final StructFactory factory;
+    final SignatureScheme scheme;
+    final NamedGroup group;
     final Negotiator negotiator;
-    final CipherSuiteImpl ciphersuite;
+    final CipherSuite ciphersuite;
     final HKDF hkdf;
     final Context context = new Context();
     // TODO: add TranscriptHash field
@@ -97,12 +98,12 @@ public abstract class AbstractHandshaker implements Handshaker {
     AEAD handshakeEncryptor;
     AEAD handshakeDecryptor;
     
-    AlertImpl receivedAlert;
+    Alert receivedAlert;
     
     ApplicationDataChannel applicationData;
 
-    AbstractHandshaker(StructFactoryImpl factory, SignatureSchemeImpl scheme, NamedGroupImpl group, 
-            Negotiator negotiator, CipherSuiteImpl ciphersuite, HKDF hkdf) {
+    AbstractHandshaker(StructFactory factory, SignatureScheme scheme, NamedGroup group, 
+            Negotiator negotiator, CipherSuite ciphersuite, HKDF hkdf) {
         
         this.factory = factory;
         this.scheme = scheme;
@@ -113,47 +114,47 @@ public abstract class AbstractHandshaker implements Handshaker {
     }
     
     @Override
-    public ClientHelloImpl createClientHello() throws Exception {
+    public ClientHello createClientHello() throws Exception {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public ServerHelloImpl createServerHello() throws Exception {
+    public ServerHello createServerHello() throws Exception {
         throw new UnsupportedOperationException(); 
     }
 
     @Override
-    public HelloRetryRequestImpl createHelloRetryRequest() throws Exception {
+    public HelloRetryRequest createHelloRetryRequest() throws Exception {
         throw new UnsupportedOperationException(); 
     }
 
     @Override
-    public EncryptedExtensionsImpl createEncryptedExtensions() throws Exception {
+    public EncryptedExtensions createEncryptedExtensions() throws Exception {
         throw new UnsupportedOperationException(); 
     }
 
     @Override
-    public CertificateRequestImpl createCertificateRequest() throws Exception {
+    public CertificateRequest createCertificateRequest() throws Exception {
         throw new UnsupportedOperationException(); 
     }
 
     @Override
-    public CertificateImpl createCertificate() throws Exception {
+    public Certificate createCertificate() throws Exception {
         throw new UnsupportedOperationException(); 
     }
 
     @Override
-    public CertificateVerifyImpl createCertificateVerify() throws Exception {
+    public CertificateVerify createCertificateVerify() throws Exception {
         throw new UnsupportedOperationException(); 
     }
 
     @Override
-    public EndOfEarlyDataImpl createEndOfEarlyData() throws Exception {
+    public EndOfEarlyData createEndOfEarlyData() throws Exception {
         throw new UnsupportedOperationException(); 
     }
 
     @Override
-    public FinishedImpl createFinished() throws Exception {
+    public Finished createFinished() throws Exception {
         throw new UnsupportedOperationException(); 
     }
 
@@ -178,7 +179,7 @@ public abstract class AbstractHandshaker implements Handshaker {
     }
 
     @Override
-    public AlertImpl getReceivedAlert() {
+    public Alert getReceivedAlert() {
         return receivedAlert;
     }
 
@@ -232,16 +233,16 @@ public abstract class AbstractHandshaker implements Handshaker {
                     server_application_write_iv));
     }
     
-    HandshakeImpl[] allMessages() throws IOException {
-        List<HandshakeImpl> list = new ArrayList<>();
+    Handshake[] allMessages() throws IOException {
+        List<Handshake> list = new ArrayList<>();
         for (HandshakeMessage message : context.allMessages()) {
             list.add(toHandshake(message));
         }
         
-        return list.toArray(new HandshakeImpl[list.size()]);
+        return list.toArray(new Handshake[list.size()]);
     }
     
-    HandshakeImpl toHandshake(HandshakeMessage message) throws IOException {
+    Handshake toHandshake(HandshakeMessage message) throws IOException {
         return factory.createHandshake(message.type(), message.encoding());
     }
     

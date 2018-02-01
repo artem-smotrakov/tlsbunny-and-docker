@@ -4,27 +4,26 @@ import com.gypsyengineer.tlsbunny.tls.Vector;
 import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import com.gypsyengineer.tlsbunny.tls.Struct;
 import com.gypsyengineer.tlsbunny.tls13.struct.KeyShareEntry;
+import com.gypsyengineer.tlsbunny.tls13.struct.*; // TODO
 
 public class KeyShareEntryImpl implements KeyShareEntry {
 
-
-    private NamedGroupImpl group;
+    private NamedGroup group;
     private Vector<Byte> key_exchange;
 
-    private KeyShareEntryImpl(NamedGroupImpl group, Vector<Byte> key_exchange) {
+    private KeyShareEntryImpl(NamedGroup group, Vector<Byte> key_exchange) {
         this.group = group;
         this.key_exchange = key_exchange;
     }
 
     @Override
-    public NamedGroupImpl getNamedGroup() {
+    public NamedGroup getNamedGroup() {
         return group;
     }
 
     @Override
-    public void setNamedGroup(NamedGroupImpl group) {
+    public void setNamedGroup(NamedGroup group) {
         this.group = group;
     }
 
@@ -48,21 +47,21 @@ public class KeyShareEntryImpl implements KeyShareEntry {
         return Utils.encoding(group, key_exchange);
     }
 
-    public static KeyShareEntryImpl parse(ByteBuffer buffer) {
-        NamedGroupImpl group = NamedGroupImpl.parse(buffer);
+    public static KeyShareEntry parse(ByteBuffer buffer) {
+        NamedGroup group = NamedGroupImpl.parse(buffer);
         Vector<Byte> key_exchange = Vector.parseOpaqueVector(
                 buffer, KEY_EXCHANGE_LENGTH_BYTES);
         
         return new KeyShareEntryImpl(group, key_exchange);
     }
     
-    public static KeyShareEntryImpl wrap(NamedGroupImpl group, UncompressedPointRepresentationImpl upr) {
+    public static KeyShareEntry wrap(NamedGroup group, UncompressedPointRepresentation upr) throws IOException {
         return new KeyShareEntryImpl(
                 group, 
                 Vector.wrap(KEY_EXCHANGE_LENGTH_BYTES, upr.encoding()));
     }
     
-    public static KeyShareEntryImpl wrap(NamedGroupImpl group, byte[] bytes) {
+    public static KeyShareEntry wrap(NamedGroup group, byte[] bytes) {
         return new KeyShareEntryImpl(
                 group, 
                 Vector.wrap(KEY_EXCHANGE_LENGTH_BYTES, bytes));

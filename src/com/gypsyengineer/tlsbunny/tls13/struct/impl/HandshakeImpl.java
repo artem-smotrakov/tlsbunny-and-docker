@@ -5,16 +5,16 @@ import com.gypsyengineer.tlsbunny.tls.UInt24;
 import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import com.gypsyengineer.tlsbunny.tls.Struct;
 import com.gypsyengineer.tlsbunny.tls13.struct.Handshake;
+import com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType;
 
 public class HandshakeImpl implements Handshake {
 
-    private HandshakeTypeImpl msg_type;
+    private HandshakeType msg_type;
     private UInt24 length;
     private Bytes body;
 
-    HandshakeImpl(HandshakeTypeImpl msg_type, UInt24 length, Bytes body) {
+    HandshakeImpl(HandshakeType msg_type, UInt24 length, Bytes body) {
         this.msg_type = msg_type;
         this.length = length;
         this.body = body;
@@ -35,7 +35,7 @@ public class HandshakeImpl implements Handshake {
     }
 
     @Override
-    public void setMessageType(HandshakeTypeImpl msg_type) {
+    public void setMessageType(HandshakeType msg_type) {
         this.msg_type = msg_type;
     }
 
@@ -50,7 +50,7 @@ public class HandshakeImpl implements Handshake {
     }
 
     @Override
-    public HandshakeTypeImpl getMessageType() {
+    public HandshakeType getMessageType() {
         return msg_type;
     }
 

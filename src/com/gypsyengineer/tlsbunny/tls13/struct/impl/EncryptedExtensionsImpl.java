@@ -2,15 +2,15 @@ package com.gypsyengineer.tlsbunny.tls13.struct.impl;
 
 import com.gypsyengineer.tlsbunny.tls.Vector;
 import com.gypsyengineer.tlsbunny.tls13.struct.EncryptedExtensions;
+import com.gypsyengineer.tlsbunny.tls13.struct.Extension;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
 public class EncryptedExtensionsImpl implements EncryptedExtensions {
 
+    private Vector<Extension> extensions;
 
-    private Vector<ExtensionImpl> extensions;
-
-    EncryptedExtensionsImpl(Vector<ExtensionImpl> extensions) {
+    EncryptedExtensionsImpl(Vector<Extension> extensions) {
         this.extensions = extensions;
     }
 
@@ -30,12 +30,12 @@ public class EncryptedExtensionsImpl implements EncryptedExtensions {
     }
 
     @Override
-    public Vector<ExtensionImpl> getExtensions() {
+    public Vector<Extension> getExtensions() {
         return extensions;
     }
 
     @Override
-    public void setExtensions(Vector<ExtensionImpl> extensions) {
+    public void setExtensions(Vector<Extension> extensions) {
         this.extensions = extensions;
     }
     
