@@ -16,6 +16,7 @@ import static com.gypsyengineer.tlsbunny.utils.Utils.info;
 
 public class MutationClientFuzzer {
 
+    public static final String ALL_TARGETS = "all";
     public static final int DEFAULT_TESTS_NUMBER = 10000;
     public static final byte[] HTTP_GET_REQUEST = "GET / HTTP/1.1\n\n".getBytes();
 
@@ -53,6 +54,10 @@ public class MutationClientFuzzer {
         }
 
         if (targets.length != 0) {
+            if (ALL_TARGETS.equals(targets[0])) {
+                targets = fuzzer.getAvailableTargets();
+            }
+
             info("okay, we're going to fuzz the following targets:%n    %s",
                     String.join(",", targets));
             info("we're going to run %d tests for each target", testsNumber);

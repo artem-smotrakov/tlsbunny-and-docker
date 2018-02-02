@@ -12,6 +12,6 @@ public interface TLSPlaintext extends Struct {
     boolean containsHandshake();
     byte[] getFragment();
     ProtocolVersion getLegacyRecordVersion();
-    UInt16 getLength();
+    UInt16 getFragmentLength();
     ContentType getType();
 }

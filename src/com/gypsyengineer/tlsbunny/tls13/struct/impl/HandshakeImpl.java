@@ -39,7 +39,7 @@ public class HandshakeImpl implements Handshake {
     }
 
     @Override
-    public UInt24 getLength() {
+    public UInt24 getBodyLength() {
         return length;
     }
 

@@ -2,6 +2,8 @@ package com.gypsyengineer.tlsbunny.tls13.fuzzer;
 
 import com.gypsyengineer.tlsbunny.tls.UInt16;
 import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
+import com.gypsyengineer.tlsbunny.tls13.struct.Handshake;
+import com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType;
 import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactoryWrapper;
@@ -15,7 +17,7 @@ import java.util.Arrays;
 public class MutatedStructFactory extends StructFactoryWrapper
         implements Fuzzer<byte[]> {
 
-    public static enum Target { tlsplaintext }
+    public static enum Target { tlsplaintext, handshake }
     public static enum Mode { byte_flip, bit_flip }
 
     public static final Target DEFAULT_TARGET = Target.tlsplaintext;
@@ -61,6 +63,22 @@ public class MutatedStructFactory extends StructFactoryWrapper
         }
 
         return tlsPlaintexts;
+    }
+
+    @Override
+    public Handshake createHandshake(HandshakeType type, byte[] content) {
+        Handshake handshake = factory.createHandshake(type, content);
+
+        if (target == Target.handshake) {
+            Utils.info("fuzz Handshake");
+            try {
+                handshake = new MutatedStruct(fuzz(handshake.encoding()));
+            } catch (IOException e) {
+                achtung("I couldn't fuzz Handshake: %s", e.getMessage());
+            }
+        }
+
+        return handshake;
     }
 
     @Override

@@ -16,6 +16,6 @@ public interface Handshake extends Struct {
     boolean containsNewSessionTicket();
     boolean containsServerHello();
     byte[] getBody();
-    UInt24 getLength();
+    UInt24 getBodyLength();
     HandshakeType getMessageType();
 }

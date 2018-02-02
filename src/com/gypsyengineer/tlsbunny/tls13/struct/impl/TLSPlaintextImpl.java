@@ -45,7 +45,7 @@ public class TLSPlaintextImpl implements TLSPlaintext {
     }
 
     @Override
-    public UInt16 getLength() {
+    public UInt16 getFragmentLength() {
         return length;
     }
 
