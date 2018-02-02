@@ -40,7 +40,6 @@ import com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
 import com.gypsyengineer.tlsbunny.tls13.struct.UncompressedPointRepresentation;
 import com.gypsyengineer.tlsbunny.utils.Utils;
-import java.io.IOException;
 import java.util.List;
 
 // TODO: all implementation should return immutable vectors
@@ -166,27 +165,7 @@ public class StructFactoryImpl implements StructFactory {
     }
     
     @Override
-    public Extension wrap(SupportedVersions supportedVersions) throws IOException {
-        return wrap(ExtensionType.supported_versions, supportedVersions.encoding());
-    }
-    
-    @Override
-    public Extension wrap(SignatureSchemeList signatureSchemeList) throws IOException {
-        return wrap(ExtensionType.signature_algorithms, signatureSchemeList.encoding());
-    }
-    
-    @Override
-    public Extension wrap(NamedGroupList namedGroupList) throws IOException {
-        return wrap(ExtensionType.supported_groups, namedGroupList.encoding());
-    }
-    
-    @Override
-    public Extension wrap(KeyShare keyShare) throws IOException {
-        return wrap(ExtensionType.key_share, keyShare.encoding());
-    }
-    
-    @Override
-    public Extension wrap(ExtensionType type, byte[] bytes) {
+    public Extension createExtension(ExtensionType type, byte[] bytes) {
         return new ExtensionImpl(
                 type, 
                 Vector.wrap(Extension.EXTENSION_DATA_LENGTH_BYTES, bytes));

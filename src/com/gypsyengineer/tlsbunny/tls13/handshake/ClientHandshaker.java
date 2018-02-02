@@ -33,10 +33,13 @@ import com.gypsyengineer.tlsbunny.tls13.struct.HandshakeMessage;
 import com.gypsyengineer.tlsbunny.tls13.struct.HelloRetryRequest;
 import com.gypsyengineer.tlsbunny.tls13.struct.KeyShare;
 import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
+import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroupList;
 import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
 import com.gypsyengineer.tlsbunny.tls13.struct.ServerHello;
 import com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme;
+import com.gypsyengineer.tlsbunny.tls13.struct.SignatureSchemeList;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
+import com.gypsyengineer.tlsbunny.tls13.struct.SupportedVersions;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext;
 
 public class ClientHandshaker extends AbstractHandshaker {
@@ -61,10 +64,10 @@ public class ClientHandshaker extends AbstractHandshaker {
     @Override
     public ClientHello createClientHello() throws Exception {
         List<Extension> extensions = List.of( 
-                factory.wrap(factory.createSupportedVersionForClientHello(ProtocolVersion.TLSv13)),
-                factory.wrap(factory.createSignatureSchemeList(scheme)),
-                factory.wrap(factory.createNamedGroupList(group)),
-                factory.wrap(factory.createKeyShareForClientHello(negotiator.createKeyShareEntry())));
+                wrap(factory.createSupportedVersionForClientHello(ProtocolVersion.TLSv13)),
+                wrap(factory.createSignatureSchemeList(scheme)),
+                wrap(factory.createNamedGroupList(group)),
+                wrap(factory.createKeyShareForClientHello(negotiator.createKeyShareEntry())));
         
         ClientHello hello = factory.createClientHello(ProtocolVersion.TLSv12, 
                 createRandom(), 
@@ -398,6 +401,26 @@ public class ClientHandshaker extends AbstractHandshaker {
         }
         
         return applicationData;
+    }
+    
+    private Extension wrap(SupportedVersions supportedVersions) throws IOException {
+        return factory.createExtension(
+                ExtensionType.supported_versions, supportedVersions.encoding());
+    }
+    
+    private Extension wrap(SignatureSchemeList signatureSchemeList) throws IOException {
+        return factory.createExtension(
+                ExtensionType.signature_algorithms, signatureSchemeList.encoding());
+    }
+    
+    private Extension wrap(NamedGroupList namedGroupList) throws IOException {
+        return factory.createExtension(
+                ExtensionType.supported_groups, namedGroupList.encoding());
+    }
+    
+    private Extension wrap(KeyShare keyShare) throws IOException {
+        return factory.createExtension(
+                ExtensionType.key_share, keyShare.encoding());
     }
     
     private boolean requestedClientAuth() {

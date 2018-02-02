@@ -3,7 +3,6 @@ package com.gypsyengineer.tlsbunny.tls13.struct;
 import com.gypsyengineer.tlsbunny.tls.Random;
 import com.gypsyengineer.tlsbunny.tls13.struct.impl.StructFactoryImpl;
 import com.gypsyengineer.tlsbunny.utils.Utils;
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
@@ -56,12 +55,7 @@ public interface StructFactory {
     SignatureSchemeList createSignatureSchemeList(SignatureScheme scheme);
     NamedGroupList createNamedGroupList(NamedGroup group);
     CertificateEntry.X509 createX509CertificateEntry(byte[] bytes);
-    
-    public Extension wrap(SupportedVersions supportedVersions) throws IOException;
-    public Extension wrap(SignatureSchemeList signatureSchemeList) throws IOException;
-    public Extension wrap(NamedGroupList namedGroupList) throws IOException;
-    public Extension wrap(KeyShare keyShare) throws IOException;
-    public Extension wrap(ExtensionType type, byte[] bytes);
+    Extension createExtension(ExtensionType type, byte[] bytes);
     
     StructParser parser();
 }
