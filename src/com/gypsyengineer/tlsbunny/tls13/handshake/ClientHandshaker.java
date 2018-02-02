@@ -11,12 +11,10 @@ import com.gypsyengineer.tlsbunny.tls13.struct.CertificateVerify;
 import com.gypsyengineer.tlsbunny.tls13.struct.CipherSuite;
 import com.gypsyengineer.tlsbunny.tls13.struct.ClientHello;
 import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
-import com.gypsyengineer.tlsbunny.tls13.struct.EncryptedExtensions;
 import com.gypsyengineer.tlsbunny.tls13.struct.Extension;
 import com.gypsyengineer.tlsbunny.tls13.struct.ExtensionType;
 import com.gypsyengineer.tlsbunny.tls13.struct.Finished;
 import com.gypsyengineer.tlsbunny.tls13.struct.Handshake;
-import com.gypsyengineer.tlsbunny.tls13.struct.HandshakeMessage;
 import com.gypsyengineer.tlsbunny.tls13.struct.HelloRetryRequest;
 import com.gypsyengineer.tlsbunny.tls13.struct.KeyShare;
 import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
@@ -63,36 +61,27 @@ public class ClientHandshaker extends AbstractHandshaker {
 
     @Override
     public ClientHello createClientHello() throws Exception {
-        List<Extension> extensions = List.of( 
+        List<Extension> extensions = List.of(
                 wrap(factory.createSupportedVersionForClientHello(ProtocolVersion.TLSv13)),
                 wrap(factory.createSignatureSchemeList(scheme)),
                 wrap(factory.createNamedGroupList(group)),
                 wrap(factory.createKeyShareForClientHello(negotiator.createKeyShareEntry())));
-        
-        ClientHello hello = factory.createClientHello(ProtocolVersion.TLSv12, 
-                createRandom(), 
-                StructFactory.EMPTY_SESSION_ID, 
-                List.of(CipherSuite.TLS_AES_128_GCM_SHA256), 
-                List.of(factory.createCompressionMethod(0)), 
+
+        ClientHello hello = factory.createClientHello(ProtocolVersion.TLSv12,
+                createRandom(),
+                StructFactory.EMPTY_SESSION_ID,
+                List.of(CipherSuite.TLS_AES_128_GCM_SHA256),
+                List.of(factory.createCompressionMethod(0)),
                 extensions);
-        
-        if (!context.hasFirstClientHello()) {
-            context.setFirstClientHello(hello);
-        } else if (!context.hasSecondClientHello()) {
-            context.setSecondClientHello(hello); 
-        } else {
-            throw new RuntimeException();
-        }
 
         return hello;
     }
 
     @Override
     public Certificate createCertificate() throws IOException {
-        context.setClientCertificate(factory.createCertificate(certificate_request_context.bytes(), 
-                    factory.createX509CertificateEntry(clientCertificate.getCertData())));
-
-        return context.getClientCertificate();
+        return factory.createCertificate(
+                certificate_request_context.bytes(),
+                factory.createX509CertificateEntry(clientCertificate.getCertData()));
     }
 
     @Override
@@ -101,7 +90,7 @@ public class ClientHandshaker extends AbstractHandshaker {
                 CERTIFICATE_VERIFY_PREFIX,
                 CERTIFICATE_VERIFY_CONTEXT_STRING,
                 new byte[] { 0 },
-                TranscriptHash.compute(ciphersuite.hash(), allMessages()));
+                TranscriptHash.compute(ciphersuite.hash(), context.allMessages()));
 
         Signature signature = Signature.getInstance("SHA256withECDSA");
         signature.initSign(
@@ -109,24 +98,24 @@ public class ClientHandshaker extends AbstractHandshaker {
                         new PKCS8EncodedKeySpec(clientCertificate.getKeyData())));
         signature.update(content);
 
-        context.setClientCertificateVerify(factory.createCertificateVerify(SignatureScheme.ecdsa_secp256r1_sha256,
-                    signature.sign()));
-
-        return context.getClientCertificateVerify();
+        return factory.createCertificateVerify(
+                SignatureScheme.ecdsa_secp256r1_sha256, signature.sign());
     }
 
     @Override
     public Finished createFinished() throws Exception {
         byte[] verify_data = hkdf.hmac(
                 finished_key,
-                TranscriptHash.compute(ciphersuite.hash(), allMessages()));
+                TranscriptHash.compute(ciphersuite.hash(), context.allMessages()));
 
-        context.setClientFinished(factory.createFinished(verify_data));
+        return factory.createFinished(verify_data);
+    }
 
+    private void computeKeysAfterClientFinished() throws Exception {
         resumption_master_secret = hkdf.deriveSecret(
                 master_secret,
                 res_master,
-                allMessages());
+                context.allMessages());
         client_application_write_key = hkdf.expandLabel(
                 client_application_traffic_secret_0,
                 key,
@@ -147,28 +136,29 @@ public class ClientHandshaker extends AbstractHandshaker {
                 iv,
                 ZERO_HASH_VALUE,
                 ciphersuite.ivLength());
-
-        return context.getClientFinished();
     }
 
-    private void handleHelloRetryRequest(HelloRetryRequest helloRetryRequest) {
-        context.setHelloRetryRequest(helloRetryRequest);
+    private void handleHelloRetryRequest(Handshake handshake) {
+        HelloRetryRequest helloRetryRequest = parser.parseHelloRetryRequest(
+                handshake.getBody());
+        context.setHelloRetryRequest(handshake);
     }
 
-    void handleServerHello(ServerHello serverHello) throws Exception {
+    void handleServerHello(Handshake handshake) throws Exception {
+        ServerHello serverHello = parser.parseServerHello(handshake.getBody());
         KeyShare.ServerHello keyShare = findKeyShare(serverHello);
 
         negotiator.processKeyShareEntry(keyShare.getServerShare());
         dh_shared_secret = negotiator.generateSecret();
 
-        context.setServerHello(serverHello);
+        context.setServerHello(handshake);
         if (!ciphersuite.equals(serverHello.getCipherSuite())) {
             throw new RuntimeException();
         }
 
         byte[] psk = zeroes(hkdf.getHashLength());
 
-        Handshake wrappedClientHello = toHandshake(context.getFirstClientHello());
+        Handshake wrappedClientHello = context.getFirstClientHello();
 
         early_secret = hkdf.extract(ZERO_SALT, psk);
         binder_key = hkdf.deriveSecret(
@@ -185,17 +175,15 @@ public class ClientHandshaker extends AbstractHandshaker {
 
         handshake_secret_salt = hkdf.deriveSecret(early_secret, derived);
 
-        Handshake wrappedServerHello = toHandshake(serverHello);
-
         handshake_secret = hkdf.extract(handshake_secret_salt, dh_shared_secret);
         client_handshake_traffic_secret = hkdf.deriveSecret(
                 handshake_secret,
                 c_hs_traffic,
-                wrappedClientHello, wrappedServerHello);
+                wrappedClientHello, handshake);
         server_handshake_traffic_secret = hkdf.deriveSecret(
                 handshake_secret,
                 s_hs_traffic,
-                wrappedClientHello, wrappedServerHello);
+                wrappedClientHello, handshake);
         master_secret = hkdf.extract(
                 hkdf.deriveSecret(handshake_secret, derived),
                 zeroes(hkdf.getHashLength()));
@@ -228,60 +216,72 @@ public class ClientHandshaker extends AbstractHandshaker {
 
         handshakeEncryptor = AEAD.createEncryptor(
                 ciphersuite.cipher(),
-                client_handshake_write_key, 
+                client_handshake_write_key,
                 client_handshake_write_iv);
         handshakeDecryptor = AEAD.createDecryptor(
                 ciphersuite.cipher(),
-                server_handshake_write_key, 
+                server_handshake_write_key,
                 server_handshake_write_iv);
     }
 
-    private void handleCertificateRequest(CertificateRequest certificateRequest) {
+    private void handleCertificateRequest(Handshake handshake) {
+        CertificateRequest certificateRequest = parser.parseCertificateRequest(
+                handshake.getBody());
         certificate_request_context = certificateRequest.getCertificateRequestContext();
-        context.setServerCertificateRequest(certificateRequest);
+        context.setServerCertificateRequest(handshake);
     }
 
-    private void handleCertificate(Certificate certificate) {
-         context.setServerCertificate(certificate);
+    private void handleCertificate(Handshake handshake) {
+        parser.parseCertificate(
+                handshake.getBody(),
+                buf -> parser.parseX509CertificateEntry(buf));
+        context.setServerCertificate(handshake);
     }
 
-    private void handleCertificateVerify(CertificateVerify certificateVerify) {
-        context.setServerCertificateVerify(certificateVerify);
+    private void handleCertificateVerify(Handshake handshake) {
+        parser.parseCertificateVerify(handshake.getBody());
+        context.setServerCertificateVerify(handshake);
     }
 
-    private void handleEncryptedExtensions(EncryptedExtensions encryptedExtensions) {
-        context.setEncryptedExtensions(encryptedExtensions);
+    private void handleEncryptedExtensions(Handshake handshake) {
+        parser.parseEncryptedExtensions(handshake.getBody());
+        context.setEncryptedExtensions(handshake);
     }
 
-    private void handleFinished(Finished message) throws Exception {
+    private void handleFinished(Handshake handshake) throws Exception {
+        Finished message = parser.parseFinished(
+                handshake.getBody(),
+                ciphersuite.hashLength());
+
         byte[] verify_key = hkdf.expandLabel(
                 server_handshake_traffic_secret,
                 finished,
                 ZERO_HASH_VALUE,
                 hkdf.getHashLength());
 
-        byte[] verify_data = hkdf.hmac(verify_key,
-                TranscriptHash.compute(ciphersuite.hash(), allMessages()));
+        byte[] verify_data = hkdf.hmac(
+                verify_key,
+                TranscriptHash.compute(ciphersuite.hash(), context.allMessages()));
 
         boolean success = Arrays.equals(verify_data, message.getVerifyData());
         if (!success) {
             throw new RuntimeException();
         }
 
-        context.setServerFinished(message);
+        context.setServerFinished(handshake);
 
         client_application_traffic_secret_0 = hkdf.deriveSecret(
                 master_secret,
                 c_ap_traffic,
-                allMessages());
+                context.allMessages());
         server_application_traffic_secret_0 = hkdf.deriveSecret(
                 master_secret,
                 s_ap_traffic,
-                allMessages());
+                context.allMessages());
         exporter_master_secret = hkdf.deriveSecret(
                 master_secret,
                 exp_master,
-                allMessages());
+                context.allMessages());
     }
 
     @Override
@@ -312,23 +312,19 @@ public class ClientHandshaker extends AbstractHandshaker {
 
     void handle(Handshake handshake) throws Exception {
         if (handshake.containsHelloRetryRequest()) {
-            handleHelloRetryRequest(parser.parseHelloRetryRequest(handshake.getBody()));
+            handleHelloRetryRequest(handshake);
         } else if (handshake.containsServerHello()) {
-            handleServerHello(parser.parseServerHello(handshake.getBody()));
+            handleServerHello(handshake);
         } else if (handshake.containsEncryptedExtensions()) {
-            handleEncryptedExtensions(parser.parseEncryptedExtensions(handshake.getBody()));
+            handleEncryptedExtensions(handshake);
         } else if (handshake.containsCertificateRequest()) {
-            handleCertificateRequest(parser.parseCertificateRequest(handshake.getBody()));
+            handleCertificateRequest(handshake);
         } else if (handshake.containsCertificate()) {
-            handleCertificate(parser.parseCertificate(
-                    handshake.getBody(), 
-                    buf -> parser.parseX509CertificateEntry(buf)));
+            handleCertificate(handshake);
         } else if (handshake.containsCertificateVerify()) {
-            handleCertificateVerify(parser.parseCertificateVerify(handshake.getBody()));
+            handleCertificateVerify(handshake);
         } else if (handshake.containsFinished()) {
-            handleFinished(parser.parseFinished(
-                    handshake.getBody(), 
-                    ciphersuite.hashLength()));
+            handleFinished(handshake);
         } else {
             throw new RuntimeException();
         }
@@ -339,17 +335,13 @@ public class ClientHandshaker extends AbstractHandshaker {
                 handshakeDecryptor.decrypt(tlsPlaintext.getFragment()));
     }
 
-    TLSPlaintext[] encrypt(HandshakeMessage message) throws Exception {
-        return encrypt(toHandshake(message));
-    }
-
     private TLSPlaintext[] encrypt(Handshake message) throws Exception {
         return encrypt(factory.createTLSInnerPlaintext(ContentType.handshake, message.encoding(), NO_PADDING));
     }
 
     private TLSPlaintext[] encrypt(TLSInnerPlaintext message) throws Exception {
-        return factory.createTLSPlaintexts(ContentType.application_data, 
-                ProtocolVersion.TLSv10, 
+        return factory.createTLSPlaintexts(ContentType.application_data,
+                ProtocolVersion.TLSv10,
                 handshakeEncryptor.encrypt(message.encoding()));
     }
 
@@ -357,10 +349,13 @@ public class ClientHandshaker extends AbstractHandshaker {
     public ApplicationDataChannel start(Connection connection) throws Exception {
         reset();
 
-        connection.send(factory.createTLSPlaintexts(ContentType.handshake, 
-                ProtocolVersion.TLSv10, 
-                toHandshake(createClientHello()).encoding()));
-        
+        Handshake handshake = toHandshake(createClientHello());
+        connection.send(factory.createTLSPlaintexts(ContentType.handshake,
+                ProtocolVersion.TLSv10,
+                handshake.encoding()));
+
+        context.setFirstClientHello(handshake);
+
         ByteBuffer buffer = ByteBuffer.wrap(connection.read());
         if (buffer.remaining() == 0) {
             return NO_APPLICATION_DATA_CHANNEL;
@@ -370,83 +365,94 @@ public class ClientHandshaker extends AbstractHandshaker {
             TLSPlaintext tlsPlaintext = parser.parseTLSPlaintext(buffer);
             handle(tlsPlaintext);
         }
-        
-        if (receivedAlert()) {            
+
+        if (receivedAlert()) {
             return NO_APPLICATION_DATA_CHANNEL;
         }
 
         if (requestedClientAuth()) {
-            connection.send(encrypt(createCertificate()));
-            connection.send(encrypt(createCertificateVerify()));
+            Certificate certificate = createCertificate();
+            handshake = toHandshake(certificate);
+            connection.send(encrypt(handshake));
+            context.setClientCertificate(handshake);
+
+            CertificateVerify certificateVerify = createCertificateVerify();
+            handshake = toHandshake(certificateVerify);
+            connection.send(encrypt(handshake));
+            context.setClientCertificateVerify(handshake);
         }
-        
-        connection.send(encrypt(createFinished()));
-        
+
+        Finished clientFinished = createFinished();
+        handshake = toHandshake(clientFinished);
+        context.setClientFinished(handshake);
+        computeKeysAfterClientFinished();
+        connection.send(encrypt(handshake));
+
         applicationData = createApplicationDataChannel(connection);
-     
+
         buffer = ByteBuffer.wrap(connection.read());
         if (buffer.remaining() == 0) {
             return NO_APPLICATION_DATA_CHANNEL;
         }
-        
+
         TLSInnerPlaintext tlsInnerPlaintext = parser.parseTLSInnerPlaintext(
                 applicationData.decrypt(
                         parser.parseTLSPlaintext(buffer).getFragment()));
-        
+
         if (tlsInnerPlaintext.containsHandshake()) {
-            Handshake handshake = parser.parseHandshake(tlsInnerPlaintext.getContent());
+            handshake = parser.parseHandshake(tlsInnerPlaintext.getContent());
             if (!handshake.containsNewSessionTicket()) {
                 return NO_APPLICATION_DATA_CHANNEL;
             }
-            
+
             // TODO: handle NewSessionTicket
         }
-        
+
         if (tlsInnerPlaintext.containsApplicationData()) {
             throw new RuntimeException("Oops, I can't handle application data!");
         }
-        
+
         return applicationData;
     }
-    
+
     private Extension wrap(SupportedVersions supportedVersions) throws IOException {
         return factory.createExtension(
                 ExtensionType.supported_versions, supportedVersions.encoding());
     }
-    
+
     private Extension wrap(SignatureSchemeList signatureSchemeList) throws IOException {
         return factory.createExtension(
                 ExtensionType.signature_algorithms, signatureSchemeList.encoding());
     }
-    
+
     private Extension wrap(NamedGroupList namedGroupList) throws IOException {
         return factory.createExtension(
                 ExtensionType.supported_groups, namedGroupList.encoding());
     }
-    
+
     private Extension wrap(KeyShare keyShare) throws IOException {
         return factory.createExtension(
                 ExtensionType.key_share, keyShare.encoding());
     }
-    
+
     private boolean requestedClientAuth() {
         return certificate_request_context != null;
     }
-    
+
     private KeyShare.ServerHello findKeyShare(ServerHello hello) throws IOException {
         return parser.parseKeyShareFromServerHello(
                 hello.findExtension(ExtensionType.key_share)
                         .getExtensionData().bytes());
     }
-    
-    public static ClientHandshaker create(StructFactory factory, 
+
+    public static ClientHandshaker create(StructFactory factory,
             SignatureScheme scheme, NamedGroup group,
             Negotiator negotiator, CipherSuite ciphersuite,
             CertificateHolder clientCertificate) throws Exception {
 
         return new ClientHandshaker(
-                factory, scheme, group, negotiator, ciphersuite, 
-                HKDF.create(ciphersuite.hash(), factory), 
+                factory, scheme, group, negotiator, ciphersuite,
+                HKDF.create(ciphersuite.hash(), factory),
                 clientCertificate);
     }
 

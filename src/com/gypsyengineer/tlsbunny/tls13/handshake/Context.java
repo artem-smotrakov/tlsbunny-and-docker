@@ -1,33 +1,24 @@
 package com.gypsyengineer.tlsbunny.tls13.handshake;
 
-import com.gypsyengineer.tlsbunny.tls13.struct.HandshakeMessage;
-import com.gypsyengineer.tlsbunny.tls13.struct.Certificate;
-import com.gypsyengineer.tlsbunny.tls13.struct.CertificateRequest;
-import com.gypsyengineer.tlsbunny.tls13.struct.CertificateVerify;
-import com.gypsyengineer.tlsbunny.tls13.struct.ClientHello;
-import com.gypsyengineer.tlsbunny.tls13.struct.EncryptedExtensions;
-import com.gypsyengineer.tlsbunny.tls13.struct.EndOfEarlyData;
-import com.gypsyengineer.tlsbunny.tls13.struct.Finished;
-import com.gypsyengineer.tlsbunny.tls13.struct.HelloRetryRequest;
-import com.gypsyengineer.tlsbunny.tls13.struct.ServerHello;
+import com.gypsyengineer.tlsbunny.tls13.struct.Handshake;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Context {
 
-    private ClientHello            firstClientHello;
-    private HelloRetryRequest      helloRetryRequest;
-    private ClientHello            secondClientHello;
-    private ServerHello            serverHello;
-    private EncryptedExtensions    encryptedExtensions;
-    private CertificateRequest     serverCertificateRequest;
-    private Certificate            serverCertificate;
-    private CertificateVerify      serverCertificateVerify;
-    private Finished               serverFinished;
-    private EndOfEarlyData         endOfEarlyData;
-    private Certificate            clientCertificate;
-    private CertificateVerify      clientCertificateVerify;
-    private Finished               clientFinished;
+    private Handshake firstClientHello;
+    private Handshake helloRetryRequest;
+    private Handshake secondClientHello;
+    private Handshake serverHello;
+    private Handshake encryptedExtensions;
+    private Handshake serverCertificateRequest;
+    private Handshake serverCertificate;
+    private Handshake serverCertificateVerify;
+    private Handshake serverFinished;
+    private Handshake endOfEarlyData;
+    private Handshake clientCertificate;
+    private Handshake clientCertificateVerify;
+    private Handshake clientFinished;
 
     public void reset() {
         firstClientHello = null;
@@ -53,112 +44,112 @@ public class Context {
         return secondClientHello != null;
     }
 
-    public ClientHello getFirstClientHello() {
+    public Handshake getFirstClientHello() {
         return firstClientHello;
     }
 
-    public void setFirstClientHello(ClientHello firstClientHello) {
+    public void setFirstClientHello(Handshake firstClientHello) {
         this.firstClientHello = firstClientHello;
     }
 
-    public HelloRetryRequest getHelloRetryRequest() {
+    public Handshake getHelloRetryRequest() {
         return helloRetryRequest;
     }
 
-    public void setHelloRetryRequest(HelloRetryRequest helloRetryRequest) {
+    public void setHelloRetryRequest(Handshake helloRetryRequest) {
         this.helloRetryRequest = helloRetryRequest;
     }
 
-    public ClientHello getSecondClientHello() {
+    public Handshake getSecondClientHello() {
         return secondClientHello;
     }
 
-    public void setSecondClientHello(ClientHello secondClientHello) {
+    public void setSecondClientHello(Handshake secondClientHello) {
         this.secondClientHello = secondClientHello;
     }
 
-    public ServerHello getServerHello() {
+    public Handshake getServerHello() {
         return serverHello;
     }
 
-    public void setServerHello(ServerHello serverHello) {
+    public void setServerHello(Handshake serverHello) {
         this.serverHello = serverHello;
     }
 
-    public EncryptedExtensions getEncryptedExtensions() {
+    public Handshake getEncryptedExtensions() {
         return encryptedExtensions;
     }
 
-    public void setEncryptedExtensions(EncryptedExtensions encryptedExtensions) {
+    public void setEncryptedExtensions(Handshake encryptedExtensions) {
         this.encryptedExtensions = encryptedExtensions;
     }
 
-    public CertificateRequest getServerCertificateRequest() {
+    public Handshake getServerCertificateRequest() {
         return serverCertificateRequest;
     }
 
-    public void setServerCertificateRequest(CertificateRequest serverCertificateRequest) {
+    public void setServerCertificateRequest(Handshake serverCertificateRequest) {
         this.serverCertificateRequest = serverCertificateRequest;
     }
 
-    public Certificate getServerCertificate() {
+    public Handshake getServerCertificate() {
         return serverCertificate;
     }
 
-    public void setServerCertificate(Certificate serverCertificate) {
+    public void setServerCertificate(Handshake serverCertificate) {
         this.serverCertificate = serverCertificate;
     }
 
-    public CertificateVerify getServerCertificateVerify() {
+    public Handshake getServerCertificateVerify() {
         return serverCertificateVerify;
     }
 
-    public void setServerCertificateVerify(CertificateVerify serverCertificateVerify) {
+    public void setServerCertificateVerify(Handshake serverCertificateVerify) {
         this.serverCertificateVerify = serverCertificateVerify;
     }
 
-    public Finished getServerFinished() {
+    public Handshake getServerFinished() {
         return serverFinished;
     }
 
-    public void setServerFinished(Finished serverFinished) {
+    public void setServerFinished(Handshake serverFinished) {
         this.serverFinished = serverFinished;
     }
 
-    public EndOfEarlyData getEndOfEarlyData() {
+    public Handshake getEndOfEarlyData() {
         return endOfEarlyData;
     }
 
-    public void setEndOfEarlyData(EndOfEarlyData endOfEarlyData) {
+    public void setEndOfEarlyData(Handshake endOfEarlyData) {
         this.endOfEarlyData = endOfEarlyData;
     }
 
-    public Certificate getClientCertificate() {
+    public Handshake getClientCertificate() {
         return clientCertificate;
     }
 
-    public void setClientCertificate(Certificate clientCertificate) {
+    public void setClientCertificate(Handshake clientCertificate) {
         this.clientCertificate = clientCertificate;
     }
 
-    public CertificateVerify getClientCertificateVerify() {
+    public Handshake getClientCertificateVerify() {
         return clientCertificateVerify;
     }
 
-    public void setClientCertificateVerify(CertificateVerify clientCertificateVerify) {
+    public void setClientCertificateVerify(Handshake clientCertificateVerify) {
         this.clientCertificateVerify = clientCertificateVerify;
     }
 
-    public Finished getClientFinished() {
+    public Handshake getClientFinished() {
         return clientFinished;
     }
 
-    public void setClientFinished(Finished clientFinished) {
+    public void setClientFinished(Handshake clientFinished) {
         this.clientFinished = clientFinished;
     }
 
-    public HandshakeMessage[] allMessages() {
-        HandshakeMessage[] messages = new HandshakeMessage[] {
+    public Handshake[] allMessages() {
+        Handshake[] messages = new Handshake[] {
                 firstClientHello,
                 helloRetryRequest,
                 secondClientHello,
@@ -174,13 +165,13 @@ public class Context {
                 clientFinished
         };
 
-        List<HandshakeMessage> list = new ArrayList<>();
-        for (HandshakeMessage message : messages) {
+        List<Handshake> list = new ArrayList<>();
+        for (Handshake message : messages) {
             if (message != null) {
                 list.add(message);
             }
         }
 
-        return list.toArray(new HandshakeMessage[list.size()]);
+        return list.toArray(new Handshake[list.size()]);
     }
 }

@@ -25,8 +25,6 @@ import com.gypsyengineer.tlsbunny.tls13.struct.StructParser;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
 import com.gypsyengineer.tlsbunny.utils.Connection;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 public abstract class AbstractHandshaker implements Handshaker {
 
@@ -60,12 +58,12 @@ public abstract class AbstractHandshaker implements Handshaker {
 
     static final long DEFAULT_SEED = 0;
     static final long SEED = Long.getLong("tlsbunny.seed", DEFAULT_SEED);
-    
+
     static final ApplicationDataChannel NO_APPLICATION_DATA_CHANNEL = null;
-    
+
     final StructFactory factory;
     final StructParser parser;
-    
+
     final SignatureScheme scheme;
     final NamedGroup group;
     final Negotiator negotiator;
@@ -73,7 +71,7 @@ public abstract class AbstractHandshaker implements Handshaker {
     final HKDF hkdf;
     final Context context = new Context();
     // TODO: add TranscriptHash field
-    
+
     byte[] dh_shared_secret;
     byte[] early_secret;
     byte[] binder_key;
@@ -97,27 +95,27 @@ public abstract class AbstractHandshaker implements Handshaker {
     byte[] client_application_write_iv;
     byte[] server_application_write_key;
     byte[] server_application_write_iv;
-    
+
     AEAD handshakeEncryptor;
     AEAD handshakeDecryptor;
-    
+
     Alert receivedAlert;
-    
+
     ApplicationDataChannel applicationData;
 
-    AbstractHandshaker(StructFactory factory, SignatureScheme scheme, NamedGroup group, 
+    AbstractHandshaker(StructFactory factory, SignatureScheme scheme, NamedGroup group,
             Negotiator negotiator, CipherSuite ciphersuite, HKDF hkdf) {
-        
+
         this.factory = factory;
         this.parser = factory.parser();
-        
+
         this.scheme = scheme;
         this.group = group;
         this.negotiator = negotiator;
         this.ciphersuite = ciphersuite;
         this.hkdf = hkdf;
     }
-    
+
     @Override
     public ClientHello createClientHello() throws Exception {
         throw new UnsupportedOperationException();
@@ -125,52 +123,52 @@ public abstract class AbstractHandshaker implements Handshaker {
 
     @Override
     public ServerHello createServerHello() throws Exception {
-        throw new UnsupportedOperationException(); 
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public HelloRetryRequest createHelloRetryRequest() throws Exception {
-        throw new UnsupportedOperationException(); 
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public EncryptedExtensions createEncryptedExtensions() throws Exception {
-        throw new UnsupportedOperationException(); 
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public CertificateRequest createCertificateRequest() throws Exception {
-        throw new UnsupportedOperationException(); 
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public Certificate createCertificate() throws Exception {
-        throw new UnsupportedOperationException(); 
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public CertificateVerify createCertificateVerify() throws Exception {
-        throw new UnsupportedOperationException(); 
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public EndOfEarlyData createEndOfEarlyData() throws Exception {
-        throw new UnsupportedOperationException(); 
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public Finished createFinished() throws Exception {
-        throw new UnsupportedOperationException(); 
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void handle(TLSPlaintext tlsPlaintext) throws Exception {
-        throw new UnsupportedOperationException(); 
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public ApplicationDataChannel start(Connection connection) throws Exception {
-        throw new UnsupportedOperationException(); 
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -216,71 +214,62 @@ public abstract class AbstractHandshaker implements Handshaker {
 
         handshakeEncryptor = null;
         handshakeDecryptor = null;
-        
+
         applicationData = null;
 
         context.reset();
     }
-    
-    ApplicationDataChannel createApplicationDataChannel(Connection connection) 
+
+    ApplicationDataChannel createApplicationDataChannel(Connection connection)
             throws Exception {
-        
+
         return new ApplicationDataChannel(
                 factory,
-                connection, 
+                connection,
                 AEAD.createEncryptor(
                     ciphersuite.cipher(),
-                    client_application_write_key, 
-                    client_application_write_iv), 
+                    client_application_write_key,
+                    client_application_write_iv),
                 AEAD.createDecryptor(
                     ciphersuite.cipher(),
-                    server_application_write_key, 
+                    server_application_write_key,
                     server_application_write_iv));
     }
-    
-    Handshake[] allMessages() throws IOException {
-        List<Handshake> list = new ArrayList<>();
-        for (HandshakeMessage message : context.allMessages()) {
-            list.add(toHandshake(message));
-        }
-        
-        return list.toArray(new Handshake[list.size()]);
-    }
-    
+
     Handshake toHandshake(HandshakeMessage message) throws IOException {
         return factory.createHandshake(message.type(), message.encoding());
     }
-    
+
     byte[] getCurrentHash() throws Exception {
         return TranscriptHash.compute(
                 ciphersuite.hash(),
-                allMessages());
+                context.allMessages());
     }
-    
+
     Context getContext() {
         return context;
     }
-    
+
     byte[] getEarlySecret() {
         return early_secret.clone();
     }
-    
+
     byte[] getHandshakeSecret() {
         return handshake_secret.clone();
     }
-    
+
     byte[] getHandshakeSecretSalt() {
         return handshake_secret_salt.clone();
     }
-    
+
     byte[] getClientHandshakeTrafficSecret() {
         return client_handshake_traffic_secret.clone();
     }
-    
+
     byte[] getServerHandshakeTrafficSecret() {
         return server_handshake_traffic_secret.clone();
     }
-    
+
     byte[] getMasterSecret() {
         return master_secret.clone();
     }
@@ -288,58 +277,58 @@ public abstract class AbstractHandshaker implements Handshaker {
     byte[] getClientHandshakeWriteKey() {
         return client_handshake_write_key.clone();
     }
-    
+
     byte[] getClientHandshakeWriteIv() {
         return client_handshake_write_iv.clone();
     }
-    
+
     byte[] getServerHandshakeWriteKey() {
         return server_handshake_write_key.clone();
     }
-    
+
     byte[] getServerHandshakeWriteIv() {
         return server_handshake_write_iv.clone();
     }
-    
+
     byte[] getClientApplicationTrafficSecret0() {
         return client_application_traffic_secret_0.clone();
     }
-    
+
     byte[] getServerApplicationTrafficSecret0() {
         return server_application_traffic_secret_0.clone();
     }
-    
+
     byte[] getExporterMasterSecret() {
         return exporter_master_secret.clone();
     }
-    
+
     byte[] getServerApplicationWriteKey() {
         return server_application_write_key.clone();
     }
-    
+
     byte[] getServerApplicationWriteIv() {
         return server_application_write_iv.clone();
     }
-    
+
     byte[] getClientApplicationWriteKey() {
         return client_application_write_key.clone();
     }
-    
+
     byte[] getClientApplicationWriteIv() {
         return client_application_write_iv.clone();
     }
-    
+
     byte[] getFinishedKey() {
         return finished_key.clone();
     }
-    
+
     static Random createRandom() {
         java.util.Random generator = new java.util.Random(SEED);
         byte[] random_bytes = new byte[Random.LENGTH];
         generator.nextBytes(random_bytes);
         Random random = new Random();
         random.setBytes(random_bytes);
-       
+
         return random;
     }
 
