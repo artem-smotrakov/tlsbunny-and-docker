@@ -12,6 +12,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.CipherSuite;
 import com.gypsyengineer.tlsbunny.tls13.struct.ClientHello;
 import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
 import com.gypsyengineer.tlsbunny.tls13.struct.EncryptedExtensions;
+import com.gypsyengineer.tlsbunny.tls13.struct.Extension;
 import com.gypsyengineer.tlsbunny.tls13.struct.ExtensionType;
 import com.gypsyengineer.tlsbunny.tls13.struct.Finished;
 import com.gypsyengineer.tlsbunny.tls13.struct.Handshake;
@@ -32,13 +33,10 @@ import com.gypsyengineer.tlsbunny.tls13.struct.HandshakeMessage;
 import com.gypsyengineer.tlsbunny.tls13.struct.HelloRetryRequest;
 import com.gypsyengineer.tlsbunny.tls13.struct.KeyShare;
 import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
-import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroupList;
 import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
 import com.gypsyengineer.tlsbunny.tls13.struct.ServerHello;
 import com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme;
-import com.gypsyengineer.tlsbunny.tls13.struct.SignatureSchemeList;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
-import com.gypsyengineer.tlsbunny.tls13.struct.SupportedVersions;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext;
 
 public class ClientHandshaker extends AbstractHandshaker {
@@ -62,19 +60,19 @@ public class ClientHandshaker extends AbstractHandshaker {
 
     @Override
     public ClientHello createClientHello() throws Exception {
+        List<Extension> extensions = List.of( 
+                factory.wrap(factory.createSupportedVersionForClientHello(ProtocolVersion.TLSv13)),
+                factory.wrap(factory.createSignatureSchemeList(scheme)),
+                factory.wrap(factory.createNamedGroupList(group)),
+                factory.wrap(factory.createKeyShareForClientHello(negotiator.createKeyShareEntry())));
+        
         ClientHello hello = factory.createClientHello(ProtocolVersion.TLSv12, 
                 createRandom(), 
                 StructFactory.EMPTY_SESSION_ID, 
                 List.of(CipherSuite.TLS_AES_128_GCM_SHA256), 
                 List.of(factory.createCompressionMethod(0)), 
-                StructFactory.NO_EXTENSIONS);
+                extensions);
         
-        hello.addExtension(factory.wrap(
-                factory.createSupportedVersionForClientHello(ProtocolVersion.TLSv13)));
-        hello.addExtension(factory.wrap(factory.createSignatureSchemeList(scheme)));
-        hello.addExtension(factory.wrap(factory.createNamedGroupList(group)));
-        hello.addExtension(factory.wrap(factory.createKeyShareForClientHello(negotiator.createKeyShareEntry())));
-
         if (!context.hasFirstClientHello()) {
             context.setFirstClientHello(hello);
         } else if (!context.hasSecondClientHello()) {

@@ -13,7 +13,7 @@ public abstract class KeyShareImpl implements Struct {
     
     public static class ClientHelloImpl extends KeyShareImpl implements ClientHello {
 
-        private Vector<KeyShareEntry> client_shares;
+        private final Vector<KeyShareEntry> client_shares;
 
         ClientHelloImpl() {
             this(Vector.wrap(LENGTH_BYTES));
@@ -23,21 +23,6 @@ public abstract class KeyShareImpl implements Struct {
             this.client_shares = client_shares;
         }
 
-        @Override
-        public void set(KeyShareEntry keyShareEntry) {
-            client_shares = Vector.wrap(LENGTH_BYTES, keyShareEntry);
-        }
-
-        @Override
-        public void set(Vector<KeyShareEntry> client_shares) {
-            this.client_shares = client_shares;
-        }
-
-        @Override
-        public void clear() {
-            client_shares.clear();
-        }
-        
         @Override
         public int encodingLength() {
             return client_shares.encodingLength();

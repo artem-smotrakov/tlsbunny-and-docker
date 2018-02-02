@@ -61,16 +61,6 @@ public class ServerHelloImpl implements ServerHello {
     }
 
     @Override
-    public void addExtension(Extension extension) {
-        extensions.add(extension);
-    }
-
-    @Override
-    public void clearExtensions() {
-        extensions.clear();
-    }
-
-    @Override
     public Extension findExtension(ExtensionType type) {
         for (Extension extension : extensions.toList()) {
             if (type.equals(extension.getExtensionType())) {

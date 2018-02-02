@@ -65,18 +65,8 @@ public class ClientHelloImpl implements ClientHello {
     }
 
     @Override
-    public void addCompressionMethod(CompressionMethod method) {
-        legacy_compression_methods.add(method);
-    }
-
-    @Override
     public Vector<CompressionMethod> getLegacyCompressionMethods() {
         return legacy_compression_methods;
-    }
-
-    @Override
-    public void addCipherSuite(CipherSuite cipher_suite) {
-        cipher_suites.add(cipher_suite);
     }
 
     @Override
@@ -97,16 +87,6 @@ public class ClientHelloImpl implements ClientHello {
     @Override
     public Vector<Extension> getExtensions() {
         return extensions;
-    }
-
-    @Override
-    public void addExtension(Extension extension) {
-        extensions.add(extension);
-    }
-
-    @Override
-    public void clearExtensions() {
-        extensions.clear();
     }
 
     @Override

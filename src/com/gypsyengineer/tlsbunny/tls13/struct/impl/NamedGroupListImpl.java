@@ -7,19 +7,9 @@ import java.io.IOException;
 
 public class NamedGroupListImpl implements NamedGroupList {
 
-    private Vector<NamedGroup> named_group_list;
+    private final Vector<NamedGroup> named_group_list;
 
     NamedGroupListImpl(Vector<NamedGroup> named_group_list) {
-        this.named_group_list = named_group_list;
-    }
-
-    @Override
-    public void set(NamedGroup group) {
-        named_group_list = Vector.wrap(LENGTH_BYTES, group);
-    }
-
-    @Override
-    public void set(Vector<NamedGroup> named_group_list) {
         this.named_group_list = named_group_list;
     }
 

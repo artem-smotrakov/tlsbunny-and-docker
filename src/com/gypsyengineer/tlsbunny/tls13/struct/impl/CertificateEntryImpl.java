@@ -7,10 +7,9 @@ import com.gypsyengineer.tlsbunny.tls13.struct.ExtensionType;
 import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.io.IOException;
 
-// TODO: make it immutable
 public abstract class CertificateEntryImpl implements CertificateEntry {
 
-    Vector<Extension> extensions;
+    final Vector<Extension> extensions;
 
     CertificateEntryImpl(Vector<Extension> extensions) {
         this.extensions = extensions;
@@ -19,21 +18,6 @@ public abstract class CertificateEntryImpl implements CertificateEntry {
     @Override
     public Vector<Extension> getExtensions() {
         return extensions;
-    }
-
-    @Override
-    public void setExtensions(Vector<Extension> extensions) {
-        this.extensions = extensions;
-    }
-
-    @Override
-    public void addExtension(Extension extension) {
-        extensions.add(extension);
-    }
-
-    @Override
-    public void clearExtensions() {
-        extensions.clear();
     }
 
     @Override
@@ -49,7 +33,7 @@ public abstract class CertificateEntryImpl implements CertificateEntry {
     
     public static class X509Impl extends CertificateEntryImpl implements X509 {
     
-        private Vector<Byte> cert_data;
+        private final Vector<Byte> cert_data;
         
         public X509Impl(Vector<Byte> cert_data, Vector<Extension> extensions) {
             super(extensions);
@@ -76,7 +60,7 @@ public abstract class CertificateEntryImpl implements CertificateEntry {
     public static class RawPublicKeyImpl extends CertificateEntryImpl 
             implements RawPublicKey {
     
-        private Vector<Byte> ASN1_subjectPublicKeyInfo;
+        private final Vector<Byte> ASN1_subjectPublicKeyInfo;
         
         public RawPublicKeyImpl(Vector<Byte> ASN1_subjectPublicKeyInfo, 
                 Vector<Extension> extensions) {

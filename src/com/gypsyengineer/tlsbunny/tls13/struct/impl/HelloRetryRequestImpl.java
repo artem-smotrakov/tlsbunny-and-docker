@@ -35,16 +35,6 @@ public class HelloRetryRequestImpl implements HelloRetryRequest {
     }
 
     @Override
-    public void addExtension(Extension extension) {
-        extensions.add(extension);
-    }
-
-    @Override
-    public void clearExtensions() {
-        extensions.clear();
-    }
-
-    @Override
     public Extension getExtension(ExtensionType type) {
         for (Extension extension : extensions.toList()) {
             if (type.equals(extension.getExtensionType())) {

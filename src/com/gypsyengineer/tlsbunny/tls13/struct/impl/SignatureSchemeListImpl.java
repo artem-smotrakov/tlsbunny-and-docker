@@ -14,22 +14,10 @@ public class SignatureSchemeListImpl implements SignatureSchemeList {
     }
 
     @Override
-    public void set(SignatureScheme signatureScheme) {
-        supported_signature_algorithms = Vector.wrap(LENGTH_BYTES, signatureScheme);
-    }
-
-    @Override
     public Vector<SignatureScheme> getSupportedSignatureAlgorithms() {
         return supported_signature_algorithms;
     }
 
-    @Override
-    public void setSupportedSignatureAlgorithms(
-            Vector<SignatureScheme> supported_signature_algorithms) {
-
-        this.supported_signature_algorithms = supported_signature_algorithms;
-    }
-    
     @Override
     public int encodingLength() {
         return supported_signature_algorithms.encodingLength();

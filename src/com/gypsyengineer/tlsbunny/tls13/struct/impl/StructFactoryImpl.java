@@ -44,7 +44,7 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.List;
 
-// TODO: make all implementations immutable
+// TODO: all implementation should return immutable vectors
 public class StructFactoryImpl implements StructFactory {
 
     @Override
