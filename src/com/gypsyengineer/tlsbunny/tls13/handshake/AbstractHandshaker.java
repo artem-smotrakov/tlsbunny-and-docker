@@ -26,6 +26,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.HandshakeMessage;
 import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
 import com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
+import com.gypsyengineer.tlsbunny.tls13.struct.StructParser;
 
 public abstract class AbstractHandshaker implements Handshaker {
 
@@ -61,6 +62,8 @@ public abstract class AbstractHandshaker implements Handshaker {
     static final long SEED = Long.getLong("tlsbunny.seed", DEFAULT_SEED);
     
     final StructFactory factory;
+    final StructParser parser;
+    
     final SignatureScheme scheme;
     final NamedGroup group;
     final Negotiator negotiator;
@@ -104,6 +107,8 @@ public abstract class AbstractHandshaker implements Handshaker {
             Negotiator negotiator, CipherSuite ciphersuite, HKDF hkdf) {
         
         this.factory = factory;
+        this.parser = factory.parser();
+        
         this.scheme = scheme;
         this.group = group;
         this.negotiator = negotiator;

@@ -72,7 +72,7 @@ public class ECDHENegotiator extends AbstractNegotiator {
             throws IOException {
         
         UncompressedPointRepresentation upr = 
-                factory.parseUncompressedPointRepresentation(
+                factory.parser().parseUncompressedPointRepresentation(
                         entry.getKeyExchange().bytes(), 
                         getCoordinateLength(getGroup()));
         

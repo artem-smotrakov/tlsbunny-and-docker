@@ -296,11 +296,11 @@ public class ClientHandshaker extends AbstractHandshaker {
         }
 
         if (ContentType.alert.equals(type)) {
-            receivedAlert = factory.parseAlert(tlsPlaintext.getFragment());
+            receivedAlert = parser.parseAlert(tlsPlaintext.getFragment());
         } else if (ContentType.handshake.equals(type)) {
             ByteBuffer buffer = ByteBuffer.wrap(content);
             while (buffer.remaining() > 0) {
-                handle(factory.parseHandshake(buffer));
+                handle(parser.parseHandshake(buffer));
             }
         } else {
             throw new RuntimeException();
@@ -309,21 +309,21 @@ public class ClientHandshaker extends AbstractHandshaker {
 
     void handle(Handshake handshake) throws Exception {
         if (handshake.containsHelloRetryRequest()) {
-            handleHelloRetryRequest(factory.parseHelloRetryRequest(handshake.getBody()));
+            handleHelloRetryRequest(parser.parseHelloRetryRequest(handshake.getBody()));
         } else if (handshake.containsServerHello()) {
-            handleServerHello(factory.parseServerHello(handshake.getBody()));
+            handleServerHello(parser.parseServerHello(handshake.getBody()));
         } else if (handshake.containsEncryptedExtensions()) {
-            handleEncryptedExtensions(factory.parseEncryptedExtensions(handshake.getBody()));
+            handleEncryptedExtensions(parser.parseEncryptedExtensions(handshake.getBody()));
         } else if (handshake.containsCertificateRequest()) {
-            handleCertificateRequest(factory.parseCertificateRequest(handshake.getBody()));
+            handleCertificateRequest(parser.parseCertificateRequest(handshake.getBody()));
         } else if (handshake.containsCertificate()) {
-            handleCertificate(factory.parseCertificate(
+            handleCertificate(parser.parseCertificate(
                     handshake.getBody(), 
-                    buf -> factory.parseX509CertificateEntry(buf)));
+                    buf -> parser.parseX509CertificateEntry(buf)));
         } else if (handshake.containsCertificateVerify()) {
-            handleCertificateVerify(factory.parseCertificateVerify(handshake.getBody()));
+            handleCertificateVerify(parser.parseCertificateVerify(handshake.getBody()));
         } else if (handshake.containsFinished()) {
-            handleFinished(factory.parseFinished(
+            handleFinished(parser.parseFinished(
                     handshake.getBody(), 
                     ciphersuite.hashLength()));
         } else {
@@ -332,7 +332,7 @@ public class ClientHandshaker extends AbstractHandshaker {
     }
 
     TLSInnerPlaintext decrypt(TLSPlaintext tlsPlaintext) throws Exception {
-        return factory.parseTLSInnerPlaintext(
+        return parser.parseTLSInnerPlaintext(
                 handshakeDecryptor.decrypt(tlsPlaintext.getFragment()));
     }
 
@@ -364,7 +364,7 @@ public class ClientHandshaker extends AbstractHandshaker {
         }
 
         while (buffer.remaining() > 0) {
-            TLSPlaintext tlsPlaintext = factory.parseTLSPlaintext(buffer);
+            TLSPlaintext tlsPlaintext = parser.parseTLSPlaintext(buffer);
             handle(tlsPlaintext);
         }
         
@@ -381,11 +381,11 @@ public class ClientHandshaker extends AbstractHandshaker {
         
         applicationData = createApplicationDataChannel(connection);
      
-        TLSInnerPlaintext tlsInnerPlaintext = factory.parseTLSInnerPlaintext(applicationData.decrypt(
-                factory.parseTLSPlaintext(connection.read()).getFragment()));
+        TLSInnerPlaintext tlsInnerPlaintext = parser.parseTLSInnerPlaintext(applicationData.decrypt(
+                parser.parseTLSPlaintext(connection.read()).getFragment()));
         
         if (tlsInnerPlaintext.containsHandshake()) {
-            Handshake handshake = factory.parseHandshake(tlsInnerPlaintext.getContent());
+            Handshake handshake = parser.parseHandshake(tlsInnerPlaintext.getContent());
             if (!handshake.containsNewSessionTicket()) {
                 throw new RuntimeException();
             }
@@ -405,7 +405,7 @@ public class ClientHandshaker extends AbstractHandshaker {
     }
     
     private KeyShare.ServerHello findKeyShare(ServerHello hello) throws IOException {
-        return factory.parseKeyShareFromServerHello(
+        return parser.parseKeyShareFromServerHello(
                 hello.findExtension(ExtensionType.key_share)
                         .getExtensionData().bytes());
     }

@@ -24,7 +24,7 @@ public class ApplicationDataChannel {
     }
     
     public byte[] receive() throws Exception {
-        TLSPlaintext tlsPlaintext = factory.parseTLSPlaintext(connection.read());
+        TLSPlaintext tlsPlaintext = factory.parser().parseTLSPlaintext(connection.read());
 
         if (!tlsPlaintext.containsApplicationData()) {
             throw new RuntimeException();
@@ -44,7 +44,8 @@ public class ApplicationDataChannel {
     }
         
     public byte[] decrypt(byte[] ciphertext) throws Exception {
-        return factory.parseTLSInnerPlaintext(decryptor.decrypt(ciphertext)).getContent();
+        return factory.parser().parseTLSInnerPlaintext(
+                decryptor.decrypt(ciphertext)).getContent();
     }
 
     public byte[] encrypt(byte[] plaintext) throws Exception {
