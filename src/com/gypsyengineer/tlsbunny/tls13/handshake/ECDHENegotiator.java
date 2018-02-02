@@ -1,8 +1,9 @@
 package com.gypsyengineer.tlsbunny.tls13.handshake;
 
-import com.gypsyengineer.tlsbunny.tls13.struct.*; // TODO
-import com.gypsyengineer.tlsbunny.tls13.struct.impl.KeyShareEntryImpl;
-import com.gypsyengineer.tlsbunny.tls13.struct.impl.UncompressedPointRepresentationImpl;
+import com.gypsyengineer.tlsbunny.tls13.struct.KeyShareEntry;
+import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
+import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
+import com.gypsyengineer.tlsbunny.tls13.struct.UncompressedPointRepresentation;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.InvalidAlgorithmParameterException;
@@ -18,33 +19,32 @@ import java.security.spec.ECPublicKeySpec;
 import java.util.Arrays;
 import javax.crypto.KeyAgreement;
 
-public class ECDHENegotiator implements Negotiator {
+public class ECDHENegotiator extends AbstractNegotiator {
 
-    private final NamedGroup.Secp group;
     private final SecpParameters secpParameters;
     private final KeyAgreement keyAgreement;
     private final KeyPairGenerator generator;
-    private final StructFactory factory;
 
     private ECDHENegotiator(NamedGroup.Secp group, SecpParameters secpParameters, 
             KeyAgreement keyAgreement, KeyPairGenerator generator, StructFactory factory) {
         
-        this.group = group;
+        super(group, factory);
         this.secpParameters = secpParameters;
         this.keyAgreement = keyAgreement;
         this.generator = generator;
-        this.factory = factory;
     }
 
     @Override
     public KeyShareEntry  createKeyShareEntry() throws Exception {
         KeyPair kp = generator.generateKeyPair();
         keyAgreement.init(kp.getPrivate());
+        ECPoint W = ((ECPublicKey) kp.getPublic()).getW();
         
-        return KeyShareEntryImpl.wrap(
-                group, createUPR(((ECPublicKey) kp.getPublic()).getW(), group));
+        return factory.createKeyShareEntry(
+                group, 
+                createUPR(W).encoding());
     }
-
+    
     @Override
     public void processKeyShareEntry(KeyShareEntry entry) throws Exception {
         if (!group.equals(entry.getNamedGroup())) {
@@ -53,7 +53,7 @@ public class ECDHENegotiator implements Negotiator {
 
         PublicKey key = KeyFactory.getInstance("EC").generatePublic(
                 new ECPublicKeySpec(
-                        convertToECPoint(entry, group), 
+                        convertToECPoint(entry), 
                         secpParameters.ecParameterSpec));
 
         keyAgreement.doPhase(key, true);
@@ -64,21 +64,23 @@ public class ECDHENegotiator implements Negotiator {
         return keyAgreement.generateSecret();
     }
     
-    private ECPoint convertToECPoint(KeyShareEntry entry, NamedGroup.Secp group) 
+    private NamedGroup.Secp getGroup() {
+        return (NamedGroup.Secp) group;
+    }
+    
+    private ECPoint convertToECPoint(KeyShareEntry entry) 
             throws IOException {
         
-        UncompressedPointRepresentation  upr = 
-                factory.parseUncompressedPointRepresentationImpl(
+        UncompressedPointRepresentation upr = 
+                factory.parseUncompressedPointRepresentation(
                         entry.getKeyExchange().bytes(), 
-                        getCoordinateLength(group));
+                        getCoordinateLength(getGroup()));
         
         return new ECPoint(new BigInteger(upr.getX()), new BigInteger(upr.getY()));
     }
     
-    private UncompressedPointRepresentation createUPR(
-            ECPoint point, NamedGroup.Secp group) {
-
-        int coordinate_length = getCoordinateLength(group);
+    private UncompressedPointRepresentation createUPR(ECPoint point) {
+        int coordinate_length = getCoordinateLength(getGroup());
         return factory.createUncompressedPointRepresentation(
                 toBytes(point.getAffineX(), coordinate_length), 
                 toBytes(point.getAffineY(), coordinate_length));
@@ -98,7 +100,7 @@ public class ECDHENegotiator implements Negotiator {
                 generator, factory);
     }
 
-    public static int getCoordinateLength(NamedGroup.Secp group) {
+    private static int getCoordinateLength(NamedGroup.Secp group) {
         switch (group.getCurve()) {
             case "secp256r1":
                 return 32;

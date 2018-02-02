@@ -47,7 +47,7 @@ public class NamedGroupImpl implements NamedGroup {
         return this.code == other.code;
     }
 
-    public static class SecpImpl extends NamedGroupImpl implements Secp {
+    static class SecpImpl extends NamedGroupImpl implements Secp {
 
         private final String curve;
         
@@ -63,7 +63,7 @@ public class NamedGroupImpl implements NamedGroup {
 
     }
 
-    public static class XImpl extends NamedGroupImpl implements X {
+    static class XImpl extends NamedGroupImpl implements X {
 
         XImpl(int code) {
             super(code);
@@ -71,7 +71,7 @@ public class NamedGroupImpl implements NamedGroup {
 
     }
 
-    public static class FFDHEImpl extends NamedGroupImpl implements FFDHE {
+    static class FFDHEImpl extends NamedGroupImpl implements FFDHE {
 
         FFDHEImpl(int code) {
             super(code);

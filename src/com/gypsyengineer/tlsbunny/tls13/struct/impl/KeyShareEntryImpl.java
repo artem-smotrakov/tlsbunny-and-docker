@@ -5,7 +5,6 @@ import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.io.IOException;
 import com.gypsyengineer.tlsbunny.tls13.struct.KeyShareEntry;
 import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
-import com.gypsyengineer.tlsbunny.tls13.struct.UncompressedPointRepresentation;
 
 public class KeyShareEntryImpl implements KeyShareEntry {
 
@@ -45,18 +44,6 @@ public class KeyShareEntryImpl implements KeyShareEntry {
     @Override
     public byte[] encoding() throws IOException {
         return Utils.encoding(group, key_exchange);
-    }
-
-    public static KeyShareEntry wrap(NamedGroup group, UncompressedPointRepresentation upr) throws IOException {
-        return new KeyShareEntryImpl(
-                group, 
-                Vector.wrap(KEY_EXCHANGE_LENGTH_BYTES, upr.encoding()));
-    }
-    
-    public static KeyShareEntry wrap(NamedGroup group, byte[] bytes) {
-        return new KeyShareEntryImpl(
-                group, 
-                Vector.wrap(KEY_EXCHANGE_LENGTH_BYTES, bytes));
     }
 
 }

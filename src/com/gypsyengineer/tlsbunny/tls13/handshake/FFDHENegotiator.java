@@ -1,7 +1,8 @@
 package com.gypsyengineer.tlsbunny.tls13.handshake;
 
-import com.gypsyengineer.tlsbunny.tls13.struct.*; // TODO
-import com.gypsyengineer.tlsbunny.tls13.struct.impl.KeyShareEntryImpl;
+import com.gypsyengineer.tlsbunny.tls13.struct.KeyShareEntry;
+import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
+import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.Convertor;
 import java.math.BigInteger;
 import java.security.KeyFactory;
@@ -19,15 +20,17 @@ public class FFDHENegotiator extends AbstractNegotiator {
     private final byte[] publicPart;
 
     private FFDHENegotiator(NamedGroup  group, KeyAgreement keyAgreement, 
-            FFDHEParemeters parameters, byte[] publicPart) {
+            FFDHEParemeters parameters, byte[] publicPart, StructFactory factory) {
 
-        super(group);
+        super(group, factory);
         this.parameters = parameters;
         this.keyAgreement = keyAgreement;
         this.publicPart = publicPart;
     }
 
-    public static FFDHENegotiator create(NamedGroup.FFDHE  group) throws Exception {
+    public static FFDHENegotiator create(NamedGroup.FFDHE group, StructFactory factory) 
+            throws Exception {
+        
         FFDHEParemeters parameters = FFDHEParemeters.create(group);
                 
         KeyPairGenerator generator = KeyPairGenerator.getInstance("DiffieHellman");
@@ -45,12 +48,13 @@ public class FFDHENegotiator extends AbstractNegotiator {
         byte[] publicPart = Convertor.leftPadding(
                 y.toByteArray(), parameters.p.toByteArray().length);
         
-        return new FFDHENegotiator(group, keyAgreement, parameters, publicPart);
+        return new FFDHENegotiator(
+                group, keyAgreement, parameters, publicPart, factory);
     }
 
     @Override
-    public KeyShareEntry  createKeyShareEntry() {
-        return KeyShareEntryImpl.wrap(group, publicPart);
+    public KeyShareEntry createKeyShareEntry() {
+        return factory.createKeyShareEntry(group, publicPart);
     }
 
     @Override

@@ -1,6 +1,15 @@
 package com.gypsyengineer.tlsbunny.tls13.handshake;
 
-import com.gypsyengineer.tlsbunny.tls13.struct.*; // TODO
+import com.gypsyengineer.tlsbunny.tls13.struct.HandshakeMessage;
+import com.gypsyengineer.tlsbunny.tls13.struct.Certificate;
+import com.gypsyengineer.tlsbunny.tls13.struct.CertificateRequest;
+import com.gypsyengineer.tlsbunny.tls13.struct.CertificateVerify;
+import com.gypsyengineer.tlsbunny.tls13.struct.ClientHello;
+import com.gypsyengineer.tlsbunny.tls13.struct.EncryptedExtensions;
+import com.gypsyengineer.tlsbunny.tls13.struct.EndOfEarlyData;
+import com.gypsyengineer.tlsbunny.tls13.struct.Finished;
+import com.gypsyengineer.tlsbunny.tls13.struct.HelloRetryRequest;
+import com.gypsyengineer.tlsbunny.tls13.struct.ServerHello;
 import java.util.ArrayList;
 import java.util.List;
 

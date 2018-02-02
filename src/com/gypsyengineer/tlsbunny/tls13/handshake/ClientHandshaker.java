@@ -406,34 +406,6 @@ public class ClientHandshaker extends AbstractHandshaker {
         return certificate_request_context != null;
     }
     
-    private SupportedVersions.ClientHello findSupportedVersions(ClientHello hello) 
-            throws IOException {
-        
-        return factory.parseSupportedVersionsClientHello(
-                hello.findExtension(ExtensionType.supported_versions)
-                        .getExtensionData().bytes());
-    }
-
-    private SignatureSchemeList findSignatureAlgorithms(ClientHello hello) 
-            throws IOException {
-        
-        return factory.parseSignatureSchemeList(
-                hello.findExtension(ExtensionType.signature_algorithms)
-                        .getExtensionData().bytes());
-    }
-
-    private NamedGroupList findSupportedGroups(ClientHello hello) throws IOException {
-        return factory.parseNamedGroupList(
-                hello.findExtension(ExtensionType.supported_groups)
-                        .getExtensionData().bytes());
-    }
-
-    private KeyShare.ClientHello findKeyShare(ClientHello hello) throws IOException {
-        return factory.parseKeyShareFromClientHello(
-                hello.findExtension(ExtensionType.key_share)
-                        .getExtensionData().bytes());
-    }
-    
     private KeyShare.ServerHello findKeyShare(ServerHello hello) throws IOException {
         return factory.parseKeyShareFromServerHello(
                 hello.findExtension(ExtensionType.key_share)

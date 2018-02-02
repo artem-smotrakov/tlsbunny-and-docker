@@ -537,7 +537,7 @@ public class StructFactoryImpl implements StructFactory {
     }
 
     @Override
-    public UncompressedPointRepresentationImpl parseUncompressedPointRepresentationImpl(
+    public UncompressedPointRepresentationImpl parseUncompressedPointRepresentation(
             ByteBuffer buffer, int coordinate_length) {
 
         byte legacy_form = buffer.get();
@@ -602,7 +602,14 @@ public class StructFactoryImpl implements StructFactory {
 
     @Override
     public NamedGroup.X createXNamedGroup(int code) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return new NamedGroupImpl.XImpl(code);
+    }
+
+    @Override
+    public KeyShareEntry createKeyShareEntry(NamedGroup group, byte[] bytes) {
+        return new KeyShareEntryImpl(
+                group, 
+                Vector.wrap(KeyShareEntry.KEY_EXCHANGE_LENGTH_BYTES, bytes));
     }
     
 }

@@ -3,7 +3,6 @@ package com.gypsyengineer.tlsbunny.tls13.struct;
 import com.gypsyengineer.tlsbunny.tls.Random;
 import com.gypsyengineer.tlsbunny.tls.Vector;
 import com.gypsyengineer.tlsbunny.tls13.struct.impl.StructFactoryImpl;
-import com.gypsyengineer.tlsbunny.tls13.struct.impl.UncompressedPointRepresentationImpl;
 import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -31,6 +30,7 @@ public interface StructFactory {
     NamedGroup.FFDHE createFFDHENamedGroup(int code);
     NamedGroup.Secp createSecpNamedGroup(int code, String curve);
     NamedGroup.X createXNamedGroup(int code);
+    KeyShareEntry createKeyShareEntry(NamedGroup group, byte[] bytes);
     
     TLSInnerPlaintext createTLSInnerPlaintext(ContentType type, byte[] content, byte[] zeros);
     TLSPlaintext createTLSPlaintext(ContentType type, ProtocolVersion version, byte[] content);
@@ -93,7 +93,7 @@ public interface StructFactory {
     HandshakeType parseHandshakeType(ByteBuffer buffer);
     KeyShareEntry parseKeyShareEntry(ByteBuffer buffer);
     NamedGroup parseNamedGroup(ByteBuffer buffer);
-    UncompressedPointRepresentationImpl parseUncompressedPointRepresentationImpl(
+    UncompressedPointRepresentation parseUncompressedPointRepresentation(
             ByteBuffer buffer, int coordinate_length);
     
     // wrappers
@@ -233,10 +233,10 @@ public interface StructFactory {
         return parseKeyShareFromHelloRetryRequest(ByteBuffer.wrap(bytes));
     }
     
-    default UncompressedPointRepresentationImpl parseUncompressedPointRepresentationImpl(
+    default UncompressedPointRepresentation parseUncompressedPointRepresentation(
             byte[] bytes, int coordinate_length) {
         
-        return parseUncompressedPointRepresentationImpl(
+        return StructFactory.this.parseUncompressedPointRepresentation(
                 ByteBuffer.wrap(bytes), coordinate_length);
     }
 }
