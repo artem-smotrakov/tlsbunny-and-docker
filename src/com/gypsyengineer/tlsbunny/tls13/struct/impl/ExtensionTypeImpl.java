@@ -1,16 +1,14 @@
 package com.gypsyengineer.tlsbunny.tls13.struct.impl;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import com.gypsyengineer.tlsbunny.tls.Struct;
 import com.gypsyengineer.tlsbunny.tls13.struct.ExtensionType;
+import java.nio.ByteBuffer;
 
 public class ExtensionTypeImpl implements ExtensionType {
 
-
     private int code;
 
-    public ExtensionTypeImpl(int code) {
+    ExtensionTypeImpl(int code) {
         check(code);
         this.code = code;
     }
@@ -58,10 +56,6 @@ public class ExtensionTypeImpl implements ExtensionType {
         return this.code == other.code;
     }
 
-    public static ExtensionTypeImpl parse(ByteBuffer buffer) {
-        return new ExtensionTypeImpl(buffer.getShort() & 0xFFFF);
-    }
-    
     private static void check(int code) {
         if (code < 0 || code > 65535) {
             throw new IllegalArgumentException();

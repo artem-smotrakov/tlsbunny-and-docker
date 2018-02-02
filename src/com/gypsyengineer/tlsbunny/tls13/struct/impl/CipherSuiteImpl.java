@@ -5,11 +5,10 @@ import com.gypsyengineer.tlsbunny.tls13.struct.CipherSuite;
 
 public class CipherSuiteImpl implements CipherSuite {
 
-
     private int first;
     private int second;
 
-    public CipherSuiteImpl(int first, int second) {
+    CipherSuiteImpl(int first, int second) {
         check(first);
         check(second);
         this.first = first;

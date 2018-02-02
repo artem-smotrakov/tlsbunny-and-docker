@@ -1,7 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls13.struct.impl;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.Objects;
 import com.gypsyengineer.tlsbunny.tls13.struct.Alert;
 import com.gypsyengineer.tlsbunny.tls13.struct.AlertDescription;

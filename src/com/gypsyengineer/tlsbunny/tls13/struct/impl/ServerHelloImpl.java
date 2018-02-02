@@ -6,7 +6,6 @@ import com.gypsyengineer.tlsbunny.tls13.struct.CipherSuite;
 import com.gypsyengineer.tlsbunny.tls13.struct.Extension;
 import com.gypsyengineer.tlsbunny.tls13.struct.ExtensionType;
 import com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType;
-import com.gypsyengineer.tlsbunny.tls13.struct.KeyShare;
 import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
 import com.gypsyengineer.tlsbunny.tls13.struct.ServerHello;
 import com.gypsyengineer.tlsbunny.utils.Utils;
@@ -105,12 +104,6 @@ public class ServerHelloImpl implements ServerHello {
     @Override
     public Vector<Extension> getExtensions() {
         return extensions;
-    }
-
-    @Override
-    public KeyShare.ServerHello findKeyShare() throws IOException {
-        return KeyShareImpl.ServerHelloImpl.parse(
-                findExtension(ExtensionType.key_share).getExtensionData());
     }
 
     @Override

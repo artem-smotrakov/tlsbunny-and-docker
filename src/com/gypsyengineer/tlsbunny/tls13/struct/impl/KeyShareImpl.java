@@ -1,13 +1,13 @@
 package com.gypsyengineer.tlsbunny.tls13.struct.impl;
 
 import com.gypsyengineer.tlsbunny.tls.Vector;
-import java.io.IOException;
-import java.nio.ByteBuffer;
 import com.gypsyengineer.tlsbunny.tls.Struct;
 import com.gypsyengineer.tlsbunny.tls13.struct.KeyShare.ClientHello;
 import com.gypsyengineer.tlsbunny.tls13.struct.KeyShare.ServerHello;
 import com.gypsyengineer.tlsbunny.tls13.struct.KeyShare.HelloRetryRequest;
-import com.gypsyengineer.tlsbunny.tls13.struct.*;
+import com.gypsyengineer.tlsbunny.tls13.struct.KeyShareEntry;
+import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
+import java.io.IOException;
 
 public abstract class KeyShareImpl implements Struct {
     
@@ -15,7 +15,7 @@ public abstract class KeyShareImpl implements Struct {
 
         private Vector<KeyShareEntry> client_shares;
 
-        public ClientHelloImpl() {
+        ClientHelloImpl() {
             this(Vector.wrap(LENGTH_BYTES));
         }
 
@@ -48,31 +48,13 @@ public abstract class KeyShareImpl implements Struct {
             return client_shares.encoding();
         }
 
-        public static ClientHello create(KeyShareEntry... keyShareEntries) {
-            return new ClientHelloImpl(
-                    Vector.wrap(LENGTH_BYTES, keyShareEntries));
-        }
-
-        public static ClientHello parse(ByteBuffer buffer) {
-            Vector<KeyShareEntry> client_shares = Vector.parse(
-                    buffer, LENGTH_BYTES, (buf) -> KeyShareEntryImpl.parse(buf));
-
-            return new ClientHelloImpl(client_shares);
-        }
-        
-        public static ClientHello parse(Vector<Byte> extenstion_data) 
-                throws IOException {
-            
-            return parse(ByteBuffer.wrap(extenstion_data.bytes()));
-        }
-    
     }
     
     public static class ServerHelloImpl extends KeyShareImpl implements ServerHello {
 
         private KeyShareEntry server_share;
 
-        public ServerHelloImpl(KeyShareEntry server_share) {
+        ServerHelloImpl(KeyShareEntry server_share) {
             this.server_share = server_share;
         }
 
@@ -96,23 +78,14 @@ public abstract class KeyShareImpl implements Struct {
             return server_share.encoding();
         }
 
-        public static ServerHelloImpl parse(ByteBuffer buffer) {
-            return new ServerHelloImpl(KeyShareEntryImpl.parse(buffer));
-        }
-        
-        public static ServerHelloImpl parse(Vector<Byte> extenstion_data) 
-                throws IOException {
-            
-            return parse(ByteBuffer.wrap(extenstion_data.bytes()));
-        }
-
     }
     
-    public static class HelloRetryRequestImpl extends KeyShareImpl implements HelloRetryRequest {
+    public static class HelloRetryRequestImpl extends KeyShareImpl 
+            implements HelloRetryRequest {
 
         private NamedGroup selected_group;
 
-        private HelloRetryRequestImpl(NamedGroup selected_group) {
+        HelloRetryRequestImpl(NamedGroup selected_group) {
             this.selected_group = selected_group;
         }
 
@@ -134,16 +107,6 @@ public abstract class KeyShareImpl implements Struct {
         @Override
         public byte[] encoding() throws IOException {
             return selected_group.encoding();
-        }
-
-        public static HelloRetryRequestImpl parse(ByteBuffer buffer) {
-            return new HelloRetryRequestImpl(NamedGroupImpl.parse(buffer));
-        }
-        
-        public static HelloRetryRequestImpl parse(Vector<Byte> extenstion_data) 
-                throws IOException {
-            
-            return parse(ByteBuffer.wrap(extenstion_data.bytes()));
         }
 
     }

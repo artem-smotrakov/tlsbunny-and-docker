@@ -6,7 +6,7 @@ public class AlertDescriptionImpl implements AlertDescription {
 
     public int code;
 
-    public AlertDescriptionImpl(int code) {
+    AlertDescriptionImpl(int code) {
         check(code);
         this.code = code;
     }

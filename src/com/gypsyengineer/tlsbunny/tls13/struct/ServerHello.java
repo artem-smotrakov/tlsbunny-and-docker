@@ -2,7 +2,6 @@ package com.gypsyengineer.tlsbunny.tls13.struct;
 
 import com.gypsyengineer.tlsbunny.tls.Random;
 import com.gypsyengineer.tlsbunny.tls.Vector;
-import java.io.IOException;
 
 public interface ServerHello extends HandshakeMessage {
 
@@ -11,7 +10,6 @@ public interface ServerHello extends HandshakeMessage {
     void addExtension(Extension extension);
     void clearExtensions();
     Extension findExtension(ExtensionType type);
-    KeyShare.ServerHello findKeyShare() throws IOException;
     CipherSuite getCipherSuite();
     Vector<Extension> getExtensions();
     ProtocolVersion getProtocolVersion();

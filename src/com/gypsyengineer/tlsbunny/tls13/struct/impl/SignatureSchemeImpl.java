@@ -1,15 +1,14 @@
 package com.gypsyengineer.tlsbunny.tls13.struct.impl;
 
+import com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme;
 
 public class SignatureSchemeImpl implements SignatureScheme {
 
-
     private int code;
 
-    public SignatureSchemeImpl(int code) {
+    SignatureSchemeImpl(int code) {
         check(code);
         this.code = code;
     }

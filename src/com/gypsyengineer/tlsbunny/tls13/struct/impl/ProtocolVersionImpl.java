@@ -9,7 +9,7 @@ public class ProtocolVersionImpl implements ProtocolVersion {
     private final int major;
     private final int minor;
 
-    public ProtocolVersionImpl(int major, int minor) {
+    ProtocolVersionImpl(int major, int minor) {
         check(minor, major);
         this.major = major;
         this.minor = minor;

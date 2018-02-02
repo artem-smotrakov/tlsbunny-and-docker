@@ -1,9 +1,9 @@
 package com.gypsyengineer.tlsbunny.tls13.struct.impl;
 
 import com.gypsyengineer.tlsbunny.tls.Vector;
-import java.io.IOException;
 import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
 import com.gypsyengineer.tlsbunny.tls13.struct.SupportedVersions;
+import java.io.IOException;
 
 public abstract class SupportedVersionsImpl implements SupportedVersions {
 
@@ -11,7 +11,7 @@ public abstract class SupportedVersionsImpl implements SupportedVersions {
         
         private Vector<ProtocolVersion> versions;
         
-        public ClientHelloImpl(Vector<ProtocolVersion> versions) {
+        ClientHelloImpl(Vector<ProtocolVersion> versions) {
             this.versions = versions;
         }
         
@@ -41,7 +41,7 @@ public abstract class SupportedVersionsImpl implements SupportedVersions {
         
         private ProtocolVersion selected_version;
 
-        public ServerHelloImpl(ProtocolVersion selected_version) {
+        ServerHelloImpl(ProtocolVersion selected_version) {
             this.selected_version = selected_version;
         }
 

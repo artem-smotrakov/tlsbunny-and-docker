@@ -2,6 +2,8 @@ package com.gypsyengineer.tlsbunny.tls13.struct;
 
 import com.gypsyengineer.tlsbunny.tls.Random;
 import com.gypsyengineer.tlsbunny.tls.Vector;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.StructFactoryImpl;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.UncompressedPointRepresentationImpl;
 import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -9,16 +11,33 @@ import java.util.Collections;
 import java.util.List;
 
 public interface StructFactory {
+    
+    public static StructFactory getDefault() {
+        return new StructFactoryImpl();
+    }
 
     byte[] EMPTY_SESSION_ID = Utils.EMPTY_ARRAY;
     List<Extension> NO_EXTENSIONS = Collections.EMPTY_LIST;
 
     CompressionMethod createCompressionMethod(int code);
+    CipherSuite createCipherSuite(int first, int second);
+    HkdfLabel createHkdfLabel(int length, byte[] label, byte[] hashValue);
+    UncompressedPointRepresentation createUncompressedPointRepresentation(byte[] X, byte[] Y);
+    HandshakeType createHandshakeType(int code);
+    ProtocolVersion createProtocolVestion(int minor, int major);
+    ExtensionType createExtensionType(int code);
+    ContentType createContentType(int code);
+    SignatureScheme createSignatureScheme(int code);
+    NamedGroup.FFDHE createFFDHENamedGroup(int code);
+    NamedGroup.Secp createSecpNamedGroup(int code, String curve);
+    NamedGroup.X createXNamedGroup(int code);
     
     TLSInnerPlaintext createTLSInnerPlaintext(ContentType type, byte[] content, byte[] zeros);
     TLSPlaintext createTLSPlaintext(ContentType type, ProtocolVersion version, byte[] content);
     TLSPlaintext[] createTLSPlaintexts(ContentType type, ProtocolVersion version, byte[] content);
 
+    AlertLevel createAlertLevel(int code);
+    AlertDescription createAlertDescription(int code);
     Alert createAlert(AlertLevel level, AlertDescription description);
     
     // handshake messages
@@ -41,6 +60,7 @@ public interface StructFactory {
     CertificateEntry.X509 createX509CertificateEntry(byte[] bytes);
     
     // parsing
+    CompressionMethod parseCompressionMethod(ByteBuffer buffer);
     ContentType parseContentType(ByteBuffer buffer);
     ProtocolVersion parseProtocolVersion(ByteBuffer buffer);
     CipherSuite parseCipherSuite(ByteBuffer buffer);
@@ -66,6 +86,15 @@ public interface StructFactory {
     CertificateEntry.RawPublicKey parseRawPublicKeyCertificateEntry(ByteBuffer buffer);
     NamedGroupList parseNamedGroupList(ByteBuffer buffer);
     KeyShare.ClientHello parseKeyShareFromClientHello(ByteBuffer buffer);
+    KeyShare.ServerHello parseKeyShareFromServerHello(ByteBuffer buffer);
+    KeyShare.HelloRetryRequest parseKeyShareFromHelloRetryRequest(ByteBuffer buffer);
+    Extension parseExtension(ByteBuffer buffer);
+    ExtensionType parseExtensionType(ByteBuffer buffer);
+    HandshakeType parseHandshakeType(ByteBuffer buffer);
+    KeyShareEntry parseKeyShareEntry(ByteBuffer buffer);
+    NamedGroup parseNamedGroup(ByteBuffer buffer);
+    UncompressedPointRepresentationImpl parseUncompressedPointRepresentationImpl(
+            ByteBuffer buffer, int coordinate_length);
     
     // wrappers
     public Extension wrap(SupportedVersions supportedVersions) throws IOException;
@@ -170,5 +199,44 @@ public interface StructFactory {
     
     default KeyShare.ClientHello parseKeyShareFromClientHello(byte[] bytes) {
         return parseKeyShareFromClientHello(ByteBuffer.wrap(bytes));
+    }
+    
+    default CompressionMethod parseCompressionMethod(byte[] bytes) {
+        return parseCompressionMethod(ByteBuffer.wrap(bytes));
+    }
+    
+    default Extension parseExtension(byte[] bytes) {
+        return parseExtension(ByteBuffer.wrap(bytes));
+    }
+    
+    default ExtensionType parseExtensionType(byte[] bytes) {
+        return parseExtensionType(ByteBuffer.wrap(bytes));
+    }
+    
+    default HandshakeType parseHandshakeType(byte[] bytes) {
+        return parseHandshakeType(ByteBuffer.wrap(bytes));
+    }
+    
+    default KeyShareEntry parseKeyShareEntry(byte[] bytes) {
+        return parseKeyShareEntry(ByteBuffer.wrap(bytes));
+    }
+    
+    default NamedGroup parseNamedGroup(byte[] bytes) {
+        return parseNamedGroup(ByteBuffer.wrap(bytes));
+    }
+    
+    default KeyShare.ServerHello parseKeyShareFromServerHello(byte[] bytes) {
+        return parseKeyShareFromServerHello(ByteBuffer.wrap(bytes));
+    }
+    
+    default KeyShare.HelloRetryRequest parseKeyShareFromHelloRetryRequest(byte[] bytes) {
+        return parseKeyShareFromHelloRetryRequest(ByteBuffer.wrap(bytes));
+    }
+    
+    default UncompressedPointRepresentationImpl parseUncompressedPointRepresentationImpl(
+            byte[] bytes, int coordinate_length) {
+        
+        return parseUncompressedPointRepresentationImpl(
+                ByteBuffer.wrap(bytes), coordinate_length);
     }
 }

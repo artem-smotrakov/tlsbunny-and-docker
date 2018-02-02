@@ -20,18 +20,20 @@ import javax.crypto.KeyAgreement;
 
 public class ECDHENegotiator implements Negotiator {
 
-    private final NamedGroup.Secp  group;
+    private final NamedGroup.Secp group;
     private final SecpParameters secpParameters;
     private final KeyAgreement keyAgreement;
     private final KeyPairGenerator generator;
+    private final StructFactory factory;
 
-    private ECDHENegotiator(NamedGroup.Secp  group, SecpParameters secpParameters, 
-            KeyAgreement keyAgreement, KeyPairGenerator generator) {
+    private ECDHENegotiator(NamedGroup.Secp group, SecpParameters secpParameters, 
+            KeyAgreement keyAgreement, KeyPairGenerator generator, StructFactory factory) {
         
         this.group = group;
         this.secpParameters = secpParameters;
         this.keyAgreement = keyAgreement;
         this.generator = generator;
+        this.factory = factory;
     }
 
     @Override
@@ -62,7 +64,27 @@ public class ECDHENegotiator implements Negotiator {
         return keyAgreement.generateSecret();
     }
     
-    public static ECDHENegotiator create(NamedGroup .Secp  group) 
+    private ECPoint convertToECPoint(KeyShareEntry entry, NamedGroup.Secp group) 
+            throws IOException {
+        
+        UncompressedPointRepresentation  upr = 
+                factory.parseUncompressedPointRepresentationImpl(
+                        entry.getKeyExchange().bytes(), 
+                        getCoordinateLength(group));
+        
+        return new ECPoint(new BigInteger(upr.getX()), new BigInteger(upr.getY()));
+    }
+    
+    private UncompressedPointRepresentation createUPR(
+            ECPoint point, NamedGroup.Secp group) {
+
+        int coordinate_length = getCoordinateLength(group);
+        return factory.createUncompressedPointRepresentation(
+                toBytes(point.getAffineX(), coordinate_length), 
+                toBytes(point.getAffineY(), coordinate_length));
+    }
+    
+    public static ECDHENegotiator create(NamedGroup.Secp group, StructFactory factory) 
             throws NoSuchAlgorithmException, InvalidAlgorithmParameterException {
         
         KeyPairGenerator generator = KeyPairGenerator.getInstance("EC");
@@ -73,30 +95,10 @@ public class ECDHENegotiator implements Negotiator {
                 group, 
                 SecpParameters.create(group), 
                 KeyAgreement.getInstance("ECDH"),
-                generator);
+                generator, factory);
     }
 
-    public static ECPoint convertToECPoint(KeyShareEntry  entry, NamedGroup .Secp  group) 
-            throws IOException {
-        
-        UncompressedPointRepresentation  upr = 
-                UncompressedPointRepresentationImpl.parse(
-                        entry.getKeyExchange().bytes(), 
-                        getCoordinateLength(group));
-        
-        return new ECPoint(new BigInteger(upr.getX()), new BigInteger(upr.getY()));
-    }
-
-    public static UncompressedPointRepresentation  createUPR(
-            ECPoint point, NamedGroup .Secp  group) {
-
-        int coordinate_length = getCoordinateLength(group);
-        return new UncompressedPointRepresentationImpl(
-                toBytes(point.getAffineX(), coordinate_length), 
-                toBytes(point.getAffineY(), coordinate_length));
-    }
-
-    public static int getCoordinateLength(NamedGroup .Secp  group) {
+    public static int getCoordinateLength(NamedGroup.Secp group) {
         switch (group.getCurve()) {
             case "secp256r1":
                 return 32;

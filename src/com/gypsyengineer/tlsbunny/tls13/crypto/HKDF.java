@@ -2,7 +2,7 @@ package com.gypsyengineer.tlsbunny.tls13.crypto;
 
 import com.gypsyengineer.tlsbunny.tls13.struct.Handshake;
 import com.gypsyengineer.tlsbunny.tls13.struct.HkdfLabel;
-import com.gypsyengineer.tlsbunny.tls13.struct.impl.HkdfLabelImpl;
+import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.security.InvalidKeyException;
@@ -18,11 +18,15 @@ public class HKDF {
     private final int hashLen;
     private final Mac mac;
     private final TranscriptHash transcriptHash;
+    private final StructFactory factory;
 
-    private HKDF(int hashLength, Mac mac, TranscriptHash transcriptHash) {
+    private HKDF(int hashLength, Mac mac, TranscriptHash transcriptHash, 
+            StructFactory factory) {
+        
         this.hashLen = hashLength;
         this.mac = mac;
         this.transcriptHash = transcriptHash;
+        this.factory = factory;
     }
 
     public int getHashLength() {
@@ -80,20 +84,21 @@ public class HKDF {
         return mac.doFinal(input);
     }
 
-    public static HKDF create(String algorithm) 
+    public static HKDF create(String algorithm, StructFactory factory) 
             throws NoSuchAlgorithmException, IOException {
 
         return new HKDF(
                 MessageDigest.getInstance(algorithm).getDigestLength(),
                 getHmac(algorithm),
-                TranscriptHash.create(algorithm));
+                TranscriptHash.create(algorithm), 
+                factory);
     }
 
     private static Mac getHmac(String hashAlgorithm) throws NoSuchAlgorithmException {
         return Mac.getInstance("Hmac" + hashAlgorithm.replace("-", ""));
     }
 
-    public static HkdfLabel createHkdfLabel(int length, byte[] label, byte[] hashValue) {
+    private HkdfLabel createHkdfLabel(int length, byte[] label, byte[] hashValue) {
         byte[] tls13_label = concatenate("tls13 ".getBytes(), label);
         if (tls13_label.length > HkdfLabel.MAX_LABEL_LENGTH) {
             throw new IllegalArgumentException();
@@ -103,7 +108,7 @@ public class HKDF {
             throw new IllegalArgumentException();
         }
 
-        return HkdfLabelImpl.create(length, tls13_label, hashValue);
+        return factory.createHkdfLabel(length, tls13_label, hashValue);
     }
 
 }

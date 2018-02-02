@@ -1,16 +1,15 @@
 package com.gypsyengineer.tlsbunny.tls13.struct.impl;
 
 import com.gypsyengineer.tlsbunny.tls.Vector;
-import java.io.IOException;
-import java.nio.ByteBuffer;
 import com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme;
 import com.gypsyengineer.tlsbunny.tls13.struct.SignatureSchemeList;
+import java.io.IOException;
 
 public class SignatureSchemeListImpl implements SignatureSchemeList {
 
     private Vector<SignatureScheme> supported_signature_algorithms;
 
-    public SignatureSchemeListImpl(Vector<SignatureScheme> supported_signature_algorithms) {
+    SignatureSchemeListImpl(Vector<SignatureScheme> supported_signature_algorithms) {
         this.supported_signature_algorithms = supported_signature_algorithms;
     }
 

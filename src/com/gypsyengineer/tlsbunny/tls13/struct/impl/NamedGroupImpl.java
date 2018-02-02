@@ -8,7 +8,7 @@ public class NamedGroupImpl implements NamedGroup {
 
     public final int code;
 
-    private NamedGroupImpl(int code) {
+    NamedGroupImpl(int code) {
         this.code = code;
     }
 
@@ -47,15 +47,11 @@ public class NamedGroupImpl implements NamedGroup {
         return this.code == other.code;
     }
 
-    public static NamedGroup parse(ByteBuffer buffer) {
-        return new NamedGroupImpl(buffer.getShort());
-    }
-    
     public static class SecpImpl extends NamedGroupImpl implements Secp {
 
         private final String curve;
         
-        public SecpImpl(int code, String curve) {
+        SecpImpl(int code, String curve) {
             super(code);
             this.curve = curve;
         }
@@ -69,7 +65,7 @@ public class NamedGroupImpl implements NamedGroup {
 
     public static class XImpl extends NamedGroupImpl implements X {
 
-        public XImpl(int code) {
+        XImpl(int code) {
             super(code);
         }
 
@@ -77,7 +73,7 @@ public class NamedGroupImpl implements NamedGroup {
 
     public static class FFDHEImpl extends NamedGroupImpl implements FFDHE {
 
-        public FFDHEImpl(int code) {
+        FFDHEImpl(int code) {
             super(code);
         }
 

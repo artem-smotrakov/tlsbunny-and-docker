@@ -6,7 +6,7 @@ public class ContentTypeImpl implements ContentType {
 
     private int code;
 
-    public ContentTypeImpl(int code) {
+    ContentTypeImpl(int code) {
         check(code);
         this.code = code;
     }

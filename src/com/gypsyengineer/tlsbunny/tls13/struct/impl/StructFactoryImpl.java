@@ -27,6 +27,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.EndOfEarlyData;
 import com.gypsyengineer.tlsbunny.tls13.struct.ExtensionType;
 import com.gypsyengineer.tlsbunny.tls13.struct.Finished;
 import com.gypsyengineer.tlsbunny.tls13.struct.HelloRetryRequest;
+import com.gypsyengineer.tlsbunny.tls13.struct.HkdfLabel;
 import com.gypsyengineer.tlsbunny.tls13.struct.KeyShare;
 import com.gypsyengineer.tlsbunny.tls13.struct.KeyShareEntry;
 import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
@@ -36,8 +37,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme;
 import com.gypsyengineer.tlsbunny.tls13.struct.SignatureSchemeList;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
-import com.gypsyengineer.tlsbunny.tls13.struct.impl.CertificateEntryImpl.RawPublicKeyImpl;
-import com.gypsyengineer.tlsbunny.tls13.struct.impl.CertificateEntryImpl.X509Impl;
+import com.gypsyengineer.tlsbunny.tls13.struct.UncompressedPointRepresentation;
 import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -46,10 +46,6 @@ import java.util.List;
 
 // TODO: make all implementations immutable
 public class StructFactoryImpl implements StructFactory {
-    
-    public static StructFactory getDefault() {
-        return new StructFactoryImpl();
-    }
 
     @Override
     public TLSPlaintext createTLSPlaintext(
@@ -204,7 +200,10 @@ public class StructFactoryImpl implements StructFactory {
 
     @Override
     public KeyShare.ClientHello createKeyShareForClientHello(KeyShareEntry entry) {
-        return KeyShareImpl.ClientHelloImpl.create(entry);
+        return new KeyShareImpl.ClientHelloImpl(
+                    Vector.wrap(
+                            KeyShare.ClientHello.LENGTH_BYTES, 
+                            entry));
     }
 
     @Override
@@ -215,12 +214,13 @@ public class StructFactoryImpl implements StructFactory {
 
     @Override
     public NamedGroupList createNamedGroupList(NamedGroup group) {
-        return NamedGroupListImpl.create(group);
+        return new NamedGroupListImpl(
+                Vector.wrap(NamedGroupList.LENGTH_BYTES, group));
     }
 
     @Override
     public Handshake parseHandshake(ByteBuffer buffer) {
-        HandshakeTypeImpl msg_type = HandshakeTypeImpl.parse(buffer);
+        HandshakeType msg_type = parseHandshakeType(buffer);
         UInt24 length = UInt24.parse(buffer);
         Bytes body = Bytes.parse(buffer, length.value);
 
@@ -236,7 +236,7 @@ public class StructFactoryImpl implements StructFactory {
                 Vector.parse(
                     buffer,
                     ServerHello.EXTENSIONS_LENGTH_BYTES,
-                    buf -> ExtensionImpl.parse(buf)));
+                    buf -> parseExtension(buf)));
     }
 
     @Override
@@ -328,7 +328,7 @@ public class StructFactoryImpl implements StructFactory {
                 Vector.parse(
                     buffer,
                     CertificateRequest.EXTENSIONS_LENGTH_BYTES,
-                    buf -> ExtensionImpl.parse(buf)));
+                    buf -> parseExtension(buf)));
     }
 
     @Override
@@ -353,11 +353,11 @@ public class StructFactoryImpl implements StructFactory {
         Vector<CompressionMethod> legacy_compression_methods = Vector.parse(
                 buffer, 
                 ClientHello.LEGACY_COMPRESSION_METHODS_LENGTH_BYTES, 
-                buf -> CompressionMethodImpl.parse(buf));
+                buf -> parseCompressionMethod(buf));
         Vector<Extension> extensions = Vector.parse(
                 buffer,
                 ClientHello.EXTENSIONS_LENGTH_BYTES,
-                buf -> ExtensionImpl.parse(buf));
+                buf -> parseExtension(buf));
 
         return new ClientHelloImpl(legacy_version, random, legacy_session_id, 
                 cipher_suites, legacy_compression_methods, extensions);
@@ -369,7 +369,7 @@ public class StructFactoryImpl implements StructFactory {
                 Vector.parse(
                     buffer,
                     EncryptedExtensions.EXTENSIONS_LENGTH_BYTES,
-                    buf -> ExtensionImpl.parse(buf)));
+                    buf -> parseExtension(buf)));
     }
 
     @Override
@@ -388,7 +388,7 @@ public class StructFactoryImpl implements StructFactory {
                 Vector.parse(
                     buffer,
                     HelloRetryRequest.EXTENSIONS_LENGTH_BYTES,
-                    buf -> ExtensionImpl.parse(buf)));
+                    buf -> parseExtension(buf)));
     }
 
     @Override
@@ -426,44 +426,182 @@ public class StructFactoryImpl implements StructFactory {
 
     @Override
     public CertificateEntry.X509 parseX509CertificateEntry(ByteBuffer buffer) {
-        return new X509Impl(
+        return new CertificateEntryImpl.X509Impl(
                     Vector.parseOpaqueVector(buffer, CertificateEntry.X509.LENGTH_BYTES), 
                     Vector.parse(
                         buffer,
                         CertificateEntry.X509.EXTENSIONS_LENGTH_BYTES,
-                        buf -> ExtensionImpl.parse(buf)));
+                        buf -> parseExtension(buf)));
     }
 
     @Override
     public CertificateEntry.RawPublicKey parseRawPublicKeyCertificateEntry(ByteBuffer buffer) {
-        return new RawPublicKeyImpl(
+        return new CertificateEntryImpl.RawPublicKeyImpl(
                     Vector.parseOpaqueVector(
                             buffer, 
                             CertificateEntry.RawPublicKey.LENGTH_BYTES), 
                     Vector.parse(
                         buffer,
                         CertificateEntry.RawPublicKey.EXTENSIONS_LENGTH_BYTES,
-                        buf -> ExtensionImpl.parse(buf)));
+                        buf -> parseExtension(buf)));
     }
 
     @Override
     public CertificateEntry.X509 createX509CertificateEntry(byte[] bytes) {
-        return new X509Impl(
+        return new CertificateEntryImpl.X509Impl(
                     Vector.wrap(CertificateEntry.X509.LENGTH_BYTES, bytes), 
                     Vector.wrap(CertificateEntry.X509.EXTENSIONS_LENGTH_BYTES));
     }
 
     @Override
     public NamedGroupList parseNamedGroupList(ByteBuffer buffer) {
-        Vector<NamedGroup> named_group_list = Vector.parse(buffer,
-                NamedGroupList.LENGTH_BYTES,
-                buf -> NamedGroupImpl.parse(buf));
-
-        return new NamedGroupListImpl(named_group_list);
+        return new NamedGroupListImpl(
+                Vector.parse(
+                        buffer,
+                        NamedGroupList.LENGTH_BYTES,
+                        buf -> parseNamedGroup(buf)));
     }
 
     @Override
     public KeyShare.ClientHello parseKeyShareFromClientHello(ByteBuffer buffer) {
+            return new KeyShareImpl.ClientHelloImpl(
+                    Vector.parse(
+                        buffer, 
+                        KeyShare.ClientHello.LENGTH_BYTES, 
+                        buf -> parseKeyShareEntry(buf)));
+    }
+
+    @Override
+    public AlertLevel createAlertLevel(int code) {
+        return new AlertLevelImpl(code);
+    }
+
+    @Override
+    public AlertDescription createAlertDescription(int code) {
+        return new AlertDescriptionImpl(code);
+    }
+
+    @Override
+    public CompressionMethod parseCompressionMethod(ByteBuffer buffer) {
+        return new CompressionMethodImpl(buffer.get() & 0xFF);
+    }
+
+    @Override
+    public Extension parseExtension(ByteBuffer buffer) {
+        ExtensionType extension_type = parseExtensionType(buffer);
+        Vector<Byte> extension_data = Vector.parseOpaqueVector(
+                buffer, Extension.EXTENSION_DATA_LENGTH_BYTES);
+        
+        return new ExtensionImpl(extension_type, extension_data);
+    }
+
+    @Override
+    public ExtensionType parseExtensionType(ByteBuffer buffer) {
+        return new ExtensionTypeImpl(buffer.getShort() & 0xFFFF);
+    }
+
+    @Override
+    public HandshakeType parseHandshakeType(ByteBuffer buffer) {
+        return new HandshakeTypeImpl(buffer.get() & 0xFF);
+    }
+
+    @Override
+    public HkdfLabel createHkdfLabel(int length, byte[] label, byte[] hashValue) {
+        return new HkdfLabelImpl(
+                new UInt16(length),
+                Vector.wrap(HkdfLabel.LABEL_LENGTH_BYTES, label),
+                Vector.wrap(HkdfLabel.HASH_VALUE_LENGTH_BYTES, hashValue));
+    }
+
+    @Override
+    public KeyShareEntry parseKeyShareEntry(ByteBuffer buffer) {
+        return new KeyShareEntryImpl(
+                parseNamedGroup(buffer), 
+                Vector.parseOpaqueVector(
+                    buffer, KeyShareEntry.KEY_EXCHANGE_LENGTH_BYTES));
+    }
+
+    @Override
+    public NamedGroup parseNamedGroup(ByteBuffer buffer) {
+        return new NamedGroupImpl(buffer.getShort());
+    }
+
+    @Override
+    public KeyShare.ServerHello parseKeyShareFromServerHello(ByteBuffer buffer) {
+        return new KeyShareImpl.ServerHelloImpl(parseKeyShareEntry(buffer));
+    }
+
+    @Override
+    public KeyShare.HelloRetryRequest parseKeyShareFromHelloRetryRequest(ByteBuffer buffer) {
+        return new KeyShareImpl.HelloRetryRequestImpl(parseNamedGroup(buffer));
+    }
+
+    @Override
+    public UncompressedPointRepresentationImpl parseUncompressedPointRepresentationImpl(
+            ByteBuffer buffer, int coordinate_length) {
+
+        byte legacy_form = buffer.get();
+        if (legacy_form != 4) {
+            throw new IllegalArgumentException();
+        }
+
+        byte[] X = new byte[coordinate_length];
+        byte[] Y = new byte[coordinate_length];
+        buffer.get(X);
+        buffer.get(Y);
+
+        return new UncompressedPointRepresentationImpl(X, Y);
+    }
+
+    @Override
+    public CipherSuite createCipherSuite(int first, int second) {
+        return new CipherSuiteImpl(first, second);
+    }
+
+    @Override
+    public UncompressedPointRepresentation createUncompressedPointRepresentation(
+            byte[] X, byte[] Y) {
+        
+        return new UncompressedPointRepresentationImpl(X, Y);
+    }
+
+    @Override
+    public HandshakeType createHandshakeType(int code) {
+        return new HandshakeTypeImpl(code);
+    }
+
+    @Override
+    public ProtocolVersion createProtocolVestion(int minor, int major) {
+        return new ProtocolVersionImpl(minor, major);
+    }
+
+    @Override
+    public ExtensionType createExtensionType(int code) {
+        return new ExtensionTypeImpl(code);
+    }
+
+    @Override
+    public ContentType createContentType(int code) {
+        return new ContentTypeImpl(code);
+    }
+
+    @Override
+    public SignatureScheme createSignatureScheme(int code) {
+        return new SignatureSchemeImpl(code);
+    }
+
+    @Override
+    public NamedGroup.FFDHE createFFDHENamedGroup(int code) {
+        return new NamedGroupImpl.FFDHEImpl(code);
+    }
+
+    @Override
+    public NamedGroup.Secp createSecpNamedGroup(int code, String curve) {
+        return new NamedGroupImpl.SecpImpl(code, curve);
+    }
+
+    @Override
+    public NamedGroup.X createXNamedGroup(int code) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     

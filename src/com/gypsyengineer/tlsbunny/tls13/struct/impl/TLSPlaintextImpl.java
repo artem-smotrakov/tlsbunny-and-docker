@@ -3,10 +3,10 @@ package com.gypsyengineer.tlsbunny.tls13.struct.impl;
 import com.gypsyengineer.tlsbunny.tls.Bytes;
 import com.gypsyengineer.tlsbunny.tls.UInt16;
 import com.gypsyengineer.tlsbunny.utils.Utils;
-import java.io.IOException;
 import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
 import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
+import java.io.IOException;
 
 public class TLSPlaintextImpl implements TLSPlaintext {
 

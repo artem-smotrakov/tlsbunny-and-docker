@@ -1,13 +1,12 @@
 package com.gypsyengineer.tlsbunny.tls13.struct.impl;
 
-import java.nio.ByteBuffer;
 import com.gypsyengineer.tlsbunny.tls13.struct.AlertLevel;
 
 public class AlertLevelImpl implements AlertLevel {
 
     public int code;
 
-    public AlertLevelImpl(int code) {
+    AlertLevelImpl(int code) {
         check(code);
         this.code = code;
     }

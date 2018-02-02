@@ -1,6 +1,5 @@
 package com.gypsyengineer.tlsbunny.tls13.struct.impl;
 
-import java.nio.ByteBuffer;
 import com.gypsyengineer.tlsbunny.tls13.struct.CompressionMethod;
 
 public class CompressionMethodImpl implements CompressionMethod {
@@ -31,10 +30,6 @@ public class CompressionMethodImpl implements CompressionMethod {
     @Override
     public byte[] encoding() {
         return new byte[] { (byte) code };
-    }
-
-    public static CompressionMethodImpl parse(ByteBuffer buffer) {
-        return new CompressionMethodImpl(buffer.get() & 0xFF);
     }
 
     private static void check(int code) {

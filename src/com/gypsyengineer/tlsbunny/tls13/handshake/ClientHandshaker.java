@@ -5,11 +5,16 @@ import com.gypsyengineer.tlsbunny.tls13.crypto.AEAD;
 import com.gypsyengineer.tlsbunny.tls13.crypto.ApplicationDataChannel;
 import com.gypsyengineer.tlsbunny.tls13.crypto.HKDF;
 import com.gypsyengineer.tlsbunny.tls13.crypto.TranscriptHash;
-import com.gypsyengineer.tlsbunny.tls13.struct.*; // TODO
+import com.gypsyengineer.tlsbunny.tls13.struct.Certificate;
+import com.gypsyengineer.tlsbunny.tls13.struct.CertificateRequest;
 import com.gypsyengineer.tlsbunny.tls13.struct.CertificateVerify;
 import com.gypsyengineer.tlsbunny.tls13.struct.CipherSuite;
 import com.gypsyengineer.tlsbunny.tls13.struct.ClientHello;
+import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
+import com.gypsyengineer.tlsbunny.tls13.struct.EncryptedExtensions;
+import com.gypsyengineer.tlsbunny.tls13.struct.ExtensionType;
 import com.gypsyengineer.tlsbunny.tls13.struct.Finished;
+import com.gypsyengineer.tlsbunny.tls13.struct.Handshake;
 import static com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext.NO_PADDING;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
 import com.gypsyengineer.tlsbunny.utils.CertificateHolder;
@@ -24,11 +29,17 @@ import static com.gypsyengineer.tlsbunny.utils.Utils.concatenate;
 import java.io.IOException;
 import java.util.List;
 import com.gypsyengineer.tlsbunny.tls13.struct.HandshakeMessage;
+import com.gypsyengineer.tlsbunny.tls13.struct.HelloRetryRequest;
 import com.gypsyengineer.tlsbunny.tls13.struct.KeyShare;
 import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
+import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroupList;
 import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
+import com.gypsyengineer.tlsbunny.tls13.struct.ServerHello;
 import com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme;
+import com.gypsyengineer.tlsbunny.tls13.struct.SignatureSchemeList;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
+import com.gypsyengineer.tlsbunny.tls13.struct.SupportedVersions;
+import com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext;
 
 public class ClientHandshaker extends AbstractHandshaker {
 
@@ -144,7 +155,7 @@ public class ClientHandshaker extends AbstractHandshaker {
     }
 
     void handleServerHello(ServerHello serverHello) throws Exception {
-        KeyShare.ServerHello keyShare = serverHello.findKeyShare();
+        KeyShare.ServerHello keyShare = findKeyShare(serverHello);
 
         negotiator.processKeyShareEntry(keyShare.getServerShare());
         dh_shared_secret = negotiator.generateSecret();
@@ -423,13 +434,21 @@ public class ClientHandshaker extends AbstractHandshaker {
                         .getExtensionData().bytes());
     }
     
+    private KeyShare.ServerHello findKeyShare(ServerHello hello) throws IOException {
+        return factory.parseKeyShareFromServerHello(
+                hello.findExtension(ExtensionType.key_share)
+                        .getExtensionData().bytes());
+    }
+    
     public static ClientHandshaker create(StructFactory factory, 
             SignatureScheme scheme, NamedGroup group,
             Negotiator negotiator, CipherSuite ciphersuite,
             CertificateHolder clientCertificate) throws Exception {
 
-        return new ClientHandshaker(factory, scheme, group, negotiator, ciphersuite, 
-                HKDF.create(ciphersuite.hash()), clientCertificate);
+        return new ClientHandshaker(
+                factory, scheme, group, negotiator, ciphersuite, 
+                HKDF.create(ciphersuite.hash(), factory), 
+                clientCertificate);
     }
 
     private static byte[] zeroes(int length) {

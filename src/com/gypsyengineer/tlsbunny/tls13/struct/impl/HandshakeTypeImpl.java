@@ -1,15 +1,13 @@
 package com.gypsyengineer.tlsbunny.tls13.struct.impl;
 
 import java.nio.ByteBuffer;
-import com.gypsyengineer.tlsbunny.tls.Struct;
 import com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType;
 
 public class HandshakeTypeImpl implements HandshakeType {
 
-
     private int value;
 
-    public HandshakeTypeImpl(int value) {
+    HandshakeTypeImpl(int value) {
         this.value = value;
     }
 
@@ -31,10 +29,6 @@ public class HandshakeTypeImpl implements HandshakeType {
     @Override
     public void setValue(int value) {
         this.value = value;
-    }
-
-    public static HandshakeTypeImpl parse(ByteBuffer data) {
-        return new HandshakeTypeImpl(data.get() & 0xFF);
     }
 
     @Override

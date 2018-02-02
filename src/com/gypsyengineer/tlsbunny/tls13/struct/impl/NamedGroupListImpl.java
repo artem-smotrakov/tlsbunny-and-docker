@@ -1,10 +1,9 @@
 package com.gypsyengineer.tlsbunny.tls13.struct.impl;
 
 import com.gypsyengineer.tlsbunny.tls.Vector;
-import java.io.IOException;
-import java.nio.ByteBuffer;
 import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
 import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroupList;
+import java.io.IOException;
 
 public class NamedGroupListImpl implements NamedGroupList {
 
@@ -34,9 +33,4 @@ public class NamedGroupListImpl implements NamedGroupList {
         return named_group_list.encoding();
     }
     
-    public static NamedGroupList create(NamedGroup... namedGroups) {
-        return new NamedGroupListImpl(
-                Vector.wrap(LENGTH_BYTES, namedGroups));
-    }
-
 }

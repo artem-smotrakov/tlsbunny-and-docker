@@ -9,7 +9,7 @@ public class UncompressedPointRepresentationImpl implements UncompressedPointRep
     private final byte[] X;
     private final byte[] Y;
 
-    public UncompressedPointRepresentationImpl(byte[] X, byte[] Y) {
+    UncompressedPointRepresentationImpl(byte[] X, byte[] Y) {
         this.X = X;
         this.Y = Y;
     }
@@ -38,26 +38,4 @@ public class UncompressedPointRepresentationImpl implements UncompressedPointRep
             .array();
     }
     
-    public static UncompressedPointRepresentationImpl parse(
-            byte[] bytes, int coordinate_length) {
-
-        return parse(ByteBuffer.wrap(bytes), coordinate_length);
-    }
-
-    public static UncompressedPointRepresentationImpl parse(
-            ByteBuffer buffer, int coordinate_length) {
-
-        byte legacy_form = buffer.get();
-        if (legacy_form != 4) {
-            throw new IllegalArgumentException();
-        }
-
-        byte[] X = new byte[coordinate_length];
-        byte[] Y = new byte[coordinate_length];
-        buffer.get(X);
-        buffer.get(Y);
-
-        return new UncompressedPointRepresentationImpl(X, Y);
-    }
-
 }

@@ -3,16 +3,16 @@ package com.gypsyengineer.tlsbunny.tls13.struct.impl;
 import com.gypsyengineer.tlsbunny.tls.Vector;
 import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import com.gypsyengineer.tlsbunny.tls13.struct.KeyShareEntry;
-import com.gypsyengineer.tlsbunny.tls13.struct.*; // TODO
+import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
+import com.gypsyengineer.tlsbunny.tls13.struct.UncompressedPointRepresentation;
 
 public class KeyShareEntryImpl implements KeyShareEntry {
 
     private NamedGroup group;
     private Vector<Byte> key_exchange;
 
-    private KeyShareEntryImpl(NamedGroup group, Vector<Byte> key_exchange) {
+    KeyShareEntryImpl(NamedGroup group, Vector<Byte> key_exchange) {
         this.group = group;
         this.key_exchange = key_exchange;
     }
@@ -47,14 +47,6 @@ public class KeyShareEntryImpl implements KeyShareEntry {
         return Utils.encoding(group, key_exchange);
     }
 
-    public static KeyShareEntry parse(ByteBuffer buffer) {
-        NamedGroup group = NamedGroupImpl.parse(buffer);
-        Vector<Byte> key_exchange = Vector.parseOpaqueVector(
-                buffer, KEY_EXCHANGE_LENGTH_BYTES);
-        
-        return new KeyShareEntryImpl(group, key_exchange);
-    }
-    
     public static KeyShareEntry wrap(NamedGroup group, UncompressedPointRepresentation upr) throws IOException {
         return new KeyShareEntryImpl(
                 group, 
