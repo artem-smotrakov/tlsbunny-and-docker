@@ -9,8 +9,8 @@ import java.io.IOException;
 
 public class CertificateImpl implements Certificate {
 
-    private Vector<Byte> certificate_request_context;
-    private Vector<CertificateEntry> certificate_list;
+    private final Vector<Byte> certificate_request_context;
+    private final Vector<CertificateEntry> certificate_list;
 
     CertificateImpl(Vector<Byte> certificate_request_context,
             Vector<CertificateEntry> certificate_list) {
@@ -35,18 +35,8 @@ public class CertificateImpl implements Certificate {
     }
 
     @Override
-    public void setCertificateRequestContext(Vector<Byte> certificate_request_context) {
-        this.certificate_request_context = certificate_request_context;
-    }
-
-    @Override
     public Vector<CertificateEntry> getCertificateList() {
         return certificate_list;
-    }
-
-    @Override
-    public void setCertificateList(Vector<CertificateEntry> certificate_list) {
-        this.certificate_list = certificate_list;
     }
 
     @Override

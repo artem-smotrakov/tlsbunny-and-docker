@@ -14,12 +14,12 @@ import java.io.IOException;
 
 public class ClientHelloImpl implements ClientHello {
     
-    private ProtocolVersion legacy_version = ProtocolVersionImpl.TLSv12;
-    private Random random = new Random();
-    private Vector<Byte> legacy_session_id = Vector.wrap(LEGACY_SESSION_ID_LENGTH_BYTES);
-    private Vector<CipherSuite> cipher_suites = Vector.wrap(CIPHER_SUITES_LENGTH_BYTES);
-    private Vector<CompressionMethod> legacy_compression_methods = Vector.wrap(LEGACY_COMPRESSION_METHODS_LENGTH_BYTES);
-    private Vector<Extension> extensions = Vector.wrap(EXTENSIONS_LENGTH_BYTES);
+    private final ProtocolVersion legacy_version;
+    private final Random random;
+    private final Vector<Byte> legacy_session_id;
+    private final Vector<CipherSuite> cipher_suites;
+    private final Vector<CompressionMethod> legacy_compression_methods;
+    private final Vector<Extension> extensions;
 
     ClientHelloImpl(
             ProtocolVersion legacy_version,
@@ -60,25 +60,8 @@ public class ClientHelloImpl implements ClientHello {
     }
 
     @Override
-    public void setCipherSuites(Vector<CipherSuite> cipher_suites) {
-        this.cipher_suites = cipher_suites;
-    }
-
-    @Override
-    public void setCompressionMethods(
-            Vector<CompressionMethod> legacy_compression_methods) {
-
-        this.legacy_compression_methods = legacy_compression_methods;
-    }
-
-    @Override
     public Vector<Byte> getLegacySessionId() {
         return legacy_session_id;
-    }
-
-    @Override
-    public void setLegacySessionId(Vector<Byte> legacy_session_id) {
-        this.legacy_session_id = legacy_session_id;
     }
 
     @Override
@@ -102,11 +85,6 @@ public class ClientHelloImpl implements ClientHello {
     }
 
     @Override
-    public void setProtocolVersion(ProtocolVersion legacy_version) {
-        this.legacy_version = legacy_version;
-    }
-
-    @Override
     public ProtocolVersion getProtocolVersion() {
         return legacy_version;
     }
@@ -114,11 +92,6 @@ public class ClientHelloImpl implements ClientHello {
     @Override
     public Random getRandom() {
         return random;
-    }
-
-    @Override
-    public void setRandom(Random random) {
-        this.random = random;
     }
 
     @Override
@@ -134,11 +107,6 @@ public class ClientHelloImpl implements ClientHello {
     @Override
     public void clearExtensions() {
         extensions.clear();
-    }
-
-    @Override
-    public void setExtensions(Vector<Extension> extensions) {
-        this.extensions = extensions;
     }
 
     @Override

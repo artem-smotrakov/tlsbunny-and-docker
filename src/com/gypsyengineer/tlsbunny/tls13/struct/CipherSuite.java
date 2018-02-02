@@ -21,6 +21,4 @@ public interface CipherSuite extends Struct {
     int hashLength();
     int ivLength();
     int keyLength();
-    void setFirst(int first);
-    void setSecond(int second);
 }

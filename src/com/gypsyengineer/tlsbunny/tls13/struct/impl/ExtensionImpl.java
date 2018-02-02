@@ -8,8 +8,8 @@ import java.io.IOException;
 
 public class ExtensionImpl implements Extension {
 
-    private ExtensionType extension_type;
-    private Vector<Byte> extension_data;
+    private final ExtensionType extension_type;
+    private final Vector<Byte> extension_data;
     
     ExtensionImpl(ExtensionType extension_type, Vector<Byte> extension_data) {
         this.extension_type = extension_type;
@@ -22,20 +22,10 @@ public class ExtensionImpl implements Extension {
     }
     
     @Override
-    public void setExtensionType(ExtensionType extension_type) {
-        this.extension_type = extension_type;
-    }
-    
-    @Override
     public Vector<Byte> getExtensionData() {
         return extension_data;
     }
     
-    @Override
-    public void setExtensionData(Vector<Byte> extension_data) {
-        this.extension_data = extension_data;
-    }
-
     @Override
     public final int encodingLength() {
         return Utils.getEncodingLength(extension_type, extension_data);

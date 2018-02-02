@@ -4,7 +4,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.AlertDescription;
 
 public class AlertDescriptionImpl implements AlertDescription {
 
-    public int code;
+    private final int code;
 
     AlertDescriptionImpl(int code) {
         check(code);
@@ -26,12 +26,6 @@ public class AlertDescriptionImpl implements AlertDescription {
         return (byte) code;
     }
     
-    @Override
-    public void setCode(int code) {
-        check(code);
-        this.code = code;
-    }
-
     @Override
     public int hashCode() {
         int hash = 7;

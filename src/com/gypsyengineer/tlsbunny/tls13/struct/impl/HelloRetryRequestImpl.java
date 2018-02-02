@@ -12,9 +12,9 @@ import java.io.IOException;
 
 public class HelloRetryRequestImpl implements HelloRetryRequest {
 
-    private ProtocolVersion server_version;
-    private CipherSuite cipher_suite;
-    private Vector<Extension> extensions;
+    private final ProtocolVersion server_version;
+    private final CipherSuite cipher_suite;
+    private final Vector<Extension> extensions;
 
     HelloRetryRequestImpl(ProtocolVersion server_version,
             CipherSuite cipher_suite, Vector<Extension> extensions) {
@@ -25,28 +25,13 @@ public class HelloRetryRequestImpl implements HelloRetryRequest {
     }
 
     @Override
-    public void setCipherSuite(CipherSuite cipher_suite) {
-        this.cipher_suite = cipher_suite;
-    }
-
-    @Override
     public CipherSuite getCipherSuite() {
         return cipher_suite;
     }
 
     @Override
-    public void setProtocolVersion(ProtocolVersion server_version) {
-        this.server_version = server_version;
-    }
-
-    @Override
     public ProtocolVersion getProtocolVersion() {
         return server_version;
-    }
-
-    @Override
-    public void setExtensions(Vector<Extension> extensions) {
-        this.extensions = extensions;
     }
 
     @Override

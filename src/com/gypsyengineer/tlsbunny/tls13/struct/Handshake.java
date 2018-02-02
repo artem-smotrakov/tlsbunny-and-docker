@@ -18,7 +18,4 @@ public interface Handshake extends Struct {
     byte[] getBody();
     UInt24 getLength();
     HandshakeType getMessageType();
-    void setBody(Bytes body);
-    void setLength(UInt24 length);
-    void setMessageType(HandshakeType msg_type);
 }

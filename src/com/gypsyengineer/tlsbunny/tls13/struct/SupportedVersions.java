@@ -10,13 +10,11 @@ public interface SupportedVersions extends Struct {
         int VERSIONS_LENGTH_BYTES = 1;
 
         Vector<ProtocolVersion> getVersions();
-        void setVersions(Vector<ProtocolVersion> versions);
     }
     
     public static interface ServerHello extends SupportedVersions {
 
         ProtocolVersion getSelectedVersion();
-        void setSelectedVersion(ProtocolVersion selected_version);
     }
     
 }

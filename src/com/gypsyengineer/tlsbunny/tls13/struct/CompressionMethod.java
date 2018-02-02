@@ -7,5 +7,4 @@ public interface CompressionMethod extends Struct {
     int ENCODING_LENGTH = 1;
 
     int getCode();
-    void setCode(int code);
 }

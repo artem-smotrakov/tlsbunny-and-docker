@@ -4,7 +4,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.CompressionMethod;
 
 public class CompressionMethodImpl implements CompressionMethod {
 
-    private int code;
+    private final int code;
 
     CompressionMethodImpl(int code) {
         check(code);
@@ -14,12 +14,6 @@ public class CompressionMethodImpl implements CompressionMethod {
     @Override
     public int getCode() {
         return code;
-    }
-
-    @Override
-    public void setCode(int code) {
-        check(code);
-        this.code = code;
     }
 
     @Override

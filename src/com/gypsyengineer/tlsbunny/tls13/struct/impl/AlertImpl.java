@@ -10,11 +10,11 @@ public class AlertImpl implements Alert {
 
     private static final int ENCODING_LENGTH = 2;
 
-    private AlertLevel level;
-    private AlertDescription description;
+    private final AlertLevel level;
+    private final AlertDescription description;
 
     AlertImpl() {
-        this(AlertLevel.fatal, AlertDescription.INTERNAL_ERROR);
+        this(AlertLevel.fatal, AlertDescription.internal_error);
     }
 
     public AlertImpl(AlertLevel level, AlertDescription description) {
@@ -38,18 +38,8 @@ public class AlertImpl implements Alert {
     }
 
     @Override
-    public void setLevel(AlertLevel level) {
-        this.level = level;
-    }
-
-    @Override
     public AlertDescription getDescription() {
         return description;
-    }
-
-    @Override
-    public void setDescription(AlertDescription description) {
-        this.description = description;
     }
 
     @Override

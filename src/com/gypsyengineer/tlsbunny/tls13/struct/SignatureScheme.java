@@ -21,5 +21,4 @@ public interface SignatureScheme extends Struct {
     SignatureScheme rsa_pss_sha512 = StructFactory.getDefault().createSignatureScheme(0x0806);
 
     int getCode();
-    void setCode(int code);
 }

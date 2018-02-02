@@ -8,9 +8,9 @@ import java.io.IOException;
 
 public class HkdfLabelImpl implements HkdfLabel {
 
-    private UInt16 length;
-    private Vector<Byte> label;
-    private Vector<Byte> hash_value;
+    private final UInt16 length;
+    private final Vector<Byte> label;
+    private final Vector<Byte> hash_value;
 
     HkdfLabelImpl(UInt16 length, Vector<Byte> label, Vector<Byte> hash_value) {
         this.length = length;
@@ -24,28 +24,13 @@ public class HkdfLabelImpl implements HkdfLabel {
     }
 
     @Override
-    public void setLength(UInt16 length) {
-        this.length = length;
-    }
-
-    @Override
     public Vector<Byte> getLabel() {
         return label;
     }
 
     @Override
-    public void setLabel(Vector<Byte> label) {
-        this.label = label;
-    }
-
-    @Override
     public Vector<Byte> getHashValue() {
         return hash_value;
-    }
-
-    @Override
-    public void setHashValue(Vector<Byte> hash_value) {
-        this.hash_value = hash_value;
     }
 
     @Override

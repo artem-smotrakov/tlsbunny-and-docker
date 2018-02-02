@@ -7,5 +7,4 @@ public interface EncryptedExtensions extends HandshakeMessage {
     int EXTENSIONS_LENGTH_BYTES = 2;
 
     Vector<Extension> getExtensions();
-    void setExtensions(Vector<Extension> extensions);
 }

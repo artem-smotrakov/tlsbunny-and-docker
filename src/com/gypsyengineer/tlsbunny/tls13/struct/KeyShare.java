@@ -3,6 +3,7 @@ package com.gypsyengineer.tlsbunny.tls13.struct;
 import com.gypsyengineer.tlsbunny.tls.Struct;
 import com.gypsyengineer.tlsbunny.tls.Vector;
 
+// TODO: make it immutable
 public interface KeyShare extends Struct {
     
     public static interface ClientHello extends KeyShare {
@@ -17,12 +18,10 @@ public interface KeyShare extends Struct {
     public static interface ServerHello extends KeyShare {
 
         KeyShareEntry getServerShare();
-        void setServerShare(KeyShareEntry server_share);
     }
     
     public interface HelloRetryRequest extends KeyShare {
 
         NamedGroup getSelectedGroup();
-        void setSelectedGroup(NamedGroup selected_group);
     }
 }

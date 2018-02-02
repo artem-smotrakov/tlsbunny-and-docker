@@ -16,7 +16,4 @@ public interface HkdfLabel extends Struct {
     Vector<Byte> getHashValue();
     Vector<Byte> getLabel();
     UInt16 getLength();
-    void setHashValue(Vector<Byte> hash_value);
-    void setLabel(Vector<Byte> label);
-    void setLength(UInt16 length);
 }

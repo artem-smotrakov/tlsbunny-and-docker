@@ -15,5 +15,4 @@ public interface ContentType extends Struct {
     boolean isAlert();
     boolean isApplicationData();
     boolean isHandshake();
-    void setCode(int code);
 }

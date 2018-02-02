@@ -13,10 +13,10 @@ import java.io.IOException;
 
 public class ServerHelloImpl implements ServerHello {
 
-    private ProtocolVersion version = ProtocolVersion.TLSv13;
-    private Random random = new Random();
-    private CipherSuite cipher_suite = CipherSuite.TLS_AES_128_GCM_SHA256;
-    private Vector<Extension> extensions = Vector.wrap(EXTENSIONS_LENGTH_BYTES);
+    private final ProtocolVersion version;
+    private final Random random;
+    private final CipherSuite cipher_suite;
+    private final Vector<Extension> extensions;
 
     ServerHelloImpl(ProtocolVersion version, Random random,
             CipherSuite cipher_suite, Vector<Extension> extensions) {
@@ -46,18 +46,8 @@ public class ServerHelloImpl implements ServerHello {
     }
 
     @Override
-    public void setProtocolVersion(ProtocolVersion version) {
-        this.version = version;
-    }
-
-    @Override
     public ProtocolVersion getProtocolVersion() {
         return version;
-    }
-
-    @Override
-    public void setRandom(Random random) {
-        this.random = random;
     }
 
     @Override
@@ -66,18 +56,8 @@ public class ServerHelloImpl implements ServerHello {
     }
 
     @Override
-    public void setCipherSuite(CipherSuite cipher_suite) {
-        this.cipher_suite = cipher_suite;
-    }
-
-    @Override
     public CipherSuite getCipherSuite() {
         return cipher_suite;
-    }
-
-    @Override
-    public void setExtensions(Vector<Extension> extensions) {
-        this.extensions = extensions;
     }
 
     @Override

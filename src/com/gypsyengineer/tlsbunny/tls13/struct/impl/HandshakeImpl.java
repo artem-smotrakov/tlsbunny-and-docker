@@ -9,9 +9,9 @@ import java.io.IOException;
 
 public class HandshakeImpl implements Handshake {
 
-    private HandshakeType msg_type;
-    private UInt24 length;
-    private Bytes body;
+    private final HandshakeType msg_type;
+    private final UInt24 length;
+    private final Bytes body;
 
     HandshakeImpl(HandshakeType msg_type, UInt24 length, Bytes body) {
         this.msg_type = msg_type;
@@ -31,21 +31,6 @@ public class HandshakeImpl implements Handshake {
     @Override
     public byte[] encoding() throws IOException {
         return Utils.encoding(msg_type, length, body);
-    }
-
-    @Override
-    public void setMessageType(HandshakeType msg_type) {
-        this.msg_type = msg_type;
-    }
-
-    @Override
-    public void setLength(UInt24 length) {
-        this.length = length;
-    }
-
-    @Override
-    public void setBody(Bytes body) {
-        this.body = body;
     }
 
     @Override

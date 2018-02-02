@@ -12,5 +12,4 @@ public interface AlertLevel extends Struct {
     AlertLevel warning = StructFactory.getDefault().createAlertLevel(1);
 
     byte getCode();
-    void setCode(int code);
 }

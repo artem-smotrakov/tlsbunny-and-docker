@@ -6,6 +6,4 @@ public interface Alert extends Struct {
 
     AlertDescription getDescription();
     AlertLevel getLevel();
-    void setDescription(AlertDescription description);
-    void setLevel(AlertLevel level);
 }

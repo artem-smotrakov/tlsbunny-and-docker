@@ -5,7 +5,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType;
 
 public class HandshakeTypeImpl implements HandshakeType {
 
-    private int value;
+    private final int value;
 
     HandshakeTypeImpl(int value) {
         this.value = value;
@@ -24,11 +24,6 @@ public class HandshakeTypeImpl implements HandshakeType {
     @Override
     public int getValue() {
         return value;
-    }
-
-    @Override
-    public void setValue(int value) {
-        this.value = value;
     }
 
     @Override

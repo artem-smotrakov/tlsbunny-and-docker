@@ -6,7 +6,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType;
 
 public class FinishedImpl implements Finished {
 
-    private Bytes verify_data;
+    private final Bytes verify_data;
 
     FinishedImpl(Bytes verify_data) {
         this.verify_data = verify_data;
@@ -15,16 +15,6 @@ public class FinishedImpl implements Finished {
     @Override
     public byte[] getVerifyData() {
         return verify_data.encoding();
-    }
-
-    @Override
-    public void setVerifyData(byte[] verify_data) {
-        this.verify_data = new Bytes(verify_data);
-    }
-
-    @Override
-    public void setVerifyData(Bytes verify_data) {
-        this.verify_data = verify_data;
     }
 
     @Override

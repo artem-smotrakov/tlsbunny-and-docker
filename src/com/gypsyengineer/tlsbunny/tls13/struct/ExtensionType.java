@@ -29,5 +29,4 @@ public interface ExtensionType extends Struct {
     ExtensionType use_srtp = StructFactory.getDefault().createExtensionType(14);
 
     int getCode();
-    void setCode(int code);
 }

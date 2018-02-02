@@ -8,7 +8,7 @@ import java.io.IOException;
 
 public class EncryptedExtensionsImpl implements EncryptedExtensions {
 
-    private Vector<Extension> extensions;
+    private final Vector<Extension> extensions;
 
     EncryptedExtensionsImpl(Vector<Extension> extensions) {
         this.extensions = extensions;
@@ -34,9 +34,4 @@ public class EncryptedExtensionsImpl implements EncryptedExtensions {
         return extensions;
     }
 
-    @Override
-    public void setExtensions(Vector<Extension> extensions) {
-        this.extensions = extensions;
-    }
-    
 }

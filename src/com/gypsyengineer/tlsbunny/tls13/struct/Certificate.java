@@ -9,6 +9,4 @@ public interface Certificate extends HandshakeMessage {
 
     Vector<CertificateEntry> getCertificateList();
     Vector<Byte> getCertificateRequestContext();
-    void setCertificateList(Vector<CertificateEntry> certificate_list);
-    void setCertificateRequestContext(Vector<Byte> certificate_request_context);
 }

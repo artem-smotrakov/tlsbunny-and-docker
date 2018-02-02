@@ -15,8 +15,4 @@ public interface TLSPlaintext extends Struct {
     ProtocolVersion getLegacyRecordVersion();
     UInt16 getLength();
     ContentType getType();
-    void setFragment(Bytes fragment);
-    void setLegacyRecordVersion(ProtocolVersion version);
-    void setLength(UInt16 length);
-    void setType(ContentType type);
 }

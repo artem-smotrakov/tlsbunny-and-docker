@@ -7,6 +7,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.ExtensionType;
 import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.io.IOException;
 
+// TODO: make it immutable
 public abstract class CertificateEntryImpl implements CertificateEntry {
 
     Vector<Extension> extensions;
@@ -61,11 +62,6 @@ public abstract class CertificateEntryImpl implements CertificateEntry {
         }
 
         @Override
-        public void setCertData(Vector<Byte> cert_data) {
-            this.cert_data = cert_data;
-        }
-        
-        @Override
         public int encodingLength() {
             return Utils.getEncodingLength(cert_data, extensions);
         }
@@ -94,11 +90,6 @@ public abstract class CertificateEntryImpl implements CertificateEntry {
             return ASN1_subjectPublicKeyInfo;
         }
 
-        @Override
-        public void setASN1SubjectPublicKeyInfo(Vector<Byte> ASN1_subjectPublicKeyInfo) {
-            this.ASN1_subjectPublicKeyInfo = ASN1_subjectPublicKeyInfo;
-        }
-        
         @Override
         public int encodingLength() {
             return Utils.getEncodingLength(ASN1_subjectPublicKeyInfo, extensions);

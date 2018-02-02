@@ -9,7 +9,7 @@ public abstract class SupportedVersionsImpl implements SupportedVersions {
 
     public static class ClientHelloImpl implements ClientHello {
         
-        private Vector<ProtocolVersion> versions;
+        private final Vector<ProtocolVersion> versions;
         
         ClientHelloImpl(Vector<ProtocolVersion> versions) {
             this.versions = versions;
@@ -20,11 +20,6 @@ public abstract class SupportedVersionsImpl implements SupportedVersions {
             return versions;
         }
         
-        @Override
-        public void setVersions(Vector<ProtocolVersion> versions) {
-            this.versions = versions;
-        }
-
         @Override
         public int encodingLength() {
             return versions.encodingLength();
@@ -39,7 +34,7 @@ public abstract class SupportedVersionsImpl implements SupportedVersions {
     
     public static class ServerHelloImpl implements SupportedVersions.ServerHello {
         
-        private ProtocolVersion selected_version;
+        private final ProtocolVersion selected_version;
 
         ServerHelloImpl(ProtocolVersion selected_version) {
             this.selected_version = selected_version;
@@ -48,11 +43,6 @@ public abstract class SupportedVersionsImpl implements SupportedVersions {
         @Override
         public ProtocolVersion getSelectedVersion() {
             return selected_version;
-        }
-
-        @Override
-        public void setSelectedVersion(ProtocolVersion selected_version) {
-            this.selected_version = selected_version;
         }
 
         @Override

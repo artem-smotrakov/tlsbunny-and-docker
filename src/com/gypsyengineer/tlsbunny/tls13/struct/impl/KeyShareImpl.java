@@ -52,7 +52,7 @@ public abstract class KeyShareImpl implements Struct {
     
     public static class ServerHelloImpl extends KeyShareImpl implements ServerHello {
 
-        private KeyShareEntry server_share;
+        private final KeyShareEntry server_share;
 
         ServerHelloImpl(KeyShareEntry server_share) {
             this.server_share = server_share;
@@ -63,11 +63,6 @@ public abstract class KeyShareImpl implements Struct {
             return server_share;
         }
 
-        @Override
-        public void setServerShare(KeyShareEntry server_share) {
-            this.server_share = server_share;
-        }
-        
         @Override
         public int encodingLength() {
             return server_share.encodingLength();
@@ -83,7 +78,7 @@ public abstract class KeyShareImpl implements Struct {
     public static class HelloRetryRequestImpl extends KeyShareImpl 
             implements HelloRetryRequest {
 
-        private NamedGroup selected_group;
+        private final NamedGroup selected_group;
 
         HelloRetryRequestImpl(NamedGroup selected_group) {
             this.selected_group = selected_group;
@@ -94,11 +89,6 @@ public abstract class KeyShareImpl implements Struct {
             return selected_group;
         }
 
-        @Override
-        public void setSelectedGroup(NamedGroup selected_group) {
-            this.selected_group = selected_group;
-        }
-        
         @Override
         public int encodingLength() {
             return selected_group.encodingLength();

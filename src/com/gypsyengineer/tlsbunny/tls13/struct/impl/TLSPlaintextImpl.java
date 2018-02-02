@@ -10,10 +10,10 @@ import java.io.IOException;
 
 public class TLSPlaintextImpl implements TLSPlaintext {
 
-    private ContentType type;
-    private ProtocolVersion legacy_record_version;
-    private UInt16 length;
-    private Bytes fragment;
+    private final ContentType type;
+    private final ProtocolVersion legacy_record_version;
+    private final UInt16 length;
+    private final Bytes fragment;
 
     TLSPlaintextImpl(ContentType type, ProtocolVersion version, 
             UInt16 length, Bytes fragment) {
@@ -32,26 +32,6 @@ public class TLSPlaintextImpl implements TLSPlaintext {
     @Override
     public byte[] encoding() throws IOException {
         return Utils.encoding(type, legacy_record_version, length, fragment);
-    }
-
-    @Override
-    public void setType(ContentType type) {
-        this.type = type;
-    }
-
-    @Override
-    public void setLegacyRecordVersion(ProtocolVersion version) {
-        this.legacy_record_version = version;
-    }
-
-    @Override
-    public void setLength(UInt16 length) {
-        this.length = length;
-    }
-
-    @Override
-    public void setFragment(Bytes fragment) {
-        this.fragment = fragment;
     }
 
     @Override

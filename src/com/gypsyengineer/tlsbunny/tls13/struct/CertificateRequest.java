@@ -9,6 +9,4 @@ public interface CertificateRequest extends HandshakeMessage {
 
     Vector<Byte> getCertificateRequestContext();
     Vector<Extension> getExtensions();
-    void setCertificateRequestContext(Vector<Byte> certificate_request_context);
-    void setExtensions(Vector<Extension> extensions);
 }

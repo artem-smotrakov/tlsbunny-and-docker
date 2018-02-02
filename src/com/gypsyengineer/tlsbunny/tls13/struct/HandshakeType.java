@@ -20,5 +20,4 @@ public interface HandshakeType extends Struct {
     HandshakeType server_hello = StructFactory.getDefault().createHandshakeType(2);
 
     int getValue();
-    void setValue(int value);
 }

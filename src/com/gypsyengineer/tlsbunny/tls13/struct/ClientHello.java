@@ -3,6 +3,7 @@ package com.gypsyengineer.tlsbunny.tls13.struct;
 import com.gypsyengineer.tlsbunny.tls.Random;
 import com.gypsyengineer.tlsbunny.tls.Vector;
 
+// TODO: make it immutable
 public interface ClientHello extends HandshakeMessage {
 
     int CIPHER_SUITES_LENGTH_BYTES = 2;
@@ -21,10 +22,4 @@ public interface ClientHello extends HandshakeMessage {
     Vector<Byte> getLegacySessionId();
     ProtocolVersion getProtocolVersion();
     Random getRandom();
-    void setCipherSuites(Vector<CipherSuite> cipher_suites);
-    void setCompressionMethods(Vector<CompressionMethod> legacy_compression_methods);
-    void setExtensions(Vector<Extension> extensions);
-    void setLegacySessionId(Vector<Byte> legacy_session_id);
-    void setProtocolVersion(ProtocolVersion legacy_version);
-    void setRandom(Random random);
 }

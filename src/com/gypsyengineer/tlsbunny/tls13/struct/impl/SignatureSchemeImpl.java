@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 
 public class SignatureSchemeImpl implements SignatureScheme {
 
-    private int code;
+    private final int code;
 
     SignatureSchemeImpl(int code) {
         check(code);
@@ -16,12 +16,6 @@ public class SignatureSchemeImpl implements SignatureScheme {
     @Override
     public int getCode() {
         return code;
-    }
-
-    @Override
-    public void setCode(int code) {
-        check(code);
-        this.code = code;
     }
 
     @Override

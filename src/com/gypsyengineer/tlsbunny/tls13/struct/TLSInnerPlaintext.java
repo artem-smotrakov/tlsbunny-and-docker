@@ -14,7 +14,4 @@ public interface TLSInnerPlaintext extends Struct {
     byte[] getContent();
     ContentType getType();
     Bytes getZeros();
-    void setContent(Bytes content);
-    void setType(ContentType type);
-    void setZeros(Bytes zeros);
 }

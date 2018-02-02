@@ -8,9 +8,9 @@ import java.io.IOException;
 
 public class TLSInnerPlaintextImpl implements TLSInnerPlaintext {
 
-    private Bytes content;
-    private ContentType type;
-    private Bytes zeros;
+    private final Bytes content;
+    private final ContentType type;
+    private final Bytes zeros;
 
     TLSInnerPlaintextImpl(Bytes content, ContentType type, Bytes zeros) {
         this.content = content;
@@ -24,28 +24,13 @@ public class TLSInnerPlaintextImpl implements TLSInnerPlaintext {
     }
 
     @Override
-    public void setContent(Bytes content) {
-        this.content = content;
-    }
-
-    @Override
     public ContentType getType() {
         return type;
     }
 
     @Override
-    public void setType(ContentType type) {
-        this.type = type;
-    }
-
-    @Override
     public Bytes getZeros() {
         return zeros;
-    }
-
-    @Override
-    public void setZeros(Bytes zeros) {
-        this.zeros = zeros;
     }
 
     @Override

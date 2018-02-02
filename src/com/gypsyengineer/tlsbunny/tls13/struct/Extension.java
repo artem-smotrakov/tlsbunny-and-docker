@@ -9,6 +9,4 @@ public interface Extension extends Struct {
 
     Vector<Byte> getExtensionData();
     ExtensionType getExtensionType();
-    void setExtensionData(Vector<Byte> extension_data);
-    void setExtensionType(ExtensionType extension_type);
 }

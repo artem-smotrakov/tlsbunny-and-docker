@@ -9,8 +9,8 @@ import java.io.IOException;
 
 public class CertificateVerifyImpl implements CertificateVerify {
 
-    private SignatureScheme algorithm;
-    private Vector<Byte> signature;
+    private final SignatureScheme algorithm;
+    private final Vector<Byte> signature;
 
     CertificateVerifyImpl(SignatureScheme algorithm, Vector<Byte> signature) {
         this.algorithm = algorithm;
@@ -33,18 +33,8 @@ public class CertificateVerifyImpl implements CertificateVerify {
     }
 
     @Override
-    public void setAlgorithm(SignatureScheme algorithm) {
-        this.algorithm = algorithm;
-    }
-
-    @Override
     public Vector<Byte> getSignature() {
         return signature;
-    }
-
-    @Override
-    public void setSignature(Vector<Byte> signature) {
-        this.signature = signature;
     }
 
     @Override

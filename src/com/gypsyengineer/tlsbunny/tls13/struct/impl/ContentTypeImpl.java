@@ -4,7 +4,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
 
 public class ContentTypeImpl implements ContentType {
 
-    private int code;
+    private final int code;
 
     ContentTypeImpl(int code) {
         check(code);
@@ -14,12 +14,6 @@ public class ContentTypeImpl implements ContentType {
     @Override
     public int getCode() {
         return code;
-    }
-
-    @Override
-    public void setCode(int code) {
-        check(code);
-        this.code = code;
     }
 
     @Override

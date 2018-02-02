@@ -5,8 +5,8 @@ import com.gypsyengineer.tlsbunny.tls13.struct.CipherSuite;
 
 public class CipherSuiteImpl implements CipherSuite {
 
-    private int first;
-    private int second;
+    private final int first;
+    private final int second;
 
     CipherSuiteImpl(int first, int second) {
         check(first);
@@ -21,22 +21,10 @@ public class CipherSuiteImpl implements CipherSuite {
     }
 
     @Override
-    public void setFirst(int first) {
-        check(first);
-        this.first = first;
-    }
-
-    @Override
     public int getSecond() {
         return second;
     }
 
-    @Override
-    public void setSecond(int second) {
-        check(second);
-        this.second = second;
-    }
-    
     @Override
     public AEAD.Cipher cipher() {
         if (first != 0x13) {

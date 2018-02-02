@@ -8,6 +8,4 @@ public interface CertificateVerify extends HandshakeMessage {
 
     SignatureScheme getAlgorithm();
     Vector<Byte> getSignature();
-    void setAlgorithm(SignatureScheme algorithm);
-    void setSignature(Vector<Byte> signature);
 }
