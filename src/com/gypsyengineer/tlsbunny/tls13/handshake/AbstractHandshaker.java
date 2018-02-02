@@ -15,18 +15,18 @@ import com.gypsyengineer.tlsbunny.tls13.struct.EncryptedExtensions;
 import com.gypsyengineer.tlsbunny.tls13.struct.EndOfEarlyData;
 import com.gypsyengineer.tlsbunny.tls13.struct.Finished;
 import com.gypsyengineer.tlsbunny.tls13.struct.Handshake;
+import com.gypsyengineer.tlsbunny.tls13.struct.HandshakeMessage;
 import com.gypsyengineer.tlsbunny.tls13.struct.HelloRetryRequest;
+import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
 import com.gypsyengineer.tlsbunny.tls13.struct.ServerHello;
+import com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme;
+import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
+import com.gypsyengineer.tlsbunny.tls13.struct.StructParser;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
 import com.gypsyengineer.tlsbunny.utils.Connection;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import com.gypsyengineer.tlsbunny.tls13.struct.HandshakeMessage;
-import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
-import com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme;
-import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
-import com.gypsyengineer.tlsbunny.tls13.struct.StructParser;
 
 public abstract class AbstractHandshaker implements Handshaker {
 
@@ -60,6 +60,8 @@ public abstract class AbstractHandshaker implements Handshaker {
 
     static final long DEFAULT_SEED = 0;
     static final long SEED = Long.getLong("tlsbunny.seed", DEFAULT_SEED);
+    
+    static final ApplicationDataChannel NO_APPLICATION_DATA_CHANNEL = null;
     
     final StructFactory factory;
     final StructParser parser;

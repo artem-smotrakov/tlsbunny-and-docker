@@ -3,7 +3,8 @@ package com.gypsyengineer.tlsbunny.utils;
 public class Parameters {
     
     public static final int DEFAULT_TEST_NUMBER = 10000;
-    public static final int DEFAULT_SEED = 1;
+    public static final double DEFAULT_MIN_RATIO = 0.01;
+    public static final double DEFAULT_MAX_RATIO = 0.05;
 
     public static String getHost() {
         return System.getProperty("tlsbunny.host", "localhost").trim();
@@ -37,12 +38,25 @@ public class Parameters {
         return targets;
     }
     
-    public static int getTestNumber() {
+    public static int getTestsNumber() {
         return Integer.getInteger("tlsbunny.tests.number", DEFAULT_TEST_NUMBER);
     }
     
-    public static int getSeed() {
-        return Integer.getInteger("tlsbunny.seed", DEFAULT_SEED);
+    public static double getMinRatio() {
+        return getDouble("tlsbunny.min.ratio", DEFAULT_MIN_RATIO);
+    }
+    
+    public static double getMaxRatio() {
+        return getDouble("tlsbunny.max.ratio", DEFAULT_MAX_RATIO);
+    }
+    
+    private static double getDouble(String name, double defaultValue) {
+        String s = System.getProperty(name);
+        if (s == null) {
+            return defaultValue;
+        }
+        
+        return Double.parseDouble(s);
     }
     
 }

@@ -16,19 +16,6 @@ import com.gypsyengineer.tlsbunny.tls13.struct.Extension;
 import com.gypsyengineer.tlsbunny.tls13.struct.ExtensionType;
 import com.gypsyengineer.tlsbunny.tls13.struct.Finished;
 import com.gypsyengineer.tlsbunny.tls13.struct.Handshake;
-import static com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext.NO_PADDING;
-import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
-import com.gypsyengineer.tlsbunny.utils.CertificateHolder;
-import com.gypsyengineer.tlsbunny.utils.Connection;
-import com.gypsyengineer.tlsbunny.utils.Utils;
-import java.nio.ByteBuffer;
-import java.security.KeyFactory;
-import java.security.Signature;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.util.Arrays;
-import static com.gypsyengineer.tlsbunny.utils.Utils.concatenate;
-import java.io.IOException;
-import java.util.List;
 import com.gypsyengineer.tlsbunny.tls13.struct.HandshakeMessage;
 import com.gypsyengineer.tlsbunny.tls13.struct.HelloRetryRequest;
 import com.gypsyengineer.tlsbunny.tls13.struct.KeyShare;
@@ -41,6 +28,19 @@ import com.gypsyengineer.tlsbunny.tls13.struct.SignatureSchemeList;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.tls13.struct.SupportedVersions;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext;
+import static com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext.NO_PADDING;
+import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
+import com.gypsyengineer.tlsbunny.utils.CertificateHolder;
+import com.gypsyengineer.tlsbunny.utils.Connection;
+import com.gypsyengineer.tlsbunny.utils.Utils;
+import static com.gypsyengineer.tlsbunny.utils.Utils.concatenate;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.security.KeyFactory;
+import java.security.Signature;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.util.Arrays;
+import java.util.List;
 
 public class ClientHandshaker extends AbstractHandshaker {
 
@@ -363,7 +363,7 @@ public class ClientHandshaker extends AbstractHandshaker {
         
         ByteBuffer buffer = ByteBuffer.wrap(connection.read());
         if (buffer.remaining() == 0) {
-            throw new RuntimeException();
+            return NO_APPLICATION_DATA_CHANNEL;
         }
 
         while (buffer.remaining() > 0) {
@@ -372,7 +372,7 @@ public class ClientHandshaker extends AbstractHandshaker {
         }
         
         if (receivedAlert()) {            
-            throw new RuntimeException();
+            return NO_APPLICATION_DATA_CHANNEL;
         }
 
         if (requestedClientAuth()) {
@@ -384,13 +384,19 @@ public class ClientHandshaker extends AbstractHandshaker {
         
         applicationData = createApplicationDataChannel(connection);
      
-        TLSInnerPlaintext tlsInnerPlaintext = parser.parseTLSInnerPlaintext(applicationData.decrypt(
-                parser.parseTLSPlaintext(connection.read()).getFragment()));
+        buffer = ByteBuffer.wrap(connection.read());
+        if (buffer.remaining() == 0) {
+            return NO_APPLICATION_DATA_CHANNEL;
+        }
+        
+        TLSInnerPlaintext tlsInnerPlaintext = parser.parseTLSInnerPlaintext(
+                applicationData.decrypt(
+                        parser.parseTLSPlaintext(buffer).getFragment()));
         
         if (tlsInnerPlaintext.containsHandshake()) {
             Handshake handshake = parser.parseHandshake(tlsInnerPlaintext.getContent());
             if (!handshake.containsNewSessionTicket()) {
-                throw new RuntimeException();
+                return NO_APPLICATION_DATA_CHANNEL;
             }
             
             // TODO: handle NewSessionTicket
