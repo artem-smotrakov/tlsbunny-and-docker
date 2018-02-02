@@ -12,36 +12,44 @@ import static com.gypsyengineer.tlsbunny.utils.Utils.achtung;
 import java.io.IOException;
 import java.util.Arrays;
 
-public class MutatedStructFactory extends StructFactoryWrapper 
+public class MutatedStructFactory extends StructFactoryWrapper
         implements Fuzzer<byte[]> {
-    
+
     public static enum Target { tlsplaintext }
     public static enum Mode { byte_flip, bit_flip }
-    
+
     public static final Target DEFAULT_TARGET = Target.tlsplaintext;
     public static final Mode DEFAULT_MODE = Mode.byte_flip;
     public static final String DEFAULT_START_TEST = "0";
     public static final String STATE_DELIMITER = ":";
-    
+
     private final double minRatio = Parameters.getMinRatio();
     private final double maxRatio = Parameters.getMaxRatio();
-    
+
     private Target target = DEFAULT_TARGET;
     private Mode mode = DEFAULT_MODE;
     private Fuzzer<byte[]> fuzzer;
-    
+
     public MutatedStructFactory(StructFactory factory) {
         super(factory);
         initFuzzer(DEFAULT_START_TEST);
     }
 
+    public void setTarget(String target) {
+        this.target = Target.valueOf(target);
+    }
+
+    public void setMode(String mode) {
+        this.mode = Mode.valueOf(mode);
+    }
+
     @Override
     public TLSPlaintext[] createTLSPlaintexts(
             ContentType type, ProtocolVersion version, byte[] content) {
-        
+
         TLSPlaintext[] tlsPlaintexts = factory.createTLSPlaintexts(
                 type, version, content);
-        
+
         if (target == Target.tlsplaintext) {
             Utils.info("fuzz TLSPlaintext");
             try {
@@ -51,23 +59,23 @@ public class MutatedStructFactory extends StructFactoryWrapper
                 achtung("I couldn't fuzz TLSPlaintext: %s", e.getMessage());
             }
         }
-        
+
         return tlsPlaintexts;
     }
-    
+
     @Override
     public byte[] fuzz(byte[] encoding) {
         byte[] fuzzed = fuzzer.fuzz(encoding);
         if (Arrays.equals(encoding, fuzzed)) {
             achtung("encoding was not fuzzed (check ratios)");
         }
-        
+
         return fuzzed;
     }
 
     @Override
     public String getState() {
-        return String.join(STATE_DELIMITER, 
+        return String.join(STATE_DELIMITER,
                 target.toString(), mode.toString(), fuzzer.getState());
     }
 
@@ -76,16 +84,16 @@ public class MutatedStructFactory extends StructFactoryWrapper
         if (state == null) {
             throw new IllegalArgumentException();
         }
-        
+
         state = state.toLowerCase().trim();
         if (state.isEmpty()) {
             throw new IllegalArgumentException();
         }
-        
+
         target = DEFAULT_TARGET;
         mode = DEFAULT_MODE;
         String subState = DEFAULT_START_TEST;
-        
+
         String[] parts = state.split(STATE_DELIMITER);
         switch (parts.length) {
             case 1:
@@ -103,7 +111,7 @@ public class MutatedStructFactory extends StructFactoryWrapper
             default:
                 throw new IllegalArgumentException();
         }
-        
+
         initFuzzer(subState);
     }
 
@@ -123,7 +131,7 @@ public class MutatedStructFactory extends StructFactoryWrapper
         for (int i=0; i<values.length; i++) {
             targets[i] = values[i].name();
         }
-        
+
         return targets;
     }
 
@@ -133,22 +141,25 @@ public class MutatedStructFactory extends StructFactoryWrapper
         switch (target) {
             case tlsplaintext:
                 startIndex = 0;
-                endIndex = ContentType.ENCODING_LENGTH 
-                        + ProtocolVersion.ENCODING_LENGTH 
+                endIndex = ContentType.ENCODING_LENGTH
+                        + ProtocolVersion.ENCODING_LENGTH
                         + UInt16.ENCODING_LENGTH;
                 break;
             default:
                 throw new UnsupportedOperationException();
         }
-        
+
         switch (mode) {
             case byte_flip:
                 fuzzer = new ByteFlipFuzzer(minRatio, maxRatio, startIndex, endIndex);
                 break;
+            case bit_flip:
+                fuzzer = new BitFlipFuzzer(minRatio, maxRatio, startIndex, endIndex);
+                break;
             default:
                 throw new UnsupportedOperationException();
         }
-        
+
         fuzzer.setState(state);
     }
 
