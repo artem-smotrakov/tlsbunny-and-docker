@@ -111,7 +111,7 @@ public class ClientHandshaker extends AbstractHandshaker {
         return factory.createFinished(verify_data);
     }
 
-    private void computeKeysAfterClientFinished() throws Exception {
+    void computeKeysAfterClientFinished() throws Exception {
         resumption_master_secret = hkdf.deriveSecret(
                 master_secret,
                 res_master,
@@ -335,7 +335,7 @@ public class ClientHandshaker extends AbstractHandshaker {
                 handshakeDecryptor.decrypt(tlsPlaintext.getFragment()));
     }
 
-    private TLSPlaintext[] encrypt(Handshake message) throws Exception {
+    TLSPlaintext[] encrypt(Handshake message) throws Exception {
         return encrypt(factory.createTLSInnerPlaintext(ContentType.handshake, message.encoding(), NO_PADDING));
     }
 
