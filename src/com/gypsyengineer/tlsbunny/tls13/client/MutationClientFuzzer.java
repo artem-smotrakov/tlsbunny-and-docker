@@ -10,9 +10,10 @@ import com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.CertificateHolder;
 import com.gypsyengineer.tlsbunny.utils.Connection;
+import com.gypsyengineer.tlsbunny.utils.Output;
 import com.gypsyengineer.tlsbunny.utils.Parameters;
-import static com.gypsyengineer.tlsbunny.utils.Utils.achtung;
 import static com.gypsyengineer.tlsbunny.utils.Utils.info;
+import static com.gypsyengineer.tlsbunny.utils.Utils.printf;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -24,14 +25,16 @@ public class MutationClientFuzzer implements Runnable {
     public static final byte[] HTTP_GET_REQUEST = "GET / HTTP/1.1\n\n".getBytes();
 
     private final MutatedStructFactory fuzzer;
+    private final Output output;
     private final String host;
     private final int port;
     private final int testsNumber;
 
-    public MutationClientFuzzer(MutatedStructFactory fuzzer,
+    public MutationClientFuzzer(MutatedStructFactory fuzzer, Output output,
             String host, int port, int testsNumber) {
 
         this.fuzzer = fuzzer;
+        this.output = output;
         this.host = host;
         this.port = port;
         this.testsNumber = testsNumber;
@@ -50,47 +53,49 @@ public class MutationClientFuzzer implements Runnable {
 
             int test = 0;
             while (fuzzer.canFuzz() && test < testsNumber) {
-                info("test #%d: now fuzzer's state is '%s'", test, fuzzer.getState());
+                output.info("test #%d: now fuzzer's state is '%s'", test, fuzzer.getState());
                 try (Connection connection = Connection.create(host, port)) {
-                    info("start handshaking");
+                    output.info("start handshaking");
                     ApplicationDataChannel applicationData = handshaker.start(connection);
 
                     if (handshaker.receivedAlert()) {
-                        info("received %s", handshaker.getReceivedAlert());
+                        output.info("received %s", handshaker.getReceivedAlert());
                         continue;
                     }
 
                     if (applicationData == null) {
                         // TODO: check what happened
-                        info("handshake failed, couldn't create application data channel");
+                        output.info("handshake failed, couldn't create application data channel");
                         continue;
                     }
 
                     applicationData.send(HTTP_GET_REQUEST);
                     byte[] bytes = applicationData.receive();
-                    info("we just received %d bytes:%n%s",
+                    output.info("we just received %d bytes:%n%s",
                             bytes.length, new String(bytes));
-                    achtung("holy moly, connection succeeded!");
+                    output.achtung("holy moly, connection succeeded!");
                 } finally {
+                    output.flush();
                     test++;
                     fuzzer.moveOn();
                 }
             }
         } catch (Exception e) {
-            achtung("what the hell? unexpected exception: %s", e.getMessage());
+            output.achtung("what the hell? unexpected exception: %s", e.getMessage());
+        } finally {
+            output.flush();
         }
     }
 
     private static void help() {
-        System.out.printf("Available parameters (via system properties):%n");
-        System.out.printf("    %s%n", Parameters.helpHost());
-        System.out.printf("    %s%n", Parameters.helpPort());
-        System.out.printf("    %s%n", Parameters.helpMode());
-        System.out.printf("    %s%n", Parameters.helpTestsNumber());
-        System.out.printf("    %s%n", Parameters.helpRatios());
-        System.out.printf("    %s%n", Parameters.helpTargets());
-        System.out.println();
-        System.out.printf("Available targets:%n    %s%n",
+        printf("Available parameters (via system properties):%n");
+        printf("    %s%n", Parameters.helpHost());
+        printf("    %s%n", Parameters.helpPort());
+        printf("    %s%n", Parameters.helpMode());
+        printf("    %s%n", Parameters.helpTestsNumber());
+        printf("    %s%n", Parameters.helpRatios());
+        printf("    %s%n", Parameters.helpTargets());
+        printf("Available targets:%n    %s%n",
                 String.join(", ", MutatedStructFactory.getAvailableTargets()));
     }
 
@@ -119,14 +124,18 @@ public class MutationClientFuzzer implements Runnable {
         if (!state.isEmpty()) {
             info("okay, reproduce the following test %s", state);
 
-            MutatedStructFactory fuzzer = new MutatedStructFactory(
-                        StructFactory.getDefault(),
-                        Parameters.getMinRatio(),
-                        Parameters.getMaxRatio());
+            try (Output output = new Output()) {
+                MutatedStructFactory fuzzer = new MutatedStructFactory(
+                            StructFactory.getDefault(),
+                            output,
+                            Parameters.getMinRatio(),
+                            Parameters.getMaxRatio());
 
-            fuzzer.setState(state);
+                fuzzer.setState(state);
 
-            new MutationClientFuzzer(fuzzer, host, port, ONE_TEST).run();
+                new MutationClientFuzzer(fuzzer, output, host, port, ONE_TEST).run();
+            }
+
             info("phew, we are done!");
             return ;
         }
@@ -171,8 +180,10 @@ public class MutationClientFuzzer implements Runnable {
             String target, String mode,
             int startTest, int testsNumber) {
 
+        Output output = new Output();
         MutatedStructFactory fuzzer = new MutatedStructFactory(
                         StructFactory.getDefault(),
+                        output,
                         Parameters.getMinRatio(),
                         Parameters.getMaxRatio());
 
@@ -183,6 +194,7 @@ public class MutationClientFuzzer implements Runnable {
 
         fuzzer.setTest(startTest);
 
-        executor.submit(new MutationClientFuzzer(fuzzer, host, port, testsNumber));
+        executor.submit(new MutationClientFuzzer(fuzzer, output,
+                host, port, testsNumber));
     }
 }

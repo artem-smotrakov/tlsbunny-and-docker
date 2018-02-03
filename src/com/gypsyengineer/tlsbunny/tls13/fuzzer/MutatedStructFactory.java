@@ -9,8 +9,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactoryWrapper;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
-import com.gypsyengineer.tlsbunny.utils.Utils;
-import static com.gypsyengineer.tlsbunny.utils.Utils.achtung;
+import com.gypsyengineer.tlsbunny.utils.Output;
 import java.io.IOException;
 import java.util.Arrays;
 
@@ -32,12 +31,15 @@ public class MutatedStructFactory extends StructFactoryWrapper
     private Mode mode = DEFAULT_MODE;
     private Fuzzer<byte[]> fuzzer;
 
-    public MutatedStructFactory(
-            StructFactory factory, double minRatio, double maxRatio) {
+    private final Output output;
+
+    public MutatedStructFactory(StructFactory factory, Output output,
+            double minRatio, double maxRatio) {
 
         super(factory);
         this.minRatio = minRatio;
         this.maxRatio = maxRatio;
+        this.output = output;
         initFuzzer(DEFAULT_START_TEST);
     }
 
@@ -57,12 +59,12 @@ public class MutatedStructFactory extends StructFactoryWrapper
                 type, version, content);
 
         if (target == Target.tlsplaintext) {
-            Utils.info("fuzz TLSPlaintext");
+            output.info("fuzz TLSPlaintext");
             try {
                 tlsPlaintexts[0] = new MutatedStruct(
                         fuzz(tlsPlaintexts[0].encoding()));
             } catch (IOException e) {
-                achtung("I couldn't fuzz TLSPlaintext: %s", e.getMessage());
+                output.achtung("I couldn't fuzz TLSPlaintext: %s", e.getMessage());
             }
         }
 
@@ -74,11 +76,11 @@ public class MutatedStructFactory extends StructFactoryWrapper
         Handshake handshake = factory.createHandshake(type, content);
 
         if (target == Target.handshake) {
-            Utils.info("fuzz Handshake");
+            output.info("fuzz Handshake");
             try {
                 handshake = new MutatedStruct(fuzz(handshake.encoding()));
             } catch (IOException e) {
-                achtung("I couldn't fuzz Handshake: %s", e.getMessage());
+                output.achtung("I couldn't fuzz Handshake: %s", e.getMessage());
             }
         }
 
@@ -89,7 +91,7 @@ public class MutatedStructFactory extends StructFactoryWrapper
     public byte[] fuzz(byte[] encoding) {
         byte[] fuzzed = fuzzer.fuzz(encoding);
         if (Arrays.equals(encoding, fuzzed)) {
-            achtung("encoding was not fuzzed (check ratios)");
+            output.achtung("encoding was not fuzzed (check ratios)");
         }
 
         return fuzzed;

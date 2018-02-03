@@ -1,17 +1,17 @@
 package com.gypsyengineer.tlsbunny.utils;
 
+import com.gypsyengineer.tlsbunny.tls.Struct;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import com.gypsyengineer.tlsbunny.tls.Struct;
 
 public class Utils {
-    
+
     public static final byte[] EMPTY_ARRAY = new byte[0];
     public static final String PREFIX = "[tlsbunny]";
-    
+
     public static byte[][] split(byte[] data, int length) {
         List<byte[]> fragments = new ArrayList<>();
         if (data.length <= length) {
@@ -88,13 +88,27 @@ public class Utils {
 
         return buffer.array();
     }
-    
-    public static void info(String format, Object... values) {
-        System.out.printf("%s %s%n", PREFIX, String.format(format, values));
+
+    // synchronized output
+
+    public static void printf(String format, Object... params) {
+        synchronized (System.out) {
+            System.out.printf(format, params);
+        }
     }
-    
+
+    public static void println(String string) {
+        synchronized (System.out) {
+            System.out.println(string);
+        }
+    }
+
+    public static void info(String format, Object... values) {
+        printf("%s %s%n", PREFIX, String.format(format, values));
+    }
+
     public static void achtung(String format, Object... values) {
-        System.out.printf("%s achtung: %s%n", PREFIX, String.format(format, values));
+        printf("%s achtung: %s%n", PREFIX, String.format(format, values));
     }
 
 }
