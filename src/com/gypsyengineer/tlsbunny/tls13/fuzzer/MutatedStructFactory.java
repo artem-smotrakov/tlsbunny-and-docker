@@ -1,6 +1,7 @@
 package com.gypsyengineer.tlsbunny.tls13.fuzzer;
 
 import com.gypsyengineer.tlsbunny.tls.UInt16;
+import com.gypsyengineer.tlsbunny.tls.UInt24;
 import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
 import com.gypsyengineer.tlsbunny.tls13.struct.Handshake;
 import com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType;
@@ -100,6 +101,11 @@ public class MutatedStructFactory extends StructFactoryWrapper
                 target.toString(), mode.toString(), fuzzer.getState());
     }
 
+    public void setTest(int test) {
+        setState(String.join(STATE_DELIMITER,
+                target.toString(), mode.toString(), String.valueOf(test)));
+    }
+
     @Override
     public void setState(String state) {
         if (state == null) {
@@ -147,14 +153,16 @@ public class MutatedStructFactory extends StructFactoryWrapper
     }
 
     private void initFuzzer(String state) {
-        int startIndex;
-        int endIndex;
+        int start = 0;
+        int end;
         switch (target) {
             case tlsplaintext:
-                startIndex = 0;
-                endIndex = ContentType.ENCODING_LENGTH
+                end = ContentType.ENCODING_LENGTH
                         + ProtocolVersion.ENCODING_LENGTH
                         + UInt16.ENCODING_LENGTH;
+                break;
+            case handshake:
+                end = HandshakeType.ENCODING_LENGTH + UInt24.ENCODING_LENGTH;
                 break;
             default:
                 throw new UnsupportedOperationException();
@@ -162,10 +170,10 @@ public class MutatedStructFactory extends StructFactoryWrapper
 
         switch (mode) {
             case byte_flip:
-                fuzzer = new ByteFlipFuzzer(minRatio, maxRatio, startIndex, endIndex);
+                fuzzer = new ByteFlipFuzzer(minRatio, maxRatio, start, end);
                 break;
             case bit_flip:
-                fuzzer = new BitFlipFuzzer(minRatio, maxRatio, startIndex, endIndex);
+                fuzzer = new BitFlipFuzzer(minRatio, maxRatio, start, end);
                 break;
             default:
                 throw new UnsupportedOperationException();

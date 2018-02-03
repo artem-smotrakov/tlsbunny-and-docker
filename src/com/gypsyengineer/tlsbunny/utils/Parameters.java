@@ -9,6 +9,9 @@ public class Parameters {
     public static final int DEFAULT_PORT = 10101;
     public static final String DEFAULT_HOST = "localhost";
 
+    // TODO: default number of threads should depend on a number of cores
+    public static final int DEFAULT_THREADS = 3;
+
     public static String helpHost() {
         return String.format("-Dtlsbunny.host sets a hostname");
     }
@@ -84,6 +87,14 @@ public class Parameters {
 
     public static double getMaxRatio() {
         return getDouble("tlsbunny.max.ratio", DEFAULT_MAX_RATIO);
+    }
+
+    public static String helpThreads() {
+        return String.format("-Dtlsbunny.threads sets a number of threads");
+    }
+
+    public static int getThreads() {
+        return Integer.getInteger("tlsbunny.threads", DEFAULT_THREADS);
     }
 
     private static double getDouble(String name, double defaultValue) {
