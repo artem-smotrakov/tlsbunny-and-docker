@@ -15,9 +15,11 @@ import static com.gypsyengineer.tlsbunny.utils.Utils.achtung;
 import static com.gypsyengineer.tlsbunny.utils.Utils.info;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class MutationClientFuzzer implements Runnable {
 
+    public static final int ONE_TEST = 1;
     public static final int DEFAULT_TESTS_NUMBER = 10000;
     public static final byte[] HTTP_GET_REQUEST = "GET / HTTP/1.1\n\n".getBytes();
 
@@ -115,9 +117,18 @@ public class MutationClientFuzzer implements Runnable {
         int threads = Parameters.getThreads();
 
         if (!state.isEmpty()) {
-            // TODO: run one single test
-            info("okay, let's set fuzzer's state to %s", state);
-            throw new UnsupportedOperationException();
+            info("okay, reproduce the following test %s", state);
+
+            MutatedStructFactory fuzzer = new MutatedStructFactory(
+                        StructFactory.getDefault(),
+                        Parameters.getMinRatio(),
+                        Parameters.getMaxRatio());
+
+            fuzzer.setState(state);
+
+            new MutationClientFuzzer(fuzzer, host, port, ONE_TEST).run();
+            info("phew, we are done!");
+            return ;
         }
 
         if (targets.length != 0) {
@@ -150,6 +161,9 @@ public class MutationClientFuzzer implements Runnable {
         } finally {
             executor.shutdown();
         }
+
+        executor.awaitTermination(365, TimeUnit.DAYS);
+        info("phew, we are done!");
     }
 
     private static void runFuzzer(ExecutorService executor,
