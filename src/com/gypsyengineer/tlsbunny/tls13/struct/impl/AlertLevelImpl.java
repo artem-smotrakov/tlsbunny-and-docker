@@ -25,7 +25,7 @@ public class AlertLevelImpl implements AlertLevel {
     public byte getCode() {
         return (byte) code;
     }
-    
+
     @Override
     public int hashCode() {
         int hash = 7;
@@ -46,6 +46,17 @@ public class AlertLevelImpl implements AlertLevel {
         }
         final AlertLevelImpl other = (AlertLevelImpl) obj;
         return this.code == other.code;
+    }
+
+    @Override
+    public String toString() {
+        if (code == fatal.getCode()) {
+            return "fatal";
+        } else if (code == warning.getCode()) {
+            return "warning";
+        }
+
+        return "unknown";
     }
 
     private static void check(int code) {

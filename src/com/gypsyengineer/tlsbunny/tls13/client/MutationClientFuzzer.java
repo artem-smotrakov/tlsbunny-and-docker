@@ -86,7 +86,7 @@ public class MutationClientFuzzer {
                     ApplicationDataChannel applicationData = handshaker.start(connection);
 
                     if (handshaker.receivedAlert()) {
-                        info("received alert: %s", handshaker.getReceivedAlert());
+                        info("received %s", handshaker.getReceivedAlert());
                         continue;
                     }
 
