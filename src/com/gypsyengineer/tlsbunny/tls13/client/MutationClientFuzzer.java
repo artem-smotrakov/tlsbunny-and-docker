@@ -20,13 +20,35 @@ public class MutationClientFuzzer {
     public static final int DEFAULT_TESTS_NUMBER = 10000;
     public static final byte[] HTTP_GET_REQUEST = "GET / HTTP/1.1\n\n".getBytes();
 
-    public static void main(String[] args) throws Exception {
-        MutatedStructFactory fuzzer = new MutatedStructFactory(
-                StructFactory.getDefault());
+    private static void help() {
+        System.out.printf("Available parameters (via system properties):%n");
+        System.out.printf("    %s%n", Parameters.helpHost());
+        System.out.printf("    %s%n", Parameters.helpPort());
+        System.out.printf("    %s%n", Parameters.helpMode());
+        System.out.printf("    %s%n", Parameters.helpTestsNumber());
+        System.out.printf("    %s%n", Parameters.helpRatios());
+        System.out.printf("    %s%n", Parameters.helpTargets());
+        System.out.println();
+        System.out.printf("Available targets:%n    %s%n",
+                String.join(", ", MutatedStructFactory.getAvailableTargets()));
+    }
 
-        String[] availableTargets = fuzzer.getAvailableTargets();
+    public static void main(String[] args) throws Exception {
+        if (args.length > 0
+                && ("help".equals(args[0]) || "-help".equals("-help") || "--help".equals(args[0]))) {
+
+            help();
+            return;
+        }
+
+        MutatedStructFactory fuzzer = new MutatedStructFactory(
+                StructFactory.getDefault(),
+                Parameters.getMinRatio(),
+                Parameters.getMaxRatio());
+
+        String[] availableTargets = MutatedStructFactory.getAvailableTargets();
         info("fuzzer has the following targets:%n    %s",
-                String.join(",", availableTargets));
+                String.join(", ", availableTargets));
 
         ClientHandshaker handshaker = ClientHandshaker.create(
                 fuzzer,
@@ -46,16 +68,18 @@ public class MutationClientFuzzer {
         int testsNumber = Parameters.getTestsNumber();
 
         if ((targets.length != 0 || !mode.isEmpty()) && !state.isEmpty()) {
-            throw new IllegalArgumentException("Both targets/mode and state are set!");
+            achtung("both targets/mode and state are set");
+            return;
         }
 
         if (targets.length == 0 && state.isEmpty()) {
-            throw new IllegalArgumentException("Set target or state");
+            achtung("set target or state");
+            return;
         }
 
         if (targets.length != 0) {
             if (ALL_TARGETS.equals(targets[0])) {
-                targets = fuzzer.getAvailableTargets();
+                targets = MutatedStructFactory.getAvailableTargets();
             }
 
             info("okay, we're going to fuzz the following targets:%n    %s",

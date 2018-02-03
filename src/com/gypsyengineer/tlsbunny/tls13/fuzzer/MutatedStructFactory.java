@@ -8,7 +8,6 @@ import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactoryWrapper;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
-import com.gypsyengineer.tlsbunny.utils.Parameters;
 import com.gypsyengineer.tlsbunny.utils.Utils;
 import static com.gypsyengineer.tlsbunny.utils.Utils.achtung;
 import java.io.IOException;
@@ -17,23 +16,27 @@ import java.util.Arrays;
 public class MutatedStructFactory extends StructFactoryWrapper
         implements Fuzzer<byte[]> {
 
+    public static enum Mode   { byte_flip, bit_flip }
     public static enum Target { tlsplaintext, handshake }
-    public static enum Mode { byte_flip, bit_flip }
 
     public static final Target DEFAULT_TARGET = Target.tlsplaintext;
     public static final Mode DEFAULT_MODE = Mode.byte_flip;
     public static final String DEFAULT_START_TEST = "0";
     public static final String STATE_DELIMITER = ":";
 
-    private final double minRatio = Parameters.getMinRatio();
-    private final double maxRatio = Parameters.getMaxRatio();
+    private final double minRatio;
+    private final double maxRatio;
 
     private Target target = DEFAULT_TARGET;
     private Mode mode = DEFAULT_MODE;
     private Fuzzer<byte[]> fuzzer;
 
-    public MutatedStructFactory(StructFactory factory) {
+    public MutatedStructFactory(
+            StructFactory factory, double minRatio, double maxRatio) {
+
         super(factory);
+        this.minRatio = minRatio;
+        this.maxRatio = maxRatio;
         initFuzzer(DEFAULT_START_TEST);
     }
 
@@ -143,16 +146,6 @@ public class MutatedStructFactory extends StructFactoryWrapper
         fuzzer.moveOn();
     }
 
-    public String[] getAvailableTargets() {
-        Target[] values = Target.values();
-        String[] targets = new String[values.length];
-        for (int i=0; i<values.length; i++) {
-            targets[i] = values[i].name();
-        }
-
-        return targets;
-    }
-
     private void initFuzzer(String state) {
         int startIndex;
         int endIndex;
@@ -179,6 +172,16 @@ public class MutatedStructFactory extends StructFactoryWrapper
         }
 
         fuzzer.setState(state);
+    }
+
+    public static String[] getAvailableTargets() {
+        Target[] values = Target.values();
+        String[] targets = new String[values.length];
+        for (int i=0; i<values.length; i++) {
+            targets[i] = values[i].name();
+        }
+
+        return targets;
     }
 
 }
