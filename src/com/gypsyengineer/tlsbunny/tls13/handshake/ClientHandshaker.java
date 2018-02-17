@@ -341,7 +341,7 @@ public class ClientHandshaker extends AbstractHandshaker {
 
     private TLSPlaintext[] encrypt(TLSInnerPlaintext message) throws Exception {
         return factory.createTLSPlaintexts(ContentType.application_data,
-                ProtocolVersion.TLSv10,
+                ProtocolVersion.TLSv12,
                 handshakeEncryptor.encrypt(message.encoding()));
     }
 
