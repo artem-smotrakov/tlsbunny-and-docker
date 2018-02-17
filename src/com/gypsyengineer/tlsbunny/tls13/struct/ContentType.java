@@ -6,10 +6,11 @@ public interface ContentType extends Struct {
 
     int ENCODING_LENGTH = 1;
 
-    ContentType alert = StructFactory.getDefault().createContentType(21);
-    ContentType application_data = StructFactory.getDefault().createContentType(23);
-    ContentType handshake = StructFactory.getDefault().createContentType(22);
     ContentType invalid = StructFactory.getDefault().createContentType(0);
+    ContentType change_cipher_spec = StructFactory.getDefault().createContentType(20);
+    ContentType alert = StructFactory.getDefault().createContentType(21);
+    ContentType handshake = StructFactory.getDefault().createContentType(22);
+    ContentType application_data = StructFactory.getDefault().createContentType(23);
 
     int getCode();
     boolean isAlert();
