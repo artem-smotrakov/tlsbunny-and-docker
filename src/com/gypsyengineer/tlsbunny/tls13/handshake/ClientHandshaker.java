@@ -305,6 +305,14 @@ public class ClientHandshaker extends AbstractHandshaker {
             while (buffer.remaining() > 0) {
                 handle(parser.parseHandshake(buffer));
             }
+        } else if (ContentType.change_cipher_spec.equals(type)) {
+            ByteBuffer buffer = ByteBuffer.wrap(content);
+            if (buffer.remaining() > 0) {
+                byte b = buffer.get();
+                if (b != 0x01) {
+                    throw new RuntimeException();
+                }
+            }
         } else {
             throw new RuntimeException();
         }
