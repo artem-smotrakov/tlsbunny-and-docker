@@ -2,4 +2,5 @@ build.xml
 manifest.mf
 nbproject/
 /build/
-/dist/
+/dist
+openssl_src
