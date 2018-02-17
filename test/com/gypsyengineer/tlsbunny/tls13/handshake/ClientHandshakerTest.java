@@ -326,7 +326,7 @@ public class ClientHandshakerTest {
                 CLIENT_APPLICATION_DATA_CIPHERTEXT,
                 handshaker.factory.createTLSPlaintext(
                         ContentType.application_data,
-                        ProtocolVersion.TLSv10,
+                        ProtocolVersion.TLSv12,
                         applicationData.encrypt(APPLICATION_DATA_PAYLOAD)).encoding());
 
         // read NewSessionTicket

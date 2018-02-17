@@ -40,7 +40,7 @@ public class ApplicationDataChannel {
 
     public void send(byte[] data) throws Exception {
         TLSPlaintext[] tlsPlaintexts = factory.createTLSPlaintexts(ContentType.application_data,
-                ProtocolVersion.TLSv10,
+                ProtocolVersion.TLSv12,
                 encrypt(factory.createTLSInnerPlaintext(ContentType.application_data, data, NO_PADDING).encoding()));
 
         for (TLSPlaintext tlsPlaintext : tlsPlaintexts) {
