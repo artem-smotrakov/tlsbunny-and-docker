@@ -40,7 +40,7 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 public class StructParserImpl implements StructParser {
-    
+
     @Override
     public Handshake parseHandshake(ByteBuffer buffer) {
         HandshakeType msg_type = parseHandshakeType(buffer);
@@ -53,9 +53,14 @@ public class StructParserImpl implements StructParser {
     @Override
     public ServerHello parseServerHello(ByteBuffer buffer) {
         return new ServerHelloImpl(
-                parseProtocolVersion(buffer), 
-                Random.parse(buffer), 
+                parseProtocolVersion(buffer),
+                Random.parse(buffer),
+                Vector.parse(
+                        buffer,
+                        ServerHello.LEGACY_SESSION_ID_ECHO_LENGTH_BYTES,
+                        buf -> buf.get()),
                 parseCipherSuite(buffer),
+                parseCompressionMethod(buffer),
                 Vector.parse(
                     buffer,
                     ServerHello.EXTENSIONS_LENGTH_BYTES,
@@ -69,7 +74,7 @@ public class StructParserImpl implements StructParser {
             if (bytes[i] != 0) {
                 break;
             }
-            
+
             i--;
         }
 
@@ -79,10 +84,10 @@ public class StructParserImpl implements StructParser {
 
         byte[] zeros = new byte[bytes.length - 1 - i];
         byte[] content = Arrays.copyOfRange(bytes, 0, i);
-        
+
         return new TLSInnerPlaintextImpl(
-                new Bytes(content), 
-                new ContentTypeImpl(bytes[i]), 
+                new Bytes(content),
+                new ContentTypeImpl(bytes[i]),
                 new Bytes(zeros));
     }
 
@@ -92,7 +97,7 @@ public class StructParserImpl implements StructParser {
         ProtocolVersion legacy_record_version = parseProtocolVersion(buffer);
         UInt16 length = UInt16.parse(buffer);
         Bytes fragment = Bytes.parse(buffer, length.value);
-        
+
         return new TLSPlaintextImpl(type, legacy_record_version, length, fragment);
     }
 
@@ -114,7 +119,7 @@ public class StructParserImpl implements StructParser {
     @Override
     public Alert parseAlert(ByteBuffer buffer) {
         return new AlertImpl(
-                parseAlertLevel(buffer), 
+                parseAlertLevel(buffer),
                 parseAlertDescription(buffer));
     }
 
@@ -131,11 +136,11 @@ public class StructParserImpl implements StructParser {
     @Override
     public Certificate parseCertificate(
             ByteBuffer buffer, Vector.ContentParser certificateEntityParser) {
-        
+
         return new CertificateImpl(
                 Vector.parse(buffer,
                     Certificate.CONTEXT_LENGTH_BYTES,
-                    buf -> buf.get()), 
+                    buf -> buf.get()),
                 Vector.parse(
                     buffer,
                     Certificate.CERTIFICATE_LIST_LENGTH_BYTES,
@@ -147,7 +152,7 @@ public class StructParserImpl implements StructParser {
         return new CertificateRequestImpl(Vector.parse(
                     buffer,
                     CertificateRequest.CERTIFICATE_REQUEST_CONTEXT_LENGTH_BYTES,
-                    buf -> buf.get()), 
+                    buf -> buf.get()),
                 Vector.parse(
                     buffer,
                     CertificateRequest.EXTENSIONS_LENGTH_BYTES,
@@ -157,7 +162,7 @@ public class StructParserImpl implements StructParser {
     @Override
     public CertificateVerify parseCertificateVerify(ByteBuffer buffer) {
         return new CertificateVerifyImpl(
-                parseSignatureScheme(buffer), 
+                parseSignatureScheme(buffer),
                 Vector.parseOpaqueVector(buffer, CertificateVerify.SIGNATURE_LENGTH_BYTES));
     }
 
@@ -166,23 +171,23 @@ public class StructParserImpl implements StructParser {
         ProtocolVersion legacy_version = parseProtocolVersion(buffer);
         Random random = Random.parse(buffer);
         Vector<Byte> legacy_session_id = Vector.parse(
-                buffer, 
-                ClientHello.LEGACY_SESSION_ID_LENGTH_BYTES, 
+                buffer,
+                ClientHello.LEGACY_SESSION_ID_LENGTH_BYTES,
                 buf -> buf.get());
         Vector<CipherSuite> cipher_suites = Vector.parse(
-                buffer, 
-                ClientHello.CIPHER_SUITES_LENGTH_BYTES, 
+                buffer,
+                ClientHello.CIPHER_SUITES_LENGTH_BYTES,
                 buf -> parseCipherSuite(buf));
         Vector<CompressionMethod> legacy_compression_methods = Vector.parse(
-                buffer, 
-                ClientHello.LEGACY_COMPRESSION_METHODS_LENGTH_BYTES, 
+                buffer,
+                ClientHello.LEGACY_COMPRESSION_METHODS_LENGTH_BYTES,
                 buf -> parseCompressionMethod(buf));
         Vector<Extension> extensions = Vector.parse(
                 buffer,
                 ClientHello.EXTENSIONS_LENGTH_BYTES,
                 buf -> parseExtension(buf));
 
-        return new ClientHelloImpl(legacy_version, random, legacy_session_id, 
+        return new ClientHelloImpl(legacy_version, random, legacy_session_id,
                 cipher_suites, legacy_compression_methods, extensions);
     }
 
@@ -199,15 +204,15 @@ public class StructParserImpl implements StructParser {
     public Finished parseFinished(ByteBuffer buffer, int hashLen) {
         byte[] verify_data = new byte[hashLen];
         buffer.get(verify_data);
-        
+
         return new FinishedImpl(new Bytes(verify_data));
     }
 
     @Override
     public HelloRetryRequest parseHelloRetryRequest(ByteBuffer buffer) {
         return new HelloRetryRequestImpl(
-                parseProtocolVersion(buffer), 
-                parseCipherSuite(buffer), 
+                parseProtocolVersion(buffer),
+                parseCipherSuite(buffer),
                 Vector.parse(
                     buffer,
                     HelloRetryRequest.EXTENSIONS_LENGTH_BYTES,
@@ -218,12 +223,12 @@ public class StructParserImpl implements StructParser {
     public SignatureScheme parseSignatureScheme(ByteBuffer buffer) {
         return new SignatureSchemeImpl(buffer.getShort());
     }
-    
+
     @Override
     public TLSInnerPlaintext parseTLSInnerPlaintext(ByteBuffer buffer) {
         throw new UnsupportedOperationException();
     }
-    
+
     @Override
     public EndOfEarlyData parseEndOfEarlyData(ByteBuffer buffer) {
         throw new UnsupportedOperationException();
@@ -233,8 +238,8 @@ public class StructParserImpl implements StructParser {
     public SignatureSchemeList parseSignatureSchemeList(ByteBuffer buffer) {
         return new SignatureSchemeListImpl(
                 Vector.parse(
-                        buffer, 
-                        SignatureSchemeList.LENGTH_BYTES, 
+                        buffer,
+                        SignatureSchemeList.LENGTH_BYTES,
                         buf -> parseSignatureScheme(buf)));
     }
 
@@ -242,15 +247,15 @@ public class StructParserImpl implements StructParser {
     public SupportedVersions.ClientHello parseSupportedVersionsClientHello(ByteBuffer buffer) {
         return new SupportedVersionsImpl.ClientHelloImpl(
                     Vector.parse(
-                            buffer, 
-                            SupportedVersions.ClientHello.VERSIONS_LENGTH_BYTES, 
+                            buffer,
+                            SupportedVersions.ClientHello.VERSIONS_LENGTH_BYTES,
                             buf -> parseProtocolVersion(buf)));
     }
 
     @Override
     public CertificateEntry.X509 parseX509CertificateEntry(ByteBuffer buffer) {
         return new CertificateEntryImpl.X509Impl(
-                    Vector.parseOpaqueVector(buffer, CertificateEntry.X509.LENGTH_BYTES), 
+                    Vector.parseOpaqueVector(buffer, CertificateEntry.X509.LENGTH_BYTES),
                     Vector.parse(
                         buffer,
                         CertificateEntry.X509.EXTENSIONS_LENGTH_BYTES,
@@ -261,8 +266,8 @@ public class StructParserImpl implements StructParser {
     public CertificateEntry.RawPublicKey parseRawPublicKeyCertificateEntry(ByteBuffer buffer) {
         return new CertificateEntryImpl.RawPublicKeyImpl(
                     Vector.parseOpaqueVector(
-                            buffer, 
-                            CertificateEntry.RawPublicKey.LENGTH_BYTES), 
+                            buffer,
+                            CertificateEntry.RawPublicKey.LENGTH_BYTES),
                     Vector.parse(
                         buffer,
                         CertificateEntry.RawPublicKey.EXTENSIONS_LENGTH_BYTES,
@@ -282,11 +287,11 @@ public class StructParserImpl implements StructParser {
     public KeyShare.ClientHello parseKeyShareFromClientHello(ByteBuffer buffer) {
             return new KeyShareImpl.ClientHelloImpl(
                     Vector.parse(
-                        buffer, 
-                        KeyShare.ClientHello.LENGTH_BYTES, 
+                        buffer,
+                        KeyShare.ClientHello.LENGTH_BYTES,
                         buf -> parseKeyShareEntry(buf)));
     }
-    
+
     @Override
     public CompressionMethod parseCompressionMethod(ByteBuffer buffer) {
         return new CompressionMethodImpl(buffer.get() & 0xFF);
@@ -297,7 +302,7 @@ public class StructParserImpl implements StructParser {
         ExtensionType extension_type = parseExtensionType(buffer);
         Vector<Byte> extension_data = Vector.parseOpaqueVector(
                 buffer, Extension.EXTENSION_DATA_LENGTH_BYTES);
-        
+
         return new ExtensionImpl(extension_type, extension_data);
     }
 
@@ -310,11 +315,11 @@ public class StructParserImpl implements StructParser {
     public HandshakeType parseHandshakeType(ByteBuffer buffer) {
         return new HandshakeTypeImpl(buffer.get() & 0xFF);
     }
-    
+
     @Override
     public KeyShareEntry parseKeyShareEntry(ByteBuffer buffer) {
         return new KeyShareEntryImpl(
-                parseNamedGroup(buffer), 
+                parseNamedGroup(buffer),
                 Vector.parseOpaqueVector(
                     buffer, KeyShareEntry.KEY_EXCHANGE_LENGTH_BYTES));
     }
