@@ -212,10 +212,16 @@ public class StructParserImpl implements StructParser {
     public HelloRetryRequest parseHelloRetryRequest(ByteBuffer buffer) {
         return new HelloRetryRequestImpl(
                 parseProtocolVersion(buffer),
+                Random.parse(buffer),
+                Vector.parse(
+                        buffer,
+                        HelloRetryRequestImpl.LEGACY_SESSION_ID_ECHO_LENGTH_BYTES,
+                        buf -> buf.get()),
                 parseCipherSuite(buffer),
+                parseCompressionMethod(buffer),
                 Vector.parse(
                     buffer,
-                    HelloRetryRequest.EXTENSIONS_LENGTH_BYTES,
+                    HelloRetryRequestImpl.EXTENSIONS_LENGTH_BYTES,
                     buf -> parseExtension(buf)));
     }
 
