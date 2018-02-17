@@ -18,7 +18,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-public class MutationClientFuzzer implements Runnable {
+public class MutatedClient implements Runnable {
 
     public static final int ONE_TEST = 1;
     public static final int DEFAULT_TESTS_NUMBER = 10000;
@@ -30,7 +30,7 @@ public class MutationClientFuzzer implements Runnable {
     private final int port;
     private final int testsNumber;
 
-    public MutationClientFuzzer(MutatedStructFactory fuzzer, Output output,
+    public MutatedClient(MutatedStructFactory fuzzer, Output output,
             String host, int port, int testsNumber) {
 
         this.fuzzer = fuzzer;
@@ -133,7 +133,7 @@ public class MutationClientFuzzer implements Runnable {
 
                 fuzzer.setState(state);
 
-                new MutationClientFuzzer(fuzzer, output, host, port, ONE_TEST).run();
+                new MutatedClient(fuzzer, output, host, port, ONE_TEST).run();
             }
 
             info("phew, we are done!");
@@ -194,7 +194,7 @@ public class MutationClientFuzzer implements Runnable {
 
         fuzzer.setTest(startTest);
 
-        executor.submit(new MutationClientFuzzer(fuzzer, output,
+        executor.submit(new MutatedClient(fuzzer, output,
                 host, port, testsNumber));
     }
 }
