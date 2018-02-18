@@ -67,6 +67,21 @@ public class Utils {
         }
     }
 
+    // returns true if the object is found in the array
+    public static boolean contains(Object object, Object... array) {
+        if (array == null || array.length == 0) {
+            return false;
+        }
+
+        for (Object element : array) {
+            if (element.equals(object)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public static int getEncodingLength(Struct... objects) {
         return Arrays.stream(objects)
                 .map(object -> object.encodingLength())

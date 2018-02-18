@@ -12,6 +12,7 @@ import com.gypsyengineer.tlsbunny.utils.CertificateHolder;
 import com.gypsyengineer.tlsbunny.utils.Connection;
 import com.gypsyengineer.tlsbunny.utils.Output;
 import com.gypsyengineer.tlsbunny.utils.Parameters;
+import com.gypsyengineer.tlsbunny.utils.Utils;
 import static com.gypsyengineer.tlsbunny.utils.Utils.info;
 import static com.gypsyengineer.tlsbunny.utils.Utils.printf;
 import java.util.concurrent.ExecutorService;
@@ -99,10 +100,12 @@ public class MutatedClient implements Runnable {
                 String.join(", ", MutatedStructFactory.getAvailableTargets()));
     }
 
-    public static void main(String[] args) throws Exception {
-        if (args.length > 0
-                && ("help".equals(args[0]) || "-help".equals("-help") || "--help".equals(args[0]))) {
+    private static boolean needHelp(String[] args) {
+        return args.length > 0 && Utils.contains(args[0], "help", "-help", "--help");
+    }
 
+    public static void main(String[] args) throws Exception {
+        if (needHelp(args)) {
             help();
             return;
         }
