@@ -12,6 +12,7 @@ import java.util.Objects;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
+// TODO: system properties should have higher priority
 public enum Config {
 
     // singleton

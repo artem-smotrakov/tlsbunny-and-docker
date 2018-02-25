@@ -14,6 +14,9 @@ import com.gypsyengineer.tlsbunny.utils.Connection;
 import com.gypsyengineer.tlsbunny.utils.Output;
 import java.util.concurrent.ExecutorService;
 
+/**
+ * This is a fuzzy TLS client which wraps a MutatedStructFactory instance.
+ */
 public class MutatedClient implements Runnable {
 
     private static final byte[] HTTP_GET_REQUEST = "GET / HTTP/1.1\n\n".getBytes();
@@ -22,16 +25,16 @@ public class MutatedClient implements Runnable {
     private final Output output;
     private final String host;
     private final int port;
-    private final int testsNumber;
+    private final int total;
 
     public MutatedClient(MutatedStructFactory fuzzer, Output output,
-            String host, int port, int testsNumber) {
+            String host, int port, int total) {
 
         this.fuzzer = fuzzer;
         this.output = output;
         this.host = host;
         this.port = port;
-        this.testsNumber = testsNumber;
+        this.total = total;
     }
 
     @Override
@@ -47,8 +50,8 @@ public class MutatedClient implements Runnable {
 
             int test = 0;
             String threadName = Thread.currentThread().getName();
-            while (fuzzer.canFuzz() && test < testsNumber) {
-                output.info("%s, test %d of %d", threadName, test, testsNumber);
+            while (fuzzer.canFuzz() && test < total) {
+                output.info("%s, test %d of %d", threadName, test, total);
                 output.info("now fuzzer's state is '%s'", fuzzer.getState());
                 try (Connection connection = Connection.create(host, port)) {
                     output.info("start handshaking");
@@ -61,7 +64,8 @@ public class MutatedClient implements Runnable {
 
                     if (applicationData == null) {
                         // TODO: check what happened
-                        output.info("handshake failed, couldn't create application data channel");
+                        output.info("handshake failed, "
+                                + "couldn't create an application data channel");
                         continue;
                     }
 
@@ -86,7 +90,7 @@ public class MutatedClient implements Runnable {
     public static void runFuzzer(ExecutorService executor,
             String host, int port,
             String target, String mode,
-            int startTest, int testsNumber) {
+            int test, int total) {
 
         Output output = new Output();
 
@@ -102,9 +106,8 @@ public class MutatedClient implements Runnable {
             fuzzer.setMode(mode);
         }
 
-        fuzzer.setTest(startTest);
+        fuzzer.setTest(test);
 
-        executor.submit(new MutatedClient(fuzzer, output,
-                host, port, testsNumber));
+        executor.submit(new MutatedClient(fuzzer, output, host, port, total));
     }
 }
