@@ -9,10 +9,11 @@ import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
 import com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.CertificateHolder;
+import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.Connection;
 import com.gypsyengineer.tlsbunny.utils.Output;
-import com.gypsyengineer.tlsbunny.utils.Parameters;
 import com.gypsyengineer.tlsbunny.utils.Utils;
+import static com.gypsyengineer.tlsbunny.utils.Utils.achtung;
 import static com.gypsyengineer.tlsbunny.utils.Utils.info;
 import static com.gypsyengineer.tlsbunny.utils.Utils.printf;
 import java.util.concurrent.ExecutorService;
@@ -92,12 +93,14 @@ public class MutatedClient implements Runnable {
 
     private static void help() {
         printf("Available parameters (via system properties):%n");
-        printf("    %s%n", Parameters.helpHost());
-        printf("    %s%n", Parameters.helpPort());
-        printf("    %s%n", Parameters.helpMode());
-        printf("    %s%n", Parameters.helpTestsNumber());
-        printf("    %s%n", Parameters.helpRatios());
-        printf("    %s%n", Parameters.helpTargets());
+        printf("    %s%n", Config.helpHost());
+        printf("    %s%n", Config.helpPort());
+        printf("    %s%n", Config.helpStartTest());
+        printf("    %s%n", Config.helpTotal());
+        printf("    %s%n", Config.helpParts());
+        printf("    %s%n", Config.helpRatios());
+        printf("    %s%n", Config.helpTargets());
+        printf("    %s%n", Config.helpThreads());
         printf("Available targets:%n    %s%n",
                 String.join(", ", MutatedStructFactory.getAvailableTargets()));
     }
@@ -116,61 +119,47 @@ public class MutatedClient implements Runnable {
         info("fuzzer has the following targets:%n    %s",
                 String.join(", ", availableTargets));
 
-        String host = Parameters.getHost();
-        int port = Parameters.getPort();
+        String host = Config.Instance.getHost();
+        int port = Config.Instance.getPort();
         info("okay, we're going to fuzz %s:%d", host, port);
 
-        String[] targets = Parameters.getTargets();
-        String mode = Parameters.getMode();
-        String state = Parameters.getState();
-        int totalTestsNumber = Parameters.getTestsNumber();
-        int threads = Parameters.getThreads();
+        // TODO: it would be nice if we could configure fuzzers in command line
+        //       without writing a config file
+        //       to do that, we need to specify targets in command line
+        // String[] targets = Config.getTargets();
 
-        if (!state.isEmpty()) {
-            info("okay, reproduce the following test %s", state);
+        int total = Config.Instance.getTotal();
+        int threads = Config.Instance.getThreads();
 
-            try (Output output = new Output()) {
-                MutatedStructFactory fuzzer = new MutatedStructFactory(
-                            StructFactory.getDefault(),
-                            output,
-                            Parameters.getMinRatio(),
-                            Parameters.getMaxRatio());
-
-                fuzzer.setState(state);
-
-                new MutatedClient(fuzzer, output, host, port, ONE_TEST).run();
-            }
-
-            info("phew, we are done!");
-            return ;
-        }
-
-        if (targets.length != 0) {
-            info("okay, we're going to fuzz the following targets:%n    %s",
-                    String.join(",", targets));
-            info("we're going to run %d tests for each target in %d threads",
-                    totalTestsNumber, threads);
-        }
-
-        if (!mode.isEmpty()) {
-            info("okay, let's set fuzzing mode to '%s'", mode);
-        }
+        // TODO: config file should contain a common mode like "mode: bit_flip"
 
         ExecutorService executor = Executors.newFixedThreadPool(threads);
         try {
-            for (String target : targets) {
-                info("we're going to fuzz target '%s'", target);
+            for (Config.FuzzerConfig fuzzerConfig : Config.Instance.getFuzzerConfigs()) {
+                switch (fuzzerConfig.getFuzzer()) {
+                    case "MutatedClient":
+                        info("fuzzer: %s", fuzzerConfig.getFuzzer());
+                        info("target: %s", fuzzerConfig.getTarget());
+                        int testsNumber = total / threads;
+                        int startTest = Config.Instance.getStartTest();
+                        while (startTest < testsNumber * threads) {
+                            runFuzzer(executor, host, port,
+                                    fuzzerConfig.getTarget(),
+                                    fuzzerConfig.getMode(),
+                                    startTest,
+                                    testsNumber);
+                            startTest += testsNumber;
+                        }
 
-                int testsNumber = totalTestsNumber / threads;
-                int startTest = 0;
-                while (startTest < testsNumber * threads) {
-                    runFuzzer(executor, host, port, target, mode,
-                            startTest, testsNumber);
-                    startTest += testsNumber;
+                        runFuzzer(executor, host, port,
+                                fuzzerConfig.getTarget(),
+                                fuzzerConfig.getMode(),
+                                startTest,
+                                total % threads);
+                        break;
+                    default:
+                        achtung("Unknown fuzzer: %s", fuzzerConfig.getFuzzer());
                 }
-
-                runFuzzer(executor, host, port, target, mode,
-                        startTest, totalTestsNumber % threads);
             }
         } finally {
             executor.shutdown();
@@ -186,11 +175,13 @@ public class MutatedClient implements Runnable {
             int startTest, int testsNumber) {
 
         Output output = new Output();
+
+        // TODO: we should be able to specify ratios for each fuzzer
         MutatedStructFactory fuzzer = new MutatedStructFactory(
                         StructFactory.getDefault(),
                         output,
-                        Parameters.getMinRatio(),
-                        Parameters.getMaxRatio());
+                        Config.Instance.getMinRatio(),
+                        Config.Instance.getMaxRatio());
 
         fuzzer.setTarget(target);
         if (!mode.isEmpty()) {
