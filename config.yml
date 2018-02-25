@@ -7,17 +7,17 @@ start_test: 0
 total: 1000
 parts: 4
 fuzzers:
-    - fuzzer: MutatedClient
-      target: tlsplaintext
-      mode:   byte_flip   
-    - fuzzer: MutatedClient
-      target: tlsplaintext
-      mode:   bit_flip
-    - fuzzer: MutatedClient
-      target: handshake
-      mode:   byte_flip
-    - fuzzer: MutatedClient
-      target: handshake
-      mode:   bit_flip
-
-      
+    - fuzzer:    MutatedClient
+      target:    tlsplaintext
+      mode:      byte_flip
+      min_ratio: 0.01
+      max_ratio: 0.09
+    - fuzzer:    MutatedClient
+      target:    tlsplaintext
+      mode:      bit_flip
+    - fuzzer:    MutatedClient
+      target:    handshake
+      mode:      byte_flip
+    - fuzzer:    MutatedClient
+      target:    handshake
+      mode:      bit_flip

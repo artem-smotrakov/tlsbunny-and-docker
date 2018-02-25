@@ -41,7 +41,7 @@ public enum Config {
     private final double maxRatio;
     private final int startTest;
     private final int total;
-    private final int parts;
+    private final int parts;    // TODO: use parts
     private final List<FuzzerConfig> fuzzerConfigs;
 
     private Config() {
@@ -76,7 +76,9 @@ public enum Config {
                 list.add(new FuzzerConfig(
                         yamlFuzzerConfig.fuzzer,
                         yamlFuzzerConfig.target,
-                        yamlFuzzerConfig.mode));
+                        yamlFuzzerConfig.mode,
+                        yamlFuzzerConfig.min_ratio,
+                        yamlFuzzerConfig.max_ratio));
             }
 
             fuzzerConfigs = Collections.unmodifiableList(list);
@@ -84,7 +86,8 @@ public enum Config {
             // default fuzzer configuration
             // TODO: don't use hardcoded strings here
             fuzzerConfigs = List.of(
-                    new FuzzerConfig("MutationClient", "tlsplaintext", "bit_flip"));
+                    new FuzzerConfig("MutationClient", "tlsplaintext", "bit_flip",
+                            DEFAULT_MIN_RATIO, DEFAULT_MAX_RATIO));
         }
     }
 
@@ -95,11 +98,16 @@ public enum Config {
         private final String fuzzer;
         private final String target;
         private final String mode;
+        private final double minRatio;
+        private final double maxRatio;
 
-        public FuzzerConfig(String fuzzer, String target, String mode) {
+        public FuzzerConfig(String fuzzer, String target, String mode,
+                double minRatio, double maxRatio) {
             this.fuzzer = fuzzer;
             this.target = target;
             this.mode = mode;
+            this.minRatio = minRatio;
+            this.maxRatio = maxRatio;
         }
 
         public String getFuzzer() {
@@ -112,6 +120,14 @@ public enum Config {
 
         public String getMode() {
             return mode;
+        }
+
+        public double getMinRatio() {
+            return minRatio;
+        }
+
+        public double getMaxRatio() {
+            return maxRatio;
         }
 
     }
@@ -132,6 +148,8 @@ public enum Config {
         public String fuzzer;
         public String target;
         public String mode;
+        public double min_ratio;
+        public double max_ratio;
     }
 
     public String getHost() {

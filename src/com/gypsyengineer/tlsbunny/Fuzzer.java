@@ -58,6 +58,9 @@ public class Fuzzer {
         int total = Config.Instance.getTotal();
         int threads = Config.Instance.getThreads();
 
+        double minRatio = Config.Instance.getMinRatio();
+        double maxRatio = Config.Instance.getMaxRatio();
+
         // TODO: config file should contain a common mode like "mode: bit_flip"
 
         ExecutorService executor = Executors.newFixedThreadPool(threads);
@@ -72,19 +75,20 @@ public class Fuzzer {
                             info("      target: %s", fuzzerConfig.getTarget());
                             info("  first test: %d", startTest);
                             info(" tatal tests: %d", testsNumber);
+
                             MutatedClient.runFuzzer(executor, host, port,
                                     fuzzerConfig.getTarget(),
                                     fuzzerConfig.getMode(),
-                                    startTest,
-                                    testsNumber);
+                                    minRatio, maxRatio,
+                                    startTest, testsNumber);
                             startTest += testsNumber;
                         }
 
                         MutatedClient.runFuzzer(executor, host, port,
                                 fuzzerConfig.getTarget(),
                                 fuzzerConfig.getMode(),
-                                startTest,
-                                total % threads);
+                                minRatio, maxRatio,
+                                startTest, total % threads);
                         break;
                     default:
                         achtung("Unknown fuzzer: %s", fuzzerConfig.getFuzzer());

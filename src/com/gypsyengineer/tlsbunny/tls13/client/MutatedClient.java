@@ -9,7 +9,6 @@ import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
 import com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.CertificateHolder;
-import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.Connection;
 import com.gypsyengineer.tlsbunny.utils.Output;
 import java.util.concurrent.ExecutorService;
@@ -90,16 +89,13 @@ public class MutatedClient implements Runnable {
     public static void runFuzzer(ExecutorService executor,
             String host, int port,
             String target, String mode,
+            double minRatio, double maxRatio,
             int test, int total) {
 
         Output output = new Output();
 
-        // TODO: we should be able to specify ratios for each fuzzer
         MutatedStructFactory fuzzer = new MutatedStructFactory(
-                        StructFactory.getDefault(),
-                        output,
-                        Config.Instance.getMinRatio(),
-                        Config.Instance.getMaxRatio());
+                        StructFactory.getDefault(), output, minRatio, maxRatio);
 
         fuzzer.setTarget(target);
         if (!mode.isEmpty()) {
