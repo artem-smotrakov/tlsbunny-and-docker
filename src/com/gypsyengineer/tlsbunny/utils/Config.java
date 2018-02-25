@@ -1,5 +1,6 @@
 package com.gypsyengineer.tlsbunny.utils;
 
+import static com.gypsyengineer.tlsbunny.utils.Utils.info;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -29,6 +30,9 @@ public enum Config {
     public static final int DEFAULT_PORT = 10101;
     public static final String DEFAULT_HOST = "localhost";
     public static final String DEFAULT_CONFIG = "config.yml";
+    public static final String DEFAULT_FUZZER = "MutatedClient";
+    public static final String DEFAULT_TARGET = "tlsplaintext";
+    public static final String DEFAULT_MODE = "byte_flip";
 
     // TODO: default number of threads should depend on a number of CPU cores
     public static final int DEFAULT_THREADS = 3;
@@ -45,32 +49,41 @@ public enum Config {
     private final List<FuzzerConfig> fuzzerConfigs;
 
     private Config() {
-        YamlConfig yaml = new YamlConfig();
-        Path filename = Paths.get(getConfig());
-        try (BufferedReader reader = Files.newBufferedReader(filename)) {
-            yaml = new Yaml(new Constructor(YamlConfig.class)).load(reader);
-        } catch (IOException e) {
-            Utils.achtung("Could not load config file %s: %s", filename, e);
-        }
+        YamlConfig yaml = load(getConfig());
 
-        host = Objects.requireNonNullElse(yaml.host,
-                System.getProperty("tlsbunny.host", DEFAULT_HOST)).trim();
-        port = Objects.requireNonNullElse(yaml.port,
-                Integer.getInteger("tlsbunny.port", DEFAULT_PORT));
-        threads = Objects.requireNonNullElse(yaml.threads,
-                Integer.getInteger("tlsbunny.threads", DEFAULT_THREADS));
-        minRatio = Objects.requireNonNullElse(yaml.min_ratio,
-                getDouble("tlsbunny.min.ratio", DEFAULT_MIN_RATIO));
-        maxRatio = Objects.requireNonNullElse(yaml.max_ratio,
-                getDouble("tlsbunny.max.ratio", DEFAULT_MAX_RATIO));
-        startTest = Objects.requireNonNullElse(yaml.start_test,
-                Integer.getInteger("tlsbunny.start.test", DEFAULT_START_TEST));
-        total = Objects.requireNonNullElse(yaml.total,
-                Integer.getInteger("tlsbunny.total", DEFAULT_TOTAL));
-        parts = Objects.requireNonNullElse(yaml.parts,
-                Integer.getInteger("tlsbunny.parts", DEFAULT_PARTS));
+        host = Objects.requireNonNullElse(
+                System.getProperty("tlsbunny.host"),
+                yaml != null ? yaml.host : DEFAULT_HOST);
 
-        if (yaml.fuzzers != null && !yaml.fuzzers.isEmpty()) {
+        port = Objects.requireNonNullElse(
+                Integer.getInteger("tlsbunny.port"),
+                yaml != null ? yaml.port : DEFAULT_PORT);
+
+        threads = Objects.requireNonNullElse(
+                Integer.getInteger("tlsbunny.threads"),
+                yaml != null ? yaml.threads : DEFAULT_THREADS);
+
+        minRatio = Objects.requireNonNullElse(
+                getDouble("tlsbunny.min.ratio"),
+                yaml != null ? yaml.min_ratio : DEFAULT_MIN_RATIO);
+
+        maxRatio = Objects.requireNonNullElse(
+                getDouble("tlsbunny.max.ratio"),
+                yaml != null ? yaml.max_ratio : DEFAULT_MAX_RATIO);
+
+        startTest = Objects.requireNonNullElse(
+                Integer.getInteger("tlsbunny.start.test"),
+                yaml != null ? yaml.start_test : DEFAULT_START_TEST);
+
+        total = Objects.requireNonNullElse(
+                Integer.getInteger("tlsbunny.total"),
+                yaml != null ? yaml.total : DEFAULT_TOTAL);
+
+        parts = Objects.requireNonNullElse(
+                Integer.getInteger("tlsbunny.parts"),
+                yaml != null ? yaml.parts : DEFAULT_PARTS);
+
+        if (yaml != null && yaml.fuzzers != null && !yaml.fuzzers.isEmpty()) {
             List<FuzzerConfig> list = new ArrayList<>();
             for (YamlFuzzerConfig yamlFuzzerConfig: yaml.fuzzers) {
                 list.add(new FuzzerConfig(
@@ -84,11 +97,26 @@ public enum Config {
             fuzzerConfigs = Collections.unmodifiableList(list);
         } else {
             // default fuzzer configuration
-            // TODO: don't use hardcoded strings here
             fuzzerConfigs = List.of(
-                    new FuzzerConfig("MutationClient", "tlsplaintext", "bit_flip",
+                    new FuzzerConfig(
+                            DEFAULT_FUZZER, DEFAULT_TARGET, DEFAULT_MODE,
                             DEFAULT_MIN_RATIO, DEFAULT_MAX_RATIO));
         }
+    }
+
+    private static YamlConfig load(String filename) {
+        YamlConfig yaml = null;
+        Path path = Paths.get(filename);
+        if (Files.isRegularFile(path)) {
+            info("load config: %s", path);
+            try (BufferedReader reader = Files.newBufferedReader(path)) {
+                yaml = new Yaml(new Constructor(YamlConfig.class)).load(reader);
+            } catch (IOException e) {
+                Utils.achtung("Could not load config file %s: %s", filename, e);
+            }
+        }
+
+        return yaml;
     }
 
     // TODO: different fuzzers may require different fields,
@@ -248,10 +276,10 @@ public enum Config {
         return String.format("-Dtlsbunny.threads sets a number of threads");
     }
 
-    private static double getDouble(String name, double defaultValue) {
+    private static Double getDouble(String name) {
         String s = System.getProperty(name);
         if (s == null) {
-            return defaultValue;
+            return null;
         }
 
         return Double.parseDouble(s);
