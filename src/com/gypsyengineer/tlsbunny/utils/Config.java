@@ -41,7 +41,7 @@ public enum Config {
     private final double maxRatio;
     private final int startTest;
     private final int total;
-    private final int parts;    // TODO: use parts
+    private final int parts;
     private final List<FuzzerConfig> fuzzerConfigs;
 
     private Config() {
@@ -67,7 +67,7 @@ public enum Config {
                 Integer.getInteger("tlsbunny.start.test", DEFAULT_START_TEST));
         total = Objects.requireNonNullElse(yaml.total,
                 Integer.getInteger("tlsbunny.total", DEFAULT_TOTAL));
-        parts = Objects.requireNonNullElse(yaml.start_test,
+        parts = Objects.requireNonNullElse(yaml.parts,
                 Integer.getInteger("tlsbunny.parts", DEFAULT_PARTS));
 
         if (yaml.fuzzers != null && !yaml.fuzzers.isEmpty()) {
@@ -178,6 +178,10 @@ public enum Config {
 
     public int getThreads() {
         return threads;
+    }
+
+    public int getParts() {
+        return parts;
     }
 
     public List<FuzzerConfig> getFuzzerConfigs() {

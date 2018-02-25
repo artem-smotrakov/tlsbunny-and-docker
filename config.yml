@@ -1,11 +1,11 @@
-host: localhost
-port: 10101
-threads: 3
-min_ratio: 0.01
-max_ratio: 0.05
+host:       localhost
+port:       10101
+threads:    3
+min_ratio:  0.01
+max_ratio:  0.05
 start_test: 0
-total: 1000
-parts: 4
+total:      1000
+parts:      5
 fuzzers:
     - fuzzer:    MutatedClient
       target:    tlsplaintext

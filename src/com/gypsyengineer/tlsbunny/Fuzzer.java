@@ -56,25 +56,25 @@ public class Fuzzer {
         // String[] targets = Config.getTargets();
 
         int total = Config.Instance.getTotal();
-        int threads = Config.Instance.getThreads();
+        int parts = Config.Instance.getParts();
 
         double minRatio = Config.Instance.getMinRatio();
         double maxRatio = Config.Instance.getMaxRatio();
 
         // TODO: config file should contain a common mode like "mode: bit_flip"
 
-        ExecutorService executor = Executors.newFixedThreadPool(threads);
+        ExecutorService executor = Executors.newFixedThreadPool(Config.Instance.getThreads());
         try {
             for (Config.FuzzerConfig fuzzerConfig : Config.Instance.getFuzzerConfigs()) {
                 switch (fuzzerConfig.getFuzzer()) {
                     case "MutatedClient":
-                        int testsNumber = total / threads;
+                        int testsNumber = total / parts;
                         int startTest = Config.Instance.getStartTest();
-                        while (startTest < testsNumber * threads) {
+                        while (startTest < testsNumber * parts) {
                             info("start fuzzer: %s", fuzzerConfig.getFuzzer());
                             info("      target: %s", fuzzerConfig.getTarget());
                             info("  first test: %d", startTest);
-                            info(" tatal tests: %d", testsNumber);
+                            info(" total tests: %d", testsNumber);
 
                             MutatedClient.runFuzzer(executor, host, port,
                                     fuzzerConfig.getTarget(),
@@ -88,7 +88,7 @@ public class Fuzzer {
                                 fuzzerConfig.getTarget(),
                                 fuzzerConfig.getMode(),
                                 minRatio, maxRatio,
-                                startTest, total % threads);
+                                startTest, total % parts);
                         break;
                     default:
                         achtung("Unknown fuzzer: %s", fuzzerConfig.getFuzzer());
