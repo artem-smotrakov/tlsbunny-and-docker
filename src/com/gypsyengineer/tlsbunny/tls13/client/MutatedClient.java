@@ -53,8 +53,10 @@ public class MutatedClient implements Runnable {
                     CertificateHolder.NO_CERTIFICATE);
 
             int test = 0;
+            String threadName = Thread.currentThread().getName();
             while (fuzzer.canFuzz() && test < testsNumber) {
-                output.info("test #%d: now fuzzer's state is '%s'", test, fuzzer.getState());
+                output.info("%s, test %d of %d", threadName, test, testsNumber);
+                output.info("now fuzzer's state is '%s'", fuzzer.getState());
                 try (Connection connection = Connection.create(host, port)) {
                     output.info("start handshaking");
                     ApplicationDataChannel applicationData = handshaker.start(connection);
