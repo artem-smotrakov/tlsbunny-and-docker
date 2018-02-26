@@ -1,6 +1,5 @@
 host:       localhost
 port:       10101
-threads:    3
 min_ratio:  0.01
 max_ratio:  0.05
 start_test: 0

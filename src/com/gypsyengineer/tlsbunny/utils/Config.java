@@ -13,7 +13,6 @@ import java.util.Objects;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
-// TODO: system properties should have higher priority
 public enum Config {
 
     // singleton
@@ -34,9 +33,6 @@ public enum Config {
     public static final String DEFAULT_TARGET = "tlsplaintext";
     public static final String DEFAULT_MODE = "byte_flip";
 
-    // TODO: default number of threads should depend on a number of CPU cores
-    public static final int DEFAULT_THREADS = 3;
-
     // common parameters
     private final String host;
     private final int port;
@@ -52,38 +48,23 @@ public enum Config {
         YamlConfig yaml = load(getConfig());
 
         host = Objects.requireNonNullElse(
-                System.getProperty("tlsbunny.host"),
-                yaml != null ? yaml.host : DEFAULT_HOST);
-
+                System.getProperty("tlsbunny.host"), yaml.host);
         port = Objects.requireNonNullElse(
-                Integer.getInteger("tlsbunny.port"),
-                yaml != null ? yaml.port : DEFAULT_PORT);
-
+                Integer.getInteger("tlsbunny.port"), yaml.port);
         threads = Objects.requireNonNullElse(
-                Integer.getInteger("tlsbunny.threads"),
-                yaml != null ? yaml.threads : DEFAULT_THREADS);
-
+                Integer.getInteger("tlsbunny.threads"), yaml.threads);
         minRatio = Objects.requireNonNullElse(
-                getDouble("tlsbunny.min.ratio"),
-                yaml != null ? yaml.min_ratio : DEFAULT_MIN_RATIO);
-
+                getDouble("tlsbunny.min.ratio"), yaml.min_ratio);
         maxRatio = Objects.requireNonNullElse(
-                getDouble("tlsbunny.max.ratio"),
-                yaml != null ? yaml.max_ratio : DEFAULT_MAX_RATIO);
-
+                getDouble("tlsbunny.max.ratio"), yaml.max_ratio);
         startTest = Objects.requireNonNullElse(
-                Integer.getInteger("tlsbunny.start.test"),
-                yaml != null ? yaml.start_test : DEFAULT_START_TEST);
-
+                Integer.getInteger("tlsbunny.start.test"), yaml.start_test);
         total = Objects.requireNonNullElse(
-                Integer.getInteger("tlsbunny.total"),
-                yaml != null ? yaml.total : DEFAULT_TOTAL);
-
+                Integer.getInteger("tlsbunny.total"), yaml.total);
         parts = Objects.requireNonNullElse(
-                Integer.getInteger("tlsbunny.parts"),
-                yaml != null ? yaml.parts : DEFAULT_PARTS);
+                Integer.getInteger("tlsbunny.parts"), yaml.parts);
 
-        if (yaml != null && yaml.fuzzers != null && !yaml.fuzzers.isEmpty()) {
+        if (yaml.fuzzers != null && !yaml.fuzzers.isEmpty()) {
             List<FuzzerConfig> list = new ArrayList<>();
             for (YamlFuzzerConfig yamlFuzzerConfig: yaml.fuzzers) {
                 list.add(new FuzzerConfig(
@@ -105,7 +86,7 @@ public enum Config {
     }
 
     private static YamlConfig load(String filename) {
-        YamlConfig yaml = null;
+        YamlConfig yaml = new YamlConfig();
         Path path = Paths.get(filename);
         if (Files.isRegularFile(path)) {
             info("load config: %s", path);
@@ -161,14 +142,14 @@ public enum Config {
     }
 
     private static class YamlConfig {
-        public String host;
-        public int port;
-        public int threads;
-        public double min_ratio;
-        public double max_ratio;
-        public int start_test;
-        public int total;
-        public int parts;
+        public String host = DEFAULT_HOST;
+        public int port = DEFAULT_PORT;
+        public int threads = Runtime.getRuntime().availableProcessors();
+        public double min_ratio = DEFAULT_MIN_RATIO;
+        public double max_ratio = DEFAULT_MAX_RATIO;
+        public int start_test = DEFAULT_START_TEST;
+        public int total = DEFAULT_TOTAL;
+        public int parts = DEFAULT_PARTS;
         public List<YamlFuzzerConfig> fuzzers;
     }
 

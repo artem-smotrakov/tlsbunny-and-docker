@@ -6,6 +6,7 @@ import com.gypsyengineer.tlsbunny.utils.Utils;
 import static com.gypsyengineer.tlsbunny.utils.Utils.achtung;
 import static com.gypsyengineer.tlsbunny.utils.Utils.info;
 import static com.gypsyengineer.tlsbunny.utils.Utils.printf;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -13,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Main entry point.
  */
-public class Fuzzer {
+public class Main {
 
     private static void help() {
         printf("Available parameters (via system properties):%n");
@@ -61,11 +62,16 @@ public class Fuzzer {
         double minRatio = Config.Instance.getMinRatio();
         double maxRatio = Config.Instance.getMaxRatio();
 
+        int threads = Config.Instance.getThreads();
+
         // TODO: config file should contain a common mode like "mode: bit_flip"
 
-        ExecutorService executor = Executors.newFixedThreadPool(Config.Instance.getThreads());
+        info("we are going to use %d threads", threads);
+        ExecutorService executor = Executors.newFixedThreadPool(threads);
         try {
-            for (Config.FuzzerConfig fuzzerConfig : Config.Instance.getFuzzerConfigs()) {
+            List<Config.FuzzerConfig> fuzzerConfigs = Config.Instance.getFuzzerConfigs();
+            info("found %d fuzzer configs", fuzzerConfigs.size());
+            for (Config.FuzzerConfig fuzzerConfig : fuzzerConfigs) {
                 switch (fuzzerConfig.getFuzzer()) {
                     case "MutatedClient":
                         int testsNumber = total / parts;
