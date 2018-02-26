@@ -8,6 +8,12 @@ parts:      5
 mode: bit_flip
 fuzzers:
     - fuzzer:    MutatedClient
+      target:    client_hello
+      mode:      byte_flip
+    - fuzzer:    MutatedClient
+      target:    client_hello
+      mode:      bit_flip
+    - fuzzer:    MutatedClient
       target:    tlsplaintext
       mode:      byte_flip
       min_ratio: 0.01
