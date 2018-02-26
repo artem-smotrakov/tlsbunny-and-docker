@@ -91,7 +91,7 @@ public class MutatedStructFactory extends StructFactoryWrapper
     public byte[] fuzz(byte[] encoding) {
         byte[] fuzzed = fuzzer.fuzz(encoding);
         if (Arrays.equals(encoding, fuzzed)) {
-            output.achtung("encoding was not fuzzed (check ratios)");
+            output.achtung("nothing actually fuzzed");
         }
 
         return fuzzed;

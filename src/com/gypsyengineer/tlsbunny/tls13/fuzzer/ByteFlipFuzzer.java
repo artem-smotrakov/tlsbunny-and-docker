@@ -13,6 +13,12 @@ public class ByteFlipFuzzer extends AbstractFlipFuzzer implements Fuzzer<byte[]>
         byte[] fuzzed = array.clone();
         double ratio = getRatio();
         int n = (int) Math.ceil((endIndex - startIndex) * ratio);
+
+        // make sure what we fuzz at least one byte
+        if (n == 0) {
+            n = 1;
+        }
+
         for (int i = 0; i < n; i++) {
             int pos = startIndex + random.nextInt(endIndex - startIndex);
             fuzzed[pos] = (byte) random.nextInt(256);
