@@ -42,6 +42,7 @@ public enum Config {
     private final int startTest;
     private final int total;
     private final int parts;
+    private final String mode;
     private final List<FuzzerConfig> fuzzerConfigs;
 
     private Config() {
@@ -63,6 +64,8 @@ public enum Config {
                 Integer.getInteger("tlsbunny.total"), yaml.total);
         parts = Objects.requireNonNullElse(
                 Integer.getInteger("tlsbunny.parts"), yaml.parts);
+        mode = Objects.requireNonNullElse(
+                System.getProperty("tlsbunny.mode"), yaml.mode);
 
         if (yaml.fuzzers != null && !yaml.fuzzers.isEmpty()) {
             List<FuzzerConfig> list = new ArrayList<>();
@@ -112,6 +115,7 @@ public enum Config {
 
         public FuzzerConfig(String fuzzer, String target, String mode,
                 double minRatio, double maxRatio) {
+
             this.fuzzer = fuzzer;
             this.target = target;
             this.mode = mode;
@@ -150,15 +154,16 @@ public enum Config {
         public int start_test = DEFAULT_START_TEST;
         public int total = DEFAULT_TOTAL;
         public int parts = DEFAULT_PARTS;
-        public List<YamlFuzzerConfig> fuzzers;
+        public String mode = DEFAULT_MODE;
+        public List<YamlFuzzerConfig> fuzzers = List.of(new YamlFuzzerConfig());
     }
 
     private static class YamlFuzzerConfig {
-        public String fuzzer;
-        public String target;
-        public String mode;
-        public double min_ratio;
-        public double max_ratio;
+        public String fuzzer = getFuzzer();
+        public String target = getTarget();
+        public String mode = DEFAULT_MODE;
+        public double min_ratio = DEFAULT_MIN_RATIO;
+        public double max_ratio = DEFAULT_MAX_RATIO;
     }
 
     public String getHost() {
@@ -193,6 +198,10 @@ public enum Config {
         return parts;
     }
 
+    public String getMode() {
+        return mode;
+    }
+
     public List<FuzzerConfig> getFuzzerConfigs() {
         return fuzzerConfigs;
     }
@@ -201,23 +210,12 @@ public enum Config {
         return System.getProperty("tlsbunny.config", DEFAULT_CONFIG).trim();
     }
 
-    public static String[] getTargets() {
-        String value = System.getProperty("tlsbunny.target", EMPTY).trim();
-        if (!value.isEmpty()) {
-            return new String[] { value };
-        }
+    private static String getFuzzer() {
+        return System.getProperty("tlsbunny.fuzzer", DEFAULT_FUZZER).trim();
+    }
 
-        value = System.getProperty("tlsbunny.targets", EMPTY).trim();
-        if (value.isEmpty()) {
-            return new String[0];
-        }
-
-        String[] targets = value.split(",");
-        for (int i=0; i<targets.length; i++) {
-            targets[i] = targets[i].trim();
-        }
-
-        return targets;
+    private static String getTarget() {
+        return System.getProperty("tlsbunny.target", DEFAULT_TARGET).trim();
     }
 
     public static String helpConfig() {
@@ -236,8 +234,12 @@ public enum Config {
         return String.format("-Dtlsbunny.start.test sets a first test");
     }
 
-    public static String helpTargets() {
-        return String.format("-Dtlsbunny.target and -Dtlsbunny.targets set what to fuzz");
+    public static String helpTarget() {
+        return String.format("-Dtlsbunny.target sets what to fuzz");
+    }
+
+    public static String helpFuzzer() {
+        return String.format("-Dtlsbunny.fuzzer sets a fuzzer");
     }
 
     public static String helpTotal() {
@@ -255,6 +257,14 @@ public enum Config {
 
     public static String helpThreads() {
         return String.format("-Dtlsbunny.threads sets a number of threads");
+    }
+
+    public static String helpMode() {
+        return String.format("-Dtlsbunny.mode sets fuzzer mode");
+    }
+
+    public static String[] getAvailableFuzzers() {
+        return new String[] { "MutatedClient" };
     }
 
     private static Double getDouble(String name) {

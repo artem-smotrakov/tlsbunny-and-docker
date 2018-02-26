@@ -24,12 +24,13 @@ public class Main {
         printf("    %s%n", Config.helpTotal());
         printf("    %s%n", Config.helpParts());
         printf("    %s%n", Config.helpRatios());
-        printf("    %s%n", Config.helpTargets());
         printf("    %s%n", Config.helpThreads());
+        printf("    %s%n", Config.helpTarget());
+        printf("    %s%n", Config.helpFuzzer());
+        printf("    %s%n", Config.helpMode());
 
-        // TODO: need to implement setting targets in command line
-        // printf("Available targets:%n    %s%n",
-        //        String.join(", ", MutatedStructFactory.getAvailableTargets()));
+        printf("Available fuzzers:%n    %s%n",
+                String.join(", ", Config.getAvailableFuzzers()));
     }
 
     private static boolean needHelp(String[] args) {
@@ -42,19 +43,9 @@ public class Main {
             return;
         }
 
-        // TODO: need to implement setting targets in command line
-        //String[] availableTargets = MutatedStructFactory.getAvailableTargets();
-        //info("fuzzer has the following targets:%n    %s",
-        //        String.join(", ", availableTargets));
-
         String host = Config.Instance.getHost();
         int port = Config.Instance.getPort();
         info("okay, we're going to fuzz %s:%d", host, port);
-
-        // TODO: it would be nice if we could configure fuzzers in command line
-        //       without writing a config file
-        //       to do that, we need to specify targets in command line
-        // String[] targets = Config.getTargets();
 
         int total = Config.Instance.getTotal();
         int parts = Config.Instance.getParts();
@@ -63,8 +54,6 @@ public class Main {
         double maxRatio = Config.Instance.getMaxRatio();
 
         int threads = Config.Instance.getThreads();
-
-        // TODO: config file should contain a common mode like "mode: bit_flip"
 
         info("we are going to use %d threads", threads);
         ExecutorService executor = Executors.newFixedThreadPool(threads);
