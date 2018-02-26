@@ -1,8 +1,13 @@
 package com.gypsyengineer.tlsbunny.tls13.fuzzer;
 
+import com.gypsyengineer.tlsbunny.tls.Random;
 import com.gypsyengineer.tlsbunny.tls.UInt16;
 import com.gypsyengineer.tlsbunny.tls.UInt24;
+import com.gypsyengineer.tlsbunny.tls13.struct.CipherSuite;
+import com.gypsyengineer.tlsbunny.tls13.struct.ClientHello;
+import com.gypsyengineer.tlsbunny.tls13.struct.CompressionMethod;
 import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
+import com.gypsyengineer.tlsbunny.tls13.struct.Extension;
 import com.gypsyengineer.tlsbunny.tls13.struct.Handshake;
 import com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType;
 import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
@@ -12,12 +17,13 @@ import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
 import com.gypsyengineer.tlsbunny.utils.Output;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 
 public class MutatedStructFactory extends StructFactoryWrapper
         implements Fuzzer<byte[]> {
 
     public static enum Mode   { byte_flip, bit_flip }
-    public static enum Target { tlsplaintext, handshake }
+    public static enum Target { tlsplaintext, handshake, client_hello }
 
     public static final Target DEFAULT_TARGET = Target.tlsplaintext;
     public static final Mode DEFAULT_MODE = Mode.byte_flip;
@@ -88,6 +94,33 @@ public class MutatedStructFactory extends StructFactoryWrapper
     }
 
     @Override
+    public ClientHello createClientHello(
+            ProtocolVersion legacy_version,
+            Random random,
+            byte[] legacy_session_id,
+            List<CipherSuite> cipher_suites,
+            List<CompressionMethod> legacy_compression_methods,
+            List<Extension> extensions) {
+
+        ClientHello clientHello = factory.createClientHello(
+                legacy_version, random, legacy_session_id, cipher_suites,
+                legacy_compression_methods, extensions);
+
+        if (target == Target.client_hello) {
+            output.info("fuzz ClientHello");
+            try {
+                byte[] fuzzed = fuzz(clientHello.encoding());
+                clientHello = new MutatedStruct(
+                        fuzzed.length, fuzzed, HandshakeType.client_hello);
+            } catch (IOException e) {
+                output.achtung("I couldn't fuzz ClientHello: %s", e.getMessage());
+            }
+        }
+
+        return clientHello;
+    }
+
+    @Override
     public byte[] fuzz(byte[] encoding) {
         byte[] fuzzed = fuzzer.fuzz(encoding);
         if (Arrays.equals(encoding, fuzzed)) {
@@ -155,19 +188,23 @@ public class MutatedStructFactory extends StructFactoryWrapper
     }
 
     private void initFuzzer(String state) {
-        int start = 0;
-        int end;
+         // fuzz all content of a message by default
+        int start = -1;
+        int end = -1;
+
         switch (target) {
             case tlsplaintext:
+                // in case of TLSPlaintext we don't fuzz the content of the message
+                // but only content type, protocol version and lenght fields
                 end = ContentType.ENCODING_LENGTH
                         + ProtocolVersion.ENCODING_LENGTH
                         + UInt16.ENCODING_LENGTH;
                 break;
             case handshake:
+                // in case of Handshake message we don't fuzz the content of the message
+                // but only handshake type and length fields
                 end = HandshakeType.ENCODING_LENGTH + UInt24.ENCODING_LENGTH;
                 break;
-            default:
-                throw new UnsupportedOperationException();
         }
 
         switch (mode) {

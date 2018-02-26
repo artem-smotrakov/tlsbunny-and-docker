@@ -6,8 +6,8 @@ public abstract class AbstractFlipFuzzer implements Fuzzer<byte[]> {
 
     final double minRatio;
     final double maxRatio;
-    final int startIndex;
-    final int endIndex;
+    private final int startIndex;
+    private final int endIndex;
     final Random random;
 
     long state = 0;
@@ -21,14 +21,39 @@ public abstract class AbstractFlipFuzzer implements Fuzzer<byte[]> {
         this.minRatio = minRatio;
         this.maxRatio = maxRatio;
 
-        if (startIndex < 0 || endIndex < 0 || startIndex > endIndex) {
-            throw new IllegalArgumentException();
+        if (endIndex == 0) {
+            throw new IllegalArgumentException("end == 0");
+        }
+
+        if (startIndex == endIndex && startIndex > 0) {
+            throw new IllegalArgumentException("start == end");
+        }
+
+        if (endIndex >= 0 && startIndex > endIndex) {
+            throw new IllegalArgumentException("start > end");
         }
         this.startIndex = startIndex;
         this.endIndex = endIndex;
 
         random = new Random(state);
         random.setSeed(state);
+    }
+
+    int getStartIndex() {
+        if (startIndex > 0) {
+            return startIndex;
+        }
+
+        return 0;
+    }
+
+    int getEndIndex(byte[] array) {
+        if (endIndex > 0) {
+            // TODO: should it check if array.length < endIndex ?
+            return endIndex;
+        }
+
+        return array.length;
     }
 
     @Override

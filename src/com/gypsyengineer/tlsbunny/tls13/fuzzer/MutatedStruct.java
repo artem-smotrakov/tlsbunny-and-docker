@@ -1,26 +1,43 @@
 package com.gypsyengineer.tlsbunny.tls13.fuzzer;
 
+import com.gypsyengineer.tlsbunny.tls.Random;
 import com.gypsyengineer.tlsbunny.tls.UInt16;
 import com.gypsyengineer.tlsbunny.tls.UInt24;
+import com.gypsyengineer.tlsbunny.tls.Vector;
+import com.gypsyengineer.tlsbunny.tls13.struct.CipherSuite;
+import com.gypsyengineer.tlsbunny.tls13.struct.ClientHello;
+import com.gypsyengineer.tlsbunny.tls13.struct.CompressionMethod;
 import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
+import com.gypsyengineer.tlsbunny.tls13.struct.Extension;
+import com.gypsyengineer.tlsbunny.tls13.struct.ExtensionType;
 import com.gypsyengineer.tlsbunny.tls13.struct.Handshake;
 import com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType;
 import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
 import java.io.IOException;
 
-public class MutatedStruct implements TLSPlaintext, Handshake {
+public class MutatedStruct implements TLSPlaintext, Handshake, ClientHello {
+
+    private static final HandshakeType NO_HANDSHAKE_TYPE = null;
 
     private final int mutatedEncodingLength;
     private final byte[] mutatedEncoding;
+    private final HandshakeType handshakeType;
 
     public MutatedStruct(byte[] mutatedEncoding) {
-        this(mutatedEncoding.length, mutatedEncoding);
+        this(mutatedEncoding.length, mutatedEncoding, NO_HANDSHAKE_TYPE);
     }
 
     public MutatedStruct(int mutatedEncodingLength, byte[] mutatedEncoding) {
+        this(mutatedEncodingLength, mutatedEncoding, NO_HANDSHAKE_TYPE);
+    }
+
+    public MutatedStruct(int mutatedEncodingLength, byte[] mutatedEncoding,
+            HandshakeType handshakeType) {
+
         this.mutatedEncodingLength = mutatedEncodingLength;
         this.mutatedEncoding = mutatedEncoding;
+        this.handshakeType = handshakeType;
     }
 
     // Struct
@@ -129,6 +146,51 @@ public class MutatedStruct implements TLSPlaintext, Handshake {
 
     @Override
     public UInt24 getBodyLength() {
+        throw new UnsupportedOperationException();
+    }
+
+
+    // HandshakeMessage
+
+    @Override
+    public HandshakeType type() {
+        return handshakeType;
+    }
+
+    // ClientHello
+
+    @Override
+    public Extension findExtension(ExtensionType type) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Vector<CipherSuite> getCipherSuites() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Vector<Extension> getExtensions() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Vector<CompressionMethod> getLegacyCompressionMethods() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Vector<Byte> getLegacySessionId() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public ProtocolVersion getProtocolVersion() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Random getRandom() {
         throw new UnsupportedOperationException();
     }
 

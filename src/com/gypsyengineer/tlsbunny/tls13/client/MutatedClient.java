@@ -81,7 +81,7 @@ public class MutatedClient implements Runnable {
                 }
             }
         } catch (Exception e) {
-            output.achtung("what the hell? unexpected exception: %s", e.getMessage());
+            output.achtung("what the hell? unexpected exception", e);
         } finally {
             output.flush();
         }

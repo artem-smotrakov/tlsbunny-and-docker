@@ -2,17 +2,17 @@ package com.gypsyengineer.tlsbunny.tls13.fuzzer;
 
 public class ByteFlipFuzzer extends AbstractFlipFuzzer implements Fuzzer<byte[]> {
 
-    public ByteFlipFuzzer(
-            double minRatio, double maxRatio, int startIndex, int endIndex) {
-
-        super(minRatio, maxRatio, startIndex, endIndex);
+    public ByteFlipFuzzer(double minRatio, double maxRatio, int start, int end) {
+        super(minRatio, maxRatio, start, end);
     }
 
     @Override
     public byte[] fuzz(byte[] array) {
         byte[] fuzzed = array.clone();
         double ratio = getRatio();
-        int n = (int) Math.ceil((endIndex - startIndex) * ratio);
+        int start = getStartIndex();
+        int end = getEndIndex(array);
+        int n = (int) Math.ceil((end - start) * ratio);
 
         // make sure what we fuzz at least one byte
         if (n == 0) {
@@ -20,7 +20,7 @@ public class ByteFlipFuzzer extends AbstractFlipFuzzer implements Fuzzer<byte[]>
         }
 
         for (int i = 0; i < n; i++) {
-            int pos = startIndex + random.nextInt(endIndex - startIndex);
+            int pos = start + random.nextInt(end - start);
             fuzzed[pos] = (byte) random.nextInt(256);
         }
 
