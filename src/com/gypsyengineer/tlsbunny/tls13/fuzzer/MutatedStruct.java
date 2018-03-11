@@ -10,13 +10,14 @@ import com.gypsyengineer.tlsbunny.tls13.struct.CompressionMethod;
 import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
 import com.gypsyengineer.tlsbunny.tls13.struct.Extension;
 import com.gypsyengineer.tlsbunny.tls13.struct.ExtensionType;
+import com.gypsyengineer.tlsbunny.tls13.struct.Finished;
 import com.gypsyengineer.tlsbunny.tls13.struct.Handshake;
 import com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType;
 import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
 import java.io.IOException;
 
-public class MutatedStruct implements TLSPlaintext, Handshake, ClientHello {
+public class MutatedStruct implements TLSPlaintext, Handshake, ClientHello, Finished {
 
     private static final HandshakeType NO_HANDSHAKE_TYPE = null;
 
@@ -191,6 +192,11 @@ public class MutatedStruct implements TLSPlaintext, Handshake, ClientHello {
 
     @Override
     public Random getRandom() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public byte[] getVerifyData() {
         throw new UnsupportedOperationException();
     }
 

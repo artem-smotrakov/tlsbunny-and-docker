@@ -71,9 +71,13 @@ public class MutatedClient implements Runnable {
 
                     applicationData.send(HTTP_GET_REQUEST);
                     byte[] bytes = applicationData.receive();
-                    output.info("we just received %d bytes:%n%s",
-                            bytes.length, new String(bytes));
-                    output.achtung("holy moly, connection succeeded!");
+                    if (bytes.length > 0) {
+                        output.info("we just received %d bytes:%n%s",
+                                bytes.length, new String(bytes));
+                    } else {
+                        output.info("0 bytes received");
+                    }
+                    output.achtung("holy moly, no alert received!");
                 } finally {
                     output.flush();
                     test++;

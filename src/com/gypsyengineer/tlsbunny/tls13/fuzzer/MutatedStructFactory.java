@@ -8,6 +8,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.ClientHello;
 import com.gypsyengineer.tlsbunny.tls13.struct.CompressionMethod;
 import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
 import com.gypsyengineer.tlsbunny.tls13.struct.Extension;
+import com.gypsyengineer.tlsbunny.tls13.struct.Finished;
 import com.gypsyengineer.tlsbunny.tls13.struct.Handshake;
 import com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType;
 import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
@@ -23,7 +24,7 @@ public class MutatedStructFactory extends StructFactoryWrapper
         implements Fuzzer<byte[]> {
 
     public static enum Mode   { byte_flip, bit_flip }
-    public static enum Target { tlsplaintext, handshake, client_hello }
+    public static enum Target { tlsplaintext, handshake, client_hello, finished }
 
     public static final Target DEFAULT_TARGET = Target.tlsplaintext;
     public static final Mode DEFAULT_MODE = Mode.byte_flip;
@@ -118,6 +119,24 @@ public class MutatedStructFactory extends StructFactoryWrapper
         }
 
         return clientHello;
+    }
+
+    @Override
+    public Finished createFinished(byte[] verify_data) {
+        Finished finished = factory.createFinished(verify_data);
+
+        if (target == Target.finished) {
+            output.info("fuzz Finished");
+            try {
+                byte[] fuzzed = fuzz(finished.encoding());
+                finished = new MutatedStruct(
+                        fuzzed.length, fuzzed, HandshakeType.finished);
+            } catch (IOException e) {
+                output.achtung("I couldn't fuzz ClientHello: %s", e.getMessage());
+            }
+        }
+
+        return finished;
     }
 
     @Override
