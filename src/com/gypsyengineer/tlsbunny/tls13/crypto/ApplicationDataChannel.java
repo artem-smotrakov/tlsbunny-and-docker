@@ -56,4 +56,8 @@ public class ApplicationDataChannel {
     public byte[] encrypt(byte[] plaintext) throws Exception {
         return encryptor.encrypt(factory.createTLSInnerPlaintext(ContentType.application_data, plaintext, NO_PADDING).encoding());
     }
+
+    public boolean isAlive() {
+        return connection.isAlive();
+    }
 }

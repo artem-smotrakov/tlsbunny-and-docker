@@ -1,12 +1,12 @@
 package com.gypsyengineer.tlsbunny.utils;
 
+import com.gypsyengineer.tlsbunny.tls.Struct;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import com.gypsyengineer.tlsbunny.tls.Struct;
 
 public class Connection implements AutoCloseable {
 
@@ -28,7 +28,7 @@ public class Connection implements AutoCloseable {
         os.flush();
     }
 
-    public void send(Struct... objects) throws IOException {       
+    public void send(Struct... objects) throws IOException {
         for (Struct object : objects) {
             send(object.encoding());
         }
@@ -46,7 +46,7 @@ public class Connection implements AutoCloseable {
 
         byte[] bytes = new byte[is.available()];
         is.read(bytes);
-        
+
         return bytes;
     }
 
@@ -56,12 +56,16 @@ public class Connection implements AutoCloseable {
             socket.close();
         }
     }
-    
+
+    public boolean isAlive() {
+        return !socket.isClosed() && socket.isConnected();
+    }
+
     public static Connection create(String host, int port) throws IOException {
         Socket socket = new Socket(host, port);
         InputStream is = new BufferedInputStream(socket.getInputStream());
         OutputStream os = new BufferedOutputStream(socket.getOutputStream());
-        
+
         return new Connection(socket, is, os);
     }
 

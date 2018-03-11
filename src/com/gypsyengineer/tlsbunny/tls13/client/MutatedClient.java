@@ -11,6 +11,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.CertificateHolder;
 import com.gypsyengineer.tlsbunny.utils.Connection;
 import com.gypsyengineer.tlsbunny.utils.Output;
+import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -69,21 +70,22 @@ public class MutatedClient implements Runnable {
                         continue;
                     }
 
-                    applicationData.send(HTTP_GET_REQUEST);
-                    byte[] bytes = applicationData.receive();
-                    if (bytes.length > 0) {
-                        output.info("we just received %d bytes:%n%s",
-                                bytes.length, new String(bytes));
-                    } else {
-                        output.info("0 bytes received");
+                    sendApplicationData(applicationData, output);
+                    if (!applicationData.isAlive()) {
+                        output.info("connection closed");
+                        continue;
                     }
-                    output.achtung("holy moly, no alert received!");
+                    output.info("send application data again");
+                    sendApplicationData(applicationData, output);
+                    output.achtung("holy cow, no alert!");
                 } finally {
                     output.flush();
                     test++;
                     fuzzer.moveOn();
                 }
             }
+        } catch (IOException e) {
+            output.info("looks like the server closed connection", e);
         } catch (Exception e) {
             output.achtung("what the hell? unexpected exception", e);
         } finally {
@@ -111,4 +113,18 @@ public class MutatedClient implements Runnable {
 
         executor.submit(new MutatedClient(fuzzer, output, host, port, total));
     }
-}
+
+    private static void sendApplicationData(
+            ApplicationDataChannel applicationData, Output output) throws Exception {
+
+        applicationData.send(HTTP_GET_REQUEST);
+        byte[] bytes = applicationData.receive();
+        if (bytes.length > 0) {
+            output.info("we just received %d bytes:%n%s", bytes.length, new String(bytes));
+        } else {
+            output.info("0 bytes received");
+        }
+
+        output.info("holy moly, no alert received so far!");
+    }
+ }
