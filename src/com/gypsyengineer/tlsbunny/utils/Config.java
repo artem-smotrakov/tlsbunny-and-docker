@@ -75,7 +75,9 @@ public enum Config {
                         yamlFuzzerConfig.target,
                         yamlFuzzerConfig.mode,
                         yamlFuzzerConfig.min_ratio,
-                        yamlFuzzerConfig.max_ratio));
+                        yamlFuzzerConfig.max_ratio,
+                        yamlFuzzerConfig.total,
+                        yamlFuzzerConfig.parts));
             }
 
             fuzzerConfigs = Collections.unmodifiableList(list);
@@ -84,7 +86,8 @@ public enum Config {
             fuzzerConfigs = List.of(
                     new FuzzerConfig(
                             DEFAULT_FUZZER, DEFAULT_TARGET, DEFAULT_MODE,
-                            DEFAULT_MIN_RATIO, DEFAULT_MAX_RATIO));
+                            DEFAULT_MIN_RATIO, DEFAULT_MAX_RATIO,
+                            DEFAULT_TOTAL, DEFAULT_PARTS));
         }
     }
 
@@ -112,15 +115,19 @@ public enum Config {
         private final String mode;
         private final double minRatio;
         private final double maxRatio;
+        private final int total;
+        private final int parts;
 
         public FuzzerConfig(String fuzzer, String target, String mode,
-                double minRatio, double maxRatio) {
+                double minRatio, double maxRatio, int total, int parts) {
 
             this.fuzzer = fuzzer;
             this.target = target;
             this.mode = mode;
             this.minRatio = minRatio;
             this.maxRatio = maxRatio;
+            this.total = total;
+            this.parts = parts;
         }
 
         public String getFuzzer() {
@@ -141,6 +148,14 @@ public enum Config {
 
         public double getMaxRatio() {
             return maxRatio;
+        }
+
+        public int getTotal() {
+            return total;
+        }
+
+        public int getParts() {
+            return parts;
         }
 
     }
@@ -164,6 +179,8 @@ public enum Config {
         public String mode = DEFAULT_MODE;
         public double min_ratio = DEFAULT_MIN_RATIO;
         public double max_ratio = DEFAULT_MAX_RATIO;
+        public int total = DEFAULT_TOTAL;
+        public int parts = DEFAULT_PARTS;
     }
 
     public String getHost() {

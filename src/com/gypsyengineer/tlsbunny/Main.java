@@ -47,9 +47,6 @@ public class Main {
         int port = Config.Instance.getPort();
         info("okay, we're going to fuzz %s:%d", host, port);
 
-        int total = Config.Instance.getTotal();
-        int parts = Config.Instance.getParts();
-
         double minRatio = Config.Instance.getMinRatio();
         double maxRatio = Config.Instance.getMaxRatio();
 
@@ -63,7 +60,11 @@ public class Main {
             for (Config.FuzzerConfig fuzzerConfig : fuzzerConfigs) {
                 switch (fuzzerConfig.getFuzzer()) {
                     case "MutatedClient":
+                        int total = fuzzerConfig.getTotal();
+                        int parts = fuzzerConfig.getParts();
                         int testsNumber = total / parts;
+
+                        // TODO: get a start test from a fuzzer config
                         int startTest = Config.Instance.getStartTest();
                         while (startTest < testsNumber * parts) {
                             info("start fuzzer: %s", fuzzerConfig.getFuzzer());
