@@ -1,4 +1,4 @@
-package com.gypsyengineer.tlsbunny.tls13.client;
+package com.gypsyengineer.tlsbunny.tls13.test.client;
 
 import com.gypsyengineer.tlsbunny.tls13.crypto.ApplicationDataChannel;
 import com.gypsyengineer.tlsbunny.tls13.handshake.ClientHandshaker;
