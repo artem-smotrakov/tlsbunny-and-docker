@@ -1,9 +1,11 @@
 package com.gypsyengineer.tlsbunny.tls13.connection;
 
-public interface Action {
+import com.gypsyengineer.tlsbunny.utils.Connection;
 
-    boolean hasData();
-    boolean needsData();
-    void send();
-    void receive();
+public interface Action {
+    void init(byte[] data);
+    void init(Connection connection);
+    void run();
+    boolean succeeded();
+    byte[] data();
 }

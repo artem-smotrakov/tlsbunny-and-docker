@@ -3,9 +3,11 @@ package com.gypsyengineer.tlsbunny.tls13.test.client;
 import com.gypsyengineer.tlsbunny.tls13.analysis.HttpContent;
 import com.gypsyengineer.tlsbunny.tls13.connection.*;
 
+import java.io.IOException;
+
 public class NewHandshakerTest {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         new TLSConnection()
                 .host("localhost")
                 .port(10101)
