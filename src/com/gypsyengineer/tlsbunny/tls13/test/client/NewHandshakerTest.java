@@ -1,7 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls13.test.client;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.*;
-
 import java.io.IOException;
 
 public class NewHandshakerTest {
@@ -12,7 +11,7 @@ public class NewHandshakerTest {
                 .port(10101)
                 .send(new OutgoingClientHello())
                 .expect(new IncomingServerHello())
-                .expect(new ImcomingCertificate())
+                .expect(new IncomingCertificate())
                 .expect(new IncomingCertificateVerify())
                 .send(new OutgoingFinished())
                 .expect(new IncomingFinished())

@@ -1,24 +1,29 @@
 package com.gypsyengineer.tlsbunny.tls13.connection;
 
+import com.gypsyengineer.tlsbunny.utils.Connection;
+
 public abstract class AbstractAction implements Action {
 
+    byte[] data;
+    Connection connection;
+
     @Override
-    public boolean hasData() {
+    public void init(byte[] data) {
+        this.data = data;
+    }
+
+    @Override
+    public void init(Connection connection) {
+        this.connection = connection;
+    }
+
+    @Override
+    public boolean succeeded() {
         return false;
     }
 
     @Override
-    public boolean needsData() {
-        return false;
-    }
-
-    @Override
-    public void send() {
-
-    }
-
-    @Override
-    public void receive() {
-
+    public byte[] data() {
+        return data.clone();
     }
 }
