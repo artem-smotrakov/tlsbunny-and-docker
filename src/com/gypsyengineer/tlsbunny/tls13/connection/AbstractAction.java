@@ -5,7 +5,6 @@ import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Negotiator;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
 import com.gypsyengineer.tlsbunny.utils.Connection;
-
 import java.io.IOException;
 
 public abstract class AbstractAction implements Action {
@@ -23,38 +22,45 @@ public abstract class AbstractAction implements Action {
     Context context;
 
     @Override
-    public void init(StructFactory factory) {
+    public Action set(StructFactory factory) {
         this.factory = factory;
+        return this;
     }
 
     @Override
-    public void init(SignatureScheme scheme) {
+    public Action set(SignatureScheme scheme) {
         this.scheme = scheme;
+        return this;
     }
 
     @Override
-    public void init(NamedGroup group) {
+    public Action set(NamedGroup group) {
         this.group = group;
+        return this;
     }
 
     @Override
-    public void init(Negotiator negotiator) {
+    public Action set(Negotiator negotiator) {
         this.negotiator = negotiator;
+        return this;
     }
 
     @Override
-    public void init(Context context) {
+    public Action set(Context context) {
         this.context = context;
+        return this;
     }
 
     @Override
-    public void init(byte[] data) {
+    public Action set(byte[] data) {
         this.data = data;
+        return this;
     }
 
     @Override
-    public void init(Connection connection) {
+    public Action set(Connection connection) {
         this.connection = connection;
+        return this;
     }
 
     @Override

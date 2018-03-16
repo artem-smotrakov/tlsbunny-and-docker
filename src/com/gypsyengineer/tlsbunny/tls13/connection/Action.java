@@ -8,14 +8,14 @@ import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.Connection;
 
 public interface Action {
-    void init(StructFactory factory);
-    void init(SignatureScheme scheme);
-    void init(NamedGroup group);
-    void init(Negotiator negotiator);
-    void init(Context context);
-    void init(byte[] data);
-    void init(Connection connection);
-    void run();
+    Action set(StructFactory factory);
+    Action set(SignatureScheme scheme);
+    Action set(NamedGroup group);
+    Action set(Negotiator negotiator);
+    Action set(Context context);
+    Action set(byte[] data);
+    Action set(Connection connection);
+    Action run();
     boolean succeeded();
     byte[] data();
 }

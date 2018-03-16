@@ -7,7 +7,7 @@ import java.util.List;
 public class OutgoingClientHello extends AbstractAction {
 
     @Override
-    public void run() {
+    public Action run() {
         try {
             List<Extension> extensions = List.of(
                     wrap(factory.createSupportedVersionForClientHello(ProtocolVersion.TLSv13)),
@@ -34,5 +34,7 @@ public class OutgoingClientHello extends AbstractAction {
         } catch (Exception e) {
             succeeded = false;
         }
+
+        return this;
     }
 }

@@ -1,7 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls13.connection;
 
 import com.gypsyengineer.tlsbunny.utils.Connection;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,9 +51,9 @@ public class TLSConnection {
         try (Connection connection = Connection.create(host, port)) {
             byte[] unprocessed = NOTHING;
             loop: for (ActionHolder holder : actions) {
-                holder.action.init(connection);
+                holder.action.set(connection);
                 if (unprocessed.length != 0) {
-                    holder.action.init(unprocessed);
+                    holder.action.set(unprocessed);
                     unprocessed = NOTHING;
                 }
 
