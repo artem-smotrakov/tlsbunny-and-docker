@@ -9,6 +9,8 @@ import com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.Connection;
 import java.io.IOException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,8 +32,8 @@ public class TLSConnection {
     private CipherSuite suite = CipherSuite.TLS_AES_128_GCM_SHA256;
     private Status status = Status.NOT_STARTED;
 
-    public TLSConnection() throws Exception {
-        negotiator = ECDHENegotiator.create((NamedGroup.Secp) group, factory);
+    private TLSConnection() {
+
     }
 
     public TLSConnection host(String host) {
@@ -146,6 +148,16 @@ public class TLSConnection {
 
     public Status status() {
         return status;
+    }
+
+    public static TLSConnection create()
+            throws InvalidAlgorithmParameterException, NoSuchAlgorithmException {
+
+        TLSConnection connection = new TLSConnection();
+        connection.negotiator = ECDHENegotiator.create(
+                (NamedGroup.Secp) connection.group, connection.factory);
+
+        return connection;
     }
 
     private static class ActionHolder {
