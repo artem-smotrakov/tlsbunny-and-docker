@@ -18,7 +18,7 @@ public class TLSConnection {
 
     private enum ActionType { SEND, EXPECT, ALLOW }
 
-    public enum Status { NOT_STARTED, COULD_NOT_SEND, UNEXPECTED_MESSAGE, SUCCESS }
+    public enum Status { NOT_STARTED, RUNNING, COULD_NOT_SEND, UNEXPECTED_MESSAGE, SUCCESS }
 
     private final List<ActionHolder> actions = new ArrayList<>();
     private String host = "localhost";
@@ -80,6 +80,7 @@ public class TLSConnection {
     }
 
     public TLSConnection run() throws IOException {
+        status = Status.RUNNING;
         try (Connection connection = Connection.create(host, port)) {
             Context context = new Context();
             byte[] unprocessed = NOTHING;
@@ -121,6 +122,10 @@ public class TLSConnection {
                         throw new IllegalStateException();
                 }
             }
+        }
+
+        if (status == Status.RUNNING) {
+            status = Status.SUCCESS;
         }
 
         return this;
