@@ -1,4 +1,4 @@
-package com.gypsyengineer.tlsbunny.tls13.action;
+package com.gypsyengineer.tlsbunny.tls13.connection;
 
 public abstract class AbstractAction implements Action {
 
