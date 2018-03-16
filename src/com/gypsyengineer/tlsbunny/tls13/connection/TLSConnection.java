@@ -1,6 +1,5 @@
 package com.gypsyengineer.tlsbunny.tls13.connection;
 
-import com.gypsyengineer.tlsbunny.tls13.analysis.Analyzer;
 import com.gypsyengineer.tlsbunny.utils.Connection;
 
 import java.io.IOException;
@@ -83,6 +82,15 @@ public class TLSConnection {
                         throw new IllegalStateException();
                 }
             }
+        }
+
+        return this;
+    }
+
+    public TLSConnection check(Check check) {
+        check.run();
+        if (check.failed()) {
+            throw new RuntimeException(String.format("check failed: %s", check.name()));
         }
 
         return this;

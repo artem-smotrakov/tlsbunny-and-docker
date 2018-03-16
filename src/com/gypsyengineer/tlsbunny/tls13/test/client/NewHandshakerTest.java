@@ -1,6 +1,5 @@
 package com.gypsyengineer.tlsbunny.tls13.test.client;
 
-import com.gypsyengineer.tlsbunny.tls13.analysis.HttpContent;
 import com.gypsyengineer.tlsbunny.tls13.connection.*;
 
 import java.io.IOException;
@@ -21,7 +20,7 @@ public class NewHandshakerTest {
                 .send(new OutgoingApplicationData())
                 .expect(new IncomingApplicationData())
                 .run()
-                .analyze(new HttpContent());
+                .check(new Success());
     }
 
 }
