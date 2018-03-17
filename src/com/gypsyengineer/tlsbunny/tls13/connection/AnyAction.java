@@ -3,7 +3,7 @@ package com.gypsyengineer.tlsbunny.tls13.connection;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AnyAction implements Action {
+public class AnyAction extends AbstractAction {
 
     private List<Action> actions = new ArrayList<>();
 
@@ -14,23 +14,8 @@ public class AnyAction implements Action {
     }
 
     @Override
-    public boolean hasData() {
-        return false;
-    }
-
-    @Override
-    public boolean needsData() {
-        return false;
-    }
-
-    @Override
-    public void send() {
-
-    }
-
-    @Override
-    public void receive() {
-
+    public Action run() {
+        return this;
     }
 
     void add(Action action) {
