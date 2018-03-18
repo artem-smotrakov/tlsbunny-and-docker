@@ -211,7 +211,7 @@ public class StructFactoryImpl implements StructFactory {
         return new HkdfLabelImpl(
                 new UInt16(length),
                 Vector.wrap(HkdfLabel.LABEL_LENGTH_BYTES, label),
-                Vector.wrap(HkdfLabel.HASH_VALUE_LENGTH_BYTES, hashValue));
+                Vector.wrap(HkdfLabel.CONTEXT_LENGTH_BYTES, hashValue));
     }
 
     @Override

@@ -29,7 +29,7 @@ public class HkdfLabelImpl implements HkdfLabel {
     }
 
     @Override
-    public Vector<Byte> getHashValue() {
+    public Vector<Byte> getContext() {
         return hash_value;
     }
 

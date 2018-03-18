@@ -58,13 +58,13 @@ public class HKDF {
         return Arrays.copyOf(T.array(), L);
     }
 
-    //HKDF-Expand-Label(Secret, Label, HashValue, Length) =
-    //        HKDF-Expand(Secret, HkdfLabel, Length)
-    public byte[] expandLabel(byte[] secret, byte[] label, byte[] hashValue, int length)
+    // HKDF-Expand-Label(Secret, Label, Context, Length) =
+    //     HKDF-Expand(Secret, HkdfLabel, Length)
+    public byte[] expandLabel(byte[] secret, byte[] label, byte[] context, int length)
             throws IOException, InvalidKeyException {
 
         return expand(secret, 
-                createHkdfLabel(length, label, hashValue).encoding(), 
+                createHkdfLabel(length, label, context).encoding(),
                 length);
     }
 
@@ -98,17 +98,17 @@ public class HKDF {
         return Mac.getInstance("Hmac" + hashAlgorithm.replace("-", ""));
     }
 
-    private HkdfLabel createHkdfLabel(int length, byte[] label, byte[] hashValue) {
+    private HkdfLabel createHkdfLabel(int length, byte[] label, byte[] context) {
         byte[] tls13_label = concatenate("tls13 ".getBytes(), label);
         if (tls13_label.length > HkdfLabel.MAX_LABEL_LENGTH) {
             throw new IllegalArgumentException();
         }
 
-        if (hashValue.length > HkdfLabel.MAX_HASH_VALUE_LENGTH) {
+        if (context.length > HkdfLabel.MAX_CONTEXT_LENGTH) {
             throw new IllegalArgumentException();
         }
 
-        return factory.createHkdfLabel(length, tls13_label, hashValue);
+        return factory.createHkdfLabel(length, tls13_label, context);
     }
 
 }
