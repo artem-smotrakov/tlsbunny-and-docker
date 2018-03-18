@@ -72,33 +72,6 @@ public abstract class AbstractHandshaker implements Handshaker {
     final Context context = new Context();
     // TODO: add TranscriptHash field
 
-    byte[] dh_shared_secret;
-    byte[] early_secret;
-    byte[] binder_key;
-    byte[] client_early_traffic_secret;
-    byte[] early_exporter_master_secret;
-    byte[] handshake_secret_salt;
-    byte[] handshake_secret;
-    byte[] client_handshake_traffic_secret;
-    byte[] server_handshake_traffic_secret;
-    byte[] master_secret;
-    byte[] client_application_traffic_secret_0;
-    byte[] server_application_traffic_secret_0;
-    byte[] exporter_master_secret;
-    byte[] resumption_master_secret;
-    byte[] client_handshake_write_key;
-    byte[] client_handshake_write_iv;
-    byte[] server_handshake_write_key;
-    byte[] server_handshake_write_iv;
-    byte[] finished_key;
-    byte[] client_application_write_key;
-    byte[] client_application_write_iv;
-    byte[] server_application_write_key;
-    byte[] server_application_write_iv;
-
-    AEAD handshakeEncryptor;
-    AEAD handshakeDecryptor;
-
     Alert receivedAlert;
 
     ApplicationDataChannel applicationData;
@@ -188,35 +161,7 @@ public abstract class AbstractHandshaker implements Handshaker {
 
     @Override
     public void reset() {
-        dh_shared_secret = null;
-        early_secret = null;
-        binder_key = null;
-        client_early_traffic_secret = null;
-        early_exporter_master_secret = null;
-        handshake_secret_salt = null;
-        handshake_secret = null;
-        client_handshake_traffic_secret = null;
-        server_handshake_traffic_secret = null;
-        master_secret = null;
-        client_application_traffic_secret_0 = null;
-        server_application_traffic_secret_0 = null;
-        exporter_master_secret = null;
-        resumption_master_secret = null;
-        client_handshake_write_key = null;
-        client_handshake_write_iv = null;
-        server_handshake_write_key = null;
-        server_handshake_write_iv = null;
-        finished_key = null;
-        client_application_write_key = null;
-        client_application_write_iv = null;
-        server_application_write_key = null;
-        server_application_write_iv = null;
-
-        handshakeEncryptor = null;
-        handshakeDecryptor = null;
-
         applicationData = null;
-
         context.reset();
     }
 
@@ -228,12 +173,12 @@ public abstract class AbstractHandshaker implements Handshaker {
                 connection,
                 AEAD.createEncryptor(
                     ciphersuite.cipher(),
-                    client_application_write_key,
-                    client_application_write_iv),
+                    context.client_application_write_key,
+                    context.client_application_write_iv),
                 AEAD.createDecryptor(
                     ciphersuite.cipher(),
-                    server_application_write_key,
-                    server_application_write_iv));
+                    context.server_application_write_key,
+                    context.server_application_write_iv));
     }
 
     Handshake toHandshake(HandshakeMessage message) throws IOException {
@@ -251,75 +196,75 @@ public abstract class AbstractHandshaker implements Handshaker {
     }
 
     byte[] getEarlySecret() {
-        return early_secret.clone();
+        return context.early_secret.clone();
     }
 
     byte[] getHandshakeSecret() {
-        return handshake_secret.clone();
+        return context.handshake_secret.clone();
     }
 
     byte[] getHandshakeSecretSalt() {
-        return handshake_secret_salt.clone();
+        return context.handshake_secret_salt.clone();
     }
 
     byte[] getClientHandshakeTrafficSecret() {
-        return client_handshake_traffic_secret.clone();
+        return context.client_handshake_traffic_secret.clone();
     }
 
     byte[] getServerHandshakeTrafficSecret() {
-        return server_handshake_traffic_secret.clone();
+        return context.server_handshake_traffic_secret.clone();
     }
 
     byte[] getMasterSecret() {
-        return master_secret.clone();
+        return context.master_secret.clone();
     }
 
     byte[] getClientHandshakeWriteKey() {
-        return client_handshake_write_key.clone();
+        return context.client_handshake_write_key.clone();
     }
 
     byte[] getClientHandshakeWriteIv() {
-        return client_handshake_write_iv.clone();
+        return context.client_handshake_write_iv.clone();
     }
 
     byte[] getServerHandshakeWriteKey() {
-        return server_handshake_write_key.clone();
+        return context.server_handshake_write_key.clone();
     }
 
     byte[] getServerHandshakeWriteIv() {
-        return server_handshake_write_iv.clone();
+        return context.server_handshake_write_iv.clone();
     }
 
     byte[] getClientApplicationTrafficSecret0() {
-        return client_application_traffic_secret_0.clone();
+        return context.client_application_traffic_secret_0.clone();
     }
 
     byte[] getServerApplicationTrafficSecret0() {
-        return server_application_traffic_secret_0.clone();
+        return context.server_application_traffic_secret_0.clone();
     }
 
     byte[] getExporterMasterSecret() {
-        return exporter_master_secret.clone();
+        return context.exporter_master_secret.clone();
     }
 
     byte[] getServerApplicationWriteKey() {
-        return server_application_write_key.clone();
+        return context.server_application_write_key.clone();
     }
 
     byte[] getServerApplicationWriteIv() {
-        return server_application_write_iv.clone();
+        return context.server_application_write_iv.clone();
     }
 
     byte[] getClientApplicationWriteKey() {
-        return client_application_write_key.clone();
+        return context.client_application_write_key.clone();
     }
 
     byte[] getClientApplicationWriteIv() {
-        return client_application_write_iv.clone();
+        return context.client_application_write_iv.clone();
     }
 
     byte[] getFinishedKey() {
-        return finished_key.clone();
+        return context.finished_key.clone();
     }
 
     static Random createRandom() {

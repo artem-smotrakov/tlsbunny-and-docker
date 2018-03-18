@@ -1,10 +1,28 @@
 package com.gypsyengineer.tlsbunny.tls13.handshake;
 
+import com.gypsyengineer.tlsbunny.tls13.crypto.AEAD;
 import com.gypsyengineer.tlsbunny.tls13.struct.Handshake;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Context {
+
+    // TODO: find a better place for these constants
+    // TODO: these constants shouldn't be public
+    public static final byte[] ext_binder      = "ext binder".getBytes();
+    public static final byte[] res_binder      = "res binder".getBytes();
+    public static final byte[] c_e_traffic     = "c e traffic".getBytes();
+    public static final byte[] e_exp_master    = "e exp master".getBytes();
+    public static final byte[] derived         = "derived".getBytes();
+    public static final byte[] c_hs_traffic    = "c hs traffic".getBytes();
+    public static final byte[] s_hs_traffic    = "s hs traffic".getBytes();
+    public static final byte[] c_ap_traffic    = "c ap traffic".getBytes();
+    public static final byte[] s_ap_traffic    = "s ap traffic".getBytes();
+    public static final byte[] exp_master      = "exp master".getBytes();
+    public static final byte[] res_master      = "res master".getBytes();
+    public static final byte[] key             = "key".getBytes();
+    public static final byte[] iv              = "iv".getBytes();
+    public static final byte[] finished        = "finished".getBytes();
 
     private Handshake firstClientHello;
     private Handshake helloRetryRequest;
@@ -20,6 +38,35 @@ public class Context {
     private Handshake clientCertificateVerify;
     private Handshake clientFinished;
 
+    // TODO: these fields should have private or package access
+    public byte[] dh_shared_secret;
+    public byte[] early_secret;
+    public byte[] binder_key;
+    public byte[] client_early_traffic_secret;
+    public byte[] early_exporter_master_secret;
+    public byte[] handshake_secret_salt;
+    public byte[] handshake_secret;
+    public byte[] client_handshake_traffic_secret;
+    public byte[] server_handshake_traffic_secret;
+    public byte[] master_secret;
+    public byte[] client_application_traffic_secret_0;
+    public byte[] server_application_traffic_secret_0;
+    public byte[] exporter_master_secret;
+    public byte[] resumption_master_secret;
+    public byte[] client_handshake_write_key;
+    public byte[] client_handshake_write_iv;
+    public byte[] server_handshake_write_key;
+    public byte[] server_handshake_write_iv;
+    public byte[] finished_key;
+    public byte[] client_application_write_key;
+    public byte[] client_application_write_iv;
+    public byte[] server_application_write_key;
+    public byte[] server_application_write_iv;
+
+    // TODO: these fields should not be public
+    public AEAD handshakeEncryptor;
+    public AEAD handshakeDecryptor;
+
     public void reset() {
         firstClientHello = null;
         helloRetryRequest = null;
@@ -34,6 +81,33 @@ public class Context {
         clientCertificate = null;
         clientCertificateVerify = null;
         clientFinished = null;
+
+        dh_shared_secret = null;
+        early_secret = null;
+        binder_key = null;
+        client_early_traffic_secret = null;
+        early_exporter_master_secret = null;
+        handshake_secret_salt = null;
+        handshake_secret = null;
+        client_handshake_traffic_secret = null;
+        server_handshake_traffic_secret = null;
+        master_secret = null;
+        client_application_traffic_secret_0 = null;
+        server_application_traffic_secret_0 = null;
+        exporter_master_secret = null;
+        resumption_master_secret = null;
+        client_handshake_write_key = null;
+        client_handshake_write_iv = null;
+        server_handshake_write_key = null;
+        server_handshake_write_iv = null;
+        finished_key = null;
+        client_application_write_key = null;
+        client_application_write_iv = null;
+        server_application_write_key = null;
+        server_application_write_iv = null;
+
+        handshakeEncryptor = null;
+        handshakeDecryptor = null;
     }
 
     public boolean hasFirstClientHello() {

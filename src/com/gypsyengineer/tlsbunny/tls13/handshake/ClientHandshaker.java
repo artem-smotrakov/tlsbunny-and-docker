@@ -105,34 +105,34 @@ public class ClientHandshaker extends AbstractHandshaker {
     @Override
     public Finished createFinished() throws Exception {
         byte[] verify_data = hkdf.hmac(
-                finished_key,
+                context.finished_key,
                 TranscriptHash.compute(ciphersuite.hash(), context.allMessages()));
 
         return factory.createFinished(verify_data);
     }
 
     void computeKeysAfterClientFinished() throws Exception {
-        resumption_master_secret = hkdf.deriveSecret(
-                master_secret,
+        context.resumption_master_secret = hkdf.deriveSecret(
+                context.master_secret,
                 res_master,
                 context.allMessages());
-        client_application_write_key = hkdf.expandLabel(
-                client_application_traffic_secret_0,
+        context.client_application_write_key = hkdf.expandLabel(
+                context.client_application_traffic_secret_0,
                 key,
                 ZERO_HASH_VALUE,
                 ciphersuite.keyLength());
-        client_application_write_iv = hkdf.expandLabel(
-                client_application_traffic_secret_0,
+        context.client_application_write_iv = hkdf.expandLabel(
+                context.client_application_traffic_secret_0,
                 iv,
                 ZERO_HASH_VALUE,
                 ciphersuite.ivLength());
-        server_application_write_key = hkdf.expandLabel(
-                server_application_traffic_secret_0,
+        context.server_application_write_key = hkdf.expandLabel(
+                context.server_application_traffic_secret_0,
                 key,
                 ZERO_HASH_VALUE,
                 ciphersuite.keyLength());
-        server_application_write_iv = hkdf.expandLabel(
-                server_application_traffic_secret_0,
+        context.server_application_write_iv = hkdf.expandLabel(
+                context.server_application_traffic_secret_0,
                 iv,
                 ZERO_HASH_VALUE,
                 ciphersuite.ivLength());
@@ -149,7 +149,7 @@ public class ClientHandshaker extends AbstractHandshaker {
         KeyShare.ServerHello keyShare = findKeyShare(serverHello);
 
         negotiator.processKeyShareEntry(keyShare.getServerShare());
-        dh_shared_secret = negotiator.generateSecret();
+        context.dh_shared_secret = negotiator.generateSecret();
 
         context.setServerHello(handshake);
         if (!ciphersuite.equals(serverHello.getCipherSuite())) {
@@ -160,68 +160,70 @@ public class ClientHandshaker extends AbstractHandshaker {
 
         Handshake wrappedClientHello = context.getFirstClientHello();
 
-        early_secret = hkdf.extract(ZERO_SALT, psk);
-        binder_key = hkdf.deriveSecret(
-                early_secret,
+        context.early_secret = hkdf.extract(ZERO_SALT, psk);
+        context.binder_key = hkdf.deriveSecret(
+                context.early_secret,
                 concatenate(ext_binder, res_binder));
-        client_early_traffic_secret = hkdf.deriveSecret(
-                early_secret,
+        context.client_early_traffic_secret = hkdf.deriveSecret(
+                context.early_secret,
                 c_e_traffic,
                 wrappedClientHello);
-        early_exporter_master_secret = hkdf.deriveSecret(
-                early_secret,
+        context.early_exporter_master_secret = hkdf.deriveSecret(
+                context.early_secret,
                 e_exp_master,
                 wrappedClientHello);
 
-        handshake_secret_salt = hkdf.deriveSecret(early_secret, derived);
+        context.handshake_secret_salt = hkdf.deriveSecret(
+                context.early_secret, derived);
 
-        handshake_secret = hkdf.extract(handshake_secret_salt, dh_shared_secret);
-        client_handshake_traffic_secret = hkdf.deriveSecret(
-                handshake_secret,
+        context.handshake_secret = hkdf.extract(
+                context.handshake_secret_salt, context.dh_shared_secret);
+        context.client_handshake_traffic_secret = hkdf.deriveSecret(
+                context.handshake_secret,
                 c_hs_traffic,
                 wrappedClientHello, handshake);
-        server_handshake_traffic_secret = hkdf.deriveSecret(
-                handshake_secret,
+        context.server_handshake_traffic_secret = hkdf.deriveSecret(
+                context.handshake_secret,
                 s_hs_traffic,
                 wrappedClientHello, handshake);
-        master_secret = hkdf.extract(
-                hkdf.deriveSecret(handshake_secret, derived),
+        context.master_secret = hkdf.extract(
+                hkdf.deriveSecret(context.handshake_secret, derived),
                 zeroes(hkdf.getHashLength()));
 
-        client_handshake_write_key = hkdf.expandLabel(
-                client_handshake_traffic_secret,
+        context.client_handshake_write_key = hkdf.expandLabel(
+                context.client_handshake_traffic_secret,
                 key,
                 ZERO_HASH_VALUE,
                 ciphersuite.keyLength());
-        client_handshake_write_iv = hkdf.expandLabel(
-                client_handshake_traffic_secret,
+        context.client_handshake_write_iv = hkdf.expandLabel(
+                context.client_handshake_traffic_secret,
                 iv,
                 ZERO_HASH_VALUE,
                 ciphersuite.ivLength());
-        server_handshake_write_key = hkdf.expandLabel(
-                server_handshake_traffic_secret,
+        context.server_handshake_write_key = hkdf.expandLabel(
+                context.server_handshake_traffic_secret,
                 key,
                 ZERO_HASH_VALUE,
                 ciphersuite.keyLength());
-        server_handshake_write_iv = hkdf.expandLabel(
-                server_handshake_traffic_secret,
+        context.server_handshake_write_iv = hkdf.expandLabel(
+                context.server_handshake_traffic_secret,
                 iv,
                 ZERO_HASH_VALUE,
                 ciphersuite.ivLength());
-        finished_key = hkdf.expandLabel(
-                client_handshake_traffic_secret,
+        context.finished_key = hkdf.expandLabel(
+                context.client_handshake_traffic_secret,
                 finished,
                 ZERO_HASH_VALUE,
                 hkdf.getHashLength());
 
-        handshakeEncryptor = AEAD.createEncryptor(
+        context.handshakeEncryptor = AEAD.createEncryptor(
                 ciphersuite.cipher(),
-                client_handshake_write_key,
-                client_handshake_write_iv);
-        handshakeDecryptor = AEAD.createDecryptor(
+                context.client_handshake_write_key,
+                context.client_handshake_write_iv);
+        context.handshakeDecryptor = AEAD.createDecryptor(
                 ciphersuite.cipher(),
-                server_handshake_write_key,
-                server_handshake_write_iv);
+                context.server_handshake_write_key,
+                context.server_handshake_write_iv);
     }
 
     private void handleCertificateRequest(Handshake handshake) {
@@ -254,7 +256,7 @@ public class ClientHandshaker extends AbstractHandshaker {
                 ciphersuite.hashLength());
 
         byte[] verify_key = hkdf.expandLabel(
-                server_handshake_traffic_secret,
+                context.server_handshake_traffic_secret,
                 finished,
                 ZERO_HASH_VALUE,
                 hkdf.getHashLength());
@@ -270,16 +272,16 @@ public class ClientHandshaker extends AbstractHandshaker {
 
         context.setServerFinished(handshake);
 
-        client_application_traffic_secret_0 = hkdf.deriveSecret(
-                master_secret,
+        context.client_application_traffic_secret_0 = hkdf.deriveSecret(
+                context.master_secret,
                 c_ap_traffic,
                 context.allMessages());
-        server_application_traffic_secret_0 = hkdf.deriveSecret(
-                master_secret,
+        context.server_application_traffic_secret_0 = hkdf.deriveSecret(
+                context.master_secret,
                 s_ap_traffic,
                 context.allMessages());
-        exporter_master_secret = hkdf.deriveSecret(
-                master_secret,
+        context.exporter_master_secret = hkdf.deriveSecret(
+                context.master_secret,
                 exp_master,
                 context.allMessages());
     }
@@ -340,7 +342,7 @@ public class ClientHandshaker extends AbstractHandshaker {
 
     TLSInnerPlaintext decrypt(TLSPlaintext tlsPlaintext) throws Exception {
         return parser.parseTLSInnerPlaintext(
-                handshakeDecryptor.decrypt(tlsPlaintext.getFragment()));
+                context.handshakeDecryptor.decrypt(tlsPlaintext.getFragment()));
     }
 
     TLSPlaintext[] encrypt(Handshake message) throws Exception {
@@ -350,7 +352,7 @@ public class ClientHandshaker extends AbstractHandshaker {
     private TLSPlaintext[] encrypt(TLSInnerPlaintext message) throws Exception {
         return factory.createTLSPlaintexts(ContentType.application_data,
                 ProtocolVersion.TLSv12,
-                handshakeEncryptor.encrypt(message.encoding()));
+                context.handshakeEncryptor.encrypt(message.encoding()));
     }
 
     @Override
