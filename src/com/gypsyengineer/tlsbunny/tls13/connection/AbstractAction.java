@@ -7,16 +7,18 @@ import com.gypsyengineer.tlsbunny.tls13.handshake.Negotiator;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
 import com.gypsyengineer.tlsbunny.utils.Connection;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 public abstract class AbstractAction implements Action {
 
     static final long DEFAULT_SEED = 0;
     static final long SEED = Long.getLong("tlsbunny.seed", DEFAULT_SEED);
 
-    byte[] data;
+    private boolean succeeded = false;
+    private byte[] data;
+
     Connection connection;
     StructFactory factory;
-    boolean succeeded = false;
     SignatureScheme scheme;
     NamedGroup group;
     CipherSuite suite;
@@ -87,6 +89,34 @@ public abstract class AbstractAction implements Action {
     public byte[] data() {
         return data.clone();
     }
+
+    @Override
+    public final Action run() {
+        ByteBuffer buffer = null;
+        try {
+            if (data != null && data.length > 0) {
+                buffer = ByteBuffer.wrap(data);
+            } else {
+                buffer = ByteBuffer.wrap(connection.read());
+                if (buffer.remaining() == 0) {
+                    throw new IOException("no data received");
+                }
+            }
+
+            succeeded = runImpl(buffer);
+        } catch (Exception e) {
+            succeeded = false;
+        } finally {
+            if (buffer != null && buffer.remaining() == 0) {
+                data = new byte[buffer.remaining()];
+                buffer.get(data);
+            }
+        }
+
+        return this;
+    }
+
+    abstract boolean runImpl(ByteBuffer buffer) throws Exception;
 
     // helper methods
 

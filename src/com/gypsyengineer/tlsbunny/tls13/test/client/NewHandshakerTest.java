@@ -10,6 +10,7 @@ public class NewHandshakerTest {
                 .port(10101)
                 .send(new OutgoingClientHello())
                 .expect(new IncomingServerHello())
+                .expect(new IncomingChangeCipherSpec())
                 .expect(new IncomingCertificate())
                 .expect(new IncomingCertificateVerify())
                 .send(new OutgoingFinished())

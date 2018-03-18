@@ -13,39 +13,21 @@ import java.nio.ByteBuffer;
 public class IncomingServerHello extends AbstractAction {
 
     @Override
-    public Action run() {
-        try {
-            ByteBuffer buffer = ByteBuffer.wrap(connection.read());
-            if (buffer.remaining() == 0) {
-                throw new IOException("no data received");
-            }
-
-            TLSPlaintext tlsPlaintext = factory.parser().parseTLSPlaintext(buffer);
-            if (!tlsPlaintext.containsHandshake()) {
-                throw new IOException("expected a handshake message");
-            }
-
-            Handshake handshake = factory.parser().parseHandshake(tlsPlaintext.getFragment());
-            if (!handshake.containsServerHello()) {
-                throw new IOException("expected a ServerHello message");
-            }
-
-            processServerHello(handshake);
-
-            if (buffer.remaining() == 0) {
-                data = new byte[buffer.remaining()];
-                buffer.get(data);
-            }
-
-            succeeded = true;
-        } catch (Exception e) {
-            succeeded = false;
+    boolean runImpl(ByteBuffer buffer) throws Exception {
+        TLSPlaintext tlsPlaintext = factory.parser().parseTLSPlaintext(buffer);
+        if (!tlsPlaintext.containsHandshake()) {
+            throw new IOException("expected a handshake message");
         }
 
-        return this;
+        Handshake handshake = factory.parser().parseHandshake(tlsPlaintext.getFragment());
+        if (!handshake.containsServerHello()) {
+            throw new IOException("expected a ServerHello message");
+        }
+
+        return processServerHello(handshake);
     }
 
-    private void processServerHello(Handshake handshake) throws Exception {
+    private boolean processServerHello(Handshake handshake) throws Exception {
         ServerHello serverHello = factory.parser().parseServerHello(handshake.getBody());
         KeyShare.ServerHello keyShare = findKeyShare(serverHello);
 
@@ -127,6 +109,8 @@ public class IncomingServerHello extends AbstractAction {
                 suite.cipher(),
                 context.server_handshake_write_key,
                 context.server_handshake_write_iv);
+
+        return true;
     }
 
     private KeyShare.ServerHello findKeyShare(ServerHello hello)
