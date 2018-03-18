@@ -32,6 +32,11 @@ public class ContentTypeImpl implements ContentType {
     }
 
     @Override
+    public boolean isChangeCipherSpec() {
+        return code == change_cipher_spec.getCode();
+    }
+
+    @Override
     public int encodingLength() {
         return ENCODING_LENGTH;
     }

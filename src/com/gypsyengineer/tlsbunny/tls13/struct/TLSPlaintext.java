@@ -10,6 +10,7 @@ public interface TLSPlaintext extends Struct {
     boolean containsAlert();
     boolean containsApplicationData();
     boolean containsHandshake();
+    boolean containsChangeCipherSpec();
     byte[] getFragment();
     ProtocolVersion getLegacyRecordVersion();
     UInt16 getFragmentLength();

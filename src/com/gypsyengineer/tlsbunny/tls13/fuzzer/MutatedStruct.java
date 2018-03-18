@@ -71,6 +71,11 @@ public class MutatedStruct implements TLSPlaintext, Handshake, ClientHello, Fini
     }
 
     @Override
+    public boolean containsChangeCipherSpec() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public byte[] getFragment() {
         throw new UnsupportedOperationException("I don't know how to do that!");
     }
