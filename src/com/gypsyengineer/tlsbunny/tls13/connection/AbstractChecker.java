@@ -2,18 +2,18 @@ package com.gypsyengineer.tlsbunny.tls13.connection;
 
 public abstract class AbstractChecker implements Check {
 
-    @Override
-    public void run() {
+    TLSConnection connection;
+    boolean failed = true;
 
+    @Override
+    public Check set(TLSConnection connection) {
+        this.connection = connection;
+        return this;
     }
 
     @Override
     public boolean failed() {
-        return false;
+        return failed;
     }
 
-    @Override
-    public String name() {
-        return "fake";
-    }
 }

@@ -2,6 +2,7 @@ package com.gypsyengineer.tlsbunny.tls13.connection;
 
 public interface Check {
     String name();
-    void run();
+    Check set(TLSConnection connection);
+    Check run();
     boolean failed();
 }
