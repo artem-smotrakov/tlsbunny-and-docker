@@ -2,10 +2,10 @@ package com.gypsyengineer.tlsbunny.tls13.struct.impl;
 
 import com.gypsyengineer.tlsbunny.tls.Bytes;
 import com.gypsyengineer.tlsbunny.tls.UInt16;
-import com.gypsyengineer.tlsbunny.utils.Utils;
 import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
 import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
+import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.io.IOException;
 
 public class TLSPlaintextImpl implements TLSPlaintext {
@@ -15,9 +15,9 @@ public class TLSPlaintextImpl implements TLSPlaintext {
     private final UInt16 length;
     private final Bytes fragment;
 
-    TLSPlaintextImpl(ContentType type, ProtocolVersion version, 
+    TLSPlaintextImpl(ContentType type, ProtocolVersion version,
             UInt16 length, Bytes fragment) {
-        
+
         this.type = type;
         this.legacy_record_version = version;
         this.length = length;
@@ -69,4 +69,8 @@ public class TLSPlaintextImpl implements TLSPlaintext {
         return type.isAlert();
     }
 
+    @Override
+    public boolean containsChangeCipherSpec() {
+        return type.isChangeCipherSpec();
+    }
 }
