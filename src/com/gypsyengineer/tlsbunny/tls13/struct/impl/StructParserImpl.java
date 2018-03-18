@@ -12,6 +12,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.Certificate;
 import com.gypsyengineer.tlsbunny.tls13.struct.CertificateEntry;
 import com.gypsyengineer.tlsbunny.tls13.struct.CertificateRequest;
 import com.gypsyengineer.tlsbunny.tls13.struct.CertificateVerify;
+import com.gypsyengineer.tlsbunny.tls13.struct.ChangeCipherSpec;
 import com.gypsyengineer.tlsbunny.tls13.struct.CipherSuite;
 import com.gypsyengineer.tlsbunny.tls13.struct.ClientHello;
 import com.gypsyengineer.tlsbunny.tls13.struct.CompressionMethod;
@@ -114,6 +115,11 @@ public class StructParserImpl implements StructParser {
     @Override
     public CipherSuite parseCipherSuite(ByteBuffer buffer) {
         return new CipherSuiteImpl(buffer.get() & 0xFF, buffer.get() & 0xFF);
+    }
+
+    @Override
+    public ChangeCipherSpec parseChangeCipherSpec(ByteBuffer buffer) {
+        return new ChangeCipherSpecImpl(buffer.get() & 0xFF);
     }
 
     @Override
