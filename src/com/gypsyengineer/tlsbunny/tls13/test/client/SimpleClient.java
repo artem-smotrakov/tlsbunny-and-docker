@@ -31,6 +31,11 @@ public class SimpleClient {
                 Config.Instance.getPort())) {
 
             ApplicationDataChannel applicationData = handshaker.start(connection);
+            if (handshaker.receivedAlert()) {
+                System.out.printf("[tlsbunny] received alert: %s%n",
+                        handshaker.getReceivedAlert());
+                return;
+            }
             applicationData.send(HTTP_GET_REQUEST);
             byte[] bytes = applicationData.receive();
             System.out.printf("[tlsbunny] received data (%d bytes)%n", bytes.length);
