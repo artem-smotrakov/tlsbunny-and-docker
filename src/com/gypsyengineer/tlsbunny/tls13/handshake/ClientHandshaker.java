@@ -8,6 +8,7 @@ import com.gypsyengineer.tlsbunny.tls13.crypto.TranscriptHash;
 import com.gypsyengineer.tlsbunny.tls13.struct.Certificate;
 import com.gypsyengineer.tlsbunny.tls13.struct.CertificateRequest;
 import com.gypsyengineer.tlsbunny.tls13.struct.CertificateVerify;
+import com.gypsyengineer.tlsbunny.tls13.struct.ChangeCipherSpec;
 import com.gypsyengineer.tlsbunny.tls13.struct.CipherSuite;
 import com.gypsyengineer.tlsbunny.tls13.struct.ClientHello;
 import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
@@ -308,12 +309,9 @@ public class ClientHandshaker extends AbstractHandshaker {
                 handle(parser.parseHandshake(buffer));
             }
         } else if (ContentType.change_cipher_spec.equals(type)) {
-            ByteBuffer buffer = ByteBuffer.wrap(content);
-            if (buffer.remaining() > 0) {
-                byte b = buffer.get();
-                if (b != 0x01) {
-                    throw new RuntimeException();
-                }
+            ChangeCipherSpec ccs = parser.parseChangeCipherSpec(content);
+            if (!ccs.isValid()) {
+                throw new RuntimeException();
             }
         } else {
             throw new RuntimeException();

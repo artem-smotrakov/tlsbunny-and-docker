@@ -4,16 +4,21 @@ import com.gypsyengineer.tlsbunny.tls13.struct.ChangeCipherSpec;
 
 public class ChangeCipherSpecImpl implements ChangeCipherSpec {
 
-    private final int code;
+    private final int value;
 
-    ChangeCipherSpecImpl(int code) {
-        check(code);
-        this.code = code;
+    ChangeCipherSpecImpl(int value) {
+        check(value);
+        this.value = value;
     }
 
     @Override
     public int getValue() {
-        return code;
+        return value;
+    }
+
+    @Override
+    public boolean isValid() {
+        return value == VALID_VALUE;
     }
 
     @Override
@@ -23,13 +28,13 @@ public class ChangeCipherSpecImpl implements ChangeCipherSpec {
 
     @Override
     public byte[] encoding() {
-        return new byte[] { (byte) code };
+        return new byte[] { (byte) value };
     }
 
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 59 * hash + this.code;
+        hash = 59 * hash + this.value;
         return hash;
     }
 
@@ -45,11 +50,11 @@ public class ChangeCipherSpecImpl implements ChangeCipherSpec {
             return false;
         }
         final ChangeCipherSpecImpl other = (ChangeCipherSpecImpl) obj;
-        return this.code == other.code;
+        return this.value == other.value;
     }
 
-    private static void check(int code) {
-        if (code < 0 || code > 255) {
+    private static void check(int value) {
+        if (value < 0 || value > 255) {
             throw new IllegalArgumentException();
         }
     }
