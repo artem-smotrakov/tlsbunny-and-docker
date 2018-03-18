@@ -359,7 +359,7 @@ public class ClientHandshaker extends AbstractHandshaker {
 
         Handshake handshake = toHandshake(createClientHello());
         connection.send(factory.createTLSPlaintexts(ContentType.handshake,
-                ProtocolVersion.TLSv10,
+                ProtocolVersion.TLSv12,
                 handshake.encoding()));
 
         context.setFirstClientHello(handshake);
