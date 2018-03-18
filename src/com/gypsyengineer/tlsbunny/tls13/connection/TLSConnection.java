@@ -1,5 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls13.connection;
 
+import com.gypsyengineer.tlsbunny.tls13.crypto.HKDF;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.handshake.ECDHENegotiator;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Negotiator;
@@ -28,8 +29,9 @@ public class TLSConnection {
     private StructFactory factory = StructFactory.getDefault();
     private NamedGroup group = NamedGroup.secp256r1;
     private SignatureScheme scheme = SignatureScheme.ecdsa_secp256r1_sha256;
-    private Negotiator negotiator;
     private CipherSuite suite = CipherSuite.TLS_AES_128_GCM_SHA256;
+    private Negotiator negotiator;
+    private HKDF hkdf;
     private Status status = Status.NOT_STARTED;
 
     private TLSConnection() {
@@ -92,9 +94,12 @@ public class TLSConnection {
                 action.set(context);
                 action.set(group);
                 action.set(scheme);
+                action.set(suite);
                 action.set(negotiator);
                 action.set(factory);
+                action.set(hkdf);
                 action.set(connection);
+
                 if (unprocessed.length != 0) {
                     action.set(unprocessed);
                     unprocessed = NOTHING;
@@ -134,9 +139,10 @@ public class TLSConnection {
     }
 
     public TLSConnection check(Check check) {
+        check.set(this);
         check.run();
         if (check.failed()) {
-            throw new RuntimeException(String.format("check failed: %s", check.name()));
+            throw new RuntimeException(String.format("%s check failed", check.name()));
         }
 
         return this;
@@ -150,12 +156,14 @@ public class TLSConnection {
         return status;
     }
 
-    public static TLSConnection create()
-            throws InvalidAlgorithmParameterException, NoSuchAlgorithmException {
+    public static TLSConnection create() throws IOException,
+            InvalidAlgorithmParameterException, NoSuchAlgorithmException {
 
         TLSConnection connection = new TLSConnection();
         connection.negotiator = ECDHENegotiator.create(
                 (NamedGroup.Secp) connection.group, connection.factory);
+        connection.hkdf = HKDF.create(
+                connection.suite.hash(), connection.factory);
 
         return connection;
     }

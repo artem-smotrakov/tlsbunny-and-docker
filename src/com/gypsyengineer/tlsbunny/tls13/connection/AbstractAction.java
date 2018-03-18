@@ -1,6 +1,7 @@
 package com.gypsyengineer.tlsbunny.tls13.connection;
 
 import com.gypsyengineer.tlsbunny.tls.Random;
+import com.gypsyengineer.tlsbunny.tls13.crypto.HKDF;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Negotiator;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
@@ -18,7 +19,9 @@ public abstract class AbstractAction implements Action {
     boolean succeeded = false;
     SignatureScheme scheme;
     NamedGroup group;
+    CipherSuite suite;
     Negotiator negotiator;
+    HKDF hkdf;
     Context context;
 
     @Override
@@ -40,8 +43,20 @@ public abstract class AbstractAction implements Action {
     }
 
     @Override
+    public Action set(CipherSuite suite) {
+        this.suite = suite;
+        return this;
+    }
+
+    @Override
     public Action set(Negotiator negotiator) {
         this.negotiator = negotiator;
+        return this;
+    }
+
+    @Override
+    public Action set(HKDF hkdf) {
+        this.hkdf = hkdf;
         return this;
     }
 
