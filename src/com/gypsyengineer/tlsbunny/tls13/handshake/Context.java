@@ -1,7 +1,12 @@
 package com.gypsyengineer.tlsbunny.tls13.handshake;
 
 import com.gypsyengineer.tlsbunny.tls13.crypto.AEAD;
+import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
 import com.gypsyengineer.tlsbunny.tls13.struct.Handshake;
+import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
+import com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext;
+import static com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext.NO_PADDING;
+import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,6 +43,8 @@ public class Context {
     private Handshake clientCertificateVerify;
     private Handshake clientFinished;
 
+    public StructFactory factory;
+
     // TODO: these fields should have private or package access
     public byte[] dh_shared_secret;
     public byte[] early_secret;
@@ -66,6 +73,8 @@ public class Context {
     // TODO: these fields should not be public
     public AEAD handshakeEncryptor;
     public AEAD handshakeDecryptor;
+    public AEAD applicationDataEnctyptor;
+    public AEAD applicationDataDecryptor;
 
     public void reset() {
         firstClientHello = null;
@@ -247,5 +256,18 @@ public class Context {
         }
 
         return list.toArray(new Handshake[list.size()]);
+    }
+
+    public TLSInnerPlaintext decryptApplicationData(TLSPlaintext tlsPlaintext)
+            throws Exception {
+
+        return factory.parser().parseTLSInnerPlaintext(
+                applicationDataDecryptor.decrypt(tlsPlaintext.getFragment()));
+    }
+
+    public byte[] encryptApplicationData(byte[] plaintext) throws Exception {
+        return applicationDataEnctyptor.encrypt(
+                factory.createTLSInnerPlaintext(
+                        ContentType.application_data, plaintext, NO_PADDING).encoding());
     }
 }

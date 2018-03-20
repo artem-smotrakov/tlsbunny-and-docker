@@ -87,6 +87,8 @@ public class TLSConnection {
         status = Status.RUNNING;
         try (Connection connection = Connection.create(host, port)) {
             Context context = new Context();
+            context.factory = factory;
+            
             byte[] unprocessed = NOTHING;
             loop: for (ActionHolder holder : actions) {
                 Action action = holder.action;

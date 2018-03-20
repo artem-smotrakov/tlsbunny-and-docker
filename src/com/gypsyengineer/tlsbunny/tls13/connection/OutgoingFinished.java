@@ -1,5 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls13.connection;
 
+import com.gypsyengineer.tlsbunny.tls13.crypto.AEAD;
 import com.gypsyengineer.tlsbunny.tls13.crypto.TranscriptHash;
 import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
 import com.gypsyengineer.tlsbunny.tls13.struct.Finished;
@@ -44,7 +45,17 @@ public class OutgoingFinished extends AbstractAction {
                     zero_hash_value,
                     suite.ivLength());
 
-            connection.send(encrypt(factory.createTLSInnerPlaintext(ContentType.handshake, handshake.encoding(), NO_PADDING)));
+            connection.send(encrypt(factory.createTLSInnerPlaintext(
+                    ContentType.handshake, handshake.encoding(), NO_PADDING)));
+
+            context.applicationDataEnctyptor = AEAD.createEncryptor(
+                    suite.cipher(),
+                    context.client_application_write_key,
+                    context.client_application_write_iv);
+            context.applicationDataDecryptor = AEAD.createDecryptor(
+                    suite.cipher(),
+                    context.server_application_write_key,
+                    context.server_application_write_iv);
 
             succeeded = true;
         } catch (Exception e) {
