@@ -11,7 +11,7 @@ public class NewHandshakerTest {
                 .send(new OutgoingClientHello())
                 .expect(new IncomingServerHello())
                 .expect(new IncomingChangeCipherSpec())
-                .expect(new IncomingCertificate())
+                .expect(new IncomingEncryptedExtensions())
                 .expect(new IncomingCertificateVerify())
                 .send(new OutgoingFinished())
                 .expect(new IncomingFinished())
