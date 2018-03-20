@@ -22,7 +22,7 @@ public abstract class AbstractReceivingAction extends AbstractAction {
         } catch (Exception e) {
             succeeded = false;
         } finally {
-            if (buffer != null && buffer.remaining() == 0) {
+            if (buffer != null && buffer.remaining() > 0) {
                 data = new byte[buffer.remaining()];
                 buffer.get(data);
             }

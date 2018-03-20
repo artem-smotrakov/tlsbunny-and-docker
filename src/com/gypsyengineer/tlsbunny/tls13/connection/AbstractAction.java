@@ -85,6 +85,11 @@ public abstract class AbstractAction implements Action {
     }
 
     @Override
+    public boolean remaining() {
+        return data != null && data.length > 0;
+    }
+
+    @Override
     public byte[] data() {
         return data.clone();
     }

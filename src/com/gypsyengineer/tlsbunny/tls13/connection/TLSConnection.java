@@ -122,11 +122,15 @@ public class TLSConnection {
                         break;
                     case ALLOW:
                         if (!action.succeeded()) {
-                            unprocessed = action.data();
+                            // do nothing
                         }
                         break;
                     default:
                         throw new IllegalStateException();
+                }
+
+                if (action.remaining()) {
+                    unprocessed = action.data();
                 }
             }
         }

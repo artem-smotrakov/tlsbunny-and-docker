@@ -21,5 +21,6 @@ public interface Action {
     Action set(Connection connection);
     Action run();
     boolean succeeded();
+    boolean remaining();
     byte[] data();
 }
