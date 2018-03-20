@@ -2,7 +2,7 @@ package com.gypsyengineer.tlsbunny.tls13.connection;
 
 import java.nio.ByteBuffer;
 
-public class IncomingCertificate extends AbstractAction {
+public class IncomingCertificate extends AbstractReceivingAction {
 
     @Override
     boolean runImpl(ByteBuffer buffer) throws Exception {

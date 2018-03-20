@@ -2,7 +2,7 @@ package com.gypsyengineer.tlsbunny.tls13.connection;
 
 import java.nio.ByteBuffer;
 
-public class IncomingNewSessionTicket extends AbstractAction {
+public class IncomingNewSessionTicket extends AbstractReceivingAction {
 
     @Override
     boolean runImpl(ByteBuffer buffer) throws Exception {

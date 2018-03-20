@@ -5,7 +5,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-public class IncomingChangeCipherSpec extends AbstractAction {
+public class IncomingChangeCipherSpec extends AbstractReceivingAction {
 
     @Override
     boolean runImpl(ByteBuffer buffer) throws IOException {

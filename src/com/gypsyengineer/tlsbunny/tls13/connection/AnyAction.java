@@ -4,7 +4,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AnyAction extends AbstractAction {
+public class AnyAction extends AbstractReceivingAction {
 
     private List<Action> actions = new ArrayList<>();
 

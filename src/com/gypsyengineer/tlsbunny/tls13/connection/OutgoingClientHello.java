@@ -1,14 +1,12 @@
 package com.gypsyengineer.tlsbunny.tls13.connection;
 
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
-import java.nio.ByteBuffer;
 import java.util.List;
 
 public class OutgoingClientHello extends AbstractAction {
 
-    // TODO: do we really need buffer in outgoing actions? what can we do here?
     @Override
-    boolean runImpl(ByteBuffer buffer) throws Exception {
+    public Action run() {
         try {
             List<Extension> extensions = List.of(
                     wrap(factory.createSupportedVersionForClientHello(ProtocolVersion.TLSv13)),
@@ -31,9 +29,11 @@ public class OutgoingClientHello extends AbstractAction {
             // TODO: check if context already has the first client hello message
             context.setFirstClientHello(handshake);
 
-            return true;
+            succeeded = true;
         } catch (Exception e) {
-            return false;
+            succeeded = false;
         }
+
+        return this;
     }
 }

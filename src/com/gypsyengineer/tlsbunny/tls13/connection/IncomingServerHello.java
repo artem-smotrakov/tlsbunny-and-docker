@@ -10,7 +10,7 @@ import static com.gypsyengineer.tlsbunny.utils.Utils.concatenate;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-public class IncomingServerHello extends AbstractAction {
+public class IncomingServerHello extends AbstractReceivingAction {
 
     @Override
     boolean runImpl(ByteBuffer buffer) throws Exception {
