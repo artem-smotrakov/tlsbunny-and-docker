@@ -22,7 +22,7 @@ public class AesGcmDecryptor extends AesGcm {
 
     @Override
     public void start() throws Exception {
-        cipher.init(Cipher.DECRYPT_MODE, key, new GCMParameterSpec(TAG_LENGTH, nextNonce()));
+        cipher.init(Cipher.DECRYPT_MODE, key, new GCMParameterSpec(TAG_LENGTH_IN_BITS, nextNonce()));
     }
 
     @Override

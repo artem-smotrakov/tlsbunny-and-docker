@@ -12,8 +12,6 @@ import java.io.IOException;
 
 public class ApplicationDataChannel {
 
-    public static final int TAG_LENGTH = 16;
-
     private final AEAD encryptor;
     private final AEAD decryptor;
     private final Connection connection;
@@ -59,8 +57,8 @@ public class ApplicationDataChannel {
 
     public byte[] decrypt(byte[] ciphertext, byte[] additional_data) throws Exception {
         decryptor.start();
-        decryptor.update(ciphertext);
         decryptor.updateAAD(additional_data);
+        decryptor.update(ciphertext);
         byte[] plaintext = decryptor.finish();
 
         return factory.parser().parseTLSInnerPlaintext(plaintext).getContent();
@@ -72,11 +70,11 @@ public class ApplicationDataChannel {
         byte[] plaintext = tlsInnerPlaintext.encoding();
 
         encryptor.start();
-        encryptor.update(plaintext);
         encryptor.updateAAD(getAdditionalData(
                 ContentType.application_data,
                 ProtocolVersion.TLSv12,
-                new UInt16(plaintext.length + TAG_LENGTH)));
+                new UInt16(plaintext.length + AesGcm.TAG_LENGTH_IN_BYTES)));
+        encryptor.update(plaintext);
 
         return encryptor.finish();
     }

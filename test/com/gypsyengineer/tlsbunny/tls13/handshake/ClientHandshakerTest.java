@@ -286,7 +286,7 @@ public class ClientHandshakerTest {
         TLSPlaintext tlsPlaintext = factory.parser()
                 .parseTLSPlaintext(SERVER_CIPHERTEXTS);
 
-        byte[] plaintext = handshaker.decrypt(tlsPlaintext).getContent();
+        byte[] plaintext = handshaker.decrypt(tlsPlaintext);
         ByteBuffer buffer = ByteBuffer.wrap(plaintext);
         while (buffer.remaining() > 0) {
             handshaker.handle(factory.parser().parseHandshake(buffer));

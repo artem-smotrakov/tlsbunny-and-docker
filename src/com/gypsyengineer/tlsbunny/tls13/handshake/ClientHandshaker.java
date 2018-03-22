@@ -1,10 +1,8 @@
 package com.gypsyengineer.tlsbunny.tls13.handshake;
 
+import com.gypsyengineer.tlsbunny.tls.UInt16;
 import com.gypsyengineer.tlsbunny.tls.Vector;
-import com.gypsyengineer.tlsbunny.tls13.crypto.AEAD;
-import com.gypsyengineer.tlsbunny.tls13.crypto.ApplicationDataChannel;
-import com.gypsyengineer.tlsbunny.tls13.crypto.HKDF;
-import com.gypsyengineer.tlsbunny.tls13.crypto.TranscriptHash;
+import com.gypsyengineer.tlsbunny.tls13.crypto.*;
 import com.gypsyengineer.tlsbunny.tls13.struct.Certificate;
 import com.gypsyengineer.tlsbunny.tls13.struct.CertificateRequest;
 import com.gypsyengineer.tlsbunny.tls13.struct.CertificateVerify;
@@ -308,7 +306,7 @@ public class ClientHandshaker extends AbstractHandshaker {
         byte[] content;
 
         if (tlsPlaintext.containsApplicationData()) {
-            TLSInnerPlaintext tlsInnerPlaintext = decrypt(tlsPlaintext);
+            TLSInnerPlaintext tlsInnerPlaintext = parser.parseTLSInnerPlaintext(decrypt(tlsPlaintext));
             type = tlsInnerPlaintext.getType();
             content = tlsInnerPlaintext.getContent();
         } else {
@@ -328,8 +326,10 @@ public class ClientHandshaker extends AbstractHandshaker {
             if (!ccs.isValid()) {
                 throw new RuntimeException();
             }
+        } else if (ContentType.invalid.equals(type)) {
+            throw new RuntimeException("received content type: invalid");
         } else {
-            throw new RuntimeException();
+            throw new RuntimeException(String.format("unexpected type: %s", type));
         }
     }
 
@@ -353,19 +353,49 @@ public class ClientHandshaker extends AbstractHandshaker {
         }
     }
 
-    TLSInnerPlaintext decrypt(TLSPlaintext tlsPlaintext) throws Exception {
-        return parser.parseTLSInnerPlaintext(
-                context.handshakeDecryptor.decrypt(tlsPlaintext));
-    }
-
     TLSPlaintext[] encrypt(Handshake message) throws Exception {
-        return encrypt(factory.createTLSInnerPlaintext(ContentType.handshake, message.encoding(), NO_PADDING));
+        return factory.createTLSPlaintexts(
+                ContentType.application_data,
+                ProtocolVersion.TLSv12,
+                encrypt(message.encoding()));
     }
 
-    private TLSPlaintext[] encrypt(TLSInnerPlaintext message) throws Exception {
-        return factory.createTLSPlaintexts(ContentType.application_data,
+    private byte[] encrypt(byte[] data) throws Exception {
+        TLSInnerPlaintext tlsInnerPlaintext = factory.createTLSInnerPlaintext(
+                ContentType.application_data, data, NO_PADDING);
+        byte[] plaintext = tlsInnerPlaintext.encoding();
+
+        context.handshakeEncryptor.start();
+        context.handshakeEncryptor.updateAAD(getAdditionalData(
+                ContentType.application_data,
                 ProtocolVersion.TLSv12,
-                context.handshakeEncryptor.update(message.encoding()));
+                new UInt16(plaintext.length + AesGcm.TAG_LENGTH_IN_BYTES)));
+        context.handshakeEncryptor.update(plaintext);
+
+        return context.handshakeEncryptor.finish();
+    }
+
+    byte[] decrypt(TLSPlaintext tlsCiphertext) throws Exception {
+        return decrypt(tlsCiphertext.getFragment(), getAdditionalData(tlsCiphertext));
+    }
+
+    private byte[] decrypt(byte[] ciphertext, byte[] additional_data) throws Exception {
+        context.handshakeDecryptor.start();
+        context.handshakeDecryptor.updateAAD(additional_data);
+        context.handshakeDecryptor.update(ciphertext);
+        byte[] plaintext = context.handshakeDecryptor.finish();
+
+        return factory.parser().parseTLSInnerPlaintext(plaintext).getContent();
+    }
+
+    // TODO: ApplicationDataChannel has the same method
+    private byte[] getAdditionalData(ContentType type, ProtocolVersion version, UInt16 length) throws IOException {
+        return Utils.concatenate(type.encoding(), version.encoding(), length.encoding());
+    }
+
+    // TODO: ApplicationDataChannel has the same method
+    private byte[] getAdditionalData(TLSPlaintext tlsPlaintext) throws IOException {
+        return getAdditionalData(tlsPlaintext.getType(), tlsPlaintext.getLegacyRecordVersion(), tlsPlaintext.getFragmentLength());
     }
 
     @Override
