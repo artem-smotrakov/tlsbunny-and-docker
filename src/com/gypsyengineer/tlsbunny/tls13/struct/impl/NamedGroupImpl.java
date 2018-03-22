@@ -47,6 +47,11 @@ public class NamedGroupImpl implements NamedGroup {
         return this.code == other.code;
     }
 
+    @Override
+    public String toString() {
+        return String.format("named group { code: %s }", code);
+    }
+
     static class SecpImpl extends NamedGroupImpl implements Secp {
 
         private final String curve;
@@ -61,6 +66,11 @@ public class NamedGroupImpl implements NamedGroup {
             return curve;
         }
 
+        @Override
+        public String toString() {
+            return String.format("named group, ecdhe { code: %d, curve: %s }", code, curve);
+        }
+
     }
 
     static class XImpl extends NamedGroupImpl implements X {
@@ -69,12 +79,22 @@ public class NamedGroupImpl implements NamedGroup {
             super(code);
         }
 
+        @Override
+        public String toString() {
+            return String.format("named group, x { code: %s }", code);
+        }
+
     }
 
     static class FFDHEImpl extends NamedGroupImpl implements FFDHE {
 
         FFDHEImpl(int code) {
             super(code);
+        }
+
+        @Override
+        public String toString() {
+            return String.format("named group, ffdhe { code: %d }", code);
         }
 
     }

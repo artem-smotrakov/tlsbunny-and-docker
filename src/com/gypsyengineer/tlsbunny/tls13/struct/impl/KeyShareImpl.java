@@ -1,15 +1,12 @@
 package com.gypsyengineer.tlsbunny.tls13.struct.impl;
 
 import com.gypsyengineer.tlsbunny.tls.Vector;
-import com.gypsyengineer.tlsbunny.tls.Struct;
-import com.gypsyengineer.tlsbunny.tls13.struct.KeyShare.ClientHello;
-import com.gypsyengineer.tlsbunny.tls13.struct.KeyShare.ServerHello;
-import com.gypsyengineer.tlsbunny.tls13.struct.KeyShare.HelloRetryRequest;
+import com.gypsyengineer.tlsbunny.tls13.struct.KeyShare;
 import com.gypsyengineer.tlsbunny.tls13.struct.KeyShareEntry;
 import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
 import java.io.IOException;
 
-public abstract class KeyShareImpl implements Struct {
+public abstract class KeyShareImpl implements KeyShare {
     
     public static class ClientHelloImpl extends KeyShareImpl implements ClientHello {
 
