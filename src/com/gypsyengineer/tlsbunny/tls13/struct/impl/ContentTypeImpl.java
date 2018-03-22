@@ -68,6 +68,11 @@ public class ContentTypeImpl implements ContentType {
         return this.code == other.code;
     }
 
+    @Override
+    public String toString() {
+        return String.format("content type { code: %d }", code);
+    }
+
     private static void check(int code) {
         if (code < 0 || code > 255) {
             throw new IllegalArgumentException();
