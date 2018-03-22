@@ -306,7 +306,8 @@ public class ClientHandshaker extends AbstractHandshaker {
         byte[] content;
 
         if (tlsPlaintext.containsApplicationData()) {
-            TLSInnerPlaintext tlsInnerPlaintext = parser.parseTLSInnerPlaintext(decrypt(tlsPlaintext));
+            TLSInnerPlaintext tlsInnerPlaintext = parser.parseTLSInnerPlaintext(
+                    decrypt(tlsPlaintext));
             type = tlsInnerPlaintext.getType();
             content = tlsInnerPlaintext.getContent();
         } else {
@@ -383,9 +384,7 @@ public class ClientHandshaker extends AbstractHandshaker {
         context.handshakeDecryptor.start();
         context.handshakeDecryptor.updateAAD(additional_data);
         context.handshakeDecryptor.update(ciphertext);
-        byte[] plaintext = context.handshakeDecryptor.finish();
-
-        return factory.parser().parseTLSInnerPlaintext(plaintext).getContent();
+        return context.handshakeDecryptor.finish();
     }
 
     // TODO: ApplicationDataChannel has the same method
