@@ -54,6 +54,11 @@ public abstract class SupportedVersionsImpl implements SupportedVersions {
         public byte[] encoding() throws IOException {
             return selected_version.encoding();
         }
+
+        @Override
+        public String toString() {
+            return String.format("SupportedVersion { ServerHello, selected_version: %s }", selected_version);
+        }
         
     }
 }
