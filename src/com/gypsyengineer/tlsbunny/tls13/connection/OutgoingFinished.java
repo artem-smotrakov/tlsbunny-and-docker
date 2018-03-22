@@ -81,7 +81,7 @@ public class OutgoingFinished extends AbstractAction {
     private TLSPlaintext[] encrypt(TLSInnerPlaintext message) throws Exception {
         return factory.createTLSPlaintexts(ContentType.application_data,
                 ProtocolVersion.TLSv12,
-                context.handshakeEncryptor.encrypt(message.encoding()));
+                context.handshakeEncryptor.update(message.encoding()));
     }
 
 }

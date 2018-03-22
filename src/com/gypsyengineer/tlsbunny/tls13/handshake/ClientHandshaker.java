@@ -355,7 +355,7 @@ public class ClientHandshaker extends AbstractHandshaker {
 
     TLSInnerPlaintext decrypt(TLSPlaintext tlsPlaintext) throws Exception {
         return parser.parseTLSInnerPlaintext(
-                context.handshakeDecryptor.decrypt(tlsPlaintext.getFragment()));
+                context.handshakeDecryptor.decrypt(tlsPlaintext));
     }
 
     TLSPlaintext[] encrypt(Handshake message) throws Exception {
@@ -365,7 +365,7 @@ public class ClientHandshaker extends AbstractHandshaker {
     private TLSPlaintext[] encrypt(TLSInnerPlaintext message) throws Exception {
         return factory.createTLSPlaintexts(ContentType.application_data,
                 ProtocolVersion.TLSv12,
-                context.handshakeEncryptor.encrypt(message.encoding()));
+                context.handshakeEncryptor.update(message.encoding()));
     }
 
     @Override
@@ -419,8 +419,7 @@ public class ClientHandshaker extends AbstractHandshaker {
         }
 
         TLSInnerPlaintext tlsInnerPlaintext = parser.parseTLSInnerPlaintext(
-                applicationData.decrypt(
-                        parser.parseTLSPlaintext(buffer).getFragment()));
+                applicationData.decrypt(parser.parseTLSPlaintext(buffer)));
 
         if (tlsInnerPlaintext.containsHandshake()) {
             handshake = parser.parseHandshake(tlsInnerPlaintext.getContent());

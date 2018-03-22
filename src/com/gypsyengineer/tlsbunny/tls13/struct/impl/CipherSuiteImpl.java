@@ -26,25 +26,25 @@ public class CipherSuiteImpl implements CipherSuite {
     }
 
     @Override
-    public AEAD.Cipher cipher() {
+    public AEAD.Method cipher() {
         if (first != 0x13) {
-            return AEAD.Cipher.UNKNOWN;
+            return AEAD.Method.UNKNOWN;
         }
         
         switch (second) {
             case 0x01:
-                return AEAD.Cipher.AES_128_GCM;
+                return AEAD.Method.AES_128_GCM;
             case 0x02:
-                return AEAD.Cipher.AES_256_GCM;
+                return AEAD.Method.AES_256_GCM;
             case 0x03:
-                return AEAD.Cipher.CHACHA20_POLY1305;
+                return AEAD.Method.CHACHA20_POLY1305;
             case 0x04:
-                return AEAD.Cipher.AES_128_CCM;
+                return AEAD.Method.AES_128_CCM;
             case 0x05:
-                return AEAD.Cipher.AES_128_CCM_8;
+                return AEAD.Method.AES_128_CCM_8;
         }
         
-        return AEAD.Cipher.UNKNOWN;
+        return AEAD.Method.UNKNOWN;
     }
     
     @Override

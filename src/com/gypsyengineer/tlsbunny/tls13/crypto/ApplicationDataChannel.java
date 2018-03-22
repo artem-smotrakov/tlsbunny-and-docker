@@ -1,13 +1,18 @@
 package com.gypsyengineer.tlsbunny.tls13.crypto;
 
-import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
-import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
-import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
+import com.gypsyengineer.tlsbunny.tls.UInt16;
+import com.gypsyengineer.tlsbunny.tls13.struct.*;
+
 import static com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext.NO_PADDING;
-import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
+
 import com.gypsyengineer.tlsbunny.utils.Connection;
+import com.gypsyengineer.tlsbunny.utils.Utils;
+
+import java.io.IOException;
 
 public class ApplicationDataChannel {
+
+    public static final int TAG_LENGTH = 16;
 
     private final AEAD encryptor;
     private final AEAD decryptor;
@@ -29,35 +34,63 @@ public class ApplicationDataChannel {
             // TODO: is it correct?
             return bytes;
         }
-        TLSPlaintext tlsPlaintext = factory.parser().parseTLSPlaintext(bytes);
+        TLSPlaintext tlsCiphertext = factory.parser().parseTLSPlaintext(bytes);
 
-        if (!tlsPlaintext.containsApplicationData()) {
+        if (!tlsCiphertext.containsApplicationData()) {
             throw new RuntimeException();
         }
 
-        return decrypt(tlsPlaintext.getFragment());
+        return decrypt(tlsCiphertext.getFragment(), getAdditionalData(tlsCiphertext));
     }
 
     public void send(byte[] data) throws Exception {
         TLSPlaintext[] tlsPlaintexts = factory.createTLSPlaintexts(ContentType.application_data,
                 ProtocolVersion.TLSv12,
-                encrypt(factory.createTLSInnerPlaintext(ContentType.application_data, data, NO_PADDING).encoding()));
+                encrypt(data));
 
         for (TLSPlaintext tlsPlaintext : tlsPlaintexts) {
             connection.send(tlsPlaintext.encoding());
         }
     }
 
-    public byte[] decrypt(byte[] ciphertext) throws Exception {
-        return factory.parser().parseTLSInnerPlaintext(
-                decryptor.decrypt(ciphertext)).getContent();
+    public byte[] decrypt(TLSPlaintext tlsCiphertext) throws Exception {
+        return decrypt(tlsCiphertext.getFragment(), getAdditionalData(tlsCiphertext));
     }
 
-    public byte[] encrypt(byte[] plaintext) throws Exception {
-        return encryptor.encrypt(factory.createTLSInnerPlaintext(ContentType.application_data, plaintext, NO_PADDING).encoding());
+    public byte[] decrypt(byte[] ciphertext, byte[] additional_data) throws Exception {
+        decryptor.start();
+        decryptor.update(ciphertext);
+        decryptor.updateAAD(additional_data);
+        byte[] plaintext = decryptor.finish();
+
+        return factory.parser().parseTLSInnerPlaintext(plaintext).getContent();
+    }
+
+    public byte[] encrypt(byte[] data) throws Exception {
+        TLSInnerPlaintext tlsInnerPlaintext = factory.createTLSInnerPlaintext(
+                ContentType.application_data, data, NO_PADDING);
+        byte[] plaintext = tlsInnerPlaintext.encoding();
+
+        encryptor.start();
+        encryptor.update(plaintext);
+        encryptor.updateAAD(getAdditionalData(
+                ContentType.application_data,
+                ProtocolVersion.TLSv12,
+                new UInt16(plaintext.length + TAG_LENGTH)));
+
+        return encryptor.finish();
     }
 
     public boolean isAlive() {
         return connection.isAlive();
     }
+
+    private byte[] getAdditionalData(ContentType type, ProtocolVersion version, UInt16 length) throws IOException {
+        return Utils.concatenate(type.encoding(), version.encoding(), length.encoding());
+    }
+
+    private byte[] getAdditionalData(TLSPlaintext tlsPlaintext) throws IOException {
+        return getAdditionalData(tlsPlaintext.getType(), tlsPlaintext.getLegacyRecordVersion(), tlsPlaintext.getFragmentLength());
+    }
+
 }

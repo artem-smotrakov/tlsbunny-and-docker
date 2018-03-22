@@ -332,13 +332,13 @@ public class ClientHandshakerTest {
         // read NewSessionTicket
         applicationData.decrypt(
                 factory.parser()
-                        .parseTLSPlaintext(NEW_SESSION_TICKET_CIPHERTEXT).getFragment());
+                        .parseTLSPlaintext(NEW_SESSION_TICKET_CIPHERTEXT));
 
         assertArrayEquals(
                 APPLICATION_DATA_PAYLOAD,
                 applicationData.decrypt(
                         factory.parser().parseTLSPlaintext(
-                                SERVER_APPLICATION_DATA_CIPHERTEXT).getFragment()));
+                                SERVER_APPLICATION_DATA_CIPHERTEXT)));
 
         System.out.println("Holy cow! The test passed!");
     }

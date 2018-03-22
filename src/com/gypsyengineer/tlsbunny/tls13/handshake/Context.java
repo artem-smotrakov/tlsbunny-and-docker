@@ -258,16 +258,4 @@ public class Context {
         return list.toArray(new Handshake[list.size()]);
     }
 
-    public TLSInnerPlaintext decryptApplicationData(TLSPlaintext tlsPlaintext)
-            throws Exception {
-
-        return factory.parser().parseTLSInnerPlaintext(
-                applicationDataDecryptor.decrypt(tlsPlaintext.getFragment()));
-    }
-
-    public byte[] encryptApplicationData(byte[] plaintext) throws Exception {
-        return applicationDataEnctyptor.encrypt(
-                factory.createTLSInnerPlaintext(
-                        ContentType.application_data, plaintext, NO_PADDING).encoding());
-    }
 }

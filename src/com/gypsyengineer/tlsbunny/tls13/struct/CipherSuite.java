@@ -14,7 +14,7 @@ public interface CipherSuite extends Struct {
     CipherSuite TLS_AES_256_GCM_SHA384 = StructFactory.getDefault().createCipherSuite(0x13, 0x02);
     CipherSuite TLS_CHACHA20_POLY1305_SHA256 = StructFactory.getDefault().createCipherSuite(0x13, 0x03);
 
-    AEAD.Cipher cipher();
+    AEAD.Method cipher();
     int getFirst();
     int getSecond();
     String hash();

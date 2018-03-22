@@ -21,7 +21,7 @@ public class IncomingFinished extends AbstractReceivingAction {
         }
 
         TLSInnerPlaintext tlsInnerPlaintext = factory.parser().parseTLSInnerPlaintext(
-                context.handshakeDecryptor.decrypt(tlsPlaintext.getFragment()));
+                context.handshakeDecryptor.decrypt(tlsPlaintext));
 
         if (!tlsInnerPlaintext.containsHandshake()) {
             throw new IOException("expected a handshake message");

@@ -1,11 +1,13 @@
 package com.gypsyengineer.tlsbunny.tls13.crypto;
 
+import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
+
 import java.security.NoSuchAlgorithmException;
 import javax.crypto.NoSuchPaddingException;
 
 public interface AEAD {
 
-    public static enum Cipher {
+    public static enum Method {
         AES_128_GCM, AES_256_GCM, CHACHA20_POLY1305, AES_128_CCM, AES_128_CCM_8,
         UNKNOWN
     }
@@ -19,11 +21,15 @@ public interface AEAD {
     
     int getKeyLength();
     int getIvLength();
+
+    void start() throws Exception;
+    byte[] update(byte[] data) throws Exception;
+    void updateAAD(byte[] data) throws Exception;
+    byte[] finish() throws Exception;
+
+    byte[] decrypt(TLSPlaintext tlsCiphertext) throws Exception;
     
-    byte[] encrypt(byte[] plaintext) throws Exception ;
-    byte[] decrypt(byte[] ciphertext) throws Exception;
-    
-    public static AEAD createEncryptor(Cipher cipher, byte[] key, byte[] iv) 
+    static AEAD createEncryptor(Method cipher, byte[] key, byte[] iv)
             throws NoSuchAlgorithmException, NoSuchPaddingException {
         
         switch (cipher) {
@@ -39,7 +45,7 @@ public interface AEAD {
         throw new IllegalArgumentException();
     }
     
-    public static AEAD createDecryptor(Cipher cipher, byte[] key, byte[] iv) 
+    static AEAD createDecryptor(Method cipher, byte[] key, byte[] iv)
             throws NoSuchAlgorithmException, NoSuchPaddingException {
         
         switch (cipher) {

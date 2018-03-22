@@ -16,8 +16,7 @@ public class IncomingNewSessionTicket extends AbstractReceivingAction {
         }
 
         TLSInnerPlaintext tlsInnerPlaintext = factory.parser().parseTLSInnerPlaintext(
-                context.applicationDataDecryptor.decrypt(
-                        tlsPlaintext.getFragment()));
+                context.applicationDataDecryptor.decrypt(tlsPlaintext));
 
         if (!tlsInnerPlaintext.containsHandshake()) {
             return false;

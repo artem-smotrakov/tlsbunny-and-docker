@@ -36,12 +36,7 @@ public abstract class AbstractAEAD implements AEAD {
     }
 
     @Override
-    public byte[] encrypt(byte[] plaintext) throws Exception {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public byte[] decrypt(byte[] ciphertext) throws Exception {
+    public byte[] update(byte[] plaintext) throws Exception {
         throw new UnsupportedOperationException();
     }
 
