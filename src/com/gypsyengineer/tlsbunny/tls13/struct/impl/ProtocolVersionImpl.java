@@ -56,5 +56,10 @@ public class ProtocolVersionImpl implements ProtocolVersion {
             throw new IllegalArgumentException();
         }
     }
+
+    @Override
+    public String toString() {
+        return String.format("0x%s%s", Integer.toHexString(major), Integer.toHexString(minor));
+    }
     
 }
