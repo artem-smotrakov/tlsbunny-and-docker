@@ -28,6 +28,7 @@ public interface StructParser {
     SignatureScheme parseSignatureScheme(ByteBuffer buffer);
     SignatureSchemeList parseSignatureSchemeList(ByteBuffer buffer);
     SupportedVersions.ClientHello parseSupportedVersionsClientHello(ByteBuffer buffer);
+    SupportedVersions.ServerHello parseSupportedVersionsServerHello(ByteBuffer buffer);
     CertificateEntry.X509 parseX509CertificateEntry(ByteBuffer buffer);
     CertificateEntry.RawPublicKey parseRawPublicKeyCertificateEntry(ByteBuffer buffer);
     NamedGroupList parseNamedGroupList(ByteBuffer buffer);
@@ -120,6 +121,10 @@ public interface StructParser {
 
     default SupportedVersions.ClientHello parseSupportedVersionsClientHello(byte[] bytes) {
         return parseSupportedVersionsClientHello(ByteBuffer.wrap(bytes));
+    }
+
+    default SupportedVersions.ServerHello parseSupportedVersionsServerHello(byte[] bytes) {
+        return parseSupportedVersionsServerHello(ByteBuffer.wrap(bytes));
     }
 
     default CertificateEntry.X509 parseX509CertificateEntry(byte[] bytes) {

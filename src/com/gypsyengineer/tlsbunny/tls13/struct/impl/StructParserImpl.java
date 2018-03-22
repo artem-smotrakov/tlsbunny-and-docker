@@ -265,6 +265,11 @@ public class StructParserImpl implements StructParser {
     }
 
     @Override
+    public SupportedVersions.ServerHello parseSupportedVersionsServerHello(ByteBuffer buffer) {
+        return new SupportedVersionsImpl.ServerHelloImpl(parseProtocolVersion(buffer));
+    }
+
+    @Override
     public CertificateEntry.X509 parseX509CertificateEntry(ByteBuffer buffer) {
         return new CertificateEntryImpl.X509Impl(
                     Vector.parseOpaqueVector(buffer, CertificateEntry.X509.LENGTH_BYTES),
