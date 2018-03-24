@@ -23,52 +23,46 @@ public class OutgoingFinished extends AbstractAction {
     }
 
     @Override
-    public Action run() {
-        try {
-            Finished finished = createFinished();
-            Handshake handshake = toHandshake(finished);
-            context.setClientFinished(handshake);
+    public Action run() throws Exception {
+        Finished finished = createFinished();
+        Handshake handshake = toHandshake(finished);
+        context.setClientFinished(handshake);
 
-            context.resumption_master_secret = hkdf.deriveSecret(
-                    context.master_secret,
-                    Context.res_master,
-                    context.allMessages());
-            context.client_application_write_key = hkdf.expandLabel(
-                    context.client_application_traffic_secret_0,
-                    Context.key,
-                    ZERO_HASH_VALUE,
-                    suite.keyLength());
-            context.client_application_write_iv = hkdf.expandLabel(
-                    context.client_application_traffic_secret_0,
-                    Context.iv,
-                    ZERO_HASH_VALUE,
-                    suite.ivLength());
-            context.server_application_write_key = hkdf.expandLabel(
-                    context.server_application_traffic_secret_0,
-                    Context.key,
-                    ZERO_HASH_VALUE,
-                    suite.keyLength());
-            context.server_application_write_iv = hkdf.expandLabel(
-                    context.server_application_traffic_secret_0,
-                    Context.iv,
-                    ZERO_HASH_VALUE,
-                    suite.ivLength());
+        context.resumption_master_secret = hkdf.deriveSecret(
+                context.master_secret,
+                Context.res_master,
+                context.allMessages());
+        context.client_application_write_key = hkdf.expandLabel(
+                context.client_application_traffic_secret_0,
+                Context.key,
+                ZERO_HASH_VALUE,
+                suite.keyLength());
+        context.client_application_write_iv = hkdf.expandLabel(
+                context.client_application_traffic_secret_0,
+                Context.iv,
+                ZERO_HASH_VALUE,
+                suite.ivLength());
+        context.server_application_write_key = hkdf.expandLabel(
+                context.server_application_traffic_secret_0,
+                Context.key,
+                ZERO_HASH_VALUE,
+                suite.keyLength());
+        context.server_application_write_iv = hkdf.expandLabel(
+                context.server_application_traffic_secret_0,
+                Context.iv,
+                ZERO_HASH_VALUE,
+                suite.ivLength());
 
-            connection.send(encrypt(handshake));
+        connection.send(encrypt(handshake));
 
-            context.applicationDataEnctyptor = AEAD.createEncryptor(
-                    suite.cipher(),
-                    context.client_application_write_key,
-                    context.client_application_write_iv);
-            context.applicationDataDecryptor = AEAD.createDecryptor(
-                    suite.cipher(),
-                    context.server_application_write_key,
-                    context.server_application_write_iv);
-
-            succeeded = true;
-        } catch (Exception e) {
-            succeeded = false;
-        }
+        context.applicationDataEnctyptor = AEAD.createEncryptor(
+                suite.cipher(),
+                context.client_application_write_key,
+                context.client_application_write_iv);
+        context.applicationDataDecryptor = AEAD.createDecryptor(
+                suite.cipher(),
+                context.server_application_write_key,
+                context.server_application_write_iv);
 
         return this;
     }

@@ -33,21 +33,16 @@ public class OutgoingApplicationData extends AbstractAction {
     }
 
     @Override
-    public Action run() {
-        try {
-            TLSPlaintext[] tlsPlaintexts = factory.createTLSPlaintexts(
-                    ContentType.application_data,
-                    ProtocolVersion.TLSv12,
-                    encrypt(data));
+    public Action run() throws Exception {
+        TLSPlaintext[] tlsPlaintexts = factory.createTLSPlaintexts(
+                ContentType.application_data,
+                ProtocolVersion.TLSv12,
+                encrypt(data));
 
-            for (TLSPlaintext tlsPlaintext : tlsPlaintexts) {
-                connection.send(tlsPlaintext.encoding());
-            }
-
-            succeeded = true;
-        } catch (Exception e) {
-            succeeded = false;
+        for (TLSPlaintext tlsPlaintext : tlsPlaintexts) {
+            connection.send(tlsPlaintext.encoding());
         }
+
 
         return this;
     }

@@ -14,7 +14,7 @@ public class IncomingEncryptedExtensions extends AbstractReceivingAction {
     }
 
     @Override
-    boolean runImpl(ByteBuffer buffer) throws Exception {
+    void runImpl(ByteBuffer buffer) throws Exception {
         TLSPlaintext tlsPlaintext = factory.parser().parseTLSPlaintext(buffer);
         if (!tlsPlaintext.containsApplicationData()) {
             throw new IOException("expected a TLSCiphertext");
@@ -34,13 +34,11 @@ public class IncomingEncryptedExtensions extends AbstractReceivingAction {
             throw new IOException("expected a EncryptedExtensions message");
         }
 
-        return processEncryptedExtensions(handshake);
+        processEncryptedExtensions(handshake);
     }
 
-    private boolean processEncryptedExtensions(Handshake handshake) {
+    private void processEncryptedExtensions(Handshake handshake) {
         factory.parser().parseEncryptedExtensions(handshake.getBody());
         context.setEncryptedExtensions(handshake);
-
-        return true;
     }
 }

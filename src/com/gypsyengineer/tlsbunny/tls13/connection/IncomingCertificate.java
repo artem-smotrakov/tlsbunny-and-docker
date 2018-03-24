@@ -14,7 +14,7 @@ public class IncomingCertificate extends AbstractReceivingAction {
     }
 
     @Override
-    boolean runImpl(ByteBuffer buffer) throws Exception {
+    void runImpl(ByteBuffer buffer) throws Exception {
         TLSPlaintext tlsPlaintext = factory.parser().parseTLSPlaintext(buffer);
         if (!tlsPlaintext.containsApplicationData()) {
             throw new IOException("expected a TLSCiphertext");
@@ -34,15 +34,13 @@ public class IncomingCertificate extends AbstractReceivingAction {
             throw new IOException("expected a Certificate message");
         }
 
-        return processCertificate(handshake);
+        processCertificate(handshake);
     }
 
-    private boolean processCertificate(Handshake handshake) {
+    private void processCertificate(Handshake handshake) {
         factory.parser().parseCertificate(
                 handshake.getBody(),
                 buf -> factory.parser().parseX509CertificateEntry(buf));
         context.setServerCertificate(handshake);
-
-        return true;
     }
 }

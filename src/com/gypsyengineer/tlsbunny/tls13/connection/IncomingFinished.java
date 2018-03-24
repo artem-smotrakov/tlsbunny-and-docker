@@ -21,7 +21,7 @@ public class IncomingFinished extends AbstractReceivingAction {
     }
 
     @Override
-    boolean runImpl(ByteBuffer buffer) throws Exception {
+    void runImpl(ByteBuffer buffer) throws Exception {
         TLSPlaintext tlsPlaintext = factory.parser().parseTLSPlaintext(buffer);
         if (!tlsPlaintext.containsApplicationData()) {
             throw new IOException("expected a TLSCiphertext");
@@ -41,10 +41,10 @@ public class IncomingFinished extends AbstractReceivingAction {
             throw new IOException("expected a Finished message");
         }
 
-        return processFinished(handshake);
+        processFinished(handshake);
     }
 
-    private boolean processFinished(Handshake handshake)
+    private void processFinished(Handshake handshake)
             throws NoSuchAlgorithmException, IOException, InvalidKeyException {
 
         Finished message = factory.parser().parseFinished(
@@ -80,7 +80,5 @@ public class IncomingFinished extends AbstractReceivingAction {
                 context.master_secret,
                 context.exp_master,
                 context.allMessages());
-
-        return true;
     }
 }

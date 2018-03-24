@@ -14,7 +14,7 @@ public class IncomingNewSessionTicket extends AbstractReceivingAction {
     }
 
     @Override
-    boolean runImpl(ByteBuffer buffer) throws Exception {
+    void runImpl(ByteBuffer buffer) throws Exception {
         TLSPlaintext tlsPlaintext = factory.parser().parseTLSPlaintext(buffer);
         if (!tlsPlaintext.containsApplicationData()) {
             throw new IOException("expected a TLSCiphertext");
@@ -24,18 +24,17 @@ public class IncomingNewSessionTicket extends AbstractReceivingAction {
                 context.applicationDataDecryptor.decrypt(tlsPlaintext));
 
         if (!tlsInnerPlaintext.containsHandshake()) {
-            return false;
+            throw new IOException("TLSInnerPlaintext should contains a handshake message");
         }
 
         Handshake handshake = factory.parser().parseHandshake(
                 tlsInnerPlaintext.getContent());
 
         if (!handshake.containsNewSessionTicket()) {
-            return false;
+            // TODO: throw an exception here
+            return;
         }
 
         // TODO: handle NewSessionTicket
-
-        return true;
     }
 }

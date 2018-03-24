@@ -1,10 +1,9 @@
 package com.gypsyengineer.tlsbunny.tls13.connection;
 
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AnyAction extends AbstractReceivingAction {
+public class AnyAction extends AbstractAction {
 
     private List<Action> actions = new ArrayList<>();
 
@@ -15,8 +14,8 @@ public class AnyAction extends AbstractReceivingAction {
     }
 
     @Override
-    boolean runImpl(ByteBuffer buffer) throws Exception {
-        return false;
+    public Action run() throws Exception {
+        return this;
     }
 
     void add(Action action) {

@@ -13,7 +13,7 @@ public class IncomingChangeCipherSpec extends AbstractReceivingAction {
     }
 
     @Override
-    boolean runImpl(ByteBuffer buffer) throws IOException {
+    void runImpl(ByteBuffer buffer) throws IOException {
         TLSPlaintext tlsPlaintext = factory.parser().parseTLSPlaintext(buffer);
         if (!tlsPlaintext.containsChangeCipherSpec()) {
             throw new IOException("expected a change cipher spec message");
@@ -23,8 +23,6 @@ public class IncomingChangeCipherSpec extends AbstractReceivingAction {
         if (!ccs.isValid()) {
             throw new IOException("unexpected content in change_cipher_spec message");
         }
-
-        return true;
     }
 
 }

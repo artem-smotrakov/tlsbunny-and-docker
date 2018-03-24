@@ -19,7 +19,7 @@ public class IncomingServerHello extends AbstractReceivingAction {
     }
 
     @Override
-    boolean runImpl(ByteBuffer buffer) throws Exception {
+    void runImpl(ByteBuffer buffer) throws Exception {
         TLSPlaintext tlsPlaintext = factory.parser().parseTLSPlaintext(buffer);
         if (!tlsPlaintext.containsHandshake()) {
             throw new IOException("expected a handshake message");
@@ -30,10 +30,10 @@ public class IncomingServerHello extends AbstractReceivingAction {
             throw new IOException("expected a ServerHello message");
         }
 
-        return processServerHello(handshake);
+        processServerHello(handshake);
     }
 
-    private boolean processServerHello(Handshake handshake) throws Exception {
+    private void processServerHello(Handshake handshake) throws Exception {
         ServerHello serverHello = factory.parser().parseServerHello(handshake.getBody());
 
         if (!suite.equals(serverHello.getCipherSuite())) {
@@ -128,8 +128,6 @@ public class IncomingServerHello extends AbstractReceivingAction {
                 suite.cipher(),
                 context.server_handshake_write_key,
                 context.server_handshake_write_iv);
-
-        return true;
     }
 
     private KeyShare.ServerHello findKeyShare(ServerHello hello)

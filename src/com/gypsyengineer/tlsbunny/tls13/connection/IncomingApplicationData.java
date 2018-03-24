@@ -4,6 +4,7 @@ import com.gypsyengineer.tlsbunny.tls13.crypto.AEAD;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import static com.gypsyengineer.tlsbunny.utils.Utils.info;
@@ -16,23 +17,20 @@ public class IncomingApplicationData extends AbstractReceivingAction {
     }
 
     @Override
-    boolean runImpl(ByteBuffer buffer) throws Exception {
+    void runImpl(ByteBuffer buffer) throws Exception {
         TLSPlaintext tlsCiphertext = factory.parser().parseTLSPlaintext(buffer);
 
         if (!tlsCiphertext.containsApplicationData()) {
-            throw new RuntimeException();
+            throw new IOException("TLSCiphertext should contains application data");
         }
 
         TLSInnerPlaintext tlsInnerPlaintext = decrypt(tlsCiphertext);
-
         if (!tlsInnerPlaintext.containsApplicationData()) {
-            return false;
+            throw new IOException("TLSInnerPlaintext should contain application data");
         }
 
         byte[] data = tlsInnerPlaintext.getContent();
         info("received data (%d bytes)%n%s", data.length, new String(data));
-
-        return true;
     }
 
     private TLSInnerPlaintext decrypt(TLSPlaintext tlsCiphertext) throws Exception {
