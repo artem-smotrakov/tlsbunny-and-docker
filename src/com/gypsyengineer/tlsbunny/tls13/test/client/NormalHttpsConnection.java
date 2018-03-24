@@ -8,8 +8,8 @@ public class NormalHttpsConnection {
 
     public static void main(String[] args) throws Exception {
         TLSConnection.create()
-                .host("localhost")
-                .port(10101)
+                .target("localhost")
+                .target(10101)
                 .send(new OutgoingClientHello())
                 .expect(new IncomingServerHello())
                 .expect(new IncomingChangeCipherSpec())

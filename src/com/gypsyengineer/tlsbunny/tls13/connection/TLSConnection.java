@@ -47,12 +47,12 @@ public class TLSConnection {
 
     }
 
-    public TLSConnection host(String host) {
+    public TLSConnection target(String host) {
         this.host = host;
         return this;
     }
 
-    public TLSConnection port(int port) {
+    public TLSConnection target(int port) {
         this.port = port;
         return this;
     }
