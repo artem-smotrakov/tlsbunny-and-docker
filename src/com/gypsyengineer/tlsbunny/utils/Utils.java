@@ -2,6 +2,8 @@ package com.gypsyengineer.tlsbunny.utils;
 
 import com.gypsyengineer.tlsbunny.tls.Struct;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -128,6 +130,15 @@ public class Utils {
 
     public static void achtung(String format, Object... values) {
         printf("%s achtung: %s%n", PREFIX, String.format(format, values));
+    }
+
+    public static void achtung(String message, Throwable e) {
+        try (StringWriter sw = new StringWriter(); PrintWriter pw = new PrintWriter(sw)) {
+            e.printStackTrace(pw);
+            achtung("%s:%n%s", message, sw.toString());
+        } catch (IOException ioe) {
+            achtung("%s: (could not print stacktrace: %s)", message, ioe.getMessage());
+        }
     }
 
 }

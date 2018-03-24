@@ -8,8 +8,8 @@ import java.nio.ByteBuffer;
 public class IncomingChangeCipherSpec extends AbstractReceivingAction {
 
     @Override
-    public String description() {
-        return "receive ChangeCipherSpec";
+    public String name() {
+        return "receiving ChangeCipherSpec";
     }
 
     @Override

@@ -6,7 +6,6 @@ import com.gypsyengineer.tlsbunny.tls13.struct.Handshake;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
@@ -16,8 +15,8 @@ import static com.gypsyengineer.tlsbunny.tls13.handshake.Context.ZERO_HASH_VALUE
 public class IncomingFinished extends AbstractReceivingAction {
 
     @Override
-    public String description() {
-        return "receive Finished";
+    public String name() {
+        return "receiving Finished";
     }
 
     @Override

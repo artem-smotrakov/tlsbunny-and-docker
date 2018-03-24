@@ -4,13 +4,12 @@ import com.gypsyengineer.tlsbunny.tls13.struct.Handshake;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
 public class IncomingCertificateVerify extends AbstractReceivingAction {
 
     @Override
-    public String description() {
-        return "receive CertificateVerify";
+    public String name() {
+        return "receiving CertificateVerify";
     }
 
     @Override

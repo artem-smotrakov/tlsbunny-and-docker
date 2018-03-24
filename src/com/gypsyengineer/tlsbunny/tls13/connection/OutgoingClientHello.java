@@ -6,8 +6,8 @@ import java.util.List;
 public class OutgoingClientHello extends AbstractAction {
 
     @Override
-    public String description() {
-        return "send ClientHello";
+    public String name() {
+        return "sending ClientHello";
     }
 
     @Override

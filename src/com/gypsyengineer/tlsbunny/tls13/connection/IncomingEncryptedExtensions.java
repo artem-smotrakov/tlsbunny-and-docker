@@ -4,13 +4,12 @@ import com.gypsyengineer.tlsbunny.tls13.struct.Handshake;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
 public class IncomingEncryptedExtensions extends AbstractReceivingAction {
 
     @Override
-    public String description() {
-        return "receive EncryptedExtensions";
+    public String name() {
+        return "receiving EncryptedExtensions";
     }
 
     @Override

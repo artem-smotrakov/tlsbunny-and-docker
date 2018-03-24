@@ -5,15 +5,14 @@ import com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
 import static com.gypsyengineer.tlsbunny.utils.Utils.info;
 
 public class IncomingApplicationData extends AbstractReceivingAction {
 
     @Override
-    public String description() {
-        return "receive application data";
+    public String name() {
+        return "receiving application data";
     }
 
     @Override

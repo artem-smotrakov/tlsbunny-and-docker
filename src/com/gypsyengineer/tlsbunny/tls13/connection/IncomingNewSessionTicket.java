@@ -4,13 +4,12 @@ import com.gypsyengineer.tlsbunny.tls13.struct.Handshake;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
 public class IncomingNewSessionTicket extends AbstractReceivingAction {
 
     @Override
-    public String description() {
-        return "receive NewSessionTicket";
+    public String name() {
+        return "receiving NewSessionTicket";
     }
 
     @Override

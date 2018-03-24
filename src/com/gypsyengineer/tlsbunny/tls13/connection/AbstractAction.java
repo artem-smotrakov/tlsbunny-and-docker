@@ -25,7 +25,7 @@ public abstract class AbstractAction implements Action {
     Context context;
 
     @Override
-    public String description() {
+    public String name() {
         return "unknown action";
     }
 

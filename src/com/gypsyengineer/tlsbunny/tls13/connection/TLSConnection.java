@@ -110,34 +110,34 @@ public class TLSConnection {
                 switch (holder.type) {
                     case SEND:
                         try {
-                            info(action.description());
+                            info(action.name());
                             action.run();
-                            info("done");
+                            info("done with %s", action.name());
                         } catch (Exception e) {
-                            achtung("could not send: ", e);
+                            achtung("could not send", e);
                             status = Status.COULD_NOT_SEND;
                             return this;
                         }
                         break;
                     case EXPECT:
                         try {
-                            info(action.description());
+                            info("expect %s", action.name());
                             action.run();
-                            info("done");
+                            info("done with %s", action.name());
                         } catch (Exception e) {
-                            achtung("could not receive: ", e);
+                            achtung("could not receive", e);
                             status = Status.UNEXPECTED_MESSAGE;
                             return this;
                         }
                         break;
                     case ALLOW:
                         try {
-                            info("(optional) %s", action.description());
+                            info("try %s", action.name());
                             action.run();
-                            info("done");
+                            info("done with %s", action.name());
                         } catch (Exception e) {
-                            info("could not receive: ", e);
-                            info("skip");
+                            info("failed: %s", e.getMessage());
+                            info("skip %s", action.name());
                         }
                         break;
                     default:

@@ -12,7 +12,7 @@ import com.gypsyengineer.tlsbunny.utils.Connection;
 import java.nio.ByteBuffer;
 
 public interface Action {
-    String description();
+    String name();
     Action set(StructFactory factory);
     Action set(SignatureScheme scheme);
     Action set(NamedGroup group);

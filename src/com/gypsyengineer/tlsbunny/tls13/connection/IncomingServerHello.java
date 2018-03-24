@@ -9,13 +9,12 @@ import static com.gypsyengineer.tlsbunny.utils.Utils.concatenate;
 import static com.gypsyengineer.tlsbunny.utils.Utils.info;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
 public class IncomingServerHello extends AbstractReceivingAction {
 
     @Override
-    public String description() {
-        return "receive ServerHello";
+    public String name() {
+        return "receiving ServerHello";
     }
 
     @Override
