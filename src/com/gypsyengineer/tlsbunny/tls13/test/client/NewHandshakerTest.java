@@ -4,6 +4,8 @@ import com.gypsyengineer.tlsbunny.tls13.connection.*;
 
 public class NewHandshakerTest {
 
+    public static final String HTTP_GET_REQUEST = "GET / HTTP/1.1\n\n";
+
     public static void main(String[] args) throws Exception {
         TLSConnection.create()
                 .host("localhost")
@@ -17,7 +19,7 @@ public class NewHandshakerTest {
                 .expect(new IncomingFinished())
                 .send(new OutgoingFinished())
                 .allow(new IncomingNewSessionTicket())
-                .send(new OutgoingApplicationData())
+                .send(new OutgoingApplicationData(HTTP_GET_REQUEST))
                 .expect(new IncomingApplicationData())
                 .run()
                 .check(new Success());
