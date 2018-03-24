@@ -7,6 +7,7 @@ import com.gypsyengineer.tlsbunny.tls13.handshake.Negotiator;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
 import com.gypsyengineer.tlsbunny.utils.Connection;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 public abstract class AbstractAction implements Action {
 
@@ -16,7 +17,7 @@ public abstract class AbstractAction implements Action {
     boolean succeeded = false;
 
     Connection connection;
-    byte[] data;
+    ByteBuffer buffer;
     StructFactory factory;
     SignatureScheme scheme;
     NamedGroup group;
@@ -68,8 +69,8 @@ public abstract class AbstractAction implements Action {
     }
 
     @Override
-    public Action set(byte[] data) {
-        this.data = data;
+    public Action set(ByteBuffer buffer) {
+        this.buffer = buffer;
         return this;
     }
 
@@ -85,13 +86,8 @@ public abstract class AbstractAction implements Action {
     }
 
     @Override
-    public boolean remaining() {
-        return data != null && data.length > 0;
-    }
-
-    @Override
-    public byte[] data() {
-        return data.clone();
+    public ByteBuffer data() {
+        return buffer;
     }
 
     // helper methods

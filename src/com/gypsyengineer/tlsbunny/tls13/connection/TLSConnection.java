@@ -10,6 +10,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.Connection;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ import java.util.List;
 
 public class TLSConnection {
 
-    private static final byte[] NOTHING = new byte[0];
+    private static final ByteBuffer NOTHING = ByteBuffer.allocate(0);
 
     private enum ActionType { SEND, EXPECT, ALLOW }
 
@@ -89,7 +90,7 @@ public class TLSConnection {
             Context context = new Context();
             context.factory = factory;
             
-            byte[] unprocessed = NOTHING;
+            ByteBuffer buffer = NOTHING;
             loop: for (ActionHolder holder : actions) {
                 Action action = holder.action;
 
@@ -101,11 +102,7 @@ public class TLSConnection {
                 action.set(factory);
                 action.set(hkdf);
                 action.set(connection);
-
-                if (unprocessed.length != 0) {
-                    action.set(unprocessed);
-                    unprocessed = NOTHING;
-                }
+                action.set(buffer);
 
                 action.run();
 
@@ -131,9 +128,7 @@ public class TLSConnection {
                         throw new IllegalStateException();
                 }
 
-                if (action.remaining()) {
-                    unprocessed = action.data();
-                }
+                buffer = action.data();
             }
         }
 
