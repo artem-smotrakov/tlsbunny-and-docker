@@ -1,6 +1,7 @@
 package com.gypsyengineer.tlsbunny.tls13.test.client;
 
 import com.gypsyengineer.tlsbunny.tls13.crypto.ApplicationDataChannel;
+import com.gypsyengineer.tlsbunny.tls13.fuzzer.Fuzzer;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.MutatedStructFactory;
 import com.gypsyengineer.tlsbunny.tls13.handshake.ClientHandshaker;
 import com.gypsyengineer.tlsbunny.tls13.handshake.ECDHENegotiator;
@@ -9,6 +10,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
 import com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.CertificateHolder;
+import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.Connection;
 import com.gypsyengineer.tlsbunny.utils.Output;
 import java.io.IOException;
@@ -19,7 +21,7 @@ import java.util.concurrent.ExecutorService;
  * MutatedClient starts handshaking where it uses mutated messages produced by MutatedStructFactory.
  */
 @Deprecated
-public class MutatedClient implements Runnable {
+public class MutatedClient implements Runnable, Fuzzer<byte[]> {
 
     private static final byte[] HTTP_GET_REQUEST = "GET / HTTP/1.1\n\n".getBytes();
 
@@ -94,25 +96,48 @@ public class MutatedClient implements Runnable {
         }
     }
 
-    public static void runFuzzer(ExecutorService executor,
-            String host, int port,
-            String target, String mode,
-            double minRatio, double maxRatio,
-            int test, int total) {
+    @Override
+    public String getState() {
+        return fuzzer.getState();
+    }
+
+    @Override
+    public void setState(String state) {
+        fuzzer.setState(state);
+    }
+
+    @Override
+    public boolean canFuzz() {
+        return fuzzer.canFuzz();
+    }
+
+    @Override
+    public byte[] fuzz(byte[] bytes) {
+        return fuzzer.fuzz(bytes);
+    }
+
+    @Override
+    public void moveOn() {
+        fuzzer.moveOn();
+    }
+
+    public static MutatedClient create(
+            Config.FuzzerConfig config, String host, int port, int test, int total) {
 
         Output output = new Output();
 
         MutatedStructFactory fuzzer = new MutatedStructFactory(
-                        StructFactory.getDefault(), output, minRatio, maxRatio);
+                StructFactory.getDefault(), output, config.getMinRatio(), config.getMaxRatio());
 
-        fuzzer.setTarget(target);
+        fuzzer.setTarget(config.getTarget());
+        String mode = config.getMode();
         if (!mode.isEmpty()) {
             fuzzer.setMode(mode);
         }
 
         fuzzer.setTest(test);
 
-        executor.submit(new MutatedClient(fuzzer, output, host, port, total));
+        return new MutatedClient(fuzzer, output, host, port, total);
     }
 
     private static void sendApplicationData(

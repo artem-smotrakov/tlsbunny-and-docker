@@ -3,13 +3,16 @@ package com.gypsyengineer.tlsbunny;
 import com.gypsyengineer.tlsbunny.tls13.test.client.MutatedClient;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.Utils;
-import static com.gypsyengineer.tlsbunny.utils.Utils.achtung;
-import static com.gypsyengineer.tlsbunny.utils.Utils.info;
-import static com.gypsyengineer.tlsbunny.utils.Utils.printf;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+
+import static com.gypsyengineer.tlsbunny.utils.Utils.info;
+import static com.gypsyengineer.tlsbunny.utils.Utils.printf;
 
 /**
  * Main entry point.
@@ -58,37 +61,32 @@ public class Main {
             List<Config.FuzzerConfig> fuzzerConfigs = Config.Instance.getFuzzerConfigs();
             info("found %d fuzzer configs", fuzzerConfigs.size());
             for (Config.FuzzerConfig fuzzerConfig : fuzzerConfigs) {
-                switch (fuzzerConfig.getFuzzer()) {
-                    case "MutatedClient":
-                        int total = fuzzerConfig.getTotal();
-                        int parts = fuzzerConfig.getParts();
-                        int testsNumber = total / parts;
-
-                        // TODO: get a start test from a fuzzer config
-                        int startTest = Config.Instance.getStartTest();
-                        while (startTest < testsNumber * parts) {
-                            info("start fuzzer: %s", fuzzerConfig.getFuzzer());
-                            info("      target: %s", fuzzerConfig.getTarget());
-                            info("  first test: %d", startTest);
-                            info(" total tests: %d", testsNumber);
-
-                            MutatedClient.runFuzzer(executor, host, port,
-                                    fuzzerConfig.getTarget(),
-                                    fuzzerConfig.getMode(),
-                                    minRatio, maxRatio,
-                                    startTest, testsNumber);
-                            startTest += testsNumber;
-                        }
-
-                        MutatedClient.runFuzzer(executor, host, port,
-                                fuzzerConfig.getTarget(),
-                                fuzzerConfig.getMode(),
-                                minRatio, maxRatio,
-                                startTest, total % parts);
-                        break;
-                    default:
-                        achtung("Unknown fuzzer: %s", fuzzerConfig.getFuzzer());
+                if (!fuzzerFactories.containsKey(fuzzerConfig.getFuzzer())) {
+                    throw new IllegalArgumentException("unknown fuzzer: " + fuzzerConfig.getFuzzer());
                 }
+
+                FuzzerFactory factory = fuzzerFactories.get(fuzzerConfig.getFuzzer());
+
+                int total = fuzzerConfig.getTotal();
+                int parts = fuzzerConfig.getParts();
+                int testsNumber = total / parts;
+
+                // TODO: get a start test from a fuzzer config
+                int startTest = Config.Instance.getStartTest();
+                while (startTest < testsNumber * parts) {
+                    info("start fuzzer: %s", fuzzerConfig.getFuzzer());
+                    info("      target: %s", fuzzerConfig.getTarget());
+                    info("  first test: %d", startTest);
+                    info(" total tests: %d", testsNumber);
+
+                    executor.submit(
+                            factory.create(fuzzerConfig, host, port, startTest, testsNumber));
+
+                    startTest += testsNumber;
+                }
+
+                executor.submit(
+                        factory.create(fuzzerConfig, host, port, startTest, total % parts));
             }
         } finally {
             executor.shutdown();
@@ -99,4 +97,16 @@ public class Main {
 
         info("phew, we are done!");
     }
+
+    interface FuzzerFactory {
+        Runnable create(Config.FuzzerConfig config, String host, int port, int test, int total);
+    }
+
+    private static final Map<String, FuzzerFactory> fuzzerFactories = new HashMap<>();
+    static {
+        fuzzerFactories.put(
+                "MutatedClient",
+                (config, host, port, test, total) -> MutatedClient.create(config, host, port, test, total));
+    }
+
 }
