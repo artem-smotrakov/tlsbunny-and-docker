@@ -12,6 +12,7 @@ import com.gypsyengineer.tlsbunny.utils.Connection;
 import java.nio.ByteBuffer;
 
 public interface Action {
+    String description();
     Action set(StructFactory factory);
     Action set(SignatureScheme scheme);
     Action set(NamedGroup group);
@@ -21,7 +22,6 @@ public interface Action {
     Action set(Context context);
     Action set(ByteBuffer buffer);
     Action set(Connection connection);
-    Action run();
-    boolean succeeded();
+    Action run() throws Exception;
     ByteBuffer data();
 }

@@ -16,6 +16,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.gypsyengineer.tlsbunny.utils.Utils.info;
+
 public class TLSConnection {
 
     private static final ByteBuffer NOTHING = ByteBuffer.allocate(0);
@@ -94,6 +96,8 @@ public class TLSConnection {
             loop: for (ActionHolder holder : actions) {
                 Action action = holder.action;
 
+                info(action.description());
+
                 action.set(context);
                 action.set(group);
                 action.set(scheme);
@@ -104,28 +108,35 @@ public class TLSConnection {
                 action.set(connection);
                 action.set(buffer);
 
-                action.run();
+                boolean success = false;
+                try {
+                    action.run();
+                    success = true;
+                } catch (Exception e) {
+                    info("exception: ", e);
+                }
 
                 switch (holder.type) {
                     case SEND:
-                        if (!action.succeeded()) {
+                        if (!success) {
                             status = Status.COULD_NOT_SEND;
                             break loop;
                         }
                         break;
                     case EXPECT:
-                        if (!action.succeeded()) {
+                        if (!success) {
                             status = Status.UNEXPECTED_MESSAGE;
                             break loop;
                         }
                         break;
                     case ALLOW:
-                        if (!action.succeeded()) {
+                        if (!success) {
                             // do nothing
                         }
                         break;
                     default:
-                        throw new IllegalStateException();
+                        throw new IllegalStateException(
+                                String.format("unknown action type: %s", holder.type));
                 }
 
                 buffer = action.data();

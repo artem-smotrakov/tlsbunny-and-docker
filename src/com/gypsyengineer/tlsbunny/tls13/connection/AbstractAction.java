@@ -27,6 +27,11 @@ public abstract class AbstractAction implements Action {
     Context context;
 
     @Override
+    public String description() {
+        return "unknown action";
+    }
+
+    @Override
     public Action set(StructFactory factory) {
         this.factory = factory;
         return this;
@@ -78,11 +83,6 @@ public abstract class AbstractAction implements Action {
     public Action set(Connection connection) {
         this.connection = connection;
         return this;
-    }
-
-    @Override
-    public boolean succeeded() {
-        return succeeded;
     }
 
     @Override
