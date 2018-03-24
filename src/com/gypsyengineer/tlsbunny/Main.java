@@ -17,6 +17,7 @@ import static com.gypsyengineer.tlsbunny.utils.Utils.printf;
 /**
  * Main entry point.
  */
+@Deprecated
 public class Main {
 
     private static void help() {

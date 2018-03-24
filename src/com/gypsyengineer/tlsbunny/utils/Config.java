@@ -13,6 +13,7 @@ import java.util.Objects;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
+@Deprecated
 public enum Config {
 
     // singleton
