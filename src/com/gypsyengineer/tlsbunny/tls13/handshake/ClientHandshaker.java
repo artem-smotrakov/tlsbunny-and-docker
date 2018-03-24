@@ -444,8 +444,8 @@ public class ClientHandshaker extends AbstractHandshaker {
             return NO_APPLICATION_DATA_CHANNEL;
         }
 
-        TLSInnerPlaintext tlsInnerPlaintext = parser.parseTLSInnerPlaintext(
-                applicationData.decrypt(parser.parseTLSPlaintext(buffer)));
+        TLSInnerPlaintext tlsInnerPlaintext =
+                applicationData.decrypt(parser.parseTLSPlaintext(buffer));
 
         if (tlsInnerPlaintext.containsHandshake()) {
             handshake = parser.parseHandshake(tlsInnerPlaintext.getContent());

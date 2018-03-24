@@ -38,7 +38,8 @@ public class ApplicationDataChannel {
             throw new RuntimeException();
         }
 
-        return decrypt(tlsCiphertext.getFragment(), AEAD.getAdditionalData(tlsCiphertext));
+        return decrypt(tlsCiphertext.getFragment(), AEAD.getAdditionalData(tlsCiphertext))
+                .getContent();
     }
 
     public void send(byte[] data) throws Exception {
@@ -52,17 +53,19 @@ public class ApplicationDataChannel {
         }
     }
 
-    public byte[] decrypt(TLSPlaintext tlsCiphertext) throws Exception {
+    public TLSInnerPlaintext decrypt(TLSPlaintext tlsCiphertext) throws Exception {
         return decrypt(tlsCiphertext.getFragment(), AEAD.getAdditionalData(tlsCiphertext));
     }
 
-    private byte[] decrypt(byte[] ciphertext, byte[] additional_data) throws Exception {
+    private TLSInnerPlaintext decrypt(byte[] ciphertext, byte[] additional_data)
+            throws Exception {
+
         decryptor.start();
         decryptor.updateAAD(additional_data);
         decryptor.update(ciphertext);
         byte[] plaintext = decryptor.finish();
 
-        return factory.parser().parseTLSInnerPlaintext(plaintext).getContent();
+        return factory.parser().parseTLSInnerPlaintext(plaintext);
     }
 
     public byte[] encrypt(byte[] data) throws Exception {
