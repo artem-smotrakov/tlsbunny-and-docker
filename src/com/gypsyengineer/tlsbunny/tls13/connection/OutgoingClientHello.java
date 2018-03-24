@@ -1,6 +1,8 @@
 package com.gypsyengineer.tlsbunny.tls13.connection;
 
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
+
+import java.io.IOException;
 import java.util.List;
 
 public class OutgoingClientHello extends AbstractAction {
@@ -30,8 +32,15 @@ public class OutgoingClientHello extends AbstractAction {
                 ProtocolVersion.TLSv10,
                 handshake.encoding()));
 
-        // TODO: check if context already has the first client hello message
-        context.setFirstClientHello(handshake);
+        if (context.hasFirstClientHello() && context.hasSecondClientHello()) {
+            throw new IOException("already received two ClientHello messages");
+        }
+
+        if (context.hasFirstClientHello()) {
+            context.setSecondClientHello(handshake);
+        } else {
+            context.setFirstClientHello(handshake);
+        }
 
         return this;
     }
