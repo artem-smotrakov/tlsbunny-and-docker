@@ -18,6 +18,7 @@ import java.util.concurrent.ExecutorService;
  * This is a fuzzy TLS client which wraps a MutatedStructFactory instance.
  * MutatedClient starts handshaking where it uses mutated messages produced by MutatedStructFactory.
  */
+@Deprecated
 public class MutatedClient implements Runnable {
 
     private static final byte[] HTTP_GET_REQUEST = "GET / HTTP/1.1\n\n".getBytes();

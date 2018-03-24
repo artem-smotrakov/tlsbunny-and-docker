@@ -14,6 +14,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.ServerHello;
 import com.gypsyengineer.tlsbunny.utils.Connection;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
 
+@Deprecated
 public interface Handshaker {
     
     ClientHello createClientHello() throws Exception;

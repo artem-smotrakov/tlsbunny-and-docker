@@ -2,7 +2,7 @@ package com.gypsyengineer.tlsbunny.tls13.test.client;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.*;
 
-public class NewHandshakerTest {
+public class NormalHttpsConnection {
 
     public static final String HTTP_GET_REQUEST = "GET / HTTP/1.1\n\n";
 

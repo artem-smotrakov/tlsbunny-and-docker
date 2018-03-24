@@ -26,6 +26,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
 import com.gypsyengineer.tlsbunny.utils.Connection;
 import java.io.IOException;
 
+@Deprecated
 public abstract class AbstractHandshaker implements Handshaker {
 
     static final byte[] ZERO_HASH_VALUE = new byte[0];

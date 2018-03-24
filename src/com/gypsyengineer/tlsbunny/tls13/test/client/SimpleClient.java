@@ -11,6 +11,7 @@ import com.gypsyengineer.tlsbunny.utils.CertificateHolder;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.Connection;
 
+@Deprecated
 public class SimpleClient {
 
     public static final byte[] HTTP_GET_REQUEST = "GET / HTTP/1.1\n\n".getBytes();

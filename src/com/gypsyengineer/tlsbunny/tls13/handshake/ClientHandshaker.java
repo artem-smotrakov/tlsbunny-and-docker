@@ -41,6 +41,7 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Arrays;
 import java.util.List;
 
+@Deprecated
 public class ClientHandshaker extends AbstractHandshaker {
 
     private final CertificateHolder clientCertificate;
