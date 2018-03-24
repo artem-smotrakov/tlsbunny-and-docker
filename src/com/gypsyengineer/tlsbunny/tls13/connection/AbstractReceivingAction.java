@@ -16,11 +16,18 @@ public abstract class AbstractReceivingAction extends AbstractAction {
             }
         }
 
-        runImpl(buffer);
+        int index = buffer.position();
+        try {
+            runImpl();
+        } catch (Exception e) {
+            // restore data before re-throwing
+            buffer.position(index);
+            throw e;
+        }
 
         return this;
     }
 
-    abstract void runImpl(ByteBuffer buffer) throws Exception;
+    abstract void runImpl() throws Exception;
 
 }

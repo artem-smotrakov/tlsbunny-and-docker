@@ -15,10 +15,6 @@ public class OutgoingApplicationData extends AbstractAction {
 
     private byte[] data = NOTHING;
 
-    public OutgoingApplicationData() {
-        this(NOTHING);
-    }
-
     public OutgoingApplicationData(byte[] data) {
         this.data = data;
     }

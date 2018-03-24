@@ -13,7 +13,7 @@ public class IncomingChangeCipherSpec extends AbstractReceivingAction {
     }
 
     @Override
-    void runImpl(ByteBuffer buffer) throws IOException {
+    void runImpl() throws IOException {
         TLSPlaintext tlsPlaintext = factory.parser().parseTLSPlaintext(buffer);
         if (!tlsPlaintext.containsChangeCipherSpec()) {
             throw new IOException("expected a change cipher spec message");

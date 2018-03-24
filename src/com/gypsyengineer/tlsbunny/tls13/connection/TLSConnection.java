@@ -16,6 +16,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.gypsyengineer.tlsbunny.utils.Utils.achtung;
 import static com.gypsyengineer.tlsbunny.utils.Utils.info;
 
 public class TLSConnection {
@@ -96,8 +97,6 @@ public class TLSConnection {
             loop: for (ActionHolder holder : actions) {
                 Action action = holder.action;
 
-                info(action.description());
-
                 action.set(context);
                 action.set(group);
                 action.set(scheme);
@@ -108,30 +107,37 @@ public class TLSConnection {
                 action.set(connection);
                 action.set(buffer);
 
-                boolean success = false;
-                try {
-                    action.run();
-                    success = true;
-                } catch (Exception e) {
-                    info("exception: ", e);
-                }
-
                 switch (holder.type) {
                     case SEND:
-                        if (!success) {
+                        try {
+                            info(action.description());
+                            action.run();
+                            info("done");
+                        } catch (Exception e) {
+                            achtung("could not send: ", e);
                             status = Status.COULD_NOT_SEND;
-                            break loop;
+                            return this;
                         }
                         break;
                     case EXPECT:
-                        if (!success) {
+                        try {
+                            info(action.description());
+                            action.run();
+                            info("done");
+                        } catch (Exception e) {
+                            achtung("could not receive: ", e);
                             status = Status.UNEXPECTED_MESSAGE;
-                            break loop;
+                            return this;
                         }
                         break;
                     case ALLOW:
-                        if (!success) {
-                            // do nothing
+                        try {
+                            info("(optional) %s", action.description());
+                            action.run();
+                            info("done");
+                        } catch (Exception e) {
+                            info("could not receive: ", e);
+                            info("skip");
                         }
                         break;
                     default:

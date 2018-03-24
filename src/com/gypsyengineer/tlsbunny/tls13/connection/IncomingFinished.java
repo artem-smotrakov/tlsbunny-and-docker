@@ -21,7 +21,7 @@ public class IncomingFinished extends AbstractReceivingAction {
     }
 
     @Override
-    void runImpl(ByteBuffer buffer) throws Exception {
+    void runImpl() throws Exception {
         TLSPlaintext tlsPlaintext = factory.parser().parseTLSPlaintext(buffer);
         if (!tlsPlaintext.containsApplicationData()) {
             throw new IOException("expected a TLSCiphertext");

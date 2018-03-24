@@ -17,7 +17,7 @@ public class IncomingApplicationData extends AbstractReceivingAction {
     }
 
     @Override
-    void runImpl(ByteBuffer buffer) throws Exception {
+    void runImpl() throws Exception {
         TLSPlaintext tlsCiphertext = factory.parser().parseTLSPlaintext(buffer);
 
         if (!tlsCiphertext.containsApplicationData()) {

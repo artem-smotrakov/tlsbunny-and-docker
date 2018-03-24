@@ -18,6 +18,7 @@ public class NewHandshakerTest {
                 .expect(new IncomingCertificateVerify())
                 .expect(new IncomingFinished())
                 .send(new OutgoingFinished())
+                .allow(new IncomingChangeCipherSpec())
                 .allow(new IncomingNewSessionTicket())
                 .send(new OutgoingApplicationData(HTTP_GET_REQUEST))
                 .expect(new IncomingApplicationData())
