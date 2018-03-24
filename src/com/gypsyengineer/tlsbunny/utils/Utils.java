@@ -46,6 +46,10 @@ public class Utils {
         return buffer.array();
     }
 
+    public static byte[] concatenate(List<byte[]> arrays) {
+        return concatenate(arrays.toArray(new byte[arrays.size()][]));
+    }
+
     public static byte[] xor(byte[] bytes1, byte[] bytes2) {
         if (bytes1.length != bytes2.length) {
             throw new IllegalArgumentException();
