@@ -9,6 +9,11 @@ import java.nio.ByteBuffer;
 public class IncomingNewSessionTicket extends AbstractReceivingAction {
 
     @Override
+    public String description() {
+        return "receive NewSessionTicket";
+    }
+
+    @Override
     boolean runImpl(ByteBuffer buffer) throws Exception {
         TLSPlaintext tlsPlaintext = factory.parser().parseTLSPlaintext(buffer);
         if (!tlsPlaintext.containsApplicationData()) {

@@ -9,6 +9,11 @@ import java.nio.ByteBuffer;
 public class IncomingCertificateVerify extends AbstractReceivingAction {
 
     @Override
+    public String description() {
+        return "receive CertificateVerify";
+    }
+
+    @Override
     boolean runImpl(ByteBuffer buffer) throws Exception {
         TLSPlaintext tlsPlaintext = factory.parser().parseTLSPlaintext(buffer);
         if (!tlsPlaintext.containsApplicationData()) {

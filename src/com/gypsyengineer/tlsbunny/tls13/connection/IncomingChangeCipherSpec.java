@@ -8,6 +8,11 @@ import java.nio.ByteBuffer;
 public class IncomingChangeCipherSpec extends AbstractReceivingAction {
 
     @Override
+    public String description() {
+        return "receive ChangeCipherSpec";
+    }
+
+    @Override
     boolean runImpl(ByteBuffer buffer) throws IOException {
         TLSPlaintext tlsPlaintext = factory.parser().parseTLSPlaintext(buffer);
         if (!tlsPlaintext.containsChangeCipherSpec()) {

@@ -14,6 +14,11 @@ import java.nio.ByteBuffer;
 public class IncomingServerHello extends AbstractReceivingAction {
 
     @Override
+    public String description() {
+        return "receive ServerHello";
+    }
+
+    @Override
     boolean runImpl(ByteBuffer buffer) throws Exception {
         TLSPlaintext tlsPlaintext = factory.parser().parseTLSPlaintext(buffer);
         if (!tlsPlaintext.containsHandshake()) {
@@ -32,12 +37,14 @@ public class IncomingServerHello extends AbstractReceivingAction {
         ServerHello serverHello = factory.parser().parseServerHello(handshake.getBody());
 
         if (!suite.equals(serverHello.getCipherSuite())) {
+            info("expected cipher suite: %s", suite);
+            info("received cipher suite: %s", serverHello.getCipherSuite());
             throw new RuntimeException("unexpected ciphersuite");
         }
 
         SupportedVersions.ServerHello selected_version = findSupportedVersion(serverHello);
         if (!selected_version.equals(ProtocolVersion.TLSv13)) {
-            info("server hello, selected version: %s", selected_version);
+            info("ServerHello.selected version: %s", selected_version.getSelectedVersion());
             // TODO: when TLS 1.3 spec is finished, we should throw an exception here
         }
 

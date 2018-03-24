@@ -16,6 +16,11 @@ import static com.gypsyengineer.tlsbunny.tls13.handshake.Context.ZERO_HASH_VALUE
 public class IncomingFinished extends AbstractReceivingAction {
 
     @Override
+    public String description() {
+        return "receive Finished";
+    }
+
+    @Override
     boolean runImpl(ByteBuffer buffer) throws Exception {
         TLSPlaintext tlsPlaintext = factory.parser().parseTLSPlaintext(buffer);
         if (!tlsPlaintext.containsApplicationData()) {

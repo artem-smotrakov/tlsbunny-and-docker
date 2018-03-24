@@ -28,6 +28,11 @@ public class OutgoingApplicationData extends AbstractAction {
     }
 
     @Override
+    public String description() {
+        return "send application data";
+    }
+
+    @Override
     public Action run() {
         try {
             TLSPlaintext[] tlsPlaintexts = factory.createTLSPlaintexts(

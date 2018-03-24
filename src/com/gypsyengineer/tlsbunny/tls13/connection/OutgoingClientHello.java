@@ -6,6 +6,11 @@ import java.util.List;
 public class OutgoingClientHello extends AbstractAction {
 
     @Override
+    public String description() {
+        return "send ClientHello";
+    }
+
+    @Override
     public Action run() {
         try {
             List<Extension> extensions = List.of(

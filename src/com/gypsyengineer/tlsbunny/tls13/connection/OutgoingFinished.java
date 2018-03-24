@@ -18,6 +18,11 @@ import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
 public class OutgoingFinished extends AbstractAction {
 
     @Override
+    public String description() {
+        return "send Finished";
+    }
+
+    @Override
     public Action run() {
         try {
             Finished finished = createFinished();

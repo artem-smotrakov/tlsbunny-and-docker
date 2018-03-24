@@ -11,6 +11,11 @@ import static com.gypsyengineer.tlsbunny.utils.Utils.info;
 public class IncomingApplicationData extends AbstractReceivingAction {
 
     @Override
+    public String description() {
+        return "receive application data";
+    }
+
+    @Override
     boolean runImpl(ByteBuffer buffer) throws Exception {
         TLSPlaintext tlsCiphertext = factory.parser().parseTLSPlaintext(buffer);
 
