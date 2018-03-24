@@ -363,21 +363,28 @@ public class ClientHandshaker extends AbstractHandshaker {
 
     private byte[] encrypt(byte[] data) throws Exception {
         TLSInnerPlaintext tlsInnerPlaintext = factory.createTLSInnerPlaintext(
-                ContentType.application_data, data, NO_PADDING);
+                ContentType.handshake, data, NO_PADDING);
         byte[] plaintext = tlsInnerPlaintext.encoding();
 
-        context.handshakeEncryptor.start();
-        context.handshakeEncryptor.updateAAD(getAdditionalData(
-                ContentType.application_data,
-                ProtocolVersion.TLSv12,
-                new UInt16(plaintext.length + AesGcm.TAG_LENGTH_IN_BYTES)));
-        context.handshakeEncryptor.update(plaintext);
+        int length = plaintext.length + AesGcm.TAG_LENGTH_IN_BYTES;
+        byte[] additional_data = AEAD.getAdditionalData(length);
 
-        return context.handshakeEncryptor.finish();
+        context.handshakeEncryptor.start();
+        context.handshakeEncryptor.updateAAD(additional_data);
+        context.handshakeEncryptor.update(plaintext);
+        byte[] ciphertext = context.handshakeEncryptor.finish();
+
+        if (length != ciphertext.length) {
+            info("actual length: %d", length);
+            info("expected length: %d", ciphertext.length);
+            throw new RuntimeException("wrong additional data");
+        }
+
+        return ciphertext;
     }
 
     byte[] decrypt(TLSPlaintext tlsCiphertext) throws Exception {
-        return decrypt(tlsCiphertext.getFragment(), getAdditionalData(tlsCiphertext));
+        return decrypt(tlsCiphertext.getFragment(), AEAD.getAdditionalData(tlsCiphertext));
     }
 
     private byte[] decrypt(byte[] ciphertext, byte[] additional_data) throws Exception {
@@ -385,16 +392,6 @@ public class ClientHandshaker extends AbstractHandshaker {
         context.handshakeDecryptor.updateAAD(additional_data);
         context.handshakeDecryptor.update(ciphertext);
         return context.handshakeDecryptor.finish();
-    }
-
-    // TODO: ApplicationDataChannel has the same method
-    private byte[] getAdditionalData(ContentType type, ProtocolVersion version, UInt16 length) throws IOException {
-        return Utils.concatenate(type.encoding(), version.encoding(), length.encoding());
-    }
-
-    // TODO: ApplicationDataChannel has the same method
-    private byte[] getAdditionalData(TLSPlaintext tlsPlaintext) throws IOException {
-        return getAdditionalData(tlsPlaintext.getType(), tlsPlaintext.getLegacyRecordVersion(), tlsPlaintext.getFragmentLength());
     }
 
     @Override

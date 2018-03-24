@@ -18,10 +18,10 @@ public class ApplicationDataChannel {
     private final StructFactory factory;
 
     public ApplicationDataChannel(StructFactory factory, Connection connection,
-            AEAD enctyptor, AEAD decryptor) {
+            AEAD encryptor, AEAD decryptor) {
 
         this.connection = connection;
-        this.encryptor = enctyptor;
+        this.encryptor = encryptor;
         this.decryptor = decryptor;
         this.factory = factory;
     }
@@ -38,11 +38,12 @@ public class ApplicationDataChannel {
             throw new RuntimeException();
         }
 
-        return decrypt(tlsCiphertext.getFragment(), getAdditionalData(tlsCiphertext));
+        return decrypt(tlsCiphertext.getFragment(), AEAD.getAdditionalData(tlsCiphertext));
     }
 
     public void send(byte[] data) throws Exception {
-        TLSPlaintext[] tlsPlaintexts = factory.createTLSPlaintexts(ContentType.application_data,
+        TLSPlaintext[] tlsPlaintexts = factory.createTLSPlaintexts(
+                ContentType.application_data,
                 ProtocolVersion.TLSv12,
                 encrypt(data));
 
@@ -52,10 +53,10 @@ public class ApplicationDataChannel {
     }
 
     public byte[] decrypt(TLSPlaintext tlsCiphertext) throws Exception {
-        return decrypt(tlsCiphertext.getFragment(), getAdditionalData(tlsCiphertext));
+        return decrypt(tlsCiphertext.getFragment(), AEAD.getAdditionalData(tlsCiphertext));
     }
 
-    public byte[] decrypt(byte[] ciphertext, byte[] additional_data) throws Exception {
+    private byte[] decrypt(byte[] ciphertext, byte[] additional_data) throws Exception {
         decryptor.start();
         decryptor.updateAAD(additional_data);
         decryptor.update(ciphertext);
@@ -70,10 +71,7 @@ public class ApplicationDataChannel {
         byte[] plaintext = tlsInnerPlaintext.encoding();
 
         encryptor.start();
-        encryptor.updateAAD(getAdditionalData(
-                ContentType.application_data,
-                ProtocolVersion.TLSv12,
-                new UInt16(plaintext.length + AesGcm.TAG_LENGTH_IN_BYTES)));
+        encryptor.updateAAD(AEAD.getAdditionalData(plaintext.length + AesGcm.TAG_LENGTH_IN_BYTES));
         encryptor.update(plaintext);
 
         return encryptor.finish();
@@ -81,14 +79,6 @@ public class ApplicationDataChannel {
 
     public boolean isAlive() {
         return connection.isAlive();
-    }
-
-    private byte[] getAdditionalData(ContentType type, ProtocolVersion version, UInt16 length) throws IOException {
-        return Utils.concatenate(type.encoding(), version.encoding(), length.encoding());
-    }
-
-    private byte[] getAdditionalData(TLSPlaintext tlsPlaintext) throws IOException {
-        return getAdditionalData(tlsPlaintext.getType(), tlsPlaintext.getLegacyRecordVersion(), tlsPlaintext.getFragmentLength());
     }
 
 }

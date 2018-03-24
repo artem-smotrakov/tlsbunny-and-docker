@@ -1,7 +1,12 @@
 package com.gypsyengineer.tlsbunny.tls13.crypto;
 
+import com.gypsyengineer.tlsbunny.tls.UInt16;
+import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
+import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
+import com.gypsyengineer.tlsbunny.utils.Utils;
 
+import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import javax.crypto.NoSuchPaddingException;
 
@@ -59,5 +64,20 @@ public interface AEAD {
         }
         
         throw new IllegalArgumentException();
+    }
+
+    static byte[] getAdditionalData(int length) throws IOException {
+        return getAdditionalData(new UInt16(length));
+    }
+
+    static byte[] getAdditionalData(TLSPlaintext tlsPlaintext) throws IOException {
+        return getAdditionalData(tlsPlaintext.getFragmentLength());
+    }
+
+    static byte[] getAdditionalData(UInt16 length) throws IOException {
+        return Utils.concatenate(
+                ContentType.application_data.encoding(),
+                ProtocolVersion.TLSv12.encoding(),
+                length.encoding());
     }
 }
