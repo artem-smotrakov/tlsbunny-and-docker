@@ -8,11 +8,13 @@ import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
 import com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.Connection;
+import com.gypsyengineer.tlsbunny.utils.Output;
 
 import java.nio.ByteBuffer;
 
 public interface Action {
     String name();
+    Action set(Output output);
     Action set(StructFactory factory);
     Action set(SignatureScheme scheme);
     Action set(NamedGroup group);

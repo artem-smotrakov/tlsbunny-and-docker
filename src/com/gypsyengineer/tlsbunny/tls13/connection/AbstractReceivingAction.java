@@ -3,8 +3,6 @@ package com.gypsyengineer.tlsbunny.tls13.connection;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import static com.gypsyengineer.tlsbunny.utils.Utils.achtung;
-
 public abstract class AbstractReceivingAction extends AbstractAction {
 
     @Override

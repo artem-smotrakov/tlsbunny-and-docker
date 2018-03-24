@@ -9,15 +9,14 @@ import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
 import com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.Connection;
+import com.gypsyengineer.tlsbunny.utils.Output;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.gypsyengineer.tlsbunny.utils.Utils.achtung;
-import static com.gypsyengineer.tlsbunny.utils.Utils.info;
 
 public class TLSConnection {
 
@@ -28,6 +27,8 @@ public class TLSConnection {
     public enum Status { NOT_STARTED, RUNNING, COULD_NOT_SEND, UNEXPECTED_MESSAGE, SUCCESS }
 
     private final List<ActionHolder> actions = new ArrayList<>();
+
+    private Output output = new Output();
     private String host = "localhost";
     private int port = 443;
     private StructFactory factory = StructFactory.getDefault();
@@ -49,6 +50,11 @@ public class TLSConnection {
 
     public TLSConnection port(int port) {
         this.port = port;
+        return this;
+    }
+
+    public TLSConnection set(Output output) {
+        this.output = output;
         return this;
     }
 
@@ -97,6 +103,7 @@ public class TLSConnection {
             loop: for (ActionHolder holder : actions) {
                 Action action = holder.action;
 
+                action.set(output);
                 action.set(context);
                 action.set(group);
                 action.set(scheme);
@@ -110,34 +117,34 @@ public class TLSConnection {
                 switch (holder.type) {
                     case SEND:
                         try {
-                            info(action.name());
+                            output.info(action.name());
                             action.run();
-                            info("done with %s", action.name());
+                            output.info("done with %s", action.name());
                         } catch (Exception e) {
-                            achtung("could not send", e);
+                            output.achtung("could not send", e);
                             status = Status.COULD_NOT_SEND;
                             return this;
                         }
                         break;
                     case EXPECT:
                         try {
-                            info("expect %s", action.name());
+                            output.info("expect %s", action.name());
                             action.run();
-                            info("done with %s", action.name());
+                            output.info("done with %s", action.name());
                         } catch (Exception e) {
-                            achtung("could not receive", e);
+                            output.achtung("could not receive", e);
                             status = Status.UNEXPECTED_MESSAGE;
                             return this;
                         }
                         break;
                     case ALLOW:
                         try {
-                            info("try %s", action.name());
+                            output.info("try %s", action.name());
                             action.run();
-                            info("done with %s", action.name());
+                            output.info("done with %s", action.name());
                         } catch (Exception e) {
-                            info("failed: %s", e.getMessage());
-                            info("skip %s", action.name());
+                            output.info("failed: %s", e.getMessage());
+                            output.info("skip %s", action.name());
                         }
                         break;
                     default:
@@ -147,6 +154,8 @@ public class TLSConnection {
 
                 buffer = action.data();
             }
+        } finally {
+            output.flush();
         }
 
         if (status == Status.RUNNING) {

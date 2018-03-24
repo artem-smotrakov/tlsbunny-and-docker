@@ -6,7 +6,6 @@ import com.gypsyengineer.tlsbunny.tls13.struct.*;
 import static com.gypsyengineer.tlsbunny.tls13.handshake.Context.ZERO_HASH_VALUE;
 import static com.gypsyengineer.tlsbunny.tls13.handshake.Context.ZERO_SALT;
 import static com.gypsyengineer.tlsbunny.utils.Utils.concatenate;
-import static com.gypsyengineer.tlsbunny.utils.Utils.info;
 
 import java.io.IOException;
 
@@ -36,21 +35,21 @@ public class IncomingServerHello extends AbstractReceivingAction {
         ServerHello serverHello = factory.parser().parseServerHello(handshake.getBody());
 
         if (!suite.equals(serverHello.getCipherSuite())) {
-            info("expected cipher suite: %s", suite);
-            info("received cipher suite: %s", serverHello.getCipherSuite());
+            output.info("expected cipher suite: %s", suite);
+            output.info("received cipher suite: %s", serverHello.getCipherSuite());
             throw new RuntimeException("unexpected ciphersuite");
         }
 
         SupportedVersions.ServerHello selected_version = findSupportedVersion(serverHello);
         if (!selected_version.equals(ProtocolVersion.TLSv13)) {
-            info("ServerHello.selected version: %s", selected_version.getSelectedVersion());
+            output.info("ServerHello.selected version: %s", selected_version.getSelectedVersion());
             // TODO: when TLS 1.3 spec is finished, we should throw an exception here
         }
 
         KeyShare.ServerHello keyShare = findKeyShare(serverHello);
         if (!group.equals(keyShare.getServerShare().getNamedGroup())) {
-            info("expected group: %s", group);
-            info("received group: %s", keyShare.getServerShare().getNamedGroup());
+            output.info("expected group: %s", group);
+            output.info("received group: %s", keyShare.getServerShare().getNamedGroup());
             throw new RuntimeException("unexpected group");
         }
 

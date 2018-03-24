@@ -6,8 +6,6 @@ import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
 
 import java.io.IOException;
 
-import static com.gypsyengineer.tlsbunny.utils.Utils.info;
-
 public class IncomingApplicationData extends AbstractReceivingAction {
 
     @Override
@@ -29,7 +27,7 @@ public class IncomingApplicationData extends AbstractReceivingAction {
         }
 
         byte[] data = tlsInnerPlaintext.getContent();
-        info("received data (%d bytes)%n%s", data.length, new String(data));
+        output.info("received data (%d bytes)%n%s", data.length, new String(data));
     }
 
     private TLSInnerPlaintext decrypt(TLSPlaintext tlsCiphertext) throws Exception {

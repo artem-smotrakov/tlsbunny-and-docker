@@ -6,6 +6,8 @@ import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Negotiator;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
 import com.gypsyengineer.tlsbunny.utils.Connection;
+import com.gypsyengineer.tlsbunny.utils.Output;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
@@ -14,6 +16,7 @@ public abstract class AbstractAction implements Action {
     static final long DEFAULT_SEED = 0;
     static final long SEED = Long.getLong("tlsbunny.seed", DEFAULT_SEED);
 
+    Output output;
     Connection connection;
     ByteBuffer buffer;
     StructFactory factory;
@@ -27,6 +30,12 @@ public abstract class AbstractAction implements Action {
     @Override
     public String name() {
         return "unknown action";
+    }
+
+    @Override
+    public Action set(Output output) {
+        this.output = output;
+        return this;
     }
 
     @Override
