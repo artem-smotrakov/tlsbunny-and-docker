@@ -11,6 +11,8 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
+import static com.gypsyengineer.tlsbunny.tls13.handshake.Context.ZERO_HASH_VALUE;
+
 public class IncomingFinished extends AbstractReceivingAction {
 
     @Override
@@ -44,12 +46,10 @@ public class IncomingFinished extends AbstractReceivingAction {
                 handshake.getBody(),
                 suite.hashLength());
 
-        byte[] zero_hash_value = new byte[0];
-
         byte[] verify_key = hkdf.expandLabel(
                 context.server_handshake_traffic_secret,
                 context.finished,
-                zero_hash_value,
+                ZERO_HASH_VALUE,
                 hkdf.getHashLength());
 
         byte[] verify_data = hkdf.hmac(
