@@ -4,7 +4,7 @@ public class Success extends AbstractChecker {
 
     @Override
     public Check run() {
-        failed = connection.status() != TLSConnection.Status.SUCCESS;
+        failed = connection.status() != TLSConnection.Status.success;
         return this;
     }
 

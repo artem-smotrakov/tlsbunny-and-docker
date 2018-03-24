@@ -22,9 +22,13 @@ public class TLSConnection {
 
     private static final ByteBuffer NOTHING = ByteBuffer.allocate(0);
 
-    private enum ActionType { SEND, EXPECT, ALLOW }
+    private enum ActionType {
+        send, expect, allow
+    }
 
-    public enum Status { NOT_STARTED, RUNNING, COULD_NOT_SEND, UNEXPECTED_MESSAGE, SUCCESS }
+    public enum Status {
+        not_started, running, could_not_send, unexpected_message, success
+    }
 
     private final List<ActionHolder> actions = new ArrayList<>();
 
@@ -37,7 +41,7 @@ public class TLSConnection {
     private CipherSuite suite = CipherSuite.TLS_AES_128_GCM_SHA256;
     private Negotiator negotiator;
     private HKDF hkdf;
-    private Status status = Status.NOT_STARTED;
+    private Status status = Status.not_started;
 
     private TLSConnection() {
 
@@ -79,22 +83,22 @@ public class TLSConnection {
     }
 
     public TLSConnection send(Action action) {
-        actions.add(new ActionHolder(action, ActionType.SEND));
+        actions.add(new ActionHolder(action, ActionType.send));
         return this;
     }
 
     public TLSConnection expect(Action action) {
-        actions.add(new ActionHolder(action, ActionType.EXPECT));
+        actions.add(new ActionHolder(action, ActionType.expect));
         return this;
     }
 
     public TLSConnection allow(Action action) {
-        actions.add(new ActionHolder(action, ActionType.ALLOW));
+        actions.add(new ActionHolder(action, ActionType.allow));
         return this;
     }
 
     public TLSConnection run() throws IOException {
-        status = Status.RUNNING;
+        status = Status.running;
         try (Connection connection = Connection.create(host, port)) {
             Context context = new Context();
             context.factory = factory;
@@ -115,29 +119,29 @@ public class TLSConnection {
                 action.set(buffer);
 
                 switch (holder.type) {
-                    case SEND:
+                    case send:
                         try {
                             output.info(action.name());
                             action.run();
                             output.info("done with %s", action.name());
                         } catch (Exception e) {
                             output.achtung("could not send", e);
-                            status = Status.COULD_NOT_SEND;
+                            status = Status.could_not_send;
                             return this;
                         }
                         break;
-                    case EXPECT:
+                    case expect:
                         try {
                             output.info("expect %s", action.name());
                             action.run();
                             output.info("done with %s", action.name());
                         } catch (Exception e) {
                             output.achtung("could not receive", e);
-                            status = Status.UNEXPECTED_MESSAGE;
+                            status = Status.unexpected_message;
                             return this;
                         }
                         break;
-                    case ALLOW:
+                    case allow:
                         try {
                             output.info("try %s", action.name());
                             action.run();
@@ -158,8 +162,8 @@ public class TLSConnection {
             output.flush();
         }
 
-        if (status == Status.RUNNING) {
-            status = Status.SUCCESS;
+        if (status == Status.running) {
+            status = Status.success;
         }
 
         return this;
