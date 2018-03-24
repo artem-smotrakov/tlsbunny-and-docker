@@ -29,6 +29,10 @@ public class Context {
     public static final byte[] iv              = "iv".getBytes();
     public static final byte[] finished        = "finished".getBytes();
 
+    // TODO: find a better place for these constants
+    public static final byte[] ZERO_SALT = new byte[0];
+    public static final byte[] ZERO_HASH_VALUE = new byte[0];
+
     private Handshake firstClientHello;
     private Handshake helloRetryRequest;
     private Handshake secondClientHello;

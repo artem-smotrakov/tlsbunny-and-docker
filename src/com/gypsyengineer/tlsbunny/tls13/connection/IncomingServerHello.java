@@ -1,12 +1,13 @@
 package com.gypsyengineer.tlsbunny.tls13.connection;
 
 import com.gypsyengineer.tlsbunny.tls13.crypto.AEAD;
-import com.gypsyengineer.tlsbunny.tls13.struct.ExtensionType;
-import com.gypsyengineer.tlsbunny.tls13.struct.Handshake;
-import com.gypsyengineer.tlsbunny.tls13.struct.KeyShare;
-import com.gypsyengineer.tlsbunny.tls13.struct.ServerHello;
-import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
+import com.gypsyengineer.tlsbunny.tls13.struct.*;
+
+import static com.gypsyengineer.tlsbunny.tls13.handshake.Context.ZERO_HASH_VALUE;
+import static com.gypsyengineer.tlsbunny.tls13.handshake.Context.ZERO_SALT;
 import static com.gypsyengineer.tlsbunny.utils.Utils.concatenate;
+import static com.gypsyengineer.tlsbunny.utils.Utils.info;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
@@ -29,23 +30,34 @@ public class IncomingServerHello extends AbstractReceivingAction {
 
     private boolean processServerHello(Handshake handshake) throws Exception {
         ServerHello serverHello = factory.parser().parseServerHello(handshake.getBody());
+
+        if (!suite.equals(serverHello.getCipherSuite())) {
+            throw new RuntimeException("unexpected ciphersuite");
+        }
+
+        SupportedVersions.ServerHello selected_version = findSupportedVersion(serverHello);
+        if (!selected_version.equals(ProtocolVersion.TLSv13)) {
+            info("server hello, selected version: %s", selected_version);
+            // TODO: when TLS 1.3 spec is finished, we should throw an exception here
+        }
+
         KeyShare.ServerHello keyShare = findKeyShare(serverHello);
+        if (!group.equals(keyShare.getServerShare().getNamedGroup())) {
+            info("expected group: %s", group);
+            info("received group: %s", keyShare.getServerShare().getNamedGroup());
+            throw new RuntimeException("unexpected group");
+        }
 
         negotiator.processKeyShareEntry(keyShare.getServerShare());
         context.dh_shared_secret = negotiator.generateSecret();
 
         context.setServerHello(handshake);
-        if (!suite.equals(serverHello.getCipherSuite())) {
-            throw new RuntimeException();
-        }
 
-        byte[] zero_psk = zeroes(hkdf.getHashLength());
-        byte[] zero_salt = new byte[0];
-        byte[] zero_hash_value = new byte[0];
+        byte[] psk = zeroes(hkdf.getHashLength());
 
         Handshake wrappedClientHello = context.getFirstClientHello();
 
-        context.early_secret = hkdf.extract(zero_salt, zero_psk);
+        context.early_secret = hkdf.extract(ZERO_SALT, psk);
         context.binder_key = hkdf.deriveSecret(
                 context.early_secret,
                 concatenate(context.ext_binder, context.res_binder));
@@ -78,27 +90,27 @@ public class IncomingServerHello extends AbstractReceivingAction {
         context.client_handshake_write_key = hkdf.expandLabel(
                 context.client_handshake_traffic_secret,
                 context.key,
-                zero_hash_value,
+                ZERO_HASH_VALUE,
                 suite.keyLength());
         context.client_handshake_write_iv = hkdf.expandLabel(
                 context.client_handshake_traffic_secret,
                 context.iv,
-                zero_hash_value,
+                ZERO_HASH_VALUE,
                 suite.ivLength());
         context.server_handshake_write_key = hkdf.expandLabel(
                 context.server_handshake_traffic_secret,
                 context.key,
-                zero_hash_value,
+                ZERO_HASH_VALUE,
                 suite.keyLength());
         context.server_handshake_write_iv = hkdf.expandLabel(
                 context.server_handshake_traffic_secret,
                 context.iv,
-                zero_hash_value,
+                ZERO_HASH_VALUE,
                 suite.ivLength());
         context.finished_key = hkdf.expandLabel(
                 context.client_handshake_traffic_secret,
                 context.finished,
-                zero_hash_value,
+                ZERO_HASH_VALUE,
                 hkdf.getHashLength());
 
         context.handshakeEncryptor = AEAD.createEncryptor(
@@ -120,6 +132,14 @@ public class IncomingServerHello extends AbstractReceivingAction {
                 .parseKeyShareFromServerHello(
                     hello.findExtension(ExtensionType.key_share)
                             .getExtensionData().bytes());
+    }
+
+    private SupportedVersions.ServerHello findSupportedVersion(ServerHello hello)
+            throws IOException {
+
+        return factory.parser().parseSupportedVersionsServerHello(
+                hello.findExtension(ExtensionType.supported_versions)
+                        .getExtensionData().bytes());
     }
 
     private static byte[] zeroes(int length) {
