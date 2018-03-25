@@ -11,6 +11,7 @@ public class Config {
     public static final String DEFAULT_HOST = "localhost";
     public static final String DEFAULT_TARGET = "tlsplaintext";
     public static final String DEFAULT_MODE = "byte_flip";
+    public static final int DEFAULT_THREADS = 3;
 
     public String getHost() {
         return System.getProperty("tlsbunny.host", DEFAULT_HOST).trim();
@@ -34,6 +35,18 @@ public class Config {
 
     public double getMaxRatio() {
         return getDouble("tlsbunny.max.ratio", DEFAULT_MAX_RATIO);
+    }
+
+    public int getThreads() {
+        return Integer.getInteger("tlsbunny.threads", DEFAULT_THREADS);
+    }
+
+    public int getParts() {
+        return Integer.getInteger("tlsbunny.parts", DEFAULT_PARTS);
+    }
+
+    public long getStartTest() {
+        return Long.getLong("tlsbunny.start.test", DEFAULT_START_TEST);
     }
 
     private static Double getDouble(String name, double default_value) {

@@ -12,34 +12,31 @@ public class MutatedHttpsConnection implements Runnable {
     public static final String HTTP_GET_REQUEST = "GET / HTTP/1.1\n\n";
 
     private final Output output;
-    private final MutatedStructFactory fuzzer;
     private final Config config;
+    private final MutatedStructFactory fuzzer;
 
     MutatedHttpsConnection(
             MutatedStructFactory fuzzer, Output output, Config config) {
 
         this.output = output;
-        this.fuzzer = fuzzer;
         this.config = config;
+        this.fuzzer = fuzzer;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         Config config = new Config();
 
-        Output output = new Output();
-        try {
-            MutatedStructFactory fuzzer = new MutatedStructFactory(
-                    StructFactory.getDefault(),
-                    output,
-                    config.getMinRatio(),
-                    config.getMaxRatio()
-            );
+        int threads = config.getThreads();
 
-            fuzzer.setTarget(config.getTarget());
-
-            new MutatedHttpsConnection(fuzzer, output, config).run();
-        } finally {
-             output.flush();
+        if (threads > 1) {
+            MultipleThreads.submit(
+                    config.getStartTest(),
+                    config.getTotal(),
+                    config.getParts(),
+                    threads,
+                    (test, limit) -> create(config));
+        } else {
+            create(config).run();
         }
     }
 
@@ -81,6 +78,20 @@ public class MutatedHttpsConnection implements Runnable {
         } finally {
             output.flush();
         }
+    }
+
+    private static MutatedHttpsConnection create(Config config) {
+        Output output = new Output();
+
+        MutatedStructFactory fuzzer = new MutatedStructFactory(
+                StructFactory.getDefault(),
+                output,
+                config.getMinRatio(),
+                config.getMaxRatio()
+        );
+        fuzzer.setTarget(config.getTarget());
+
+        return new MutatedHttpsConnection(fuzzer, output, config);
     }
 
 }
