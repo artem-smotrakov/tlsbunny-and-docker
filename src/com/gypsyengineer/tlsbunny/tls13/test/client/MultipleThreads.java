@@ -1,5 +1,7 @@
 package com.gypsyengineer.tlsbunny.tls13.test.client;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -8,26 +10,26 @@ import static com.gypsyengineer.tlsbunny.utils.Utils.info;
 
 public class MultipleThreads {
 
-    public static void submit(long start, long total, int parts, int threads, ThreadFactory factory)
-            throws InterruptedException {
+    private final List<Config> configs = new ArrayList<>();
+
+    public MultipleThreads add(Config config) {
+        configs.add(config);
+        return this;
+    }
+
+    public void submit() throws InterruptedException {
+        int threads = 1;
+        for (Config config : configs) {
+            if (threads < config.threads()) {
+                threads = config.threads();
+            }
+        }
 
         info("we are going to use %d threads", threads);
         ExecutorService executor = Executors.newFixedThreadPool(threads);
         try {
-            long end = start + total;
-            long perThread = total / parts;
-
-            long test = start;
-            long limit = start + perThread;
-            while (limit < end) {
-                executor.submit(factory.create(test, limit));
-
-                test = limit;
-                limit += perThread;
-            }
-
-            if (test < end) {
-                executor.submit(factory.create(test, end));
+            for (Config config : configs) {
+                submit(executor, config);
             }
         } finally {
             executor.shutdown();
@@ -39,7 +41,27 @@ public class MultipleThreads {
         info("phew, we are done!");
     }
 
-    interface ThreadFactory {
-        Runnable create(long test, long limit);
+    private static void submit(ExecutorService executor, Config config) {
+        for (Config subConfig : split(config)) {
+            executor.submit(subConfig.create());
+        }
     }
+
+    private static Config[] split(Config config) {
+        Config[] configs = new Config[config.parts()];
+        long perThread = (config.endTest() - config.startTest()) / config.parts();
+        long start = config.startTest();
+        long end = start + perThread;
+
+        for (int i = 0; i < config.parts(); i++) {
+            Config subConfig = config.copy();
+            subConfig.parts(1);
+            subConfig.startTest(start);
+            subConfig.endTest(end);
+            configs[i] = subConfig;
+        }
+
+        return configs;
+    }
+
 }

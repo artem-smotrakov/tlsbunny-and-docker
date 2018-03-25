@@ -14,7 +14,6 @@ import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.Connection;
 import com.gypsyengineer.tlsbunny.utils.Output;
 import java.io.IOException;
-import java.util.concurrent.ExecutorService;
 
 /**
  * This is a fuzzy TLS client which wraps a MutatedStructFactory instance.
@@ -127,13 +126,13 @@ public class MutatedClient implements Runnable, Fuzzer<byte[]> {
     }
 
     @Override
-    public void setTest(long test) {
-        fuzzer.setTest(test);
+    public void setStartTest(long test) {
+        fuzzer.setStartTest(test);
     }
 
     @Override
-    public void setLimit(long limit) {
-        fuzzer.setLimit(limit);
+    public void setEndTest(long test) {
+        throw new UnsupportedOperationException();
     }
 
     public static MutatedClient create(
@@ -150,7 +149,7 @@ public class MutatedClient implements Runnable, Fuzzer<byte[]> {
             fuzzer.setMode(mode);
         }
 
-        fuzzer.setTest(test);
+        fuzzer.setStartTest(test);
 
         return new MutatedClient(fuzzer, output, host, port, total);
     }

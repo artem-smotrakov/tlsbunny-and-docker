@@ -11,6 +11,6 @@ public interface Fuzzer<T> {
     void moveOn();
 
     long getTest();
-    void setTest(long test);
-    void setLimit(long limit);
+    void setStartTest(long test);
+    void setEndTest(long test);
 }

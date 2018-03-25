@@ -156,19 +156,19 @@ public class MutatedStructFactory extends StructFactoryWrapper
     }
 
     @Override
-    public void setTest(long test) {
+    public void setStartTest(long test) {
         setState(String.join(STATE_DELIMITER,
                 target.toString(), mode.toString(), String.valueOf(test)));
     }
 
     @Override
-    public long getTest() {
-        return fuzzer.getTest();
+    public void setEndTest(long test) {
+        fuzzer.setEndTest(test);
     }
 
     @Override
-    public void setLimit(long limit) {
-        fuzzer.setLimit(limit);
+    public long getTest() {
+        return fuzzer.getTest();
     }
 
     @Override

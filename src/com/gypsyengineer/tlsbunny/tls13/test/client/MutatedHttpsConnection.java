@@ -12,15 +12,23 @@ public class MutatedHttpsConnection implements Runnable {
     public static final String HTTP_GET_REQUEST = "GET / HTTP/1.1\n\n";
 
     private final Output output;
-    private final Config config;
+    private final FuzzerConfig config;
     private final MutatedStructFactory fuzzer;
 
-    MutatedHttpsConnection(
-            MutatedStructFactory fuzzer, Output output, Config config) {
+    MutatedHttpsConnection(Output output, FuzzerConfig config) {
+        fuzzer = new MutatedStructFactory(
+                StructFactory.getDefault(),
+                output,
+                config.minRatio(),
+                config.maxRatio()
+        );
+        fuzzer.setTarget(config.target());
+        fuzzer.setMode(config.mode());
+        fuzzer.setStartTest(config.startTest());
+        fuzzer.setEndTest(config.endTest());
 
         this.output = output;
         this.config = config;
-        this.fuzzer = fuzzer;
     }
 
     @Override
@@ -28,8 +36,7 @@ public class MutatedHttpsConnection implements Runnable {
         try {
             String threadName = Thread.currentThread().getName();
             while (fuzzer.canFuzz()) {
-                output.info("%s, test %d of %d",
-                        threadName, fuzzer.getTest(), config.total());
+                output.info("%s, test %d", threadName, fuzzer.getTest());
                 output.info("now fuzzer's state is '%s'", fuzzer.getState());
                 try {
                     TLSConnection.create()
@@ -64,35 +71,134 @@ public class MutatedHttpsConnection implements Runnable {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        Config config = new Config();
+        FuzzerConfig config = new FuzzerConfig();
 
         int threads = config.threads();
 
         if (threads > 1) {
-            MultipleThreads.submit(
-                    config.startTest(),
-                    config.total(),
-                    config.parts(),
-                    threads,
-                    (test, limit) -> create(config));
+            new MultipleThreads().add(config).submit();
         } else {
-            create(config).run();
+            config.create().run();
         }
     }
 
-    public static MutatedHttpsConnection create(Config config) {
-        Output output = new Output();
+    public static class FuzzerConfig implements Config {
 
-        MutatedStructFactory fuzzer = new MutatedStructFactory(
-                StructFactory.getDefault(),
-                output,
-                config.minRatio(),
-                config.maxRatio()
-        );
-        fuzzer.setTarget(config.target());
-        fuzzer.setMode(config.mode());
+        public static final String DEFAULT_TARGET = "tls_plaintext";
+        public static final String DEFAULT_MODE = "byte_flip";
 
-        return new MutatedHttpsConnection(fuzzer, output, config);
+        private CommonConfig commonConfig;
+        private String target = System.getProperty("tlsbunny.target", DEFAULT_TARGET).trim();
+        private String mode = System.getProperty("tlsbunny.mode", DEFAULT_MODE).trim();
+
+        public FuzzerConfig() {
+            this(new CommonConfig());
+        }
+
+        public FuzzerConfig(CommonConfig commonConfig) {
+            this.commonConfig = commonConfig;
+        }
+
+        public MutatedHttpsConnection create() {
+            return new MutatedHttpsConnection(new Output(), this);
+        }
+
+        public FuzzerConfig target(String target) {
+            this.target = target;
+            return this;
+        }
+
+        public FuzzerConfig mode(String mode) {
+            this.mode = mode;
+            return this;
+        }
+
+        public String target() {
+            return target;
+        }
+
+        public String mode() {
+            return mode;
+        }
+
+        @Override
+        public String host() {
+            return commonConfig.host();
+        }
+
+        @Override
+        public int port() {
+            return commonConfig.port();
+        }
+
+        @Override
+        public double minRatio() {
+            return commonConfig.minRatio();
+        }
+
+        @Override
+        public double maxRatio() {
+            return commonConfig.maxRatio();
+        }
+
+        @Override
+        public int threads() {
+            return commonConfig.threads();
+        }
+
+        @Override
+        public int parts() {
+            return commonConfig.parts();
+        }
+
+        @Override
+        public long startTest() {
+            return commonConfig.startTest();
+        }
+
+        @Override
+        public long endTest() {
+            return commonConfig.endTest();
+        }
+
+        @Override
+        public Config minRatio(double ratio) {
+            commonConfig.minRatio(ratio);
+            return this;
+        }
+
+        @Override
+        public Config maxRatio(double ratio) {
+            commonConfig.maxRatio(ratio);
+            return this;
+        }
+
+        @Override
+        public Config startTest(long test) {
+            commonConfig.startTest(test);
+            return this;
+        }
+
+        @Override
+        public Config endTest(long test) {
+            commonConfig.endTest(test);
+            return this;
+        }
+
+        @Override
+        public Config parts(int parts) {
+            commonConfig.parts(parts);
+            return this;
+        }
+
+        @Override
+        public Config copy() {
+            FuzzerConfig clone = new FuzzerConfig(commonConfig.copy());
+            clone.target(target);
+            clone.mode(mode);
+
+            return clone;
+        }
     }
 
 }
