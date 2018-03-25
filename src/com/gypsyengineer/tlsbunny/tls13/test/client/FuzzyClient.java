@@ -5,10 +5,10 @@ public class FuzzyClient {
     private static final Config[] configs = new Config[] {
             new MutatedHttpsConnection.FuzzerConfig()
                     .target("tls_plaintext").mode("byte_flip")
-                    .minRatio(0.01).maxRatio(0.09).endTest(500).parts(5),
+                    .minRatio(0.01).maxRatio(0.09).endTest(10).parts(5),
             new MutatedHttpsConnection.FuzzerConfig()
                     .target("tls_plaintext").mode("bit_flip")
-                    .minRatio(0.01).maxRatio(0.09).endTest(500).parts(5),
+                    .minRatio(0.01).maxRatio(0.09).endTest(10).parts(5),
             new MutatedHttpsConnection.FuzzerConfig()
                     .target("handshake").mode("byte_flip")
                     .minRatio(0.01).maxRatio(0.09).endTest(500).parts(5),
@@ -29,9 +29,7 @@ public class FuzzyClient {
                     .minRatio(0.01).maxRatio(0.09).endTest(500).parts(5),
     };
 
-    public static void main(String[] args) {
-        for (Config config : configs) {
-
-        }
+    public static void main(String[] args) throws InterruptedException {
+        new MultipleThreads().add(configs).submit();
     }
 }

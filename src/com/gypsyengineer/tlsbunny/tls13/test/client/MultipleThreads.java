@@ -12,8 +12,11 @@ public class MultipleThreads {
 
     private final List<Config> configs = new ArrayList<>();
 
-    public MultipleThreads add(Config config) {
-        configs.add(config);
+    public MultipleThreads add(Config... configs) {
+        for (Config config : configs) {
+            this.configs.add(config);
+        }
+
         return this;
     }
 
