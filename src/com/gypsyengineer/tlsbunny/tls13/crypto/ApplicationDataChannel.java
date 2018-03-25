@@ -10,6 +10,7 @@ import com.gypsyengineer.tlsbunny.utils.Utils;
 
 import java.io.IOException;
 
+@Deprecated
 public class ApplicationDataChannel {
 
     private final AEAD encryptor;
