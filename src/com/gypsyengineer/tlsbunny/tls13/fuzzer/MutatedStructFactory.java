@@ -23,8 +23,8 @@ import java.util.List;
 public class MutatedStructFactory extends StructFactoryWrapper
         implements Fuzzer<byte[]> {
 
-    public static enum Mode   { byte_flip, bit_flip }
-    public static enum Target { tlsplaintext, handshake, client_hello, finished }
+    public enum Mode   { byte_flip, bit_flip }
+    public enum Target { tlsplaintext, handshake, client_hello, finished }
 
     public static final Target DEFAULT_TARGET = Target.tlsplaintext;
     public static final Mode DEFAULT_MODE = Mode.byte_flip;
@@ -155,9 +155,20 @@ public class MutatedStructFactory extends StructFactoryWrapper
                 target.toString(), mode.toString(), fuzzer.getState());
     }
 
-    public void setTest(int test) {
+    @Override
+    public void setTest(long test) {
         setState(String.join(STATE_DELIMITER,
                 target.toString(), mode.toString(), String.valueOf(test)));
+    }
+
+    @Override
+    public long getTest() {
+        return fuzzer.getTest();
+    }
+
+    @Override
+    public void setLimit(long limit) {
+        fuzzer.setLimit(limit);
     }
 
     @Override

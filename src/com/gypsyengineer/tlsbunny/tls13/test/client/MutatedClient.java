@@ -121,6 +121,21 @@ public class MutatedClient implements Runnable, Fuzzer<byte[]> {
         fuzzer.moveOn();
     }
 
+    @Override
+    public long getTest() {
+        return fuzzer.getTest();
+    }
+
+    @Override
+    public void setTest(long test) {
+        fuzzer.setTest(test);
+    }
+
+    @Override
+    public void setLimit(long limit) {
+        fuzzer.setLimit(limit);
+    }
+
     public static MutatedClient create(
             Config.FuzzerConfig config, String host, int port, int test, int total) {
 

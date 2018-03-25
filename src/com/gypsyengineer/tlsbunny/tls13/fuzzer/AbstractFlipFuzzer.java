@@ -11,6 +11,7 @@ public abstract class AbstractFlipFuzzer implements Fuzzer<byte[]> {
     final Random random;
 
     long state = 0;
+    long limit = NO_LIMIT;
 
     public AbstractFlipFuzzer(double minRatio, double maxRatio,
             int startIndex, int endIndex) {
@@ -67,12 +68,31 @@ public abstract class AbstractFlipFuzzer implements Fuzzer<byte[]> {
         if (value < 0) {
             throw new IllegalArgumentException();
         }
-        this.state = value;
+        setTest(value);
+    }
+
+    @Override
+    public void setLimit(long limit) {
+        this.limit = limit;
+    }
+
+    @Override
+    public void setTest(long state) {
+        this.state = state;
+    }
+
+    @Override
+    public long getTest() {
+        return state;
     }
 
     @Override
     public boolean canFuzz() {
-        return state < Long.MAX_VALUE;
+        if (limit == NO_LIMIT) {
+            return state < Long.MAX_VALUE;
+        }
+
+        return state < limit;
     }
 
     @Override

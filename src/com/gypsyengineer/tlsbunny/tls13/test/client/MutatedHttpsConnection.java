@@ -23,7 +23,7 @@ public class MutatedHttpsConnection implements Runnable {
         this.config = config;
     }
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         Config config = new Config();
 
         Output output = new Output();
@@ -46,14 +46,12 @@ public class MutatedHttpsConnection implements Runnable {
     @Override
     public void run() {
         try {
-            int test = 0;
             String threadName = Thread.currentThread().getName();
-            while (fuzzer.canFuzz() && test < config.getTotal()) {
-                output.info("%s, test %d of %d", threadName, test, config.getTotal());
+            while (fuzzer.canFuzz()) {
+                output.info("%s, test %d of %d",
+                        threadName, fuzzer.getTest(), config.getTotal());
                 output.info("now fuzzer's state is '%s'", fuzzer.getState());
                 try {
-                    output.info("let's go!");
-
                     TLSConnection.create()
                             .target(config.getHost())
                             .target(config.getPort())
@@ -73,7 +71,6 @@ public class MutatedHttpsConnection implements Runnable {
                             .run();
                 } finally {
                     output.flush();
-                    test++;
                     fuzzer.moveOn();
                 }
             }
