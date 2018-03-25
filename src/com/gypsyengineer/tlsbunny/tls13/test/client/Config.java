@@ -24,6 +24,46 @@ public class Config {
     private int parts = Integer.getInteger("tlsbunny.parts", DEFAULT_PARTS);
     private long startTest = Long.getLong("tlsbunny.start.test", DEFAULT_START_TEST);
 
+    public Config host(String host) {
+        this.host = host;
+        return this;
+    }
+
+    public Config target(String target) {
+        this.target = target;
+        return this;
+    }
+
+    public Config mode(String mode) {
+        this.mode = mode;
+        return this;
+    }
+
+    public Config minRatio(double minRatio) {
+        this.minRatio = minRatio;
+        return this;
+    }
+
+    public Config maxRatio(double maxRatio) {
+        this.maxRatio = maxRatio;
+        return this;
+    }
+
+    public Config total(int total) {
+        this.total = total;
+        return this;
+    }
+
+    public Config parts(int parts) {
+        this.parts = parts;
+        return this;
+    }
+
+    public Config startTest(long startTest) {
+        this.startTest = startTest;
+        return this;
+    }
+
     public String host() {
         return host;
     }
