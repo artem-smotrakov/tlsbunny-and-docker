@@ -55,7 +55,7 @@ public abstract class AbstractHandshaker implements Handshaker {
     }
 
     static final byte[] CERTIFICATE_VERIFY_CONTEXT_STRING =
-            "TLS 1.3, client CertificateVerify".getBytes();
+            "TLSBUNNY 1.3, client CertificateVerify".getBytes();
 
     static final long DEFAULT_SEED = 0;
     static final long SEED = Long.getLong("tlsbunny.seed", DEFAULT_SEED);

@@ -16,7 +16,7 @@ import com.gypsyengineer.tlsbunny.utils.Output;
 import java.io.IOException;
 
 /**
- * This is a fuzzy TLS client which wraps a MutatedStructFactory instance.
+ * This is a fuzzy TLSBUNNY client which wraps a MutatedStructFactory instance.
  * MutatedClient starts handshaking where it uses mutated messages produced by MutatedStructFactory.
  */
 @Deprecated

@@ -156,7 +156,7 @@ public class ClientHandshaker extends AbstractHandshaker {
         SupportedVersions.ServerHello selected_version = findSupportedVersion(serverHello);
         if (!selected_version.equals(ProtocolVersion.TLSv13)) {
             info("server hello, selected version: %s", selected_version);
-            // TODO: when TLS 1.3 spec is finished, we should throw an exception here
+            // TODO: when TLSBUNNY 1.3 spec is finished, we should throw an exception here
         }
 
         KeyShare.ServerHello keyShare = findKeyShare(serverHello);

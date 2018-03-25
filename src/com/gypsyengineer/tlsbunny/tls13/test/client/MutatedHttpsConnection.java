@@ -34,15 +34,16 @@ public class MutatedHttpsConnection implements Runnable {
     @Override
     public void run() {
         try {
-            String threadName = Thread.currentThread().getName();
+            output.prefix(Thread.currentThread().getName());
             while (fuzzer.canFuzz()) {
-                output.info("%s, test %d", threadName, fuzzer.getTest());
+                output.info("test %d", fuzzer.getTest());
                 output.info("now fuzzer's state is '%s'", fuzzer.getState());
                 try {
                     TLSConnection.create()
                             .target(config.host())
                             .target(config.port())
                             .set(fuzzer)
+                            .set(output)
                             .send(new OutgoingClientHello())
                             .expect(new IncomingServerHello())
                             .expect(new IncomingChangeCipherSpec())

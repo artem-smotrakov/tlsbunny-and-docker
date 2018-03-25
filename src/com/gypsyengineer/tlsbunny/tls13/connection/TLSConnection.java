@@ -125,7 +125,7 @@ public class TLSConnection {
                             action.run();
                             output.info("done with %s", action.name());
                         } catch (Exception e) {
-                            output.achtung("could not send", e);
+                            output.info("could not send: %s", e.getMessage());
                             status = Status.could_not_send;
                             return this;
                         }
@@ -136,7 +136,7 @@ public class TLSConnection {
                             action.run();
                             output.info("done with %s", action.name());
                         } catch (Exception e) {
-                            output.achtung("could not receive", e);
+                            output.info("could not receive: %s", e.getMessage());
                             status = Status.unexpected_message;
                             return this;
                         }
