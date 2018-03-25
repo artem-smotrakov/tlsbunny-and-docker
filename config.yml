@@ -14,14 +14,14 @@ fuzzers:
       target:    client_hello
       mode:      bit_flip
     - fuzzer:    MutatedClient
-      target:    tlsplaintext
+      target:    tls_plaintext
       mode:      byte_flip
       min_ratio: 0.01
       max_ratio: 0.09
       total:     500
       parts:     5
     - fuzzer:    MutatedClient
-      target:    tlsplaintext
+      target:    tls_plaintext
       mode:      bit_flip
       total:     500
       parts:     5

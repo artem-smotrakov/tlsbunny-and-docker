@@ -31,7 +31,7 @@ public enum Config {
     public static final String DEFAULT_HOST = "localhost";
     public static final String DEFAULT_CONFIG = "config.yml";
     public static final String DEFAULT_FUZZER = "MutatedClient";
-    public static final String DEFAULT_TARGET = "tlsplaintext";
+    public static final String DEFAULT_TARGET = "tls_plaintext";
     public static final String DEFAULT_MODE = "byte_flip";
 
     // common parameters

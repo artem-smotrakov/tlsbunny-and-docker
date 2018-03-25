@@ -24,9 +24,9 @@ public class MutatedStructFactory extends StructFactoryWrapper
         implements Fuzzer<byte[]> {
 
     public enum Mode   { byte_flip, bit_flip }
-    public enum Target { tlsplaintext, handshake, client_hello, finished }
+    public enum Target { tls_plaintext, handshake, client_hello, finished }
 
-    public static final Target DEFAULT_TARGET = Target.tlsplaintext;
+    public static final Target DEFAULT_TARGET = Target.tls_plaintext;
     public static final Mode DEFAULT_MODE = Mode.byte_flip;
     public static final String DEFAULT_START_TEST = "0";
     public static final String STATE_DELIMITER = ":";
@@ -65,7 +65,7 @@ public class MutatedStructFactory extends StructFactoryWrapper
         TLSPlaintext[] tlsPlaintexts = factory.createTLSPlaintexts(
                 type, version, content);
 
-        if (target == Target.tlsplaintext) {
+        if (target == Target.tls_plaintext) {
             output.info("fuzz TLSPlaintext");
             try {
                 tlsPlaintexts[0] = new MutatedStruct(
@@ -223,7 +223,7 @@ public class MutatedStructFactory extends StructFactoryWrapper
         int end = -1;
 
         switch (target) {
-            case tlsplaintext:
+            case tls_plaintext:
                 // in case of TLSPlaintext we don't fuzz the content of the message
                 // but only content type, protocol version and lenght fields
                 end = ContentType.ENCODING_LENGTH

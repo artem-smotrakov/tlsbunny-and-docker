@@ -9,7 +9,7 @@ public class Config {
     public static final double DEFAULT_MAX_RATIO = 0.05;
     public static final int DEFAULT_PORT = 10101;
     public static final String DEFAULT_HOST = "localhost";
-    public static final String DEFAULT_TARGET = "tlsplaintext";
+    public static final String DEFAULT_TARGET = "tls_plaintext";
     public static final String DEFAULT_MODE = "byte_flip";
     public static final int DEFAULT_THREADS = 3;
 
