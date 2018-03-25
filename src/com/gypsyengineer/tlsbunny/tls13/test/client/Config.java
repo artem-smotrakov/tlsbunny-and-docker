@@ -13,46 +13,61 @@ public class Config {
     public static final String DEFAULT_MODE = "byte_flip";
     public static final int DEFAULT_THREADS = 3;
 
-    public String getHost() {
-        return System.getProperty("tlsbunny.host", DEFAULT_HOST).trim();
+    private String host = System.getProperty("tlsbunny.host", DEFAULT_HOST).trim();
+    private int port = Integer.getInteger("tlsbunny.port", DEFAULT_PORT);
+    private String target = System.getProperty("tlsbunny.target", DEFAULT_TARGET).trim();
+    private String mode = System.getProperty("tlsbunny.mode", DEFAULT_MODE).trim();
+    private int total = Integer.getInteger("tlsbunny.total", DEFAULT_TOTAL);
+    private double minRatio = getDouble("tlsbunny.min.ratio", DEFAULT_MIN_RATIO);
+    private double maxRatio = getDouble("tlsbunny.max.ratio", DEFAULT_MAX_RATIO);
+    private int threads = Integer.getInteger("tlsbunny.threads", DEFAULT_THREADS);
+    private int parts = Integer.getInteger("tlsbunny.parts", DEFAULT_PARTS);
+    private long startTest = Long.getLong("tlsbunny.start.test", DEFAULT_START_TEST);
+
+    public String host() {
+        return host;
     }
 
-    public int getPort() {
-        return Integer.getInteger("tlsbunny.port", DEFAULT_PORT);
+    public int port() {
+        return port;
     }
 
-    public String getTarget() {
-        return System.getProperty("tlsbunny.target", DEFAULT_TARGET).trim();
+    public String target() {
+        return target;
     }
 
-    public int getTotal() {
-        return Integer.getInteger("tlsbunny.total", DEFAULT_TOTAL);
+    public String mode() {
+        return mode;
     }
 
-    public double getMinRatio() {
-        return getDouble("tlsbunny.min.ratio", DEFAULT_MIN_RATIO);
+    public int total() {
+        return total;
     }
 
-    public double getMaxRatio() {
-        return getDouble("tlsbunny.max.ratio", DEFAULT_MAX_RATIO);
+    public double minRatio() {
+        return minRatio;
     }
 
-    public int getThreads() {
-        return Integer.getInteger("tlsbunny.threads", DEFAULT_THREADS);
+    public double maxRatio() {
+        return maxRatio;
     }
 
-    public int getParts() {
-        return Integer.getInteger("tlsbunny.parts", DEFAULT_PARTS);
+    public int threads() {
+        return threads;
     }
 
-    public long getStartTest() {
-        return Long.getLong("tlsbunny.start.test", DEFAULT_START_TEST);
+    public int parts() {
+        return parts;
     }
 
-    private static Double getDouble(String name, double default_value) {
+    public long startTest() {
+        return startTest;
+    }
+
+    private static Double getDouble(String name, double defaultValue) {
         String s = System.getProperty(name);
         if (s == null) {
-            return default_value;
+            return defaultValue;
         }
 
         return Double.parseDouble(s);

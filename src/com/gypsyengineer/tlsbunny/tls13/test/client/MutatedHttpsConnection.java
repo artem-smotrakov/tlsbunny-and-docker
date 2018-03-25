@@ -23,35 +23,18 @@ public class MutatedHttpsConnection implements Runnable {
         this.fuzzer = fuzzer;
     }
 
-    public static void main(String[] args) throws InterruptedException {
-        Config config = new Config();
-
-        int threads = config.getThreads();
-
-        if (threads > 1) {
-            MultipleThreads.submit(
-                    config.getStartTest(),
-                    config.getTotal(),
-                    config.getParts(),
-                    threads,
-                    (test, limit) -> create(config));
-        } else {
-            create(config).run();
-        }
-    }
-
     @Override
     public void run() {
         try {
             String threadName = Thread.currentThread().getName();
             while (fuzzer.canFuzz()) {
                 output.info("%s, test %d of %d",
-                        threadName, fuzzer.getTest(), config.getTotal());
+                        threadName, fuzzer.getTest(), config.total());
                 output.info("now fuzzer's state is '%s'", fuzzer.getState());
                 try {
                     TLSConnection.create()
-                            .target(config.getHost())
-                            .target(config.getPort())
+                            .target(config.host())
+                            .target(config.port())
                             .set(fuzzer)
                             .send(new OutgoingClientHello())
                             .expect(new IncomingServerHello())
@@ -80,16 +63,34 @@ public class MutatedHttpsConnection implements Runnable {
         }
     }
 
-    private static MutatedHttpsConnection create(Config config) {
+    public static void main(String[] args) throws InterruptedException {
+        Config config = new Config();
+
+        int threads = config.threads();
+
+        if (threads > 1) {
+            MultipleThreads.submit(
+                    config.startTest(),
+                    config.total(),
+                    config.parts(),
+                    threads,
+                    (test, limit) -> create(config));
+        } else {
+            create(config).run();
+        }
+    }
+
+    public static MutatedHttpsConnection create(Config config) {
         Output output = new Output();
 
         MutatedStructFactory fuzzer = new MutatedStructFactory(
                 StructFactory.getDefault(),
                 output,
-                config.getMinRatio(),
-                config.getMaxRatio()
+                config.minRatio(),
+                config.maxRatio()
         );
-        fuzzer.setTarget(config.getTarget());
+        fuzzer.setTarget(config.target());
+        fuzzer.setMode(config.mode());
 
         return new MutatedHttpsConnection(fuzzer, output, config);
     }
