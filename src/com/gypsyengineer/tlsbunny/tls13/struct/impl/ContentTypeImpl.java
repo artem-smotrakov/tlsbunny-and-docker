@@ -37,6 +37,11 @@ public class ContentTypeImpl implements ContentType {
     }
 
     @Override
+    public boolean isInvalid() {
+        return code == invalid.getCode();
+    }
+
+    @Override
     public int encodingLength() {
         return ENCODING_LENGTH;
     }
@@ -70,7 +75,28 @@ public class ContentTypeImpl implements ContentType {
 
     @Override
     public String toString() {
-        return String.format("content type { code: %d }", code);
+        // yes, the multiple ifs below look just terrible
+        // although it's not clear how to avoid them:
+        // - "switch" doesn't work because we can't use ContentType.getCode() for "case"
+        // - creating a map {code, description} doesn't work because standard types in ContentType
+        //   are not initialized at the moment of initializing of the map
+        String template = "content type (%d)";
+        if (isAlert()) {
+            template = "alert (%s)";
+        }
+        if (isHandshake()) {
+            template = "handshake (%s)";
+        }
+        if (isApplicationData()) {
+            template = "application_data (%s)";
+        }
+        if (isChangeCipherSpec()) {
+            template = "change_cipher_spec (%s)";
+        }
+        if (isInvalid()) {
+            template = "invalid (%s)";
+        }
+        return String.format(template, code);
     }
 
     private static void check(int code) {

@@ -17,4 +17,5 @@ public interface ContentType extends Struct {
     boolean isApplicationData();
     boolean isHandshake();
     boolean isChangeCipherSpec();
+    boolean isInvalid();
 }
