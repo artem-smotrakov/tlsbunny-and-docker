@@ -26,7 +26,7 @@ public class OutgoingApplicationData extends AbstractAction {
 
     @Override
     public String name() {
-        return "sending application data";
+        return "application data";
     }
 
     @Override

@@ -13,7 +13,7 @@ public class IncomingServerHello extends AbstractAction {
 
     @Override
     public String name() {
-        return "receiving ServerHello";
+        return "ServerHello";
     }
 
     @Override

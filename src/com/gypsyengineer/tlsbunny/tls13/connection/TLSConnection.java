@@ -125,18 +125,18 @@ public class TLSConnection {
                 switch (holder.type) {
                     case send:
                         try {
-                            output.info(action.name());
+                            output.info("send: %s", action.name());
                             action.run();
                             connection.send(action.data());
-                            output.info("done with %s", action.name());
+                            output.info("done with sending");
                         } catch (Exception e) {
-                            output.info("could not send: %s", e.getMessage());
+                            output.info("error: %s", e.getMessage());
                             status = Status.could_not_send;
                             return this;
                         }
                         break;
                     case expect:
-                        output.info("expect %s", action.name());
+                        output.info("expect: %s", action.name());
                         try {
                             if (buffer.remaining() == 0) {
                                 buffer = ByteBuffer.wrap(connection.read());
@@ -147,7 +147,7 @@ public class TLSConnection {
                             }
 
                             action.run();
-                            output.info("done with %s", action.name());
+                            output.info("done with receiving");
                         } catch (Exception e) {
                             output.info("could not receive: %s", e.getMessage());
                             status = Status.unexpected_message;
@@ -155,7 +155,7 @@ public class TLSConnection {
                         }
                         break;
                     case allow:
-                        output.info("try %s", action.name());
+                        output.info("allow: %s", action.name());
 
                         // TODO: duplicate code, see above
                         if (buffer.remaining() == 0) {
@@ -169,9 +169,9 @@ public class TLSConnection {
                         int index = buffer.position();
                         try {
                             action.run();
-                            output.info("done with %s", action.name());
+                            output.info("done with receiving");
                         } catch (Exception e) {
-                            output.info("failed: %s", e.getMessage());
+                            output.info("error: %s", e.getMessage());
                             output.info("skip %s", action.name());
 
                             // restore data
@@ -179,10 +179,10 @@ public class TLSConnection {
                         }
                         break;
                     case produce:
-                        output.info("try producing %s", action.name());
+                        output.info("produce: %s", action.name());
                         try {
                             action.run();
-                            output.info("done with producing %s", action.name());
+                            output.info("done with producing");
                         } catch (Exception e) {
                             output.info("error: %s", e.getMessage());
                             status = Status.unexpected_error;

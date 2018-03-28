@@ -16,7 +16,7 @@ public class IncomingFinished extends AbstractAction {
 
     @Override
     public String name() {
-        return "receiving Finished";
+        return "Finished";
     }
 
     @Override

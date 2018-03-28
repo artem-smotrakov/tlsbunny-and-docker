@@ -9,7 +9,7 @@ public class IncomingEncryptedExtensions extends AbstractAction {
 
     @Override
     public String name() {
-        return "receiving EncryptedExtensions";
+        return "EncryptedExtensions";
     }
 
     @Override

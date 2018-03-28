@@ -9,7 +9,7 @@ public class IncomingChangeCipherSpec extends AbstractAction {
 
     @Override
     public String name() {
-        return "receiving ChangeCipherSpec";
+        return "ChangeCipherSpec";
     }
 
     @Override

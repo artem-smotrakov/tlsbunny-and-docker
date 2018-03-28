@@ -9,7 +9,7 @@ public class IncomingNewSessionTicket extends AbstractAction {
 
     @Override
     public String name() {
-        return "receiving NewSessionTicket";
+        return "NewSessionTicket";
     }
 
     @Override

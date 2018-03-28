@@ -20,7 +20,7 @@ public class OutgoingFinished extends AbstractAction {
 
     @Override
     public String name() {
-        return "sending Finished";
+        return "Finished";
     }
 
     @Override

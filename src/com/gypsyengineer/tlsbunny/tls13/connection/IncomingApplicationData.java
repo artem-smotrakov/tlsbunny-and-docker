@@ -10,7 +10,7 @@ public class IncomingApplicationData extends AbstractAction {
 
     @Override
     public String name() {
-        return "receiving application data";
+        return "application data";
     }
 
     @Override

@@ -9,7 +9,7 @@ public class IncomingCertificate extends AbstractAction {
 
     @Override
     public String name() {
-        return "receiving Certificate";
+        return "Certificate";
     }
 
     @Override
