@@ -4,14 +4,13 @@ import com.gypsyengineer.tlsbunny.tls13.struct.*;
 import com.gypsyengineer.tlsbunny.tls13.utils.Helper;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.List;
 
 public class OutgoingClientHello extends AbstractAction {
 
     @Override
     public String name() {
-        return "sending ClientHello";
+        return "ClientHello";
     }
 
     @Override

@@ -23,11 +23,11 @@ public class TLSConnection {
     private static final ByteBuffer NOTHING = ByteBuffer.allocate(0);
 
     private enum ActionType {
-        send, expect, allow
+        send, expect, allow, produce
     }
 
     public enum Status {
-        not_started, running, could_not_send, unexpected_message, success
+        not_started, running, could_not_send, unexpected_message, unexpected_error, success
     }
 
     private final List<ActionHolder> actions = new ArrayList<>();
@@ -97,6 +97,11 @@ public class TLSConnection {
         return this;
     }
 
+    public TLSConnection produce(Action action) {
+        actions.add(new ActionHolder(action, ActionType.produce));
+        return this;
+    }
+
     public TLSConnection connect() throws IOException {
         status = Status.running;
         try (Connection connection = Connection.create(host, port)) {
@@ -131,8 +136,8 @@ public class TLSConnection {
                         }
                         break;
                     case expect:
+                        output.info("expect %s", action.name());
                         try {
-                            output.info("expect %s", action.name());
                             if (buffer.remaining() == 0) {
                                 buffer = ByteBuffer.wrap(connection.read());
                                 if (buffer.remaining() == 0) {
@@ -150,6 +155,8 @@ public class TLSConnection {
                         }
                         break;
                     case allow:
+                        output.info("try %s", action.name());
+
                         // TODO: duplicate code, see above
                         if (buffer.remaining() == 0) {
                             buffer = ByteBuffer.wrap(connection.read());
@@ -161,7 +168,6 @@ public class TLSConnection {
 
                         int index = buffer.position();
                         try {
-                            output.info("try %s", action.name());
                             action.run();
                             output.info("done with %s", action.name());
                         } catch (Exception e) {
@@ -171,6 +177,18 @@ public class TLSConnection {
                             // restore data
                             buffer.position(index);
                         }
+                        break;
+                    case produce:
+                        output.info("try producing %s", action.name());
+                        try {
+                            action.run();
+                            output.info("done with producing %s", action.name());
+                        } catch (Exception e) {
+                            output.info("error: %s", e.getMessage());
+                            status = Status.unexpected_error;
+                            return this;
+                        }
+
                         break;
                     default:
                         throw new IllegalStateException(
