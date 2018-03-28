@@ -17,7 +17,6 @@ public abstract class AbstractAction implements Action {
     static final long SEED = Long.getLong("tlsbunny.seed", DEFAULT_SEED);
 
     Output output;
-    private Connection connection;
     ByteBuffer buffer;
     StructFactory factory;
     SignatureScheme scheme;
@@ -83,12 +82,6 @@ public abstract class AbstractAction implements Action {
     @Override
     public Action set(ByteBuffer buffer) {
         this.buffer = buffer;
-        return this;
-    }
-
-    @Override
-    public Action set(Connection connection) {
-        this.connection = connection;
         return this;
     }
 

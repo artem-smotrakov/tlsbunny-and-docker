@@ -115,7 +115,6 @@ public class TLSConnection {
                 action.set(negotiator);
                 action.set(factory);
                 action.set(hkdf);
-                action.set(connection);
                 action.set(buffer);
 
                 switch (holder.type) {

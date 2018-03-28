@@ -23,7 +23,6 @@ public interface Action {
     Action set(HKDF hkdf);
     Action set(Context context);
     Action set(ByteBuffer buffer);
-    Action set(Connection connection);
     Action run() throws Exception;
     ByteBuffer data();
 }
