@@ -97,12 +97,12 @@ public class TLSConnection {
         return this;
     }
 
-    public TLSConnection run() throws IOException {
+    public TLSConnection connect() throws IOException {
         status = Status.running;
         try (Connection connection = Connection.create(host, port)) {
             Context context = new Context();
             context.factory = factory;
-            
+
             ByteBuffer buffer = NOTHING;
             loop: for (ActionHolder holder : actions) {
                 Action action = holder.action;
@@ -123,6 +123,7 @@ public class TLSConnection {
                         try {
                             output.info(action.name());
                             action.run();
+                            connection.send(action.data());
                             output.info("done with %s", action.name());
                         } catch (Exception e) {
                             output.info("could not send: %s", e.getMessage());
@@ -133,6 +134,14 @@ public class TLSConnection {
                     case expect:
                         try {
                             output.info("expect %s", action.name());
+                            if (buffer.remaining() == 0) {
+                                buffer = ByteBuffer.wrap(connection.read());
+                                if (buffer.remaining() == 0) {
+                                    throw new IOException("no data received");
+                                }
+                                action.set(buffer);
+                            }
+
                             action.run();
                             output.info("done with %s", action.name());
                         } catch (Exception e) {
@@ -142,6 +151,16 @@ public class TLSConnection {
                         }
                         break;
                     case allow:
+                        // TODO: duplicate code, see above
+                        if (buffer.remaining() == 0) {
+                            buffer = ByteBuffer.wrap(connection.read());
+                            if (buffer.remaining() == 0) {
+                                throw new IOException("no data received");
+                            }
+                            action.set(buffer);
+                        }
+
+                        int index = buffer.position();
                         try {
                             output.info("try %s", action.name());
                             action.run();
@@ -149,14 +168,15 @@ public class TLSConnection {
                         } catch (Exception e) {
                             output.info("failed: %s", e.getMessage());
                             output.info("skip %s", action.name());
+
+                            // restore data
+                            buffer.position(index);
                         }
                         break;
                     default:
                         throw new IllegalStateException(
                                 String.format("unknown action type: %s", holder.type));
                 }
-
-                buffer = action.data();
             }
         } finally {
             output.flush();
@@ -187,7 +207,7 @@ public class TLSConnection {
         return status;
     }
 
-    public static TLSConnection create() throws IOException,
+    public static TLSConnection init() throws IOException,
             InvalidAlgorithmParameterException, NoSuchAlgorithmException {
 
         TLSConnection connection = new TLSConnection();

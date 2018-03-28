@@ -6,6 +6,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
 import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
+import com.gypsyengineer.tlsbunny.tls13.utils.Helper;
 
 import static com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext.NO_PADDING;
 
@@ -35,10 +36,7 @@ public class OutgoingApplicationData extends AbstractAction {
                 ProtocolVersion.TLSv12,
                 encrypt(data));
 
-        for (TLSPlaintext tlsPlaintext : tlsPlaintexts) {
-            connection.send(tlsPlaintext.encoding());
-        }
-
+        buffer = Helper.store(tlsPlaintexts);
 
         return this;
     }

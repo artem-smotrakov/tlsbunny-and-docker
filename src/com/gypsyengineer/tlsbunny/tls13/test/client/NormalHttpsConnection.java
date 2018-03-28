@@ -7,7 +7,7 @@ public class NormalHttpsConnection {
     public static final String HTTP_GET_REQUEST = "GET / HTTP/1.1\n\n";
 
     public static void main(String[] args) throws Exception {
-        TLSConnection.create()
+        TLSConnection.init()
                 .target("localhost")
                 .target(10101)
                 .send(new OutgoingClientHello())
@@ -18,11 +18,10 @@ public class NormalHttpsConnection {
                 .expect(new IncomingCertificateVerify())
                 .expect(new IncomingFinished())
                 .send(new OutgoingFinished())
-                .allow(new IncomingChangeCipherSpec())
                 .allow(new IncomingNewSessionTicket())
                 .send(new OutgoingApplicationData(HTTP_GET_REQUEST))
                 .expect(new IncomingApplicationData())
-                .run()
+                .connect()
                 .check(new Success());
     }
 

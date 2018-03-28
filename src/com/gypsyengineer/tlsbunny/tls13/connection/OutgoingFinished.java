@@ -14,6 +14,7 @@ import static com.gypsyengineer.tlsbunny.tls13.handshake.Context.ZERO_HASH_VALUE
 import static com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext.NO_PADDING;
 
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
+import com.gypsyengineer.tlsbunny.tls13.utils.Helper;
 
 public class OutgoingFinished extends AbstractAction {
 
@@ -53,7 +54,7 @@ public class OutgoingFinished extends AbstractAction {
                 ZERO_HASH_VALUE,
                 suite.ivLength());
 
-        connection.send(encrypt(handshake));
+        buffer = Helper.store(encrypt(handshake));
 
         context.applicationDataEnctyptor = AEAD.createEncryptor(
                 suite.cipher(),

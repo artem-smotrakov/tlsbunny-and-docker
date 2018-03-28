@@ -17,7 +17,7 @@ public abstract class AbstractAction implements Action {
     static final long SEED = Long.getLong("tlsbunny.seed", DEFAULT_SEED);
 
     Output output;
-    Connection connection;
+    private Connection connection;
     ByteBuffer buffer;
     StructFactory factory;
     SignatureScheme scheme;

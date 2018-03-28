@@ -4,7 +4,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.*;
 
 import java.io.IOException;
 
-public class IncomingAlert extends AbstractReceivingAction {
+public class IncomingAlert extends AbstractAction {
 
     @Override
     public String name() {
@@ -12,15 +12,28 @@ public class IncomingAlert extends AbstractReceivingAction {
     }
 
     @Override
-    void runImpl() throws Exception {
+    public Action run() throws Exception {
         TLSPlaintext tlsPlaintext = factory.parser().parseTLSPlaintext(buffer);
-        if (!tlsPlaintext.containsAlert()) {
-            output.info("received a record of %s", tlsPlaintext.getType());
+
+        if (tlsPlaintext.containsApplicationData()) {
+
+        }
+
+        Alert alert = null;
+        if (tlsPlaintext.containsAlert()) {
+            alert = factory.parser().parseAlert(tlsPlaintext.getFragment());
+        } else if (tlsPlaintext.containsApplicationData()) {
+
+        }
+
+
+        output.info("received an alert: %s", alert);
+
+        if (alert == null) {
             throw new IOException("expected an alert");
         }
 
-        Alert alert = factory.parser().parseAlert(tlsPlaintext.getFragment());
-        output.info("received an alert: %s", alert);
+        return this;
     }
 
     

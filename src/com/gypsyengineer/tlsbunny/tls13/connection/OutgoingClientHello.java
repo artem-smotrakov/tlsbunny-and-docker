@@ -1,8 +1,10 @@
 package com.gypsyengineer.tlsbunny.tls13.connection;
 
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
+import com.gypsyengineer.tlsbunny.tls13.utils.Helper;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.List;
 
 public class OutgoingClientHello extends AbstractAction {
@@ -28,9 +30,12 @@ public class OutgoingClientHello extends AbstractAction {
                 extensions);
 
         Handshake handshake = toHandshake(hello);
-        connection.send(factory.createTLSPlaintexts(ContentType.handshake,
+        TLSPlaintext[] tlsPlaintexts = factory.createTLSPlaintexts(
+                ContentType.handshake,
                 ProtocolVersion.TLSv10,
-                handshake.encoding()));
+                handshake.encoding());
+
+        buffer = Helper.store(tlsPlaintexts);
 
         if (context.hasFirstClientHello() && context.hasSecondClientHello()) {
             throw new IOException("already received two ClientHello messages");

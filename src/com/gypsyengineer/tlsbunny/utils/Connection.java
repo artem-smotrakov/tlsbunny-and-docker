@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.nio.ByteBuffer;
 
 public class Connection implements AutoCloseable {
 
@@ -21,6 +22,10 @@ public class Connection implements AutoCloseable {
         this.socket = socket;
         this.is = is;
         this.os = os;
+    }
+
+    public void send(ByteBuffer buffer) throws IOException {
+        send(buffer.array());
     }
 
     public void send(byte[] data) throws IOException {

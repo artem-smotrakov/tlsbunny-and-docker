@@ -5,7 +5,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-public class IncomingChangeCipherSpec extends AbstractReceivingAction {
+public class IncomingChangeCipherSpec extends AbstractAction {
 
     @Override
     public String name() {
@@ -13,7 +13,7 @@ public class IncomingChangeCipherSpec extends AbstractReceivingAction {
     }
 
     @Override
-    void runImpl() throws IOException {
+    public Action run() throws IOException {
         TLSPlaintext tlsPlaintext = factory.parser().parseTLSPlaintext(buffer);
         if (!tlsPlaintext.containsChangeCipherSpec()) {
             throw new IOException("expected a change cipher spec message");
@@ -23,6 +23,8 @@ public class IncomingChangeCipherSpec extends AbstractReceivingAction {
         if (!ccs.isValid()) {
             throw new IOException("unexpected content in change_cipher_spec message");
         }
+
+        return this;
     }
 
 }

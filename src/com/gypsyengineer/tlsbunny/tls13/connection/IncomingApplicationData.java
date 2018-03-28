@@ -6,7 +6,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
 
 import java.io.IOException;
 
-public class IncomingApplicationData extends AbstractReceivingAction {
+public class IncomingApplicationData extends AbstractAction {
 
     @Override
     public String name() {
@@ -14,7 +14,7 @@ public class IncomingApplicationData extends AbstractReceivingAction {
     }
 
     @Override
-    void runImpl() throws Exception {
+    public Action run() throws Exception {
         TLSPlaintext tlsCiphertext = factory.parser().parseTLSPlaintext(buffer);
 
         if (!tlsCiphertext.containsApplicationData()) {
@@ -28,6 +28,8 @@ public class IncomingApplicationData extends AbstractReceivingAction {
 
         byte[] data = tlsInnerPlaintext.getContent();
         output.info("received data (%d bytes)%n%s", data.length, new String(data));
+
+        return this;
     }
 
     private TLSInnerPlaintext decrypt(TLSPlaintext tlsCiphertext) throws Exception {

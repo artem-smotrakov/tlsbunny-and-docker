@@ -12,7 +12,7 @@ import java.util.Arrays;
 
 import static com.gypsyengineer.tlsbunny.tls13.handshake.Context.ZERO_HASH_VALUE;
 
-public class IncomingFinished extends AbstractReceivingAction {
+public class IncomingFinished extends AbstractAction {
 
     @Override
     public String name() {
@@ -20,7 +20,7 @@ public class IncomingFinished extends AbstractReceivingAction {
     }
 
     @Override
-    void runImpl() throws Exception {
+    public Action run() throws Exception {
         TLSPlaintext tlsPlaintext = factory.parser().parseTLSPlaintext(buffer);
         if (!tlsPlaintext.containsApplicationData()) {
             throw new IOException("expected a TLSCiphertext");
@@ -41,6 +41,8 @@ public class IncomingFinished extends AbstractReceivingAction {
         }
 
         processFinished(handshake);
+
+        return this;
     }
 
     private void processFinished(Handshake handshake)

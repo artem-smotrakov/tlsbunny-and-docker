@@ -5,7 +5,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
 import java.io.IOException;
 
-public class IncomingCertificateVerify extends AbstractReceivingAction {
+public class IncomingCertificateVerify extends AbstractAction {
 
     @Override
     public String name() {
@@ -13,7 +13,7 @@ public class IncomingCertificateVerify extends AbstractReceivingAction {
     }
 
     @Override
-    void runImpl() throws Exception {
+    public Action run() throws Exception {
         TLSPlaintext tlsPlaintext = factory.parser().parseTLSPlaintext(buffer);
         if (!tlsPlaintext.containsApplicationData()) {
             throw new IOException("expected a TLSCiphertext");
@@ -34,6 +34,8 @@ public class IncomingCertificateVerify extends AbstractReceivingAction {
         }
 
         processCertificateVerify(handshake);
+
+        return this;
     }
 
     private void processCertificateVerify(Handshake handshake) {

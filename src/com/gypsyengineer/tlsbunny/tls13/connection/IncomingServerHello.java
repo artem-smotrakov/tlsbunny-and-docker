@@ -9,7 +9,7 @@ import static com.gypsyengineer.tlsbunny.utils.Utils.concatenate;
 
 import java.io.IOException;
 
-public class IncomingServerHello extends AbstractReceivingAction {
+public class IncomingServerHello extends AbstractAction {
 
     @Override
     public String name() {
@@ -17,7 +17,7 @@ public class IncomingServerHello extends AbstractReceivingAction {
     }
 
     @Override
-    void runImpl() throws Exception {
+    public Action run() throws Exception {
         TLSPlaintext tlsPlaintext = factory.parser().parseTLSPlaintext(buffer);
         if (!tlsPlaintext.containsHandshake()) {
             throw new IOException("expected a handshake message");
@@ -29,6 +29,8 @@ public class IncomingServerHello extends AbstractReceivingAction {
         }
 
         processServerHello(handshake);
+
+        return this;
     }
 
     private void processServerHello(Handshake handshake) throws Exception {
