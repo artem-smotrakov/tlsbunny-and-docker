@@ -11,6 +11,7 @@ public class NormalHttpsConnection {
                 .target("localhost")
                 .target(10101)
                 .send(new OutgoingClientHello())
+                .send(new OutgoingChangeCipherSpec())
                 .expect(new IncomingServerHello())
                 .expect(new IncomingChangeCipherSpec())
                 .expect(new IncomingEncryptedExtensions())
