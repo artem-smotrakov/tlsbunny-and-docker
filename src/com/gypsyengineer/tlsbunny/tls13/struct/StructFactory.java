@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface StructFactory {
     
-    public static StructFactory getDefault() {
+    static StructFactory getDefault() {
         return new StructFactoryImpl();
     }
 
@@ -36,6 +36,8 @@ public interface StructFactory {
     AlertLevel createAlertLevel(int code);
     AlertDescription createAlertDescription(int code);
     Alert createAlert(AlertLevel level, AlertDescription description);
+
+    ChangeCipherSpec createChangeCipherSpec(int value);
     
     // handshake messages
     Handshake createHandshake(HandshakeType type, byte[] content);

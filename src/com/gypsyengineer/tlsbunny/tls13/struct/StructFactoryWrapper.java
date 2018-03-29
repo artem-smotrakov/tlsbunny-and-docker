@@ -115,6 +115,11 @@ public class StructFactoryWrapper implements StructFactory {
     }
 
     @Override
+    public ChangeCipherSpec createChangeCipherSpec(int value) {
+        return factory.createChangeCipherSpec(value);
+    }
+
+    @Override
     public Handshake createHandshake(HandshakeType type, byte[] content) {
         return factory.createHandshake(type, content);
     }

@@ -5,44 +5,11 @@ import com.gypsyengineer.tlsbunny.tls.Random;
 import com.gypsyengineer.tlsbunny.tls.UInt16;
 import com.gypsyengineer.tlsbunny.tls.UInt24;
 import com.gypsyengineer.tlsbunny.tls.Vector;
-import com.gypsyengineer.tlsbunny.tls13.struct.Alert;
-import com.gypsyengineer.tlsbunny.tls13.struct.AlertDescription;
-import com.gypsyengineer.tlsbunny.tls13.struct.AlertLevel;
-import com.gypsyengineer.tlsbunny.tls13.struct.Certificate;
-import com.gypsyengineer.tlsbunny.tls13.struct.CertificateEntry;
-import com.gypsyengineer.tlsbunny.tls13.struct.CertificateRequest;
-import com.gypsyengineer.tlsbunny.tls13.struct.CertificateVerify;
-import com.gypsyengineer.tlsbunny.tls13.struct.CipherSuite;
-import com.gypsyengineer.tlsbunny.tls13.struct.CompressionMethod;
-import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
-import com.gypsyengineer.tlsbunny.tls13.struct.Extension;
-import com.gypsyengineer.tlsbunny.tls13.struct.Handshake;
-import com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType;
-import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
-import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
-import com.gypsyengineer.tlsbunny.tls13.struct.SupportedVersions;
-import com.gypsyengineer.tlsbunny.tls13.struct.ClientHello;
-import com.gypsyengineer.tlsbunny.tls13.struct.EncryptedExtensions;
-import com.gypsyengineer.tlsbunny.tls13.struct.EndOfEarlyData;
-import com.gypsyengineer.tlsbunny.tls13.struct.ExtensionType;
-import com.gypsyengineer.tlsbunny.tls13.struct.Finished;
-import com.gypsyengineer.tlsbunny.tls13.struct.HelloRetryRequest;
-import com.gypsyengineer.tlsbunny.tls13.struct.HkdfLabel;
-import com.gypsyengineer.tlsbunny.tls13.struct.KeyShare;
-import com.gypsyengineer.tlsbunny.tls13.struct.KeyShareEntry;
-import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
-import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroupList;
-import com.gypsyengineer.tlsbunny.tls13.struct.ServerHello;
-import com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme;
-import com.gypsyengineer.tlsbunny.tls13.struct.SignatureSchemeList;
-import com.gypsyengineer.tlsbunny.tls13.struct.StructParser;
-import com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext;
-import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
-import com.gypsyengineer.tlsbunny.tls13.struct.UncompressedPointRepresentation;
+import com.gypsyengineer.tlsbunny.tls13.struct.*;
 import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.util.List;
 
-// TODO: all implementation should return immutable vectors
+// TODO: all implementations should return immutable vectors
 public class StructFactoryImpl implements StructFactory {
 
     @Override
@@ -107,6 +74,11 @@ public class StructFactoryImpl implements StructFactory {
                 Vector.wrap(ClientHelloImpl.CIPHER_SUITES_LENGTH_BYTES, cipher_suites), 
                 Vector.wrap(ClientHelloImpl.LEGACY_COMPRESSION_METHODS_LENGTH_BYTES, legacy_compression_methods),
                 Vector.wrap(ClientHelloImpl.EXTENSIONS_LENGTH_BYTES, extensions));
+    }
+
+    @Override
+    public ChangeCipherSpec createChangeCipherSpec(int value) {
+        return new ChangeCipherSpecImpl(value);
     }
     
     @Override
