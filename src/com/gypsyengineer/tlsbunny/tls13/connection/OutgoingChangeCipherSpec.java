@@ -15,7 +15,7 @@ public class OutgoingChangeCipherSpec extends AbstractAction {
         ChangeCipherSpec ccs = factory.createChangeCipherSpec(ChangeCipherSpec.VALID_VALUE);
         TLSPlaintext[] tlsPlaintexts = factory.createTLSPlaintexts(
                 ContentType.change_cipher_spec,
-                ProtocolVersion.TLSv10,
+                ProtocolVersion.TLSv12,
                 ccs.encoding());
 
         buffer = Helper.store(tlsPlaintexts);
