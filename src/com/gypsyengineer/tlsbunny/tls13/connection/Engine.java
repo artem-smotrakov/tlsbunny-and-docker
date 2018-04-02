@@ -39,6 +39,8 @@ public class Engine {
     private Negotiator negotiator;
     private HKDF hkdf;
     private Status status = Status.not_started;
+    private ByteBuffer buffer = NOTHING;
+    private Context context = new Context();
 
     // if false, then the engine stops when an alert received
     private boolean tolerant = false;
@@ -110,10 +112,10 @@ public class Engine {
     public Engine connect() throws IOException {
         status = Status.running;
         try (Connection connection = Connection.create(host, port)) {
-            Context context = new Context();
+            buffer = NOTHING;
+            context = new Context();
             context.factory = factory;
 
-            ByteBuffer buffer = NOTHING;
             loop: for (ActionHolder holder : actions) {
                 Action action = holder.action;
 
@@ -143,36 +145,11 @@ public class Engine {
                     case expect:
                         output.info("expect: %s", action.name());
                         try {
-                            if (buffer.remaining() == 0) {
-                                buffer = ByteBuffer.wrap(connection.read());
-                                if (buffer.remaining() == 0) {
-                                    throw new IOException("no data received");
-                                }
-
-                                if (!tolerant) {
-                                    // check for an alert
-                                    buffer.mark();
-                                    try {
-                                        Alert alert = factory.parser().parseAlert(buffer);
-                                        if (alert != null) {
-                                            context.setAlert(alert);
-                                            output.info("stop, received an alert: %s", alert);
-                                            break loop;
-                                        }
-                                    } catch (Exception e) {
-                                        // it's not an alert, ignore
-                                    } finally {
-                                         buffer.reset();
-                                    }
-                                }
-
-                                action.set(buffer);
-                            }
-
+                            read(connection, action);
                             action.run();
                             output.info("done with receiving");
                         } catch (Exception e) {
-                            output.info("could not receive: %s", e.getMessage());
+                            output.info("error: %s", e.getMessage());
                             status = Status.unexpected_message;
                             return this;
                         }
@@ -180,14 +157,7 @@ public class Engine {
                     case allow:
                         output.info("allow: %s", action.name());
 
-                        // TODO: duplicate code, see above
-                        if (buffer.remaining() == 0) {
-                            buffer = ByteBuffer.wrap(connection.read());
-                            if (buffer.remaining() == 0) {
-                                throw new IOException("no data received");
-                            }
-                            action.set(buffer);
-                        }
+                        read(connection, action);
 
                         int index = buffer.position();
                         try {
@@ -245,6 +215,31 @@ public class Engine {
 
     public Status status() {
         return status;
+    }
+
+    private void read(Connection connection, Action action) throws IOException {
+        if (buffer.remaining() == 0) {
+            buffer = ByteBuffer.wrap(connection.read());
+            if (buffer.remaining() == 0) {
+                throw new IOException("no data received");
+            }
+
+            if (!tolerant) {
+                // check for an alert
+                buffer.mark();
+                try {
+                    Alert alert = factory.parser().parseAlert(buffer);
+                    if (alert != null) {
+                        context.setAlert(alert);
+                        throw new IOException(String.format("received an alert: %s", alert));
+                    }
+                } finally {
+                    buffer.reset(); // restore data if no alert
+                }
+            }
+
+            action.set(buffer);
+        }
     }
 
     public static Engine init() throws IOException,
