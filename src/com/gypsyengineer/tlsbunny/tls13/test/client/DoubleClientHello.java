@@ -5,7 +5,7 @@ import com.gypsyengineer.tlsbunny.tls13.connection.*;
 public class DoubleClientHello {
 
     public static void main(String[] args) throws Exception {
-        TLSConnection.init()
+        Engine.init()
                 .target("localhost")
                 .target(10101)
                 .send(new OutgoingClientHello())
