@@ -185,6 +185,11 @@ public class Engine {
                         throw new IllegalStateException(
                                 String.format("unknown action type: %s", holder.type));
                 }
+
+                if (context.hasAlert()) {
+                    output.info("stop, alert occurred: %s", context.getAlert());
+                    break;
+                }
             }
         } finally {
             output.flush();
