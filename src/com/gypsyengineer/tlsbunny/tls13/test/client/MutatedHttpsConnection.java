@@ -39,7 +39,7 @@ public class MutatedHttpsConnection implements Runnable {
                 output.info("test %d", fuzzer.getTest());
                 output.info("now fuzzer's state is '%s'", fuzzer.getState());
                 try {
-                    TLSConnection.init()
+                    Engine.init()
                             .target(config.host())
                             .target(config.port())
                             .set(fuzzer)

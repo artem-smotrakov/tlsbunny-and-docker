@@ -4,10 +4,7 @@ import com.gypsyengineer.tlsbunny.tls13.crypto.HKDF;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.handshake.ECDHENegotiator;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Negotiator;
-import com.gypsyengineer.tlsbunny.tls13.struct.CipherSuite;
-import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
-import com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme;
-import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
+import com.gypsyengineer.tlsbunny.tls13.struct.*;
 import com.gypsyengineer.tlsbunny.utils.Connection;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
@@ -18,7 +15,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TLSConnection {
+public class Engine {
 
     private static final ByteBuffer NOTHING = ByteBuffer.allocate(0);
 
@@ -42,73 +39,83 @@ public class TLSConnection {
     private Negotiator negotiator;
     private HKDF hkdf;
     private Status status = Status.not_started;
+    private ByteBuffer buffer = NOTHING;
+    private Context context = new Context();
 
-    private TLSConnection() {
+    // if false, then the engine stops when an alert received
+    private boolean tolerant = false;
+
+    private Engine() {
 
     }
 
-    public TLSConnection target(String host) {
+    public Engine target(String host) {
         this.host = host;
         return this;
     }
 
-    public TLSConnection target(int port) {
+    public Engine target(int port) {
         this.port = port;
         return this;
     }
 
-    public TLSConnection set(Output output) {
+    public Engine tolerant() {
+        tolerant = true;
+        return this;
+    }
+
+    public Engine set(Output output) {
         this.output = output;
         return this;
     }
 
-    public TLSConnection set(StructFactory factory) {
+    public Engine set(StructFactory factory) {
         this.factory = factory;
         return this;
     }
 
-    public TLSConnection set(SignatureScheme scheme) {
+    public Engine set(SignatureScheme scheme) {
         this.scheme = scheme;
         return this;
     }
 
-    public TLSConnection set(NamedGroup group) {
+    public Engine set(NamedGroup group) {
         this.group = group;
         return this;
     }
 
-    public TLSConnection set(Negotiator negotiator) {
+    public Engine set(Negotiator negotiator) {
         this.negotiator = negotiator;
         return this;
     }
 
-    public TLSConnection send(Action action) {
+    public Engine send(Action action) {
         actions.add(new ActionHolder(action, ActionType.send));
         return this;
     }
 
-    public TLSConnection expect(Action action) {
+    public Engine expect(Action action) {
         actions.add(new ActionHolder(action, ActionType.expect));
         return this;
     }
 
-    public TLSConnection allow(Action action) {
+    public Engine allow(Action action) {
         actions.add(new ActionHolder(action, ActionType.allow));
         return this;
     }
 
-    public TLSConnection produce(Action action) {
+    public Engine produce(Action action) {
         actions.add(new ActionHolder(action, ActionType.produce));
         return this;
     }
 
-    public TLSConnection connect() throws IOException {
+    public Engine connect() throws IOException {
         status = Status.running;
         try (Connection connection = Connection.create(host, port)) {
-            Context context = new Context();
+            buffer = NOTHING;
+            context = new Context();
             context.factory = factory;
 
-            ByteBuffer buffer = NOTHING;
             loop: for (ActionHolder holder : actions) {
                 Action action = holder.action;
 
@@ -138,18 +145,11 @@ public class TLSConnection {
                     case expect:
                         output.info("expect: %s", action.name());
                         try {
-                            if (buffer.remaining() == 0) {
-                                buffer = ByteBuffer.wrap(connection.read());
-                                if (buffer.remaining() == 0) {
-                                    throw new IOException("no data received");
-                                }
-                                action.set(buffer);
-                            }
-
+                            read(connection, action);
                             action.run();
                             output.info("done with receiving");
                         } catch (Exception e) {
-                            output.info("could not receive: %s", e.getMessage());
+                            output.info("error: %s", e.getMessage());
                             status = Status.unexpected_message;
                             return this;
                         }
@@ -157,14 +157,7 @@ public class TLSConnection {
                     case allow:
                         output.info("allow: %s", action.name());
 
-                        // TODO: duplicate code, see above
-                        if (buffer.remaining() == 0) {
-                            buffer = ByteBuffer.wrap(connection.read());
-                            if (buffer.remaining() == 0) {
-                                throw new IOException("no data received");
-                            }
-                            action.set(buffer);
-                        }
+                        read(connection, action);
 
                         int index = buffer.position();
                         try {
@@ -206,7 +199,7 @@ public class TLSConnection {
         return this;
     }
 
-    public TLSConnection check(Check check) {
+    public Engine check(Check check) {
         check.set(this);
         check.run();
         if (check.failed()) {
@@ -216,7 +209,7 @@ public class TLSConnection {
         return this;
     }
 
-    public TLSConnection analyze(Analyzer analyzer) {
+    public Engine analyze(Analyzer analyzer) {
         return this;
     }
 
@@ -224,10 +217,35 @@ public class TLSConnection {
         return status;
     }
 
-    public static TLSConnection init() throws IOException,
+    private void read(Connection connection, Action action) throws IOException {
+        if (buffer.remaining() == 0) {
+            buffer = ByteBuffer.wrap(connection.read());
+            if (buffer.remaining() == 0) {
+                throw new IOException("no data received");
+            }
+            action.set(buffer);
+
+            if (!tolerant) {
+                // check for an alert
+                buffer.mark();
+                try {
+                    TLSPlaintext tlsPlaintext = factory.parser().parseTLSPlaintext(buffer);
+                    if (tlsPlaintext.containsAlert()) {
+                        Alert alert = factory.parser().parseAlert(buffer);
+                        context.setAlert(alert);
+                        throw new IOException(String.format("received an alert: %s", alert));
+                    }
+                } finally {
+                    buffer.reset(); // restore data if no alert
+                }
+            }
+        }
+    }
+
+    public static Engine init() throws IOException,
             InvalidAlgorithmParameterException, NoSuchAlgorithmException {
 
-        TLSConnection connection = new TLSConnection();
+        Engine connection = new Engine();
         connection.negotiator = ECDHENegotiator.create(
                 (NamedGroup.Secp) connection.group, connection.factory);
         connection.hkdf = HKDF.create(
