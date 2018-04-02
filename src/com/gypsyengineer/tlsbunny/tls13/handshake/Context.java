@@ -1,12 +1,9 @@
 package com.gypsyengineer.tlsbunny.tls13.handshake;
 
+import com.gypsyengineer.tlsbunny.tls.Vector;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AEAD;
-import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
 import com.gypsyengineer.tlsbunny.tls13.struct.Handshake;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
-import com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext;
-import static com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext.NO_PADDING;
-import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -74,6 +71,8 @@ public class Context {
     public byte[] server_application_write_key;
     public byte[] server_application_write_iv;
 
+    public Vector<Byte> certificate_request_context;
+
     // TODO: these fields should not be public
     public AEAD handshakeEncryptor;
     public AEAD handshakeDecryptor;
@@ -118,6 +117,8 @@ public class Context {
         client_application_write_iv = null;
         server_application_write_key = null;
         server_application_write_iv = null;
+
+        certificate_request_context = null;
 
         handshakeEncryptor = null;
         handshakeDecryptor = null;
