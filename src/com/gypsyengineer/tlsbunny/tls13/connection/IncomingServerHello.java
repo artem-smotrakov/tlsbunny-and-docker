@@ -19,6 +19,13 @@ public class IncomingServerHello extends AbstractAction {
     @Override
     public Action run() throws Exception {
         TLSPlaintext tlsPlaintext = factory.parser().parseTLSPlaintext(buffer);
+
+        if (tlsPlaintext.containsAlert()) {
+            Alert alert = factory.parser().parseAlert(tlsPlaintext.getFragment());
+            context.setAlert(alert);
+            throw new IOException(String.format("received an alert: %s", alert));
+        }
+
         if (!tlsPlaintext.containsHandshake()) {
             throw new IOException("expected a handshake message");
         }
