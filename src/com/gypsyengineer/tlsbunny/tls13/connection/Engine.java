@@ -159,16 +159,14 @@ public class Engine {
 
                         read(connection, action);
 
-                        int index = buffer.position();
+                        buffer.mark();
                         try {
                             action.run();
                             output.info("done with receiving");
                         } catch (Exception e) {
                             output.info("error: %s", e.getMessage());
                             output.info("skip %s", action.name());
-
-                            // restore data
-                            buffer.position(index);
+                            buffer.reset(); // restore data
                         }
                         break;
                     case produce:
@@ -186,6 +184,11 @@ public class Engine {
                     default:
                         throw new IllegalStateException(
                                 String.format("unknown action type: %s", holder.type));
+                }
+
+                if (!tolerant && context.hasAlert()) {
+                    output.info("stop, alert occurred: %s", context.getAlert());
+                    break;
                 }
             }
         } finally {

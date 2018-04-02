@@ -14,21 +14,7 @@ public class IncomingEncryptedExtensions extends AbstractAction {
 
     @Override
     public Action run() throws Exception {
-        TLSPlaintext tlsPlaintext = factory.parser().parseTLSPlaintext(buffer);
-        if (!tlsPlaintext.containsApplicationData()) {
-            throw new IOException("expected a TLSCiphertext");
-        }
-
-        TLSInnerPlaintext tlsInnerPlaintext = factory.parser().parseTLSInnerPlaintext(
-                context.handshakeDecryptor.decrypt(tlsPlaintext));
-
-        if (!tlsInnerPlaintext.containsHandshake()) {
-            throw new IOException("expected a handshake message");
-        }
-
-        Handshake handshake = factory.parser().parseHandshake(
-                tlsInnerPlaintext.getContent());
-
+        Handshake handshake = processEncryptedHandshake();
         if (!handshake.containsEncryptedExtensions()) {
             throw new IOException("expected a EncryptedExtensions message");
         }
