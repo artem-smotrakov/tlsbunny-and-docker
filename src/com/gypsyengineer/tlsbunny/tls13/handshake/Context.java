@@ -2,6 +2,7 @@ package com.gypsyengineer.tlsbunny.tls13.handshake;
 
 import com.gypsyengineer.tlsbunny.tls.Vector;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AEAD;
+import com.gypsyengineer.tlsbunny.tls13.struct.Alert;
 import com.gypsyengineer.tlsbunny.tls13.struct.Handshake;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import java.util.ArrayList;
@@ -72,6 +73,8 @@ public class Context {
     public byte[] server_application_write_iv;
 
     public Vector<Byte> certificate_request_context;
+
+    private Alert alert;
 
     // TODO: these fields should not be public
     public AEAD handshakeEncryptor;
@@ -263,4 +266,15 @@ public class Context {
         return list.toArray(new Handshake[list.size()]);
     }
 
+    public boolean hasAlert() {
+        return alert != null;
+    }
+
+    public void setAlert(Alert alert) {
+        this.alert = alert;
+    }
+
+    public Alert getAlert() {
+        return alert;
+    }
 }
