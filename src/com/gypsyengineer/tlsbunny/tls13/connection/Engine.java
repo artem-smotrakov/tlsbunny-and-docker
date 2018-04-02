@@ -4,10 +4,7 @@ import com.gypsyengineer.tlsbunny.tls13.crypto.HKDF;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.handshake.ECDHENegotiator;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Negotiator;
-import com.gypsyengineer.tlsbunny.tls13.struct.CipherSuite;
-import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
-import com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme;
-import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
+import com.gypsyengineer.tlsbunny.tls13.struct.*;
 import com.gypsyengineer.tlsbunny.utils.Connection;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
@@ -43,6 +40,9 @@ public class Engine {
     private HKDF hkdf;
     private Status status = Status.not_started;
 
+    // if false, then the engine stops when an alert received
+    private boolean tolerant = false;
+
     private Engine() {
 
     }
@@ -54,6 +54,11 @@ public class Engine {
 
     public Engine target(int port) {
         this.port = port;
+        return this;
+    }
+
+    public Engine tolerant() {
+        tolerant = true;
         return this;
     }
 
@@ -143,6 +148,24 @@ public class Engine {
                                 if (buffer.remaining() == 0) {
                                     throw new IOException("no data received");
                                 }
+
+                                if (!tolerant) {
+                                    // check for an alert
+                                    buffer.mark();
+                                    try {
+                                        Alert alert = factory.parser().parseAlert(buffer);
+                                        if (alert != null) {
+                                            context.setAlert(alert);
+                                            output.info("stop, received an alert: %s", alert);
+                                            break loop;
+                                        }
+                                    } catch (Exception e) {
+                                        // it's not an alert, ignore
+                                    } finally {
+                                         buffer.reset();
+                                    }
+                                }
+
                                 action.set(buffer);
                             }
 
