@@ -123,6 +123,11 @@ public abstract class AbstractAction implements Action {
         return tlsInnerPlaintext.getContent();
     }
 
+    Handshake processEncryptedHandshake() throws Exception {
+        return factory.parser().parseHandshake(
+                processEncrypted(context.handshakeDecryptor, ContentType.handshake));
+    }
+
     Handshake toHandshake(HandshakeMessage message) throws IOException {
         return factory.createHandshake(message.type(), message.encoding());
     }
