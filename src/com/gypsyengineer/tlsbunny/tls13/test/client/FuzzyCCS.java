@@ -1,6 +1,7 @@
 package com.gypsyengineer.tlsbunny.tls13.test.client;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.*;
+import com.gypsyengineer.tlsbunny.utils.Output;
 
 public class FuzzyCCS {
 
@@ -8,11 +9,15 @@ public class FuzzyCCS {
 
     public static void main(String[] args) throws Exception {
         Config config = new CommonConfig();
+        Output output = new Output();
         FuzzyChangeCipherSpec fuzzyChangeCipherSpec = new FuzzyChangeCipherSpec();
+
         while (fuzzyChangeCipherSpec.canFuzz()) {
+            output.info("test: %s", fuzzyChangeCipherSpec.getState());
             Engine.init()
                     .target(config.host())
                     .target(config.port())
+                    .set(output)
                     .send(new OutgoingClientHello())
                     .send(fuzzyChangeCipherSpec)
                     .expect(new IncomingServerHello())
@@ -29,6 +34,9 @@ public class FuzzyCCS {
 
             fuzzyChangeCipherSpec.moveOn();
         }
+
+        output.info("done!");
+        output.flush();
     }
 
 }
