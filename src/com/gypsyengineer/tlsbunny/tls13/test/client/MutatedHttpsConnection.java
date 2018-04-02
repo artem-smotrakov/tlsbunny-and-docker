@@ -163,6 +163,16 @@ public class MutatedHttpsConnection implements Runnable {
         }
 
         @Override
+        public String clientCertificate() {
+            return commonConfig.clientCertificate();
+        }
+
+        @Override
+        public String clientKey() {
+            return commonConfig.clientKey();
+        }
+
+        @Override
         public Config minRatio(double ratio) {
             commonConfig.minRatio(ratio);
             return this;
