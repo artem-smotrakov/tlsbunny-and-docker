@@ -21,7 +21,7 @@ public class OutgoingCertificateVerify extends AbstractAction {
     private static final byte[] CERTIFICATE_VERIFY_PREFIX = new byte[64];
     static {
         for (int i=0; i<CERTIFICATE_VERIFY_PREFIX.length; i++) {
-            CERTIFICATE_VERIFY_PREFIX[i] = 32;
+            CERTIFICATE_VERIFY_PREFIX[i] = 0x20;
         }
     }
 
@@ -45,7 +45,10 @@ public class OutgoingCertificateVerify extends AbstractAction {
     public Action run() throws Exception {
         CertificateVerify certificateVerify = createCertificateVerify();
         Handshake handshake = toHandshake(certificateVerify);
-        context.setClientFinished(handshake);
+
+        // TODO: the class should be renamed to OutgoingClientCertificateVerify
+        //       since it sets a client CertificateVerify in context
+        context.setClientCertificateVerify(handshake);
 
         buffer = Helper.store(encrypt(handshake));
 
