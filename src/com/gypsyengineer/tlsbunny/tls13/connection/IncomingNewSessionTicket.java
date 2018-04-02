@@ -1,8 +1,7 @@
 package com.gypsyengineer.tlsbunny.tls13.connection;
 
-import com.gypsyengineer.tlsbunny.tls13.struct.Handshake;
-import com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext;
-import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
+import com.gypsyengineer.tlsbunny.tls13.struct.*;
+
 import java.io.IOException;
 
 public class IncomingNewSessionTicket extends AbstractAction {
@@ -14,21 +13,8 @@ public class IncomingNewSessionTicket extends AbstractAction {
 
     @Override
     public Action run() throws Exception {
-        TLSPlaintext tlsPlaintext = factory.parser().parseTLSPlaintext(buffer);
-        if (!tlsPlaintext.containsApplicationData()) {
-            throw new IOException("expected a TLSCiphertext");
-        }
-
-        TLSInnerPlaintext tlsInnerPlaintext = factory.parser().parseTLSInnerPlaintext(
-                context.applicationDataDecryptor.decrypt(tlsPlaintext));
-
-        if (!tlsInnerPlaintext.containsHandshake()) {
-            throw new IOException("TLSInnerPlaintext should contains a handshake message");
-        }
-
-        Handshake handshake = factory.parser().parseHandshake(
-                tlsInnerPlaintext.getContent());
-
+        byte[] content = processEncrypted(context.applicationDataDecryptor, ContentType.handshake);
+        Handshake handshake = factory.parser().parseHandshake(content);
         if (!handshake.containsNewSessionTicket()) {
             throw new IOException("handshake message should contain NewSessionTicket");
         }
