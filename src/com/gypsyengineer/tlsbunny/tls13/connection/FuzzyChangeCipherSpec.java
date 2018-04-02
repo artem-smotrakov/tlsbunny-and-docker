@@ -87,9 +87,6 @@ public class FuzzyChangeCipherSpec extends AbstractAction implements Fuzzer<Chan
 
     @Override
     public void moveOn() {
-        if (value == Long.MAX_VALUE) {
-            throw new IllegalStateException();
-        }
         value++;
     }
 
