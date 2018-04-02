@@ -1,6 +1,7 @@
 package com.gypsyengineer.tlsbunny.tls13.connection;
 
 import com.gypsyengineer.tlsbunny.tls.Random;
+import com.gypsyengineer.tlsbunny.tls13.crypto.AEAD;
 import com.gypsyengineer.tlsbunny.tls13.crypto.HKDF;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Negotiator;
@@ -91,6 +92,36 @@ public abstract class AbstractAction implements Action {
     }
 
     // helper methods
+
+    byte[] processEncrypted(AEAD decryptor, ContentType expectedType) throws Exception {
+        TLSPlaintext tlsPlaintext = factory.parser().parseTLSPlaintext(buffer);
+        if (tlsPlaintext.containsAlert()) {
+            Alert alert = factory.parser().parseAlert(tlsPlaintext.getFragment());
+            context.setAlert(alert);
+            throw new IOException(String.format("received an alert: %s", alert));
+        }
+
+        if (!tlsPlaintext.containsApplicationData()) {
+            throw new IOException("expected a TLSCiphertext");
+        }
+
+        TLSInnerPlaintext tlsInnerPlaintext = factory.parser().parseTLSInnerPlaintext(
+                decryptor.decrypt(tlsPlaintext));
+
+        if (!expectedType.isAlert() && tlsInnerPlaintext.containsAlert()) {
+            Alert alert = factory.parser().parseAlert(tlsInnerPlaintext.getContent());
+            context.setAlert(alert);
+            throw new IOException(String.format("received an alert: %s", alert));
+        }
+
+        if (!expectedType.equals(tlsInnerPlaintext.getType())) {
+            throw new IOException(
+                    String.format("expected %, but received %s",
+                            expectedType, tlsInnerPlaintext.getType()));
+        }
+
+        return tlsInnerPlaintext.getContent();
+    }
 
     Handshake toHandshake(HandshakeMessage message) throws IOException {
         return factory.createHandshake(message.type(), message.encoding());
