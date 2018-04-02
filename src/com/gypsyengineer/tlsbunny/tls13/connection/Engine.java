@@ -223,13 +223,15 @@ public class Engine {
             if (buffer.remaining() == 0) {
                 throw new IOException("no data received");
             }
+            action.set(buffer);
 
             if (!tolerant) {
                 // check for an alert
                 buffer.mark();
                 try {
-                    Alert alert = factory.parser().parseAlert(buffer);
-                    if (alert != null) {
+                    TLSPlaintext tlsPlaintext = factory.parser().parseTLSPlaintext(buffer);
+                    if (tlsPlaintext.containsAlert()) {
+                        Alert alert = factory.parser().parseAlert(buffer);
                         context.setAlert(alert);
                         throw new IOException(String.format("received an alert: %s", alert));
                     }
@@ -237,8 +239,6 @@ public class Engine {
                     buffer.reset(); // restore data if no alert
                 }
             }
-
-            action.set(buffer);
         }
     }
 
