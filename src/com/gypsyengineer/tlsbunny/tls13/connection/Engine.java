@@ -186,7 +186,7 @@ public class Engine {
                                 String.format("unknown action type: %s", holder.type));
                 }
 
-                if (context.hasAlert()) {
+                if (!tolerant && context.hasAlert()) {
                     output.info("stop, alert occurred: %s", context.getAlert());
                     break;
                 }
