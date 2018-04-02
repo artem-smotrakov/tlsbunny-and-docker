@@ -9,11 +9,14 @@ import com.gypsyengineer.tlsbunny.tls13.utils.Helper;
 
 public class FuzzyChangeCipherSpec extends AbstractAction implements Fuzzer<ChangeCipherSpec> {
 
+    public static final String STATE_DELIMITER = ":";
+    public static final String STATE_PREFIX = "fuzzy_ccs";
+
     private static final ChangeCipherSpec NO_INPUT = null;
     private static final int MIN_VALUE = 0;
     private static final int MAX_VALUE = 255;
 
-    int start = MIN_VALUE;
+    int value = MIN_VALUE;
     int end = MAX_VALUE;
 
     @Override
@@ -36,21 +39,30 @@ public class FuzzyChangeCipherSpec extends AbstractAction implements Fuzzer<Chan
 
     @Override
     public String getState() {
-        return Long.toString(start);
+        return String.format("%s%s%d", STATE_PREFIX, STATE_DELIMITER, value);
     }
 
     @Override
     public void setState(String state) {
-        long value = Long.parseLong(state);
-        if (value < 0) {
+        if (state == null || state.isEmpty()) {
             throw new IllegalArgumentException();
         }
-        setStartTest(value);
+
+        String[] parts = state.trim().split(STATE_DELIMITER);
+        if (parts.length != 2) {
+            throw new IllegalArgumentException();
+        }
+
+        if (!STATE_PREFIX.equals(parts[0])) {
+            throw new IllegalArgumentException();
+        }
+
+        setStartTest(Long.parseLong(parts[1]));
     }
 
     @Override
     public void setStartTest(long start) {
-        this.start = check(start);
+        this.value = check(start);
     }
 
     @Override
@@ -60,25 +72,25 @@ public class FuzzyChangeCipherSpec extends AbstractAction implements Fuzzer<Chan
 
     @Override
     public long getTest() {
-        return start;
+        return value;
     }
 
     @Override
     public boolean canFuzz() {
-        return start <= end;
+        return value <= end;
     }
 
     @Override
     public ChangeCipherSpec fuzz(ChangeCipherSpec object) {
-        return factory.createChangeCipherSpec(start);
+        return factory.createChangeCipherSpec(value);
     }
 
     @Override
     public void moveOn() {
-        if (start == Long.MAX_VALUE) {
+        if (value == Long.MAX_VALUE) {
             throw new IllegalStateException();
         }
-        start++;
+        value++;
     }
 
     private static int check(long value) {
