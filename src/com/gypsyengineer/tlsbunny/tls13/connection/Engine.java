@@ -212,7 +212,8 @@ public class Engine {
         return this;
     }
 
-    public Engine analyze(Analyzer analyzer) {
+    public Engine apply(Analyzer analyzer) {
+        analyzer.add(context);
         return this;
     }
 
