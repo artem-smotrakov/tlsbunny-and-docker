@@ -39,6 +39,10 @@ public class Output implements AutoCloseable {
         achtung(String.format("%s%n%s", message, new String(baos.toByteArray())));
     }
 
+    synchronized public void reset() {
+        index = 0;
+    }
+
     synchronized public void flush() {
         synchronized (System.out) {
             while (index < strings.size()) {
