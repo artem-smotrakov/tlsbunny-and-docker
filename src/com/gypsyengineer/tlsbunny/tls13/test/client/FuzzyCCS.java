@@ -14,12 +14,13 @@ public class FuzzyCCS {
         Analyzer analyzer = new NoAlertAnalyzer().set(output);
 
         while (fuzzyChangeCipherSpec.canFuzz()) {
-            output.info("test: %s", fuzzyChangeCipherSpec.getState());
+            Output testOutput = new Output();
+            testOutput.info("test: %s", fuzzyChangeCipherSpec.getState());
             Engine.init()
                     .label(fuzzyChangeCipherSpec.getState())
                     .target(config.host())
                     .target(config.port())
-                    .set(new Output())
+                    .set(testOutput)
                     .send(new OutgoingClientHello())
                     .send(fuzzyChangeCipherSpec)
                     .expect(new IncomingServerHello())
