@@ -45,6 +45,9 @@ public class Engine {
     // if false, then the engine stops when an alert received
     private boolean tolerant = false;
 
+    // this is a label to mark a particular connection
+    private String label = String.valueOf(System.currentTimeMillis());
+
     private Engine() {
 
     }
@@ -61,6 +64,14 @@ public class Engine {
 
     public Engine tolerant() {
         tolerant = true;
+        return this;
+    }
+
+    public Engine label(String label) {
+        if (label == null || label.trim().isEmpty()) {
+            throw new IllegalArgumentException();
+        }
+        this.label = label;
         return this;
     }
 
@@ -213,7 +224,7 @@ public class Engine {
     }
 
     public Engine apply(Analyzer analyzer) {
-        analyzer.add(context);
+        analyzer.add(label, context);
         return this;
     }
 

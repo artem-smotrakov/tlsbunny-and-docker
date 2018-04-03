@@ -11,11 +11,12 @@ public class FuzzyCCS {
         Config config = new CommonConfig();
         Output output = new Output();
         FuzzyChangeCipherSpec fuzzyChangeCipherSpec = new FuzzyChangeCipherSpec();
-        Analyzer analyzer = new NoAlertAnalyzer();
+        Analyzer analyzer = new NoAlertAnalyzer().set(output);
 
         while (fuzzyChangeCipherSpec.canFuzz()) {
             output.info("test: %s", fuzzyChangeCipherSpec.getState());
             Engine.init()
+                    .label(fuzzyChangeCipherSpec.getState())
                     .target(config.host())
                     .target(config.port())
                     .set(output)

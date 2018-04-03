@@ -3,13 +3,13 @@ package com.gypsyengineer.tlsbunny.tls13.connection;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class NoAlertAnalyzer implements Analyzer {
 
     private Output output;
-    private final List<Context> contexts = new ArrayList<>();
+    private final Map<String, Context> contexts = new HashMap<>();
 
     @Override
     public Analyzer set(Output output) {
@@ -18,8 +18,12 @@ public class NoAlertAnalyzer implements Analyzer {
     }
 
     @Override
-    public Analyzer add(Context context) {
-        contexts.add(context);
+    public Analyzer add(String label, Context context) {
+        if (contexts.containsKey(label)) {
+            output.achtung("connection '%s' has been already added to %s",
+                    label, NoAlertAnalyzer.class.getSimpleName());
+        }
+        contexts.put(label, context);
         return this;
     }
 

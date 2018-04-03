@@ -6,6 +6,6 @@ import com.gypsyengineer.tlsbunny.utils.Output;
 public interface Analyzer {
 
     Analyzer set(Output output);
-    Analyzer add(Context context);
+    Analyzer add(String label, Context context);
     Analyzer run();
 }
