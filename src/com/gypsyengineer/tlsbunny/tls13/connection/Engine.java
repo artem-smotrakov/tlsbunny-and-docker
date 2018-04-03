@@ -225,6 +225,7 @@ public class Engine {
 
     public Engine apply(Analyzer analyzer) {
         analyzer.add(label, context);
+        analyzer.add(label, output);
         return this;
     }
 

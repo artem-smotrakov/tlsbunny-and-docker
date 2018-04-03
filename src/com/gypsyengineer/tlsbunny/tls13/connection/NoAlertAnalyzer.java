@@ -9,7 +9,7 @@ import java.util.Map;
 public class NoAlertAnalyzer implements Analyzer {
 
     private Output output;
-    private final Map<String, Context> contexts = new HashMap<>();
+    private final Map<String, Holder> contexts = new HashMap<>();
 
     @Override
     public Analyzer set(Output output) {
@@ -19,11 +19,23 @@ public class NoAlertAnalyzer implements Analyzer {
 
     @Override
     public Analyzer add(String label, Context context) {
-        if (contexts.containsKey(label)) {
-            output.achtung("connection '%s' has been already added to %s",
-                    label, NoAlertAnalyzer.class.getSimpleName());
+        Holder holder = contexts.get(label);
+        if (holder == null) {
+            holder = new Holder();
+            contexts.put(label, holder);
         }
-        contexts.put(label, context);
+        holder.context = context;
+        return this;
+    }
+
+    @Override
+    public Analyzer add(String label, Output output) {
+        Holder holder = contexts.get(label);
+        if (holder == null) {
+            holder = new Holder();
+            contexts.put(label, holder);
+        }
+        holder.output = output;
         return this;
     }
 
@@ -31,12 +43,13 @@ public class NoAlertAnalyzer implements Analyzer {
     public Analyzer run() {
         output.info("let's look for connections with no alerts");
         int count = 0;
-        for (Map.Entry<String, Context> entry : contexts.entrySet()) {
+        for (Map.Entry<String, Holder> entry : contexts.entrySet()) {
             String label = entry.getKey();
-            Context context = entry.getValue();
+            Holder holder = entry.getValue();
 
-            if (!context.hasAlert()) {
-                output.info("connection '%s' didn't result to an alert", label);
+            if (!holder.context.hasAlert()) {
+                output.info("connection '%s' didn't result to an alert:", label);
+                output.add(holder.output);
                 count++;
             }
         }
@@ -50,6 +63,11 @@ public class NoAlertAnalyzer implements Analyzer {
         }
 
         return this;
+    }
+
+    private static class Holder {
+        Output output;
+        Context context;
     }
 
 }
