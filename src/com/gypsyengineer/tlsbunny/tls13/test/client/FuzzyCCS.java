@@ -19,7 +19,7 @@ public class FuzzyCCS {
                     .label(fuzzyChangeCipherSpec.getState())
                     .target(config.host())
                     .target(config.port())
-                    .set(output)
+                    .set(new Output())
                     .send(new OutgoingClientHello())
                     .send(fuzzyChangeCipherSpec)
                     .expect(new IncomingServerHello())
