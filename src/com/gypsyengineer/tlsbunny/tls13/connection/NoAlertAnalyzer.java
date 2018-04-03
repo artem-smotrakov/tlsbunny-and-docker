@@ -30,6 +30,25 @@ public class NoAlertAnalyzer implements Analyzer {
     @Override
     public Analyzer run() {
         output.info("let's look for connections with no alerts");
+        int count = 0;
+        for (Map.Entry<String, Context> entry : contexts.entrySet()) {
+            String label = entry.getKey();
+            Context context = entry.getValue();
+
+            if (!context.hasAlert()) {
+                output.info("connection '%s' didn't result to an alert", label);
+                count++;
+            }
+        }
+
+        if (count == 0) {
+            output.info("all connections resulted to an alert");
+        } else if (count == 1) {
+            output.info("found 1 connection which didn't result to an alert");
+        } else {
+            output.info("found %d connections which didn't result to an alert", count);
+        }
+
         return this;
     }
 
