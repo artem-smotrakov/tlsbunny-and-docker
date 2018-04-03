@@ -11,6 +11,7 @@ public class Output implements AutoCloseable {
 
     private final List<String> strings = new ArrayList<>();
     private String prefix = "";
+    private int index = 0;
 
     synchronized public void printf(String format, Object... params) {
         strings.add(String.format(format, params));
@@ -40,7 +41,10 @@ public class Output implements AutoCloseable {
 
     synchronized public void flush() {
         synchronized (System.out) {
-            strings.forEach(string -> System.out.print(string));
+            while (index < strings.size()) {
+                System.out.print(strings.get(index));
+                index++;
+            }
         }
     }
 
