@@ -30,7 +30,10 @@ public class OutgoingCertificate extends AbstractAction {
     public Action run() throws Exception {
         Certificate certificate = createCertificate();
         Handshake handshake = toHandshake(certificate);
-        context.setClientFinished(handshake);
+
+        // TODO: the class should be renamed to OutgoingClientCertificate
+        //       since it sets a client certificate in context
+        context.setClientCertificate(handshake);
 
         buffer = Helper.store(encrypt(handshake));
 

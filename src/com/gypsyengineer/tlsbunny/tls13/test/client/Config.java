@@ -9,6 +9,8 @@ public interface Config {
     int parts();
     long startTest();
     long endTest();
+    String clientCertificate();
+    String clientKey();
 
     Config minRatio(double minRatio);
     Config maxRatio(double maxRatio);

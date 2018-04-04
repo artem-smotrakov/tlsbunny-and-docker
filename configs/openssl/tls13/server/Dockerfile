@@ -6,9 +6,13 @@
 #
 # docker build --file configs/openssl/tls13/server/Dockerfile --tag openssl/server/tls13 .
 #
-# the following command start an OpenSSL server
+# the following command starts an OpenSSL server
 #
 # docker run -p 10101:10101 openssl/server/tls13
+#
+# the following command starts an OpenSSL server with required client authentication
+#
+# docker run -p 10101:10101 -e OPTIONS="-Verify 0 -CAfile certs/root_cert.pem" openssl/server/tls13
 #
 # good luck!
 #

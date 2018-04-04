@@ -28,6 +28,7 @@ public class AesGcmEncryptor extends AesGcm {
 
     @Override
     public void start() throws Exception {
+        ciphertexts.clear();
         cipher.init(Cipher.ENCRYPT_MODE, key,
                 new GCMParameterSpec(TAG_LENGTH_IN_BITS, nextNonce()));
     }

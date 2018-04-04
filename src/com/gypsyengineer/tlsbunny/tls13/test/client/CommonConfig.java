@@ -91,6 +91,16 @@ public class CommonConfig implements Config {
     }
 
     @Override
+    public String clientCertificate() {
+        return System.getProperty("tlsbunny.client.cert");
+    }
+
+    @Override
+    public String clientKey() {
+        return System.getProperty("tlsbunny.client.key");
+    }
+
+    @Override
     public CommonConfig copy() {
         CommonConfig clone = new CommonConfig();
         clone.host = host;

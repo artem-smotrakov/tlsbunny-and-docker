@@ -50,6 +50,11 @@ public class SignatureSchemeImpl implements SignatureScheme {
         return this.code == other.code;
     }
 
+    @Override
+    public String toString() {
+        return String.format("signature scheme (%d)", code);
+    }
+
     private static void check(int code) {
         if (code < 0 || code > 65535) {
             throw new IllegalArgumentException();
