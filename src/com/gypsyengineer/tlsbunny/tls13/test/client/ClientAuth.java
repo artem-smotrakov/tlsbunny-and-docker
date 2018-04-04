@@ -9,7 +9,7 @@ public class ClientAuth {
     public static void main(String[] args) throws Exception {
         Config config = new CommonConfig();
 
-        TLSConnection.init()
+        Engine.init()
                 .target(config.host())
                 .target(config.port())
                 .send(new OutgoingClientHello())
