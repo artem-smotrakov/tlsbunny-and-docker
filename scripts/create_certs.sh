@@ -11,7 +11,7 @@ openssl ecparam -out server_key.pem -name secp256r1 -genkey
 openssl req -new -key server_key.pem -out server_req.pem -sha256 -subj /CN=Server
 openssl x509 -req -days 3650 -sha256 \
     -in server_req.pem -out server_cert.der -outform der \
-    -CA root_cert.pem -CAkey root_key.pem -set_serial 2
+    -CA root_cert.pem -CAkey root_key.pem -set_serial 1
 openssl pkcs8 -topk8 -nocrypt \
     -in server_key.pem -inform pem -out server_key.pkcs8 -outform der
 openssl x509 -in server_cert.der -inform der -out server_cert.pem -outform pem
