@@ -11,13 +11,16 @@ public class FuzzyCCS {
         Config config = new CommonConfig();
         Output output = new Output();
         FuzzyChangeCipherSpec fuzzyChangeCipherSpec = new FuzzyChangeCipherSpec();
+        Analyzer analyzer = new NoAlertAnalyzer().set(output);
 
         while (fuzzyChangeCipherSpec.canFuzz()) {
-            output.info("test: %s", fuzzyChangeCipherSpec.getState());
+            Output testOutput = new Output();
+            testOutput.info("test: %s", fuzzyChangeCipherSpec.getState());
             Engine.init()
+                    .label(fuzzyChangeCipherSpec.getState())
                     .target(config.host())
                     .target(config.port())
-                    .set(output)
+                    .set(testOutput)
                     .send(new OutgoingClientHello())
                     .send(fuzzyChangeCipherSpec)
                     .expect(new IncomingServerHello())
@@ -30,10 +33,13 @@ public class FuzzyCCS {
                     .allow(new IncomingNewSessionTicket())
                     .send(new OutgoingApplicationData(HTTP_GET_REQUEST))
                     .expect(new IncomingApplicationData())
-                    .connect();
+                    .connect()
+                    .apply(analyzer);
 
             fuzzyChangeCipherSpec.moveOn();
         }
+
+        analyzer.run();
 
         output.info("done!");
         output.flush();
