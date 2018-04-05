@@ -20,10 +20,10 @@ RUN apt-get update
 RUN apt-get update --fix-missing
 RUN apt-get install -y dash git-core autoconf libtool gettext autopoint
 RUN apt-get install -y automake autogen nettle-dev libp11-kit-dev libtspi-dev libunistring-dev
-RUN apt-get install -y guile-2.0-dev libtasn1-6-dev libidn2-0-dev gawk gperf
+RUN apt-get install -y guile-2.0 guile-2.0-libs guile-2.0-dev libtasn1-6 libtasn1-6-dev libidn2-0-dev gawk gperf
 RUN apt-get install -y libunbound-dev dns-root-data bison help2man gtk-doc-tools
 RUN apt-get install -y texinfo texlive texlive-generic-recommended texlive-extra-utils
-RUN apt-get install -y libgmp-dev wget libtasn1-6 libtasn1-6-dev
+RUN apt-get install -y libgmp-dev wget
 
 ENV GNUTLS_SRC /var/src/gnutls
 ENV GNUTLS_DIR /var/gnutls
