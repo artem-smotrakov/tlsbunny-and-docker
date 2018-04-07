@@ -17,9 +17,9 @@ public abstract class AbstractAction implements Action {
     static final long DEFAULT_SEED = 0;
     static final long SEED = Long.getLong("tlsbunny.seed", DEFAULT_SEED);
 
+    protected StructFactory factory;
+    protected ByteBuffer buffer;
     Output output;
-    ByteBuffer buffer;
-    StructFactory factory;
     SignatureScheme scheme;
     NamedGroup group;
     CipherSuite suite;

@@ -1,6 +1,7 @@
 package com.gypsyengineer.tlsbunny.tls13.test.client;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.*;
+import com.gypsyengineer.tlsbunny.tls13.fuzzer.FuzzyChangeCipherSpec;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
 public class FuzzyCCS {
