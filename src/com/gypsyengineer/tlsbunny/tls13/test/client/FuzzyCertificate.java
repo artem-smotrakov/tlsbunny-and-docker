@@ -2,6 +2,7 @@ package com.gypsyengineer.tlsbunny.tls13.test.client;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.*;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.MutatedStructFactory;
+import com.gypsyengineer.tlsbunny.tls13.fuzzer.Target;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
@@ -22,7 +23,7 @@ public class FuzzyCertificate implements Runnable {
                 config.minRatio(),
                 config.maxRatio()
         );
-        fuzzer.setTarget(MutatedStructFactory.Target.certificate);
+        fuzzer.setTarget(Target.certificate);
         fuzzer.setMode(config.mode());
         fuzzer.setStartTest(config.startTest());
         fuzzer.setEndTest(config.endTest());
