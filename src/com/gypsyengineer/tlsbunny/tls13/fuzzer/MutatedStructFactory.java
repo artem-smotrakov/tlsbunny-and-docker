@@ -3,18 +3,7 @@ package com.gypsyengineer.tlsbunny.tls13.fuzzer;
 import com.gypsyengineer.tlsbunny.tls.Random;
 import com.gypsyengineer.tlsbunny.tls.UInt16;
 import com.gypsyengineer.tlsbunny.tls.UInt24;
-import com.gypsyengineer.tlsbunny.tls13.struct.CipherSuite;
-import com.gypsyengineer.tlsbunny.tls13.struct.ClientHello;
-import com.gypsyengineer.tlsbunny.tls13.struct.CompressionMethod;
-import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
-import com.gypsyengineer.tlsbunny.tls13.struct.Extension;
-import com.gypsyengineer.tlsbunny.tls13.struct.Finished;
-import com.gypsyengineer.tlsbunny.tls13.struct.Handshake;
-import com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType;
-import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
-import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
-import com.gypsyengineer.tlsbunny.tls13.struct.StructFactoryWrapper;
-import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
+import com.gypsyengineer.tlsbunny.tls13.struct.*;
 import com.gypsyengineer.tlsbunny.utils.Output;
 import java.io.IOException;
 import java.util.Arrays;
@@ -24,7 +13,7 @@ public class MutatedStructFactory extends StructFactoryWrapper
         implements Fuzzer<byte[]> {
 
     public enum Mode   { byte_flip, bit_flip }
-    public enum Target { tls_plaintext, handshake, client_hello, finished }
+    public enum Target { tls_plaintext, handshake, client_hello, certificate, finished }
 
     public static final Target DEFAULT_TARGET = Target.tls_plaintext;
     public static final Mode DEFAULT_MODE = Mode.byte_flip;
@@ -132,11 +121,32 @@ public class MutatedStructFactory extends StructFactoryWrapper
                 finished = new MutatedStruct(
                         fuzzed.length, fuzzed, HandshakeType.finished);
             } catch (IOException e) {
-                output.achtung("I couldn't fuzz ClientHello: %s", e.getMessage());
+                output.achtung("I couldn't fuzz Finished: %s", e.getMessage());
             }
         }
 
         return finished;
+    }
+
+    @Override
+    public Certificate createCertificate(
+            byte[] certificate_request_context, CertificateEntry... certificate_list) {
+
+        Certificate certificate = factory.createCertificate(
+                certificate_request_context, certificate_list);
+
+        if (target == Target.certificate) {
+            output.info("fuzz Certificate");
+            try {
+                byte[] fuzzed = fuzz(certificate.encoding());
+                certificate = new MutatedStruct(
+                        fuzzed.length, fuzzed, HandshakeType.certificate);
+            } catch (IOException e) {
+                output.achtung("I couldn't fuzz Certificate: %s", e.getMessage());
+            }
+        }
+
+        return certificate;
     }
 
     @Override
