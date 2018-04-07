@@ -4,6 +4,10 @@ import java.util.BitSet;
 
 public class BitFlipFuzzer extends AbstractFlipFuzzer {
 
+    public BitFlipFuzzer(double minRatio, double maxRatio) {
+        this(minRatio, maxRatio, FROM_THE_BEGINNING, NOT_SPECIFIED);
+    }
+
     public BitFlipFuzzer(double minRatio, double maxRatio, int start, int end) {
         super(minRatio, maxRatio, start, end);
     }
