@@ -9,7 +9,7 @@ import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Target.certificate;
 
 public class CertificateFuzzer extends HandshakeMessageFuzzer {
 
-    private static final Config[] configs = new Config[] {
+    static final Config[] configs = new Config[] {
             new CertificateFuzzerConfig(commonConfig)
                     .mode(byte_flip)
                     .minRatio(0.01)
