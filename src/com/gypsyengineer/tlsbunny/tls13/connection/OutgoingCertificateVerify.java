@@ -31,6 +31,10 @@ public class OutgoingCertificateVerify extends AbstractAction {
     private byte[] key_data;
 
     public Action key(String path) throws IOException {
+        if (path == null || path.trim().isEmpty()) {
+            throw  new IllegalArgumentException("no certificate key specified");
+        }
+
         key_data = Files.readAllBytes(Paths.get(path));
 
         return this;

@@ -4,20 +4,11 @@ import com.gypsyengineer.tlsbunny.tls.Random;
 import com.gypsyengineer.tlsbunny.tls.UInt16;
 import com.gypsyengineer.tlsbunny.tls.UInt24;
 import com.gypsyengineer.tlsbunny.tls.Vector;
-import com.gypsyengineer.tlsbunny.tls13.struct.CipherSuite;
-import com.gypsyengineer.tlsbunny.tls13.struct.ClientHello;
-import com.gypsyengineer.tlsbunny.tls13.struct.CompressionMethod;
-import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
-import com.gypsyengineer.tlsbunny.tls13.struct.Extension;
-import com.gypsyengineer.tlsbunny.tls13.struct.ExtensionType;
-import com.gypsyengineer.tlsbunny.tls13.struct.Finished;
-import com.gypsyengineer.tlsbunny.tls13.struct.Handshake;
-import com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType;
-import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
-import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
+import com.gypsyengineer.tlsbunny.tls13.struct.*;
+
 import java.io.IOException;
 
-public class MutatedStruct implements TLSPlaintext, Handshake, ClientHello, Finished {
+public class MutatedStruct implements TLSPlaintext, Handshake, ClientHello, Finished, Certificate {
 
     private static final HandshakeType NO_HANDSHAKE_TYPE = null;
 
@@ -205,4 +196,13 @@ public class MutatedStruct implements TLSPlaintext, Handshake, ClientHello, Fini
         throw new UnsupportedOperationException();
     }
 
+    @Override
+    public Vector<CertificateEntry> getCertificateList() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Vector<Byte> getCertificateRequestContext() {
+        throw new UnsupportedOperationException();
+    }
 }
