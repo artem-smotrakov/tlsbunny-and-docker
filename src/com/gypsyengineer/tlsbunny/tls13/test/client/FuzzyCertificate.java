@@ -1,6 +1,7 @@
 package com.gypsyengineer.tlsbunny.tls13.test.client;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.*;
+import com.gypsyengineer.tlsbunny.tls13.fuzzer.Mode;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.MutatedStructFactory;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.Target;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
@@ -8,7 +9,20 @@ import com.gypsyengineer.tlsbunny.utils.Output;
 
 import java.io.IOException;
 
+import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Mode.bit_flip;
+import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Mode.byte_flip;
+import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Target.certificate;
+
 public class FuzzyCertificate implements Runnable {
+
+    private static final Config[] configs = new Config[] {
+            new FuzzerConfig()
+                    .target(certificate).mode(byte_flip)
+                    .minRatio(0.01).maxRatio(0.09).endTest(10).parts(5),
+            new FuzzerConfig()
+                    .target(certificate).mode(bit_flip)
+                    .minRatio(0.01).maxRatio(0.09).endTest(10).parts(5),
+    };
 
     public static final String HTTP_GET_REQUEST = "GET / HTTP/1.1\n\n";
 
@@ -23,7 +37,7 @@ public class FuzzyCertificate implements Runnable {
                 config.minRatio(),
                 config.maxRatio()
         );
-        fuzzer.setTarget(Target.certificate);
+        fuzzer.setTarget(certificate);
         fuzzer.setMode(config.mode());
         fuzzer.setStartTest(config.startTest());
         fuzzer.setEndTest(config.endTest());
@@ -78,14 +92,7 @@ public class FuzzyCertificate implements Runnable {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        FuzzerConfig config = new FuzzerConfig();
-
-        int threads = config.threads();
-        if (threads > 1) {
-            new MultipleThreads().add(config).submit();
-        } else {
-            config.create().run();
-        }
+        new MultipleThreads().add(configs).submit();
     }
 
     public static class FuzzerConfig extends CommonConfig {
