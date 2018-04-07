@@ -4,8 +4,6 @@ import com.gypsyengineer.tlsbunny.tls13.connection.*;
 
 public class HttpsConnection {
 
-    public static final String HTTP_GET_REQUEST = "GET / HTTP/1.1\n\n";
-
     public static void main(String[] args) throws Exception {
         Engine.init()
                 .target("localhost")
@@ -20,7 +18,7 @@ public class HttpsConnection {
                 .expect(new IncomingFinished())
                 .send(new OutgoingFinished())
                 .allow(new IncomingNewSessionTicket())
-                .send(new OutgoingApplicationData(HTTP_GET_REQUEST))
+                .send(new OutgoingHttpGetRequest())
                 .expect(new IncomingApplicationData())
                 .connect()
                 .check(new Success());

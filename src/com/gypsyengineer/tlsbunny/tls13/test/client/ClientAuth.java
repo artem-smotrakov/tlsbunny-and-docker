@@ -4,8 +4,6 @@ import com.gypsyengineer.tlsbunny.tls13.connection.*;
 
 public class ClientAuth {
 
-    public static final String HTTP_GET_REQUEST = "GET / HTTP/1.1\n\n";
-
     public static void main(String[] args) throws Exception {
         Config config = new CommonConfig();
 
@@ -27,7 +25,7 @@ public class ClientAuth {
                         .key(config.clientKey()))
                 .send(new OutgoingFinished())
                 .allow(new IncomingNewSessionTicket())
-                .send(new OutgoingApplicationData(HTTP_GET_REQUEST))
+                .send(new OutgoingHttpGetRequest())
                 .expect(new IncomingApplicationData())
                 .connect()
                 .check(new Success());

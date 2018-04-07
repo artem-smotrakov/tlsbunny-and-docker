@@ -9,8 +9,6 @@ import java.io.IOException;
 
 public class MutatedHttpsConnection implements Runnable {
 
-    public static final String HTTP_GET_REQUEST = "GET / HTTP/1.1\n\n";
-
     private final Output output;
     private final FuzzerConfig config;
     private final MutatedStructFactory fuzzer;
@@ -54,7 +52,7 @@ public class MutatedHttpsConnection implements Runnable {
                             .send(new OutgoingFinished())
                             .allow(new IncomingChangeCipherSpec())
                             .allow(new IncomingNewSessionTicket())
-                            .send(new OutgoingApplicationData(HTTP_GET_REQUEST))
+                            .send(new OutgoingHttpGetRequest())
                             .expect(new IncomingApplicationData())
                             .connect();
                 } finally {

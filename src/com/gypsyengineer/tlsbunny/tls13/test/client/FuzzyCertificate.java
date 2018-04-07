@@ -1,9 +1,7 @@
 package com.gypsyengineer.tlsbunny.tls13.test.client;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.*;
-import com.gypsyengineer.tlsbunny.tls13.fuzzer.Mode;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.MutatedStructFactory;
-import com.gypsyengineer.tlsbunny.tls13.fuzzer.Target;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
@@ -23,8 +21,6 @@ public class FuzzyCertificate implements Runnable {
                     .target(certificate).mode(bit_flip)
                     .minRatio(0.01).maxRatio(0.09).endTest(10).parts(5),
     };
-
-    public static final String HTTP_GET_REQUEST = "GET / HTTP/1.1\n\n";
 
     private final Output output;
     private final FuzzerConfig config;
@@ -74,7 +70,7 @@ public class FuzzyCertificate implements Runnable {
                                     .key(config.clientKey()))
                             .send(new OutgoingFinished())
                             .allow(new IncomingNewSessionTicket())
-                            .send(new OutgoingApplicationData(HTTP_GET_REQUEST))
+                            .send(new OutgoingHttpGetRequest())
                             .expect(new IncomingApplicationData())
                             .connect();
                 } finally {
