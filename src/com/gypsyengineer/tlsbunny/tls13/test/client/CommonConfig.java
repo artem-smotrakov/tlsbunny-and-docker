@@ -141,7 +141,7 @@ public class CommonConfig implements Config {
     @Override
     public Config mode(Mode mode) {
         this.mode = mode;
-        return null;
+        return this;
     }
 
     @Override
