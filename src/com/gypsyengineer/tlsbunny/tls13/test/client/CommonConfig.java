@@ -1,5 +1,8 @@
 package com.gypsyengineer.tlsbunny.tls13.test.client;
 
+import com.gypsyengineer.tlsbunny.tls13.fuzzer.Mode;
+import com.gypsyengineer.tlsbunny.tls13.fuzzer.Target;
+
 public class CommonConfig implements Config {
 
     public static final int DEFAULT_PARTS = 4;
@@ -13,14 +16,27 @@ public class CommonConfig implements Config {
     public static final String DEFAULT_CLIENT_CERTIFICATE = "certs/client_cert.der";
     public static final String DEFAULT_CLIENT_KEY = "certs/client_key.pkcs8";
 
-    private String host = System.getProperty("tlsbunny.host", DEFAULT_HOST).trim();
-    private int port = Integer.getInteger("tlsbunny.port", DEFAULT_PORT);
-    private double minRatio = getDouble("tlsbunny.min.ratio", DEFAULT_MIN_RATIO);
-    private double maxRatio = getDouble("tlsbunny.max.ratio", DEFAULT_MAX_RATIO);
-    private int threads = Integer.getInteger("tlsbunny.threads", DEFAULT_THREADS);
-    private int parts = Integer.getInteger("tlsbunny.parts", DEFAULT_PARTS);
-    private long startTest = Long.getLong("tlsbunny.start.test", DEFAULT_START_TEST);
-    private long endTest = Long.getLong("tlsbunny.ebd.test", DEFAULT_END_TEST);
+    public static final Target DEFAULT_TARGET = Target.tls_plaintext;
+    public static final Mode DEFAULT_MODE = Mode.bit_flip;
+
+    String host = System.getProperty("tlsbunny.host", DEFAULT_HOST).trim();
+    int port = Integer.getInteger("tlsbunny.port", DEFAULT_PORT);
+    double minRatio = getDouble("tlsbunny.min.ratio", DEFAULT_MIN_RATIO);
+    double maxRatio = getDouble("tlsbunny.max.ratio", DEFAULT_MAX_RATIO);
+    int threads = Integer.getInteger("tlsbunny.threads", DEFAULT_THREADS);
+    int parts = Integer.getInteger("tlsbunny.parts", DEFAULT_PARTS);
+    long startTest = Long.getLong("tlsbunny.start.test", DEFAULT_START_TEST);
+    long endTest = Long.getLong("tlsbunny.ebd.test", DEFAULT_END_TEST);
+    Target target;
+    Mode mode;
+
+    public CommonConfig() {
+        String value = System.getProperty("tlsbunny.target");
+        target = value != null ? Target.valueOf(value) : DEFAULT_TARGET;
+
+        value = System.getProperty("tlsbunny.mode");
+        mode = value != null ? Mode.valueOf(value) : DEFAULT_MODE;
+    }
 
     @Override
     public Config minRatio(double minRatio) {
@@ -60,6 +76,16 @@ public class CommonConfig implements Config {
     @Override
     public int port() {
         return port;
+    }
+
+    @Override
+    public Target target() {
+        return target;
+    }
+
+    @Override
+    public Mode mode() {
+        return mode;
     }
 
     @Override
@@ -103,6 +129,18 @@ public class CommonConfig implements Config {
     }
 
     @Override
+    public Config target(Target target) {
+        this.target = target;
+        return this;
+    }
+
+    @Override
+    public Config mode(Mode mode) {
+        this.mode = mode;
+        return null;
+    }
+
+    @Override
     public CommonConfig copy() {
         CommonConfig clone = new CommonConfig();
         clone.host = host;
@@ -113,6 +151,8 @@ public class CommonConfig implements Config {
         clone.parts = parts;
         clone.startTest = startTest;
         clone.endTest = endTest;
+        clone.target = target;
+        clone.mode = mode;
 
         return clone;
     }

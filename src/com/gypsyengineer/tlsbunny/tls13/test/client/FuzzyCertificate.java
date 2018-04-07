@@ -88,131 +88,26 @@ public class FuzzyCertificate implements Runnable {
         }
     }
 
-    // TODO: duplicate
-    public static class FuzzerConfig implements Config {
+    public static class FuzzerConfig extends CommonConfig {
 
-        public static final String DEFAULT_TARGET = "tls_plaintext";
-        public static final String DEFAULT_MODE = "byte_flip";
-
-        private CommonConfig commonConfig;
-        private String target = System.getProperty("tlsbunny.target", DEFAULT_TARGET).trim();
-        private String mode = System.getProperty("tlsbunny.mode", DEFAULT_MODE).trim();
-
-        public FuzzerConfig() {
-            this(new CommonConfig());
-        }
-
-        public FuzzerConfig(CommonConfig commonConfig) {
-            this.commonConfig = commonConfig;
-        }
-
+        @Override
         public FuzzyCertificate create() {
             return new FuzzyCertificate(new Output(), this);
         }
 
-        public FuzzerConfig target(String target) {
-            this.target = target;
-            return this;
-        }
-
-        public FuzzerConfig mode(String mode) {
-            this.mode = mode;
-            return this;
-        }
-
-        public String target() {
-            return target;
-        }
-
-        public String mode() {
-            return mode;
-        }
-
         @Override
-        public String host() {
-            return commonConfig.host();
-        }
-
-        @Override
-        public int port() {
-            return commonConfig.port();
-        }
-
-        @Override
-        public double minRatio() {
-            return commonConfig.minRatio();
-        }
-
-        @Override
-        public double maxRatio() {
-            return commonConfig.maxRatio();
-        }
-
-        @Override
-        public int threads() {
-            return commonConfig.threads();
-        }
-
-        @Override
-        public int parts() {
-            return commonConfig.parts();
-        }
-
-        @Override
-        public long startTest() {
-            return commonConfig.startTest();
-        }
-
-        @Override
-        public long endTest() {
-            return commonConfig.endTest();
-        }
-
-        @Override
-        public String clientCertificate() {
-            return commonConfig.clientCertificate();
-        }
-
-        @Override
-        public String clientKey() {
-            return commonConfig.clientKey();
-        }
-
-        @Override
-        public Config minRatio(double ratio) {
-            commonConfig.minRatio(ratio);
-            return this;
-        }
-
-        @Override
-        public Config maxRatio(double ratio) {
-            commonConfig.maxRatio(ratio);
-            return this;
-        }
-
-        @Override
-        public Config startTest(long test) {
-            commonConfig.startTest(test);
-            return this;
-        }
-
-        @Override
-        public Config endTest(long test) {
-            commonConfig.endTest(test);
-            return this;
-        }
-
-        @Override
-        public Config parts(int parts) {
-            commonConfig.parts(parts);
-            return this;
-        }
-
-        @Override
-        public Config copy() {
-            FuzzerConfig clone = new FuzzerConfig(commonConfig.copy());
-            clone.target(target);
-            clone.mode(mode);
+        public CommonConfig copy() {
+            FuzzerConfig clone = new FuzzerConfig();
+            clone.host = host;
+            clone.port = port;
+            clone.minRatio = minRatio;
+            clone.maxRatio = maxRatio;
+            clone.threads = threads;
+            clone.parts = parts;
+            clone.startTest = startTest;
+            clone.endTest = endTest;
+            clone.target = target;
+            clone.mode = mode;
 
             return clone;
         }

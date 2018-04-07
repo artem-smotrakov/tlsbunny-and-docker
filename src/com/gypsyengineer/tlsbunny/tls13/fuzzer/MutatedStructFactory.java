@@ -44,8 +44,12 @@ public class MutatedStructFactory extends StructFactoryWrapper
         setTarget(Target.valueOf(target));
     }
 
+    public void setMode(Mode mode) {
+        this.mode = mode;
+    }
+
     public void setMode(String mode) {
-        this.mode = Mode.valueOf(mode);
+        setMode(Mode.valueOf(mode));
     }
 
     @Override
