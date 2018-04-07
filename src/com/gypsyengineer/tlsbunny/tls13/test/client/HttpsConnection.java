@@ -5,9 +5,11 @@ import com.gypsyengineer.tlsbunny.tls13.connection.*;
 public class HttpsConnection {
 
     public static void main(String[] args) throws Exception {
+        CommonConfig config = new CommonConfig();
+
         Engine.init()
-                .target("localhost")
-                .target(10101)
+                .target(config.host())
+                .target(config.port())
                 .send(new OutgoingClientHello())
                 .send(new OutgoingChangeCipherSpec())
                 .expect(new IncomingServerHello())
