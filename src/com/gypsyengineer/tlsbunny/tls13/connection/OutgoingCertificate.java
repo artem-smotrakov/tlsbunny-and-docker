@@ -16,6 +16,10 @@ public class OutgoingCertificate extends AbstractAction {
     private byte[] cert_data;
 
     public Action certificate(String path) throws IOException {
+        if (path == null || path.trim().isEmpty()) {
+            throw  new IllegalArgumentException("no certificate specified");
+        }
+
         cert_data = Files.readAllBytes(Paths.get(path));
 
         return this;
