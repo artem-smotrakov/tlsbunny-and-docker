@@ -13,27 +13,35 @@ import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Target.certificate;
 
 public class FuzzyCertificate implements Runnable {
 
+    private static final CommonConfig commonConfig = new CommonConfig();
+
     private static final Config[] configs = new Config[] {
-            new FuzzerConfig()
-                    .target(certificate).mode(byte_flip)
-                    .minRatio(0.01).maxRatio(0.09).endTest(10).parts(5),
-            new FuzzerConfig()
-                    .target(certificate).mode(bit_flip)
-                    .minRatio(0.01).maxRatio(0.09).endTest(10).parts(5),
+            new CertificateFuzzerConfig(commonConfig)
+                    .mode(byte_flip)
+                    .minRatio(0.01)
+                    .maxRatio(0.09)
+                    .endTest(10)
+                    .parts(5),
+            new CertificateFuzzerConfig(commonConfig)
+                    .mode(bit_flip)
+                    .minRatio(0.01)
+                    .maxRatio(0.09)
+                    .endTest(10)
+                    .parts(5),
     };
 
     private final Output output;
-    private final FuzzerConfig config;
+    private final CertificateFuzzerConfig config;
     private final MutatedStructFactory fuzzer;
 
-    FuzzyCertificate(Output output, FuzzerConfig config) {
+    public FuzzyCertificate(Output output, CertificateFuzzerConfig config) {
         fuzzer = new MutatedStructFactory(
                 StructFactory.getDefault(),
                 output,
                 config.minRatio(),
                 config.maxRatio()
         );
-        fuzzer.setTarget(certificate);
+        fuzzer.setTarget(config.target());
         fuzzer.setMode(config.mode());
         fuzzer.setStartTest(config.startTest());
         fuzzer.setEndTest(config.endTest());
@@ -91,29 +99,14 @@ public class FuzzyCertificate implements Runnable {
         new MultipleThreads().add(configs).submit();
     }
 
-    public static class FuzzerConfig extends CommonConfig {
+    public static class CertificateFuzzerConfig extends FuzzerConfig {
 
-        @Override
-        public FuzzyCertificate create() {
-            return new FuzzyCertificate(new Output(), this);
+        public CertificateFuzzerConfig(CommonConfig commonConfig) {
+            super(commonConfig);
+            set(() -> new FuzzyCertificate(new Output(), this));
+            target(certificate);
         }
 
-        @Override
-        public CommonConfig copy() {
-            FuzzerConfig clone = new FuzzerConfig();
-            clone.host = host;
-            clone.port = port;
-            clone.minRatio = minRatio;
-            clone.maxRatio = maxRatio;
-            clone.threads = threads;
-            clone.parts = parts;
-            clone.startTest = startTest;
-            clone.endTest = endTest;
-            clone.target = target;
-            clone.mode = mode;
-
-            return clone;
-        }
     }
 
 }
