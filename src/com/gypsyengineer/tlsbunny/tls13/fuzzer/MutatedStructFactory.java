@@ -39,8 +39,12 @@ public class MutatedStructFactory extends StructFactoryWrapper
         initFuzzer(DEFAULT_START_TEST);
     }
 
+    public void setTarget(Target target) {
+        this.target = target;
+    }
+
     public void setTarget(String target) {
-        this.target = Target.valueOf(target);
+        setTarget(Target.valueOf(target));
     }
 
     public void setMode(String mode) {
