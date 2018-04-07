@@ -29,6 +29,10 @@ public class CommonConfig implements Config {
     long endTest = Long.getLong("tlsbunny.ebd.test", DEFAULT_END_TEST);
     Target target;
     Mode mode;
+    String clientCertificate = System.getProperty(
+            "tlsbunny.client.cert", DEFAULT_CLIENT_CERTIFICATE);
+    String clientKey = System.getProperty(
+            "tlsbunny.client.key", DEFAULT_CLIENT_KEY);
 
     public CommonConfig() {
         String value = System.getProperty("tlsbunny.target");
@@ -120,12 +124,12 @@ public class CommonConfig implements Config {
 
     @Override
     public String clientCertificate() {
-        return System.getProperty("tlsbunny.client.cert", DEFAULT_CLIENT_CERTIFICATE);
+        return clientCertificate;
     }
 
     @Override
     public String clientKey() {
-        return System.getProperty("tlsbunny.client.key", DEFAULT_CLIENT_KEY);
+        return clientKey;
     }
 
     @Override
