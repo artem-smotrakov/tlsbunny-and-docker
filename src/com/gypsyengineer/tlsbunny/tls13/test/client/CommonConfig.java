@@ -10,6 +10,8 @@ public class CommonConfig implements Config {
     public static final int DEFAULT_PORT = 10101;
     public static final String DEFAULT_HOST = "localhost";
     public static final int DEFAULT_THREADS = 3;
+    public static final String DEFAULT_CLIENT_CERTIFICATE = "certs/client_cert.der";
+    public static final String DEFAULT_CLIENT_KEY = "certs/client_key.pkcs8";
 
     private String host = System.getProperty("tlsbunny.host", DEFAULT_HOST).trim();
     private int port = Integer.getInteger("tlsbunny.port", DEFAULT_PORT);
@@ -92,12 +94,12 @@ public class CommonConfig implements Config {
 
     @Override
     public String clientCertificate() {
-        return System.getProperty("tlsbunny.client.cert");
+        return System.getProperty("tlsbunny.client.cert", DEFAULT_CLIENT_CERTIFICATE);
     }
 
     @Override
     public String clientKey() {
-        return System.getProperty("tlsbunny.client.key");
+        return System.getProperty("tlsbunny.client.key", DEFAULT_CLIENT_KEY);
     }
 
     @Override
