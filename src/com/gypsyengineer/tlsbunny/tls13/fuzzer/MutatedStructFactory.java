@@ -12,9 +12,6 @@ import java.util.List;
 public class MutatedStructFactory extends StructFactoryWrapper
         implements Fuzzer<byte[]> {
 
-    public enum Mode   { byte_flip, bit_flip }
-    public enum Target { tls_plaintext, handshake, client_hello, certificate, finished }
-
     public static final Target DEFAULT_TARGET = Target.tls_plaintext;
     public static final Mode DEFAULT_MODE = Mode.byte_flip;
     public static final String DEFAULT_START_TEST = "0";
@@ -47,8 +44,12 @@ public class MutatedStructFactory extends StructFactoryWrapper
         setTarget(Target.valueOf(target));
     }
 
+    public void setMode(Mode mode) {
+        this.mode = mode;
+    }
+
     public void setMode(String mode) {
-        this.mode = Mode.valueOf(mode);
+        setMode(Mode.valueOf(mode));
     }
 
     @Override

@@ -2,14 +2,14 @@ package com.gypsyengineer.tlsbunny.tls13.test.client;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.*;
 
-public class NormalHttpsConnection {
-
-    public static final String HTTP_GET_REQUEST = "GET / HTTP/1.1\n\n";
+public class HttpsConnection {
 
     public static void main(String[] args) throws Exception {
+        CommonConfig config = new CommonConfig();
+
         Engine.init()
-                .target("localhost")
-                .target(10101)
+                .target(config.host())
+                .target(config.port())
                 .send(new OutgoingClientHello())
                 .send(new OutgoingChangeCipherSpec())
                 .expect(new IncomingServerHello())
@@ -20,7 +20,7 @@ public class NormalHttpsConnection {
                 .expect(new IncomingFinished())
                 .send(new OutgoingFinished())
                 .allow(new IncomingNewSessionTicket())
-                .send(new OutgoingApplicationData(HTTP_GET_REQUEST))
+                .send(new OutgoingHttpGetRequest())
                 .expect(new IncomingApplicationData())
                 .connect()
                 .check(new Success());

@@ -5,9 +5,11 @@ import com.gypsyengineer.tlsbunny.tls13.connection.*;
 public class DoubleClientHello {
 
     public static void main(String[] args) throws Exception {
+        CommonConfig config = new CommonConfig();
+
         Engine.init()
-                .target("localhost")
-                .target(10101)
+                .target(config.host())
+                .target(config.port())
                 .send(new OutgoingClientHello())
                 .expect(new IncomingServerHello())
                 .expect(new IncomingChangeCipherSpec())

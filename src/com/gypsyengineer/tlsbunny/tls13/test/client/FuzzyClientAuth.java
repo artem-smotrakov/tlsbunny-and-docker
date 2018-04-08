@@ -4,14 +4,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class FuzzyClient {
+public class FuzzyClientAuth {
 
     private static final List<Config> configs = new ArrayList<>();
     static {
-        //configs.addAll(Arrays.asList(TLSPlaintextFuzzer.configs));
-        //configs.addAll(Arrays.asList(HandshakeFuzzer.configs));
-        //configs.addAll(Arrays.asList(ClientHelloFuzzer.configs));
-        configs.addAll(Arrays.asList(FinishedFuzzer.configs));
+        configs.addAll(Arrays.asList(CertificateFuzzer.configs));
     }
 
     public static void main(String[] args) throws InterruptedException {

@@ -1,6 +1,7 @@
 package com.gypsyengineer.tlsbunny.tls13.test.client;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -12,12 +13,16 @@ public class MultipleThreads {
 
     private final List<Config> configs = new ArrayList<>();
 
-    public MultipleThreads add(Config... configs) {
+    public MultipleThreads add(List<Config> configs) {
         for (Config config : configs) {
             this.configs.add(config);
         }
 
         return this;
+    }
+
+    public MultipleThreads add(Config... configs) {
+        return add(Arrays.asList(configs));
     }
 
     public void submit() throws InterruptedException {
