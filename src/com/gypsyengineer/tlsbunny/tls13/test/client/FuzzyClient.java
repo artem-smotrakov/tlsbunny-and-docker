@@ -8,9 +8,9 @@ public class FuzzyClient {
 
     private static final List<Config> configs = new ArrayList<>();
     static {
-        configs.addAll(Arrays.asList(TLSPlaintextFuzzer.configs));
-        configs.addAll(Arrays.asList(HandshakeFuzzer.configs));
-        configs.addAll(Arrays.asList(ClientHelloFuzzer.configs));
+        //configs.addAll(Arrays.asList(TLSPlaintextFuzzer.configs));
+        //configs.addAll(Arrays.asList(HandshakeFuzzer.configs));
+        //configs.addAll(Arrays.asList(ClientHelloFuzzer.configs));
         configs.addAll(Arrays.asList(FinishedFuzzer.configs));
     }
 

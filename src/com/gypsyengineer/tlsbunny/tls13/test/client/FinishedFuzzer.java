@@ -1,6 +1,7 @@
 package com.gypsyengineer.tlsbunny.tls13.test.client;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.*;
+import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Mode.bit_flip;
@@ -28,11 +29,12 @@ public class FinishedFuzzer extends HandshakeMessageFuzzer {
         super(output, config);
     }
 
-    Engine connect() throws Exception {
+    @Override
+    Engine connect(StructFactory factory) throws Exception {
         return Engine.init()
                 .target(config.host())
                 .target(config.port())
-                .set(fuzzer)
+                .set(factory)
                 .set(output)
                 .send(new OutgoingClientHello())
                 .send(new OutgoingChangeCipherSpec())

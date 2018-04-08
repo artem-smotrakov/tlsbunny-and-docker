@@ -34,12 +34,24 @@ public abstract class HandshakeMessageFuzzer implements Runnable {
     @Override
     public void run() {
         try {
+            output.info("run a smoke test before fuzzing");
+            connect(StructFactory.getDefault()).check(new Success());
+        } catch (Exception e) {
+            output.achtung("smoke test failed: %s", e.getMessage());
+            output.achtung("skip fuzzing");
+            return;
+        } finally {
+            output.flush();
+        }
+
+        output.info("smoke test passed, start fuzzing");
+        try {
             output.prefix(Thread.currentThread().getName());
             while (fuzzer.canFuzz()) {
                 output.info("test %d", fuzzer.getTest());
                 output.info("now fuzzer's state is '%s'", fuzzer.getState());
                 try {
-                    connect();
+                    connect(fuzzer);
                 } finally {
                     output.flush();
                     fuzzer.moveOn();
@@ -54,6 +66,6 @@ public abstract class HandshakeMessageFuzzer implements Runnable {
         }
     }
 
-    abstract Engine connect() throws Exception;
+    abstract Engine connect(StructFactory factory) throws Exception;
 
 }
