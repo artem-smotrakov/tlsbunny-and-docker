@@ -9,6 +9,7 @@ public class FuzzyClientAuth {
     private static final List<Config> configs = new ArrayList<>();
     static {
         configs.addAll(Arrays.asList(CertificateFuzzer.configs));
+        configs.addAll(Arrays.asList(CertificateVerifyFuzzer.configs));
     }
 
     public static void main(String[] args) throws InterruptedException {
