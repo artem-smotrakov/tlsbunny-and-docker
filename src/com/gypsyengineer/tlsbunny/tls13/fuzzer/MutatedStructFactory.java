@@ -155,6 +155,27 @@ public class MutatedStructFactory extends StructFactoryWrapper
     }
 
     @Override
+    public CertificateVerify createCertificateVerify(
+            SignatureScheme algorithm, byte[] signature) {
+
+        CertificateVerify certificateVerify = factory.createCertificateVerify(
+                algorithm, signature);
+
+        if (target == Target.certificate_verify) {
+            output.info("fuzz CertificateVerify");
+            try {
+                byte[] fuzzed = fuzz(certificateVerify.encoding());
+                certificateVerify = new MutatedStruct(
+                        fuzzed.length, fuzzed, HandshakeType.certificate);
+            } catch (IOException e) {
+                output.achtung("I couldn't fuzz CertificateVerify: %s", e.getMessage());
+            }
+        }
+
+        return certificateVerify;
+    }
+
+    @Override
     public byte[] fuzz(byte[] encoding) {
         byte[] fuzzed = fuzzer.fuzz(encoding);
         if (Arrays.equals(encoding, fuzzed)) {
