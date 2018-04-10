@@ -8,7 +8,8 @@ import com.gypsyengineer.tlsbunny.tls13.struct.*;
 
 import java.io.IOException;
 
-public class MutatedStruct implements TLSPlaintext, Handshake, ClientHello, Finished, Certificate {
+public class MutatedStruct implements TLSPlaintext, Handshake, ClientHello,
+        Finished, Certificate, CertificateVerify {
 
     private static final HandshakeType NO_HANDSHAKE_TYPE = null;
 
@@ -146,15 +147,10 @@ public class MutatedStruct implements TLSPlaintext, Handshake, ClientHello, Fini
         throw new UnsupportedOperationException();
     }
 
-
-    // HandshakeMessage
-
     @Override
     public HandshakeType type() {
         return handshakeType;
     }
-
-    // ClientHello
 
     @Override
     public Extension findExtension(ExtensionType type) {
@@ -203,6 +199,16 @@ public class MutatedStruct implements TLSPlaintext, Handshake, ClientHello, Fini
 
     @Override
     public Vector<Byte> getCertificateRequestContext() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public SignatureScheme getAlgorithm() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Vector<Byte> getSignature() {
         throw new UnsupportedOperationException();
     }
 }
