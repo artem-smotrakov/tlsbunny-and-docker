@@ -4,13 +4,14 @@ import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 
 public abstract class AbstractCheck implements Check {
 
-    Engine connection;
-    boolean failed = true;
+    Engine engine;
     Context context;
 
+    boolean failed = true;
+
     @Override
-    public Check set(Engine connection) {
-        this.connection = connection;
+    public Check set(Engine engine) {
+        this.engine = engine;
         return this;
     }
 

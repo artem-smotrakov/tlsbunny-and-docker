@@ -15,6 +15,6 @@ public class StartWithCCS {
                 .send(new OutgoingClientHello())
                 .allow(new AnythingIncoming())
                 .connect()
-                .check(new AlertOccurred());
+                .check(new AlertReceived());
     }
 }

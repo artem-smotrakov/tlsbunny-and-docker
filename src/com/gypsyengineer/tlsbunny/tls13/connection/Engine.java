@@ -213,6 +213,7 @@ public class Engine {
 
     public Engine check(Check check) {
         check.set(this);
+        check.set(context);
         check.run();
         if (check.failed()) {
             throw new RuntimeException(String.format("%s check failed", check.name()));
