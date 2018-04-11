@@ -53,7 +53,7 @@ public abstract class AbstractFlipFuzzer implements Fuzzer<byte[]> {
 
     int getEndIndex(byte[] array) {
         if (endIndex > 0) {
-            // TODO: should it check if array.length < endIndex ?
+            // TODO: should it run if array.length < endIndex ?
             return endIndex;
         }
 

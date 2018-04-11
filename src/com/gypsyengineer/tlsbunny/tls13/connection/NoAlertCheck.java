@@ -1,6 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls13.connection;
 
-public class NoAlertReceived extends AbstractCheck {
+public class NoAlertCheck extends AbstractCheck {
 
     @Override
     public Check run() {

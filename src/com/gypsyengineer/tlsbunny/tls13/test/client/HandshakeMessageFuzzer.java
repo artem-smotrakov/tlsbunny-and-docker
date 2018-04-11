@@ -35,7 +35,7 @@ public abstract class HandshakeMessageFuzzer implements Runnable {
     public void run() {
         try {
             output.info("run a smoke test before fuzzing");
-            connect(StructFactory.getDefault()).check(new NoAlertReceived());
+            connect(StructFactory.getDefault()).run(new NoAlertCheck());
         } catch (Exception e) {
             output.achtung("smoke test failed: %s", e.getMessage());
             output.achtung("skip fuzzing");

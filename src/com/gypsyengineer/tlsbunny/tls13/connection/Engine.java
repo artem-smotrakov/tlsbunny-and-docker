@@ -211,12 +211,12 @@ public class Engine {
         return this;
     }
 
-    public Engine check(Check check) {
+    public Engine run(Check check) {
         check.set(this);
         check.set(context);
         check.run();
         if (check.failed()) {
-            throw new RuntimeException(String.format("%s check failed", check.name()));
+            throw new RuntimeException(String.format("%s run failed", check.name()));
         }
 
         return this;
@@ -242,7 +242,7 @@ public class Engine {
             for (Action alwaysExpectedAction : alwaysExpectedActions) {
                 buffer.mark();
                 try {
-                    output.info("check for %s", alwaysExpectedAction.name());
+                    output.info("run for %s", alwaysExpectedAction.name());
                     init(alwaysExpectedAction);
                     alwaysExpectedAction.run();
                     output.info("found %s", alwaysExpectedAction.name());

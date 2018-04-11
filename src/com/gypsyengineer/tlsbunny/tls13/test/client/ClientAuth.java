@@ -28,7 +28,7 @@ public class ClientAuth {
                 .send(new OutgoingHttpGetRequest())
                 .require(new IncomingApplicationData())
                 .connect()
-                .check(new NoAlertReceived());
+                .run(new NoAlertCheck());
     }
 
 }

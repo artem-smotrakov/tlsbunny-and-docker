@@ -23,7 +23,7 @@ public class HttpsConnection {
                 .send(new OutgoingHttpGetRequest())
                 .require(new IncomingApplicationData())
                 .connect()
-                .check(new NoAlertReceived());
+                .run(new NoAlertCheck());
     }
 
 }
