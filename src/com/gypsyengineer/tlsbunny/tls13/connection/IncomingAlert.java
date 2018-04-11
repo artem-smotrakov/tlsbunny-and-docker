@@ -31,6 +31,10 @@ public class IncomingAlert extends AbstractAction {
             throw new IOException("expected an alert");
         }
 
+        if (alert != null) {
+            context.setAlert(alert);
+        }
+
         output.info("received an alert: %s", alert);
 
         return this;
