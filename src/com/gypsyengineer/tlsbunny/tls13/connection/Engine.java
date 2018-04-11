@@ -247,7 +247,7 @@ public class Engine {
                 try {
                     TLSPlaintext tlsPlaintext = factory.parser().parseTLSPlaintext(buffer);
                     if (tlsPlaintext.containsAlert()) {
-                        Alert alert = factory.parser().parseAlert(buffer);
+                        Alert alert = factory.parser().parseAlert(tlsPlaintext.getFragment());
                         context.setAlert(alert);
                         throw new IOException(String.format("received an alert: %s", alert));
                     }
