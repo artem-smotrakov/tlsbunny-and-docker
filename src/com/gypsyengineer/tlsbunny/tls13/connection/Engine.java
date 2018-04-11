@@ -20,7 +20,7 @@ public class Engine {
     private static final ByteBuffer NOTHING = ByteBuffer.allocate(0);
 
     private enum ActionType {
-        send, expect, allow, produce
+        send, require, allow, produce
     }
 
     public enum Status {
@@ -42,8 +42,10 @@ public class Engine {
     private ByteBuffer buffer = NOTHING;
     private Context context = new Context();
 
-    // if true, then always check for an alert when receive data
-    private boolean checkAlert = true;
+    private List<Action> alwaysExpectedActions = new ArrayList<>();
+
+    // if true, then stop if an alert occurred
+    private boolean stopIfAlert = true;
 
     // this is a label to mark a particular connection
     private String label = String.valueOf(System.currentTimeMillis());
@@ -63,7 +65,7 @@ public class Engine {
     }
 
     public Engine tolerant() {
-        checkAlert = false;
+        stopIfAlert = false;
         return this;
     }
 
@@ -100,13 +102,18 @@ public class Engine {
         return this;
     }
 
+    public Engine expect(Action action) {
+        alwaysExpectedActions.add(action);
+        return this;
+    }
+
     public Engine send(Action action) {
         actions.add(new ActionHolder(action, ActionType.send));
         return this;
     }
 
     public Engine require(Action action) {
-        actions.add(new ActionHolder(action, ActionType.expect));
+        actions.add(new ActionHolder(action, ActionType.require));
         return this;
     }
 
@@ -129,16 +136,7 @@ public class Engine {
 
             loop: for (ActionHolder holder : actions) {
                 Action action = holder.action;
-
-                action.set(output);
-                action.set(context);
-                action.set(group);
-                action.set(scheme);
-                action.set(suite);
-                action.set(negotiator);
-                action.set(factory);
-                action.set(hkdf);
-                action.set(buffer);
+                init(action);
 
                 switch (holder.type) {
                     case send:
@@ -153,21 +151,21 @@ public class Engine {
                             return this;
                         }
                         break;
-                    case expect:
+                    case require:
                         output.info("require: %s", action.name());
+                        read(connection, action);
+
                         try {
-                            read(connection, action);
                             action.run();
                             output.info("done with receiving");
                         } catch (Exception e) {
-                            output.info("error: %s", e.getMessage());
+                            output.info("error: %s", e);
                             status = Status.unexpected_message;
                             return this;
                         }
                         break;
                     case allow:
                         output.info("allow: %s", action.name());
-
                         read(connection, action);
 
                         buffer.mark();
@@ -175,7 +173,7 @@ public class Engine {
                             action.run();
                             output.info("done with receiving");
                         } catch (Exception e) {
-                            output.info("error: %s", e.getMessage());
+                            output.info("error: %s", e);
                             output.info("skip %s", action.name());
                             buffer.reset(); // restore data
                         }
@@ -197,7 +195,7 @@ public class Engine {
                                 String.format("unknown action type: %s", holder.type));
                 }
 
-                if (!checkAlert && context.hasAlert()) {
+                if (stopIfAlert && context.hasAlert()) {
                     output.info("stop, alert occurred: %s", context.getAlert());
                     break;
                 }
@@ -234,28 +232,27 @@ public class Engine {
     }
 
     private void read(Connection connection, Action action) throws IOException {
-        if (buffer.remaining() == 0) {
+        while (buffer.remaining() == 0 && !context.hasAlert()) {
             buffer = ByteBuffer.wrap(connection.read());
             if (buffer.remaining() == 0) {
                 throw new IOException("no data received");
             }
-            action.set(buffer);
 
-            if (checkAlert) {
-                // check for an alert
+            for (Action alwaysExpectedAction : alwaysExpectedActions) {
                 buffer.mark();
                 try {
-                    TLSPlaintext tlsPlaintext = factory.parser().parseTLSPlaintext(buffer);
-                    if (tlsPlaintext.containsAlert()) {
-                        Alert alert = factory.parser().parseAlert(tlsPlaintext.getFragment());
-                        context.setAlert(alert);
-                        throw new IOException(String.format("received an alert: %s", alert));
-                    }
-                } finally {
-                    buffer.reset(); // restore data if no alert
+                    output.info("check for %s", alwaysExpectedAction.name());
+                    init(alwaysExpectedAction);
+                    alwaysExpectedAction.run();
+                    output.info("found %s", alwaysExpectedAction.name());
+                } catch (Exception e) {
+                    output.info("no %s found", alwaysExpectedAction.name());
+                    buffer.reset(); // restore data
                 }
             }
         }
+
+        action.set(buffer);
     }
 
     public static Engine init() throws IOException,
@@ -268,6 +265,18 @@ public class Engine {
                 connection.suite.hash(), connection.factory);
 
         return connection;
+    }
+
+    private void init(Action action) {
+        action.set(output);
+        action.set(context);
+        action.set(group);
+        action.set(scheme);
+        action.set(suite);
+        action.set(negotiator);
+        action.set(factory);
+        action.set(hkdf);
+        action.set(buffer);
     }
 
     private static class ActionHolder {

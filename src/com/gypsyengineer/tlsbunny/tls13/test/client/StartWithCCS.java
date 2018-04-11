@@ -10,9 +10,10 @@ public class StartWithCCS {
         Engine.init()
                 .target(config.host())
                 .target(config.port())
+                .expect(new IncomingAlert())
                 .send(new OutgoingChangeCipherSpec())
                 .send(new OutgoingClientHello())
-                .require(new IncomingAlert())
+                .allow(new AnythingIncoming())
                 .connect();
     }
 }
