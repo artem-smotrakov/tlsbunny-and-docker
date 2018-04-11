@@ -42,8 +42,8 @@ public class Engine {
     private ByteBuffer buffer = NOTHING;
     private Context context = new Context();
 
-    // if false, then the engine stops when an alert received
-    private boolean tolerant = false;
+    // if true, then always check for an alert when receive data
+    private boolean checkAlert = true;
 
     // this is a label to mark a particular connection
     private String label = String.valueOf(System.currentTimeMillis());
@@ -63,7 +63,7 @@ public class Engine {
     }
 
     public Engine tolerant() {
-        tolerant = true;
+        checkAlert = false;
         return this;
     }
 
@@ -105,7 +105,7 @@ public class Engine {
         return this;
     }
 
-    public Engine expect(Action action) {
+    public Engine require(Action action) {
         actions.add(new ActionHolder(action, ActionType.expect));
         return this;
     }
@@ -154,7 +154,7 @@ public class Engine {
                         }
                         break;
                     case expect:
-                        output.info("expect: %s", action.name());
+                        output.info("require: %s", action.name());
                         try {
                             read(connection, action);
                             action.run();
@@ -197,7 +197,7 @@ public class Engine {
                                 String.format("unknown action type: %s", holder.type));
                 }
 
-                if (!tolerant && context.hasAlert()) {
+                if (!checkAlert && context.hasAlert()) {
                     output.info("stop, alert occurred: %s", context.getAlert());
                     break;
                 }
@@ -241,7 +241,7 @@ public class Engine {
             }
             action.set(buffer);
 
-            if (!tolerant) {
+            if (checkAlert) {
                 // check for an alert
                 buffer.mark();
                 try {

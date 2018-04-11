@@ -12,7 +12,7 @@ public class StartWithCCS {
                 .target(config.port())
                 .send(new OutgoingChangeCipherSpec())
                 .send(new OutgoingClientHello())
-                .expect(new IncomingAlert())
+                .require(new IncomingAlert())
                 .connect();
     }
 }

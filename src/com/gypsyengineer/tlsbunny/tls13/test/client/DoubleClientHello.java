@@ -11,15 +11,15 @@ public class DoubleClientHello {
                 .target(config.host())
                 .target(config.port())
                 .send(new OutgoingClientHello())
-                .expect(new IncomingServerHello())
-                .expect(new IncomingChangeCipherSpec())
-                .expect(new IncomingEncryptedExtensions())
-                .expect(new IncomingCertificate())
-                .expect(new IncomingCertificateVerify())
-                .expect(new IncomingFinished())
+                .require(new IncomingServerHello())
+                .require(new IncomingChangeCipherSpec())
+                .require(new IncomingEncryptedExtensions())
+                .require(new IncomingCertificate())
+                .require(new IncomingCertificateVerify())
+                .require(new IncomingFinished())
                 .produce(new OutgoingFinished())
                 .send(new OutgoingClientHello())
-                .expect(new IncomingAlert())
+                .require(new IncomingAlert())
                 .connect();
     }
 }
