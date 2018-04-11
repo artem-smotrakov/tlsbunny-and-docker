@@ -14,6 +14,7 @@ public class StartWithCCS {
                 .send(new OutgoingChangeCipherSpec())
                 .send(new OutgoingClientHello())
                 .allow(new AnythingIncoming())
-                .connect();
+                .connect()
+                .check(new AlertOccurred());
     }
 }
