@@ -144,7 +144,6 @@ public class Engine {
                             output.info("send: %s", action.name());
                             action.run();
                             connection.send(action.data());
-                            output.info("done with sending");
                         } catch (Exception e) {
                             output.info("error: %s", e.getMessage());
                             status = Status.could_not_send;
@@ -157,7 +156,6 @@ public class Engine {
 
                         try {
                             action.run();
-                            output.info("done with receiving");
                         } catch (Exception e) {
                             output.info("error: %s", e);
                             status = Status.unexpected_message;
@@ -171,7 +169,6 @@ public class Engine {
                         buffer.mark();
                         try {
                             action.run();
-                            output.info("done with receiving");
                         } catch (Exception e) {
                             output.info("error: %s", e);
                             output.info("skip %s", action.name());
@@ -216,7 +213,7 @@ public class Engine {
         check.set(context);
         check.run();
         if (check.failed()) {
-            throw new RuntimeException(String.format("%s run failed", check.name()));
+            throw new RuntimeException(String.format("%s check failed", check.name()));
         }
 
         return this;
@@ -242,12 +239,11 @@ public class Engine {
             for (Action alwaysExpectedAction : alwaysExpectedActions) {
                 buffer.mark();
                 try {
-                    output.info("run for %s", alwaysExpectedAction.name());
+                    output.info("check for %s", alwaysExpectedAction.name());
                     init(alwaysExpectedAction);
                     alwaysExpectedAction.run();
                     output.info("found %s", alwaysExpectedAction.name());
                 } catch (Exception e) {
-                    output.info("no %s found", alwaysExpectedAction.name());
                     buffer.reset(); // restore data
                 }
             }
