@@ -8,7 +8,7 @@ public class AnythingIncoming extends AbstractAction {
     }
 
     @Override
-    public Action run() throws Exception {
+    public Action run() {
         int read = buffer.remaining();
         buffer.position(buffer.limit());
         output.info("received %d bytes", read);
