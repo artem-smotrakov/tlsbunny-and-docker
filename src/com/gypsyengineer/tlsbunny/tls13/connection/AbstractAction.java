@@ -87,6 +87,11 @@ public abstract class AbstractAction implements Action {
     }
 
     @Override
+    public boolean produced() {
+        return out != null && out.remaining() > 0;
+    }
+
+    @Override
     public ByteBuffer data() {
         return out;
     }

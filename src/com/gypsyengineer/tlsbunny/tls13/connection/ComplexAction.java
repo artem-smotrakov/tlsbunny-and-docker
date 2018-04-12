@@ -117,9 +117,22 @@ public class ComplexAction implements Action {
     public Action run() throws Exception {
         for (Action action : actions) {
             action.run();
+
+            if (action.produced()) {
+                byte[] unprocessed = new byte[buffer.remaining()];
+                buffer.get(unprocessed);
+                buffer.clear();
+                buffer.put(action.data());
+                buffer.put(unprocessed);
+            }
         }
 
         return this;
+    }
+
+    @Override
+    public boolean produced() {
+        return buffer != null && buffer.remaining() > 0;
     }
 
     @Override
