@@ -20,7 +20,7 @@ public class Engine {
     private static final ByteBuffer NOTHING = ByteBuffer.allocate(0);
 
     private enum ActionType {
-        send, require, allow, produce
+        send, require, allow, run
     }
 
     public enum Status {
@@ -122,8 +122,8 @@ public class Engine {
         return this;
     }
 
-    public Engine produce(Action action) {
-        actions.add(new ActionHolder(action, ActionType.produce));
+    public Engine run(Action action) {
+        actions.add(new ActionHolder(action, ActionType.run));
         return this;
     }
 
@@ -156,6 +156,7 @@ public class Engine {
 
                         try {
                             action.run();
+                            combineData(action);
                         } catch (Exception e) {
                             output.info("error: %s", e);
                             status = Status.unexpected_message;
@@ -169,17 +170,18 @@ public class Engine {
                         buffer.mark();
                         try {
                             action.run();
+                            combineData(action);
                         } catch (Exception e) {
                             output.info("error: %s", e);
                             output.info("skip %s", action.name());
                             buffer.reset(); // restore data
                         }
                         break;
-                    case produce:
-                        output.info("produce: %s", action.name());
+                    case run:
+                        output.info("run: %s", action.name());
                         try {
                             action.run();
-                            output.info("done with producing");
+                            combineData(action);
                         } catch (Exception e) {
                             output.info("error: %s", e.getMessage());
                             status = Status.unexpected_error;
@@ -227,6 +229,16 @@ public class Engine {
 
     public Status status() {
         return status;
+    }
+
+    private void combineData(Action action) {
+        if (action.produced()) {
+            byte[] unprocessed = new byte[buffer.remaining()];
+            buffer.get(unprocessed);
+            buffer.clear();
+            buffer.put(action.data());
+            buffer.put(unprocessed);
+        }
     }
 
     private void read(Connection connection, Action action) throws IOException {

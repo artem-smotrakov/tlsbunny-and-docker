@@ -17,7 +17,7 @@ public class DoubleClientHello {
                 .require(new IncomingCertificate())
                 .require(new IncomingCertificateVerify())
                 .require(new IncomingFinished())
-                .produce(new OutgoingFinished())
+                .run(new OutgoingFinished())
                 .send(new OutgoingClientHello())
                 .require(new IncomingAlert())
                 .connect();

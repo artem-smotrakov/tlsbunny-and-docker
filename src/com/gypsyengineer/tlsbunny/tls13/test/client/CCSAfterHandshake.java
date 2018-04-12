@@ -24,8 +24,8 @@ public class CCSAfterHandshake {
                 .allow(new IncomingNewSessionTicket())
                 .send(new OutgoingHttpGetRequest())
                 .require(new IncomingApplicationData())
-                //.send(new OutgoingChangeCipherSpec())
-                //.allow(new AnythingIncoming())
+                .send(new OutgoingChangeCipherSpec())
+                .expect(new IncomingEncryptedHandshakeData())
                 .connect()
                 .run(new AlertCheck());
     }
