@@ -13,13 +13,13 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ComplexAction implements Action {
+public class ActionChain implements Action {
 
     private final String name;
     private final List<Action> actions = new ArrayList<>();
     private ByteBuffer buffer;
 
-    public ComplexAction(String name, Action... actions) {
+    public ActionChain(String name, Action... actions) {
         this.name = name;
         for (Action action : actions) {
             this.actions.add(action);
