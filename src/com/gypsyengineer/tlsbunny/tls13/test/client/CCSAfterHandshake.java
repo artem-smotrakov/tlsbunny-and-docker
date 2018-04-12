@@ -11,7 +11,8 @@ public class CCSAfterHandshake {
         Engine.init()
                 .target(config.host())
                 .target(config.port())
-                //.expect(new IncomingAlert())
+                //.expect(new EncryptedHandshakeAlert())
+                //.expect(new EncryptedApplicationDataAlert())
                 .send(new OutgoingClientHello())
                 .send(new OutgoingChangeCipherSpec())
                 .require(new IncomingServerHello())
@@ -25,7 +26,7 @@ public class CCSAfterHandshake {
                 .send(new OutgoingHttpGetRequest())
                 .require(new IncomingApplicationData())
                 .send(new OutgoingChangeCipherSpec())
-                .expect(new IncomingEncryptedHandshakeData())
+                .require(new AnythingIncoming())
                 .connect()
                 .run(new AlertCheck());
     }
