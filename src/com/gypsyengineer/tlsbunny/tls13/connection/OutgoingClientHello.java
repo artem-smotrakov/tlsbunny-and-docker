@@ -34,7 +34,7 @@ public class OutgoingClientHello extends AbstractAction {
                 ProtocolVersion.TLSv10,
                 handshake.encoding());
 
-        buffer = Helper.store(tlsPlaintexts);
+        out = Helper.store(tlsPlaintexts);
 
         if (context.hasFirstClientHello() && context.hasSecondClientHello()) {
             throw new IOException("already received two ClientHello messages");

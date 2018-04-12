@@ -12,18 +12,18 @@ public class HttpsConnection {
                 .target(config.port())
                 .send(new OutgoingClientHello())
                 .send(new OutgoingChangeCipherSpec())
-                .expect(new IncomingServerHello())
-                .expect(new IncomingChangeCipherSpec())
-                .expect(new IncomingEncryptedExtensions())
-                .expect(new IncomingCertificate())
-                .expect(new IncomingCertificateVerify())
-                .expect(new IncomingFinished())
+                .require(new IncomingServerHello())
+                .require(new IncomingChangeCipherSpec())
+                .require(new IncomingEncryptedExtensions())
+                .require(new IncomingCertificate())
+                .require(new IncomingCertificateVerify())
+                .require(new IncomingFinished())
                 .send(new OutgoingFinished())
                 .allow(new IncomingNewSessionTicket())
                 .send(new OutgoingHttpGetRequest())
-                .expect(new IncomingApplicationData())
+                .require(new IncomingApplicationData())
                 .connect()
-                .check(new Success());
+                .run(new NoAlertCheck());
     }
 
 }

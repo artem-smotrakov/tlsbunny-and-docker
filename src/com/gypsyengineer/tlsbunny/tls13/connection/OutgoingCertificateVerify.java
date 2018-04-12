@@ -54,7 +54,7 @@ public class OutgoingCertificateVerify extends AbstractAction {
         //       since it sets a client CertificateVerify in context
         context.setClientCertificateVerify(handshake);
 
-        buffer = Helper.store(encrypt(handshake));
+        out = Helper.store(encrypt(handshake));
 
         return this;
     }
@@ -77,7 +77,7 @@ public class OutgoingCertificateVerify extends AbstractAction {
     }
 
     // TODO: move this method to handshakeDecryptor to avoid code duplicates
-    //       check other classes for outgoing handshake messages
+    //       run other classes for outgoing handshake messages
     TLSPlaintext[] encrypt(Handshake message) throws Exception {
         return factory.createTLSPlaintexts(
                 ContentType.application_data,
@@ -86,7 +86,7 @@ public class OutgoingCertificateVerify extends AbstractAction {
     }
 
     // TODO: move this method to handshakeDecryptor to avoid code duplicates
-    //       check other classes for outgoing handshake messages
+    //       run other classes for outgoing handshake messages
     private byte[] encrypt(byte[] data) throws Exception {
         TLSInnerPlaintext tlsInnerPlaintext = factory.createTLSInnerPlaintext(
                 ContentType.handshake, data, NO_PADDING);

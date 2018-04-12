@@ -6,7 +6,6 @@ import com.gypsyengineer.tlsbunny.tls13.crypto.HKDF;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Negotiator;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
-import com.gypsyengineer.tlsbunny.utils.Connection;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
 import java.io.IOException;
@@ -18,7 +17,8 @@ public abstract class AbstractAction implements Action {
     static final long SEED = Long.getLong("tlsbunny.seed", DEFAULT_SEED);
 
     protected StructFactory factory;
-    protected ByteBuffer buffer;
+    protected ByteBuffer in;
+    protected ByteBuffer out;
     Output output;
     SignatureScheme scheme;
     NamedGroup group;
@@ -82,19 +82,19 @@ public abstract class AbstractAction implements Action {
 
     @Override
     public Action set(ByteBuffer buffer) {
-        this.buffer = buffer;
+        this.in = buffer;
         return this;
     }
 
     @Override
     public ByteBuffer data() {
-        return buffer;
+        return out;
     }
 
     // helper methods
 
     byte[] processEncrypted(AEAD decryptor, ContentType expectedType) throws Exception {
-        TLSPlaintext tlsPlaintext = factory.parser().parseTLSPlaintext(buffer);
+        TLSPlaintext tlsPlaintext = factory.parser().parseTLSPlaintext(in);
         if (tlsPlaintext.containsAlert()) {
             Alert alert = factory.parser().parseAlert(tlsPlaintext.getFragment());
             context.setAlert(alert);

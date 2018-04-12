@@ -39,7 +39,7 @@ public class OutgoingCertificate extends AbstractAction {
         //       since it sets a client certificate in context
         context.setClientCertificate(handshake);
 
-        buffer = Helper.store(encrypt(handshake));
+        out = Helper.store(encrypt(handshake));
 
         return this;
     }

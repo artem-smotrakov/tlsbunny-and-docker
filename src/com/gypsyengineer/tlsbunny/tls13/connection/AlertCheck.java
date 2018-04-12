@@ -1,16 +1,16 @@
 package com.gypsyengineer.tlsbunny.tls13.connection;
 
-public class Success extends AbstractChecker {
+public class AlertCheck extends AbstractCheck {
 
     @Override
     public Check run() {
-        failed = connection.status() != Engine.Status.success;
+        failed = !context.hasAlert();
         return this;
     }
 
     @Override
     public String name() {
-        return "successful connection";
+        return "alert received";
     }
 
 }

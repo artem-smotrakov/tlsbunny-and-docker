@@ -18,7 +18,7 @@ public class OutgoingChangeCipherSpec extends AbstractAction {
                 ProtocolVersion.TLSv12,
                 ccs.encoding());
 
-        buffer = Helper.store(tlsPlaintexts);
+        out = Helper.store(tlsPlaintexts);
 
         return this;
     }

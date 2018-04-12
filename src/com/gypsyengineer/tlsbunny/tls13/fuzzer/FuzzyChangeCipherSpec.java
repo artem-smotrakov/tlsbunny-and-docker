@@ -2,7 +2,6 @@ package com.gypsyengineer.tlsbunny.tls13.fuzzer;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.AbstractAction;
 import com.gypsyengineer.tlsbunny.tls13.connection.Action;
-import com.gypsyengineer.tlsbunny.tls13.fuzzer.Fuzzer;
 import com.gypsyengineer.tlsbunny.tls13.struct.ChangeCipherSpec;
 import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
 import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
@@ -34,7 +33,7 @@ public class FuzzyChangeCipherSpec extends AbstractAction implements Fuzzer<Chan
                 ProtocolVersion.TLSv12,
                 ccs.encoding());
 
-        buffer = Helper.store(tlsPlaintexts);
+        in = Helper.store(tlsPlaintexts);
 
         return this;
     }

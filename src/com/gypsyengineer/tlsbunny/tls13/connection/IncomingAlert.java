@@ -13,7 +13,7 @@ public class IncomingAlert extends AbstractAction {
 
     @Override
     public Action run() throws Exception {
-        TLSPlaintext tlsPlaintext = factory.parser().parseTLSPlaintext(buffer);
+        TLSPlaintext tlsPlaintext = factory.parser().parseTLSPlaintext(in);
 
         Alert alert;
         if (tlsPlaintext.containsAlert()) {
@@ -29,6 +29,10 @@ public class IncomingAlert extends AbstractAction {
             alert = factory.parser().parseAlert(tlsInnerPlaintext.getContent());
         } else {
             throw new IOException("expected an alert");
+        }
+
+        if (alert != null) {
+            context.setAlert(alert);
         }
 
         output.info("received an alert: %s", alert);
