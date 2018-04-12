@@ -6,7 +6,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-public class IncomingEncryptedHandshake extends AbstractAction {
+public class IncomingEncryptedHandshakeData extends AbstractAction {
 
     @Override
     public String name() {
@@ -23,10 +23,6 @@ public class IncomingEncryptedHandshake extends AbstractAction {
 
         TLSInnerPlaintext tlsInnerPlaintext = factory.parser().parseTLSInnerPlaintext(
                 context.handshakeDecryptor.decrypt(tlsPlaintext));
-
-        if (!tlsInnerPlaintext.containsHandshake()) {
-            throw new IOException("expected encrypted handshake data");
-        }
 
         out = ByteBuffer.wrap(tlsInnerPlaintext.getContent());
 
