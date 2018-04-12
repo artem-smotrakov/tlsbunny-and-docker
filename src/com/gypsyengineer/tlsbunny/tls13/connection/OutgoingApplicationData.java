@@ -36,7 +36,7 @@ public class OutgoingApplicationData extends AbstractAction {
                 ProtocolVersion.TLSv12,
                 encrypt(data));
 
-        buffer = Helper.store(tlsPlaintexts);
+        out = Helper.store(tlsPlaintexts);
 
         return this;
     }

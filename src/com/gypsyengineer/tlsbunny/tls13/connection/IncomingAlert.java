@@ -13,7 +13,7 @@ public class IncomingAlert extends AbstractAction {
 
     @Override
     public Action run() throws Exception {
-        TLSPlaintext tlsPlaintext = factory.parser().parseTLSPlaintext(buffer);
+        TLSPlaintext tlsPlaintext = factory.parser().parseTLSPlaintext(in);
 
         Alert alert;
         if (tlsPlaintext.containsAlert()) {

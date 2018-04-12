@@ -54,7 +54,7 @@ public class OutgoingCertificateVerify extends AbstractAction {
         //       since it sets a client CertificateVerify in context
         context.setClientCertificateVerify(handshake);
 
-        buffer = Helper.store(encrypt(handshake));
+        out = Helper.store(encrypt(handshake));
 
         return this;
     }

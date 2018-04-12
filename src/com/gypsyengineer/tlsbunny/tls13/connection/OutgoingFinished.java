@@ -54,7 +54,7 @@ public class OutgoingFinished extends AbstractAction {
                 ZERO_HASH_VALUE,
                 suite.ivLength());
 
-        buffer = Helper.store(encrypt(handshake));
+        out = Helper.store(encrypt(handshake));
 
         context.applicationDataEnctyptor = AEAD.createEncryptor(
                 suite.cipher(),

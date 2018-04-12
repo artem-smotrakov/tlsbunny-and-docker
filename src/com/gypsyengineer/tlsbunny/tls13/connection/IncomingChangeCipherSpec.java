@@ -3,7 +3,6 @@ package com.gypsyengineer.tlsbunny.tls13.connection;
 import com.gypsyengineer.tlsbunny.tls13.struct.ChangeCipherSpec;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
 public class IncomingChangeCipherSpec extends AbstractAction {
 
@@ -14,7 +13,7 @@ public class IncomingChangeCipherSpec extends AbstractAction {
 
     @Override
     public Action run() throws IOException {
-        TLSPlaintext tlsPlaintext = factory.parser().parseTLSPlaintext(buffer);
+        TLSPlaintext tlsPlaintext = factory.parser().parseTLSPlaintext(in);
         if (!tlsPlaintext.containsChangeCipherSpec()) {
             throw new IOException("expected a change cipher spec message");
         }

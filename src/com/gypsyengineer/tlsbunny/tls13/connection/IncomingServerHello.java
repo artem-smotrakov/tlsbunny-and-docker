@@ -18,7 +18,7 @@ public class IncomingServerHello extends AbstractAction {
 
     @Override
     public Action run() throws Exception {
-        TLSPlaintext tlsPlaintext = factory.parser().parseTLSPlaintext(buffer);
+        TLSPlaintext tlsPlaintext = factory.parser().parseTLSPlaintext(in);
 
         if (tlsPlaintext.containsAlert()) {
             Alert alert = factory.parser().parseAlert(tlsPlaintext.getFragment());
