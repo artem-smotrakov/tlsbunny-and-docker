@@ -6,11 +6,11 @@ import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-public class IncomingEncryptedData extends AbstractAction {
+public class IncomingEncryptedHandshake extends AbstractAction {
 
     @Override
     public String name() {
-        return "encrypted data";
+        return "encrypted handshake data";
     }
 
     @Override
@@ -22,10 +22,15 @@ public class IncomingEncryptedData extends AbstractAction {
         }
 
         TLSInnerPlaintext tlsInnerPlaintext = factory.parser().parseTLSInnerPlaintext(
-                context.applicationDataDecryptor.decrypt(tlsPlaintext));
+                context.handshakeDecryptor.decrypt(tlsPlaintext));
+
+        if (!tlsInnerPlaintext.containsHandshake()) {
+            throw new IOException("expected encrypted handshake data");
+        }
+
         out = ByteBuffer.wrap(tlsInnerPlaintext.getContent());
 
-        output.info("received encrypted data (%d bytes)",
+        output.info("received encrypted handshake data (%d bytes)",
                 tlsInnerPlaintext.getContent().length);
 
         return this;
