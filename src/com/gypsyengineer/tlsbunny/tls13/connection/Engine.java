@@ -248,6 +248,8 @@ public class Engine {
                 throw new IOException("no data received");
             }
 
+            // TODO: it breaks down when an action involves decryption
+            //       should we just always expect CCS?
             for (Action alwaysExpectedAction : alwaysExpectedActions) {
                 buffer.mark();
                 try {
