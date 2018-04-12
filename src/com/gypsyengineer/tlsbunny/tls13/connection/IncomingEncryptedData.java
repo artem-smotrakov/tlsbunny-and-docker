@@ -25,6 +25,7 @@ public class IncomingEncryptedData extends AbstractAction {
                 context.applicationDataDecryptor.decrypt(tlsPlaintext));
         out = ByteBuffer.wrap(tlsInnerPlaintext.getContent());
 
+        // TODO: Engine should take care out it
         byte[] unprocessed = new byte[in.remaining()];
         in.get(unprocessed);
         in.clear();
