@@ -168,6 +168,10 @@ public class Engine {
                         output.info("allow: %s", action.name());
                         read(connection, action);
 
+                        // TODO: if an action decrypts data, but the action fails,
+                        //       then decryption in the next action is going to fail
+                        //       this may be fixed by propagating decrypted data
+                        //       to the next action
                         buffer.mark();
                         try {
                             action.run();
