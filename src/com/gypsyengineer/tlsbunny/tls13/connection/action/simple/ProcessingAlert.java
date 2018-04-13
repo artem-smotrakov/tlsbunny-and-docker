@@ -8,7 +8,7 @@ public class ProcessingAlert extends AbstractAction {
 
     @Override
     public String name() {
-        return "alert";
+        return "processing an alert";
     }
 
     @Override

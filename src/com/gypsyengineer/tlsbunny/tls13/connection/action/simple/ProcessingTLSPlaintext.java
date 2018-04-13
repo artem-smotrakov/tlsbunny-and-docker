@@ -21,7 +21,7 @@ public class ProcessingTLSPlaintext extends AbstractAction {
 
     @Override
     public String name() {
-        return "TLSPlaintext";
+        return "processing a TLSPlaintext";
     }
 
     @Override

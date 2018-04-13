@@ -17,7 +17,7 @@ public class OutgoingData extends AbstractAction {
         out = ByteBuffer.allocate(in.remaining());
         out.put(in);
         out.position(0);
-        output.info("sending %d bytes", out.remaining());
+        output.info("sent %d bytes", out.remaining());
 
         return this;
     }

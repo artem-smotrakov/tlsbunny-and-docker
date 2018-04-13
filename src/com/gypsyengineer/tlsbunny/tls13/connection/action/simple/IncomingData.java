@@ -17,7 +17,7 @@ public class IncomingData extends AbstractAction {
         out = ByteBuffer.allocate(in.remaining());
         out.put(in);
         out.position(0);
-        output.info("receiving %d bytes", out.remaining());
+        output.info("received %d bytes", out.remaining());
 
         return this;
     }
