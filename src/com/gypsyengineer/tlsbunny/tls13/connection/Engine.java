@@ -42,7 +42,8 @@ public class Engine {
     private ByteBuffer buffer = NOTHING;
     private Context context = new Context();
 
-    private List<Action> alwaysExpectedActions = new ArrayList<>();
+    // if true, always check for CCS when read data
+    private boolean alwaysCheckForCCS = true;
 
     // if true, then stop if an alert occurred
     private boolean stopIfAlert = true;
@@ -64,8 +65,13 @@ public class Engine {
         return this;
     }
 
-    public Engine tolerant() {
+    public Engine dontStopIfAlert() {
         stopIfAlert = false;
+        return this;
+    }
+
+    public Engine dontExpectCCS () {
+        alwaysCheckForCCS = false;
         return this;
     }
 
@@ -99,11 +105,6 @@ public class Engine {
 
     public Engine set(Negotiator negotiator) {
         this.negotiator = negotiator;
-        return this;
-    }
-
-    public Engine expect(Action action) {
-        alwaysExpectedActions.add(action);
         return this;
     }
 
@@ -247,23 +248,26 @@ public class Engine {
             if (buffer.remaining() == 0) {
                 throw new IOException("no data received");
             }
-
-            // TODO: it breaks down when an action involves decryption
-            //       should we just always expect CCS?
-            for (Action alwaysExpectedAction : alwaysExpectedActions) {
-                buffer.mark();
-                try {
-                    output.info("check for %s", alwaysExpectedAction.name());
-                    init(alwaysExpectedAction);
-                    alwaysExpectedAction.run();
-                    output.info("found %s", alwaysExpectedAction.name());
-                } catch (Exception e) {
-                    buffer.reset(); // restore data
-                }
-            }
         }
 
+        checkCCS();
+
         action.set(buffer);
+    }
+
+    private void checkCCS() {
+        if (alwaysCheckForCCS) {
+            buffer.mark();
+            try {
+                IncomingChangeCipherSpec incomingCCS = new IncomingChangeCipherSpec();
+                output.info("check for %s", incomingCCS.name());
+                init(incomingCCS);
+                incomingCCS.run();
+                output.info("found %s", incomingCCS.name());
+            } catch (Exception e) {
+                buffer.reset(); // restore data
+            }
+        }
     }
 
     public static Engine init() throws IOException,
