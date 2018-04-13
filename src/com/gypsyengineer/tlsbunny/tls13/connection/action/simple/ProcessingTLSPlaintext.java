@@ -8,13 +8,13 @@ import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-public class ReadingTLSPlaintext extends AbstractAction {
+public class ProcessingTLSPlaintext extends AbstractAction {
 
     public static final ContentType NO_TYPE_SPECIFIED = null;
 
     private ContentType expectedType = NO_TYPE_SPECIFIED;
 
-    public ReadingTLSPlaintext expect(ContentType type) {
+    public ProcessingTLSPlaintext expect(ContentType type) {
         expectedType = type;
         return this;
     }

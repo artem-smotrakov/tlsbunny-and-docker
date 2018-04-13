@@ -10,19 +10,19 @@ import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-public class EncryptedAlert extends AbstractAction {
+public class ProcessingEncryptedAlert extends AbstractAction {
 
-    enum Phase { handshake, application_data };
+    enum Phase { handshake, application_data }
 
     private final Phase phase;
 
-    public EncryptedAlert(Phase phase) {
+    public ProcessingEncryptedAlert(Phase phase) {
         this.phase = phase;
     }
 
     @Override
     public String name() {
-        return "encrypted alert";
+        return String.format("encrypted alert (%s)", phase);
     }
 
     @Override

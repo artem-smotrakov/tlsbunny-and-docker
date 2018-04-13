@@ -7,7 +7,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
 
 import java.io.IOException;
 
-public class TLSPlaintextWithAlert extends AbstractAction {
+public class ProcessingTLSPlaintextWithAlert extends AbstractAction {
 
     @Override
     public String name() {
