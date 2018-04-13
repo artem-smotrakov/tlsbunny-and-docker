@@ -1,4 +1,4 @@
-package com.gypsyengineer.tlsbunny.tls13.connection;
+package com.gypsyengineer.tlsbunny.tls13.connection.action;
 
 import com.gypsyengineer.tlsbunny.tls.Random;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AEAD;
@@ -19,13 +19,13 @@ public abstract class AbstractAction implements Action {
     protected StructFactory factory;
     protected ByteBuffer in;
     protected ByteBuffer out;
-    Output output;
-    SignatureScheme scheme;
-    NamedGroup group;
-    CipherSuite suite;
-    Negotiator negotiator;
-    HKDF hkdf;
-    Context context;
+    protected Output output;
+    protected SignatureScheme scheme;
+    protected NamedGroup group;
+    protected CipherSuite suite;
+    protected Negotiator negotiator;
+    protected HKDF hkdf;
+    protected Context context;
 
     @Override
     public String name() {
@@ -87,13 +87,18 @@ public abstract class AbstractAction implements Action {
     }
 
     @Override
+    public boolean produced() {
+        return out != null && out.remaining() > 0;
+    }
+
+    @Override
     public ByteBuffer data() {
         return out;
     }
 
     // helper methods
 
-    byte[] processEncrypted(AEAD decryptor, ContentType expectedType) throws Exception {
+    protected byte[] processEncrypted(AEAD decryptor, ContentType expectedType) throws Exception {
         TLSPlaintext tlsPlaintext = factory.parser().parseTLSPlaintext(in);
         if (tlsPlaintext.containsAlert()) {
             Alert alert = factory.parser().parseAlert(tlsPlaintext.getFragment());
@@ -123,36 +128,36 @@ public abstract class AbstractAction implements Action {
         return tlsInnerPlaintext.getContent();
     }
 
-    Handshake processEncryptedHandshake() throws Exception {
+    protected Handshake processEncryptedHandshake() throws Exception {
         return factory.parser().parseHandshake(
                 processEncrypted(context.handshakeDecryptor, ContentType.handshake));
     }
 
-    Handshake toHandshake(HandshakeMessage message) throws IOException {
+    protected Handshake toHandshake(HandshakeMessage message) throws IOException {
         return factory.createHandshake(message.type(), message.encoding());
     }
 
-    Extension wrap(SupportedVersions supportedVersions) throws IOException {
+    protected Extension wrap(SupportedVersions supportedVersions) throws IOException {
         return factory.createExtension(
                 ExtensionType.supported_versions, supportedVersions.encoding());
     }
 
-    Extension wrap(SignatureSchemeList signatureSchemeList) throws IOException {
+    protected Extension wrap(SignatureSchemeList signatureSchemeList) throws IOException {
         return factory.createExtension(
                 ExtensionType.signature_algorithms, signatureSchemeList.encoding());
     }
 
-    Extension wrap(NamedGroupList namedGroupList) throws IOException {
+    protected Extension wrap(NamedGroupList namedGroupList) throws IOException {
         return factory.createExtension(
                 ExtensionType.supported_groups, namedGroupList.encoding());
     }
 
-    Extension wrap(KeyShare keyShare) throws IOException {
+    protected Extension wrap(KeyShare keyShare) throws IOException {
         return factory.createExtension(
                 ExtensionType.key_share, keyShare.encoding());
     }
 
-    static Random createRandom() {
+    public static Random createRandom() {
         java.util.Random generator = new java.util.Random(SEED);
         byte[] random_bytes = new byte[Random.LENGTH];
         generator.nextBytes(random_bytes);

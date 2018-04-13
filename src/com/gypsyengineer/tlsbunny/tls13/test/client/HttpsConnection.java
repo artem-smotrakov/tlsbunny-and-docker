@@ -1,6 +1,7 @@
 package com.gypsyengineer.tlsbunny.tls13.test.client;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.*;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.*;
 
 public class HttpsConnection {
 
@@ -13,7 +14,6 @@ public class HttpsConnection {
                 .send(new OutgoingClientHello())
                 .send(new OutgoingChangeCipherSpec())
                 .require(new IncomingServerHello())
-                .require(new IncomingChangeCipherSpec())
                 .require(new IncomingEncryptedExtensions())
                 .require(new IncomingCertificate())
                 .require(new IncomingCertificateVerify())

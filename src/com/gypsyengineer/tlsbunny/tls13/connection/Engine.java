@@ -1,5 +1,7 @@
 package com.gypsyengineer.tlsbunny.tls13.connection;
 
+import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.IncomingChangeCipherSpec;
 import com.gypsyengineer.tlsbunny.tls13.crypto.HKDF;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.handshake.ECDHENegotiator;
@@ -20,7 +22,7 @@ public class Engine {
     private static final ByteBuffer NOTHING = ByteBuffer.allocate(0);
 
     private enum ActionType {
-        send, require, allow, produce
+        send, require, allow, run
     }
 
     public enum Status {
@@ -42,7 +44,8 @@ public class Engine {
     private ByteBuffer buffer = NOTHING;
     private Context context = new Context();
 
-    private List<Action> alwaysExpectedActions = new ArrayList<>();
+    // if true, always check for CCS when read data
+    private boolean alwaysCheckForCCS = true;
 
     // if true, then stop if an alert occurred
     private boolean stopIfAlert = true;
@@ -64,8 +67,13 @@ public class Engine {
         return this;
     }
 
-    public Engine tolerant() {
+    public Engine dontStopIfAlert() {
         stopIfAlert = false;
+        return this;
+    }
+
+    public Engine dontExpectCCS () {
+        alwaysCheckForCCS = false;
         return this;
     }
 
@@ -102,11 +110,6 @@ public class Engine {
         return this;
     }
 
-    public Engine expect(Action action) {
-        alwaysExpectedActions.add(action);
-        return this;
-    }
-
     public Engine send(Action action) {
         actions.add(new ActionHolder(action, ActionType.send));
         return this;
@@ -122,8 +125,8 @@ public class Engine {
         return this;
     }
 
-    public Engine produce(Action action) {
-        actions.add(new ActionHolder(action, ActionType.produce));
+    public Engine run(Action action) {
+        actions.add(new ActionHolder(action, ActionType.run));
         return this;
     }
 
@@ -156,6 +159,7 @@ public class Engine {
 
                         try {
                             action.run();
+                            combineData(action);
                         } catch (Exception e) {
                             output.info("error: %s", e);
                             status = Status.unexpected_message;
@@ -166,20 +170,25 @@ public class Engine {
                         output.info("allow: %s", action.name());
                         read(connection, action);
 
+                        // TODO: if an action decrypts data, but the action fails,
+                        //       then decryption in the next action is going to fail
+                        //       this may be fixed by propagating decrypted data
+                        //       to the next action
                         buffer.mark();
                         try {
                             action.run();
+                            combineData(action);
                         } catch (Exception e) {
                             output.info("error: %s", e);
                             output.info("skip %s", action.name());
                             buffer.reset(); // restore data
                         }
                         break;
-                    case produce:
-                        output.info("produce: %s", action.name());
+                    case run:
+                        output.info("run: %s", action.name());
                         try {
                             action.run();
-                            output.info("done with producing");
+                            combineData(action);
                         } catch (Exception e) {
                             output.info("error: %s", e.getMessage());
                             status = Status.unexpected_error;
@@ -229,27 +238,42 @@ public class Engine {
         return status;
     }
 
+    private void combineData(Action action) {
+        if (action.produced()) {
+            byte[] unprocessed = new byte[buffer.remaining()];
+            buffer.get(unprocessed);
+            buffer.clear();
+            buffer.put(action.data());
+            buffer.put(unprocessed);
+        }
+    }
+
     private void read(Connection connection, Action action) throws IOException {
         while (buffer.remaining() == 0 && !context.hasAlert()) {
             buffer = ByteBuffer.wrap(connection.read());
             if (buffer.remaining() == 0) {
                 throw new IOException("no data received");
             }
-
-            for (Action alwaysExpectedAction : alwaysExpectedActions) {
-                buffer.mark();
-                try {
-                    output.info("check for %s", alwaysExpectedAction.name());
-                    init(alwaysExpectedAction);
-                    alwaysExpectedAction.run();
-                    output.info("found %s", alwaysExpectedAction.name());
-                } catch (Exception e) {
-                    buffer.reset(); // restore data
-                }
-            }
         }
 
+        checkCCS();
+
         action.set(buffer);
+    }
+
+    private void checkCCS() {
+        if (alwaysCheckForCCS) {
+            buffer.mark();
+            try {
+                IncomingChangeCipherSpec incomingCCS = new IncomingChangeCipherSpec();
+                output.info("check for %s", incomingCCS.name());
+                init(incomingCCS);
+                incomingCCS.run();
+                output.info("found %s", incomingCCS.name());
+            } catch (Exception e) {
+                buffer.reset(); // restore data
+            }
+        }
     }
 
     public static Engine init() throws IOException,

@@ -1,5 +1,7 @@
-package com.gypsyengineer.tlsbunny.tls13.connection;
+package com.gypsyengineer.tlsbunny.tls13.connection.action.composite;
 
+import com.gypsyengineer.tlsbunny.tls13.connection.action.AbstractAction;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
 import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
 
 public class IncomingApplicationData extends AbstractAction {

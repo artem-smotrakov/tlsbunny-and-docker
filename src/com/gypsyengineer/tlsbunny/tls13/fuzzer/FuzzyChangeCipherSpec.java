@@ -1,7 +1,7 @@
 package com.gypsyengineer.tlsbunny.tls13.fuzzer;
 
-import com.gypsyengineer.tlsbunny.tls13.connection.AbstractAction;
-import com.gypsyengineer.tlsbunny.tls13.connection.Action;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.AbstractAction;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
 import com.gypsyengineer.tlsbunny.tls13.struct.ChangeCipherSpec;
 import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
 import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;

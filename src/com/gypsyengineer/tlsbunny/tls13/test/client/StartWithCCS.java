@@ -1,6 +1,9 @@
 package com.gypsyengineer.tlsbunny.tls13.test.client;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.*;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.IncomingAlert;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.OutgoingChangeCipherSpec;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.OutgoingClientHello;
 
 public class StartWithCCS {
 
@@ -10,10 +13,9 @@ public class StartWithCCS {
         Engine.init()
                 .target(config.host())
                 .target(config.port())
-                .expect(new IncomingAlert())
                 .send(new OutgoingChangeCipherSpec())
                 .send(new OutgoingClientHello())
-                .allow(new AnythingIncoming())
+                .require(new IncomingAlert())
                 .connect()
                 .run(new AlertCheck());
     }

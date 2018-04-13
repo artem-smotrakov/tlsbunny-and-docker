@@ -1,8 +1,9 @@
-package com.gypsyengineer.tlsbunny.tls13.connection;
+package com.gypsyengineer.tlsbunny.tls13.connection.action.composite;
 
+import com.gypsyengineer.tlsbunny.tls13.connection.action.AbstractAction;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
 import com.gypsyengineer.tlsbunny.tls13.struct.Handshake;
-import com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext;
-import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
+
 import java.io.IOException;
 
 public class IncomingCertificateVerify extends AbstractAction {

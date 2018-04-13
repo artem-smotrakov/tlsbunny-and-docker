@@ -1,16 +1,18 @@
-package com.gypsyengineer.tlsbunny.tls13.connection;
+package com.gypsyengineer.tlsbunny.tls13.connection.action.composite;
 
+import com.gypsyengineer.tlsbunny.tls13.connection.action.AbstractAction;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-public class IncomingEncryptedData extends AbstractAction {
+public class IncomingEncryptedHandshakeData extends AbstractAction {
 
     @Override
     public String name() {
-        return "encrypted data";
+        return "encrypted handshake data";
     }
 
     @Override
@@ -22,15 +24,11 @@ public class IncomingEncryptedData extends AbstractAction {
         }
 
         TLSInnerPlaintext tlsInnerPlaintext = factory.parser().parseTLSInnerPlaintext(
-                context.applicationDataDecryptor.decrypt(tlsPlaintext));
+                context.handshakeDecryptor.decrypt(tlsPlaintext));
+
         out = ByteBuffer.wrap(tlsInnerPlaintext.getContent());
 
-        // TODO: Engine should take care out it
-        byte[] unprocessed = new byte[in.remaining()];
-        in.get(unprocessed);
-        in.clear();
-
-        output.info("received encrypted data (%d bytes)",
+        output.info("received encrypted handshake data (%d bytes)",
                 tlsInnerPlaintext.getContent().length);
 
         return this;

@@ -1,4 +1,4 @@
-package com.gypsyengineer.tlsbunny.tls13.connection;
+package com.gypsyengineer.tlsbunny.tls13.connection.action;
 
 import com.gypsyengineer.tlsbunny.tls13.crypto.HKDF;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
@@ -13,13 +13,13 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ComplexAction implements Action {
+public class ActionChain implements Action {
 
     private final String name;
     private final List<Action> actions = new ArrayList<>();
     private ByteBuffer buffer;
 
-    public ComplexAction(String name, Action... actions) {
+    public ActionChain(String name, Action... actions) {
         this.name = name;
         for (Action action : actions) {
             this.actions.add(action);
@@ -117,9 +117,22 @@ public class ComplexAction implements Action {
     public Action run() throws Exception {
         for (Action action : actions) {
             action.run();
+
+            if (action.produced()) {
+                byte[] unprocessed = new byte[buffer.remaining()];
+                buffer.get(unprocessed);
+                buffer.clear();
+                buffer.put(action.data());
+                buffer.put(unprocessed);
+            }
         }
 
         return this;
+    }
+
+    @Override
+    public boolean produced() {
+        return buffer != null && buffer.remaining() > 0;
     }
 
     @Override
