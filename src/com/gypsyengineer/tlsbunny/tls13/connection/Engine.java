@@ -1,6 +1,7 @@
 package com.gypsyengineer.tlsbunny.tls13.connection;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.ActionFactory;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.IncomingChangeCipherSpec;
 import com.gypsyengineer.tlsbunny.tls13.crypto.HKDF;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
@@ -112,6 +113,13 @@ public class Engine {
 
     public Engine send(Action action) {
         actions.add(new ActionHolder(action, ActionType.send));
+        return this;
+    }
+
+    public Engine send(int n, ActionFactory factory) {
+        for (int i=0; i<n; i++) {
+            send(factory.create());
+        }
         return this;
     }
 
