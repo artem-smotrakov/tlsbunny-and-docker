@@ -248,11 +248,11 @@ public class Engine {
 
     private void combineData(Action action) {
         if (action.produced()) {
-            byte[] unprocessed = new byte[buffer.remaining()];
-            buffer.get(unprocessed);
-            buffer.clear();
-            buffer.put(action.data());
-            buffer.put(unprocessed);
+            ByteBuffer data = action.data();
+            ByteBuffer combined = ByteBuffer.allocate(buffer.remaining() + data.remaining());
+            combined.put(action.data());
+            combined.put(buffer);
+            buffer = combined;
         }
     }
 
