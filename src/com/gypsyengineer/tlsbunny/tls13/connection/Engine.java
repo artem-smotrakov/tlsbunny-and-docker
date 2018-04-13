@@ -253,6 +253,7 @@ public class Engine {
             combined.put(action.data());
             combined.put(buffer);
             buffer = combined;
+            buffer.position(0);
         }
     }
 

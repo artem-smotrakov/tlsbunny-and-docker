@@ -30,7 +30,10 @@ public class WrappingIntoTLSPlaintexts extends AbstractAction {
 
     @Override
     public Action run() throws Exception {
-        out = Helper.store(factory.createTLSPlaintexts(type, version, in.array()));
+        byte[] content = new byte[in.remaining()];
+        in.get(content);
+
+        out = Helper.store(factory.createTLSPlaintexts(type, version, content));
 
         return this;
     }

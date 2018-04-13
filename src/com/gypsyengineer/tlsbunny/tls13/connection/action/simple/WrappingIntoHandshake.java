@@ -31,7 +31,10 @@ public class WrappingIntoHandshake extends AbstractAction {
 
     @Override
     public Action run() throws Exception {
-        Handshake handshake = factory.createHandshake(type, in.array());
+        byte[] content = new byte[in.remaining()];
+        in.get(content);
+
+        Handshake handshake = factory.createHandshake(type, content);
 
         if (contextUpdater != NOT_SPECIFIED) {
             contextUpdater.run(context, handshake);
