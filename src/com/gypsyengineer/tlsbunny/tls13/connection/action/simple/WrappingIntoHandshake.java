@@ -11,16 +11,17 @@ public class WrappingIntoHandshake extends AbstractAction {
 
     public static final ContextUpdater NOT_SPECIFIED = null;
 
-    private final HandshakeType type;
-    private final ContextUpdater contextUpdater;
+    private HandshakeType type;
+    private ContextUpdater contextUpdater;
 
-    public WrappingIntoHandshake(HandshakeType type, ContextUpdater contextUpdater) {
+    public WrappingIntoHandshake type(HandshakeType type) {
         this.type = type;
-        this.contextUpdater = contextUpdater;
+        return this;
     }
 
-    public WrappingIntoHandshake(HandshakeType type) {
-        this(type, NOT_SPECIFIED);
+    public WrappingIntoHandshake run(ContextUpdater contextUpdater) {
+        this.contextUpdater = contextUpdater;
+        return this;
     }
 
     @Override
