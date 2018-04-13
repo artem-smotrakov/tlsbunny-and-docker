@@ -1,4 +1,4 @@
-package com.gypsyengineer.tlsbunny.tls13.connection;
+package com.gypsyengineer.tlsbunny.tls13.connection.action;
 
 import com.gypsyengineer.tlsbunny.tls13.crypto.HKDF;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;

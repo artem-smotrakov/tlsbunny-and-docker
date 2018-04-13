@@ -1,5 +1,7 @@
 package com.gypsyengineer.tlsbunny.tls13.connection;
 
+import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.IncomingChangeCipherSpec;
 import com.gypsyengineer.tlsbunny.tls13.crypto.HKDF;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.handshake.ECDHENegotiator;
