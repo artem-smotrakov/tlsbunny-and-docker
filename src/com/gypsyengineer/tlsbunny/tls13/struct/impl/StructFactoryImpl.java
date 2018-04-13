@@ -59,21 +59,28 @@ public class StructFactoryImpl implements StructFactory {
     // handshake messages below
     
     @Override
-    public ClientHello createClientHello(
-            ProtocolVersion legacy_version,
-            Random random,
-            byte[] legacy_session_id,
-            List<CipherSuite> cipher_suites,
-            List<CompressionMethod> legacy_compression_methods,
-            List<Extension> extensions) {
+    public ClientHello createClientHello(ProtocolVersion legacy_version,
+                                         Random random,
+                                         byte[] legacy_session_id,
+                                         List<CipherSuite> cipher_suites,
+                                         List<CompressionMethod> legacy_compression_methods,
+                                         List<Extension> extensions) {
         
         return new ClientHelloImpl(
                 legacy_version, 
                 random, 
-                Vector.wrap(ClientHelloImpl.LEGACY_SESSION_ID_LENGTH_BYTES, legacy_session_id),
-                Vector.wrap(ClientHelloImpl.CIPHER_SUITES_LENGTH_BYTES, cipher_suites), 
-                Vector.wrap(ClientHelloImpl.LEGACY_COMPRESSION_METHODS_LENGTH_BYTES, legacy_compression_methods),
-                Vector.wrap(ClientHelloImpl.EXTENSIONS_LENGTH_BYTES, extensions));
+                Vector.wrap(
+                        ClientHelloImpl.LEGACY_SESSION_ID_LENGTH_BYTES,
+                        legacy_session_id),
+                Vector.wrap(
+                        ClientHelloImpl.CIPHER_SUITES_LENGTH_BYTES,
+                        cipher_suites),
+                Vector.wrap(
+                        ClientHelloImpl.LEGACY_COMPRESSION_METHODS_LENGTH_BYTES,
+                        legacy_compression_methods),
+                Vector.wrap(
+                        ClientHelloImpl.EXTENSIONS_LENGTH_BYTES,
+                        extensions));
     }
 
     @Override
@@ -82,8 +89,24 @@ public class StructFactoryImpl implements StructFactory {
     }
     
     @Override
-    public ServerHello createServerHello() {
-        throw new UnsupportedOperationException("I don't know how to do it yet!");
+    public ServerHello createServerHello(ProtocolVersion version,
+                                         Random random,
+                                         byte[] legacy_session_id_echo,
+                                         CipherSuite cipher_suite,
+                                         CompressionMethod legacy_compression_method,
+                                         List<Extension> extensions) {
+
+        return new ServerHelloImpl(
+                version,
+                random,
+                Vector.wrap(
+                        ServerHelloImpl.LEGACY_SESSION_ID_ECHO_LENGTH_BYTES,
+                        legacy_session_id_echo),
+                cipher_suite,
+                legacy_compression_method,
+                Vector.wrap(
+                        ServerHelloImpl.EXTENSIONS_LENGTH_BYTES,
+                        extensions));
     }
     
     @Override

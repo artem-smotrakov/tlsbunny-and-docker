@@ -1,6 +1,7 @@
 package com.gypsyengineer.tlsbunny.tls13.struct;
 
 import com.gypsyengineer.tlsbunny.tls.Random;
+import com.gypsyengineer.tlsbunny.tls.Vector;
 import com.gypsyengineer.tlsbunny.tls13.struct.impl.StructFactoryImpl;
 import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.util.Collections;
@@ -44,12 +45,22 @@ public interface StructFactory {
     Certificate createCertificate(byte[] certificate_request_context, CertificateEntry... certificate_list);
     CertificateRequest createCertificateRequest();
     CertificateVerify createCertificateVerify(SignatureScheme algorithm, byte[] signature);
-    ClientHello createClientHello(ProtocolVersion legacy_version, Random random, byte[] legacy_session_id, List<CipherSuite> cipher_suites, List<CompressionMethod> legacy_compression_methods, List<Extension> extensions);
+    ClientHello createClientHello(ProtocolVersion legacy_version,
+                                  Random random,
+                                  byte[] legacy_session_id,
+                                  List<CipherSuite> cipher_suites,
+                                  List<CompressionMethod> legacy_compression_methods,
+                                  List<Extension> extensions);
     EncryptedExtensions createEncryptedExtensions(Extension... extensions);
     EndOfEarlyData createEndOfEarlyData();
     Finished createFinished(byte[] verify_data);
     HelloRetryRequest createHelloRetryRequest();
-    ServerHello createServerHello();
+    ServerHello createServerHello(ProtocolVersion version,
+                                  Random random,
+                                  byte[] legacy_session_id_echo,
+                                  CipherSuite cipher_suite,
+                                  CompressionMethod legacy_compression_method,
+                                  List<Extension> extensions);
     
     // create extensions
     KeyShare.ClientHello createKeyShareForClientHello(KeyShareEntry entry);

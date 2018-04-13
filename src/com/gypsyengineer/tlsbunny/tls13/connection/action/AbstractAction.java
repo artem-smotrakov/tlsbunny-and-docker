@@ -98,6 +98,32 @@ public abstract class AbstractAction implements Action {
 
     // helper methods
 
+    protected void updateContext(Handshake handshake) {
+        if (handshake.containsClientHello()) {
+            if (!context.hasFirstClientHello()) {
+                context.setFirstClientHello(handshake);
+            } else if (!context.hasSecondClientHello()) {
+                context.setSecondClientHello(handshake);
+            } else {
+                throw new IllegalArgumentException(
+                        "two ClientHello messages have been already set");
+            }
+        }
+
+        if (handshake.containsServerHello()) {
+            context.setServerHello(handshake);
+        }
+
+        if (handshake.containsEncryptedExtensions()) {
+            context.setEncryptedExtensions(handshake);
+        }
+
+        // TODO: we need to be able to set both server and client
+        //       Certificates and CertificateVerify messages
+
+        // TODO: set the test of messages
+    }
+
     protected byte[] processEncrypted(AEAD decryptor, ContentType expectedType) throws Exception {
         TLSPlaintext tlsPlaintext = factory.parser().parseTLSPlaintext(in);
         if (tlsPlaintext.containsAlert()) {
