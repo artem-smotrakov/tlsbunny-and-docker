@@ -1,5 +1,8 @@
 package com.gypsyengineer.tlsbunny.tls13.connection;
 
+import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.ActionFactory;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.IncomingChangeCipherSpec;
 import com.gypsyengineer.tlsbunny.tls13.crypto.HKDF;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.handshake.ECDHENegotiator;
@@ -20,7 +23,7 @@ public class Engine {
     private static final ByteBuffer NOTHING = ByteBuffer.allocate(0);
 
     private enum ActionType {
-        send, expect, allow, produce
+        send, require, allow, run
     }
 
     public enum Status {
@@ -32,24 +35,24 @@ public class Engine {
     private Output output = new Output();
     private String host = "localhost";
     private int port = 443;
-    private StructFactory factory = StructFactory.getDefault();
-    private NamedGroup group = NamedGroup.secp256r1;
-    private SignatureScheme scheme = SignatureScheme.ecdsa_secp256r1_sha256;
-    private CipherSuite suite = CipherSuite.TLS_AES_128_GCM_SHA256;
-    private Negotiator negotiator;
-    private HKDF hkdf;
     private Status status = Status.not_started;
     private ByteBuffer buffer = NOTHING;
     private Context context = new Context();
 
-    // if false, then the engine stops when an alert received
-    private boolean tolerant = false;
+    // if true, always check for CCS when read data
+    private boolean alwaysCheckForCCS = true;
+
+    // if true, then stop if an alert occurred
+    private boolean stopIfAlert = true;
 
     // this is a label to mark a particular connection
     private String label = String.valueOf(System.currentTimeMillis());
 
     private Engine() {
-
+        context.group = NamedGroup.secp256r1;
+        context.scheme = SignatureScheme.ecdsa_secp256r1_sha256;
+        context.suite = CipherSuite.TLS_AES_128_GCM_SHA256;
+        context.factory = StructFactory.getDefault();
     }
 
     public Engine target(String host) {
@@ -62,8 +65,13 @@ public class Engine {
         return this;
     }
 
-    public Engine tolerant() {
-        tolerant = true;
+    public Engine dontStopIfAlert() {
+        stopIfAlert = false;
+        return this;
+    }
+
+    public Engine dontExpectCCS () {
+        alwaysCheckForCCS = false;
         return this;
     }
 
@@ -81,22 +89,22 @@ public class Engine {
     }
 
     public Engine set(StructFactory factory) {
-        this.factory = factory;
+        this.context.factory = factory;
         return this;
     }
 
     public Engine set(SignatureScheme scheme) {
-        this.scheme = scheme;
+        this.context.scheme = scheme;
         return this;
     }
 
     public Engine set(NamedGroup group) {
-        this.group = group;
+        this.context.group = group;
         return this;
     }
 
     public Engine set(Negotiator negotiator) {
-        this.negotiator = negotiator;
+        this.context.negotiator = negotiator;
         return this;
     }
 
@@ -105,8 +113,15 @@ public class Engine {
         return this;
     }
 
-    public Engine expect(Action action) {
-        actions.add(new ActionHolder(action, ActionType.expect));
+    public Engine send(int n, ActionFactory factory) {
+        for (int i=0; i<n; i++) {
+            send(factory.create());
+        }
+        return this;
+    }
+
+    public Engine require(Action action) {
+        actions.add(new ActionHolder(action, ActionType.require));
         return this;
     }
 
@@ -115,8 +130,8 @@ public class Engine {
         return this;
     }
 
-    public Engine produce(Action action) {
-        actions.add(new ActionHolder(action, ActionType.produce));
+    public Engine run(Action action) {
+        actions.add(new ActionHolder(action, ActionType.run));
         return this;
     }
 
@@ -124,21 +139,10 @@ public class Engine {
         status = Status.running;
         try (Connection connection = Connection.create(host, port)) {
             buffer = NOTHING;
-            context = new Context();
-            context.factory = factory;
 
             loop: for (ActionHolder holder : actions) {
                 Action action = holder.action;
-
-                action.set(output);
-                action.set(context);
-                action.set(group);
-                action.set(scheme);
-                action.set(suite);
-                action.set(negotiator);
-                action.set(factory);
-                action.set(hkdf);
-                action.set(buffer);
+                init(action);
 
                 switch (holder.type) {
                     case send:
@@ -146,45 +150,48 @@ public class Engine {
                             output.info("send: %s", action.name());
                             action.run();
                             connection.send(action.data());
-                            output.info("done with sending");
                         } catch (Exception e) {
                             output.info("error: %s", e.getMessage());
                             status = Status.could_not_send;
                             return this;
                         }
                         break;
-                    case expect:
-                        output.info("expect: %s", action.name());
+                    case require:
+                        output.info("require: %s", action.name());
+                        read(connection, action);
+
                         try {
-                            read(connection, action);
                             action.run();
-                            output.info("done with receiving");
+                            combineData(action);
                         } catch (Exception e) {
-                            output.info("error: %s", e.getMessage());
+                            output.info("error: %s", e);
                             status = Status.unexpected_message;
                             return this;
                         }
                         break;
                     case allow:
                         output.info("allow: %s", action.name());
-
                         read(connection, action);
 
+                        // TODO: if an action decrypts data, but the action fails,
+                        //       then decryption in the next action is going to fail
+                        //       this may be fixed by propagating decrypted data
+                        //       to the next action
                         buffer.mark();
                         try {
                             action.run();
-                            output.info("done with receiving");
+                            combineData(action);
                         } catch (Exception e) {
-                            output.info("error: %s", e.getMessage());
+                            output.info("error: %s", e);
                             output.info("skip %s", action.name());
                             buffer.reset(); // restore data
                         }
                         break;
-                    case produce:
-                        output.info("produce: %s", action.name());
+                    case run:
+                        output.info("run: %s", action.name());
                         try {
                             action.run();
-                            output.info("done with producing");
+                            combineData(action);
                         } catch (Exception e) {
                             output.info("error: %s", e.getMessage());
                             status = Status.unexpected_error;
@@ -197,7 +204,7 @@ public class Engine {
                                 String.format("unknown action type: %s", holder.type));
                 }
 
-                if (!tolerant && context.hasAlert()) {
+                if (stopIfAlert && context.hasAlert()) {
                     output.info("stop, alert occurred: %s", context.getAlert());
                     break;
                 }
@@ -213,8 +220,9 @@ public class Engine {
         return this;
     }
 
-    public Engine check(Check check) {
+    public Engine run(Check check) {
         check.set(this);
+        check.set(context);
         check.run();
         if (check.failed()) {
             throw new RuntimeException(String.format("%s check failed", check.name()));
@@ -233,27 +241,41 @@ public class Engine {
         return status;
     }
 
+    private void combineData(Action action) {
+        if (action.produced()) {
+            ByteBuffer data = action.data();
+            ByteBuffer combined = ByteBuffer.allocate(buffer.remaining() + data.remaining());
+            combined.put(action.data());
+            combined.put(buffer);
+            buffer = combined;
+            buffer.position(0);
+        }
+    }
+
     private void read(Connection connection, Action action) throws IOException {
-        if (buffer.remaining() == 0) {
+        while (buffer.remaining() == 0 && !context.hasAlert()) {
             buffer = ByteBuffer.wrap(connection.read());
             if (buffer.remaining() == 0) {
                 throw new IOException("no data received");
             }
-            action.set(buffer);
+        }
 
-            if (!tolerant) {
-                // check for an alert
-                buffer.mark();
-                try {
-                    TLSPlaintext tlsPlaintext = factory.parser().parseTLSPlaintext(buffer);
-                    if (tlsPlaintext.containsAlert()) {
-                        Alert alert = factory.parser().parseAlert(buffer);
-                        context.setAlert(alert);
-                        throw new IOException(String.format("received an alert: %s", alert));
-                    }
-                } finally {
-                    buffer.reset(); // restore data if no alert
-                }
+        checkCCS();
+
+        action.set(buffer);
+    }
+
+    private void checkCCS() {
+        if (alwaysCheckForCCS) {
+            buffer.mark();
+            try {
+                IncomingChangeCipherSpec incomingCCS = new IncomingChangeCipherSpec();
+                output.info("check for %s", incomingCCS.name());
+                init(incomingCCS);
+                incomingCCS.run();
+                output.info("found %s", incomingCCS.name());
+            } catch (Exception e) {
+                buffer.reset(); // restore data
             }
         }
     }
@@ -262,12 +284,18 @@ public class Engine {
             InvalidAlgorithmParameterException, NoSuchAlgorithmException {
 
         Engine connection = new Engine();
-        connection.negotiator = ECDHENegotiator.create(
-                (NamedGroup.Secp) connection.group, connection.factory);
-        connection.hkdf = HKDF.create(
-                connection.suite.hash(), connection.factory);
+        connection.context.negotiator = ECDHENegotiator.create(
+                (NamedGroup.Secp) connection.context.group, connection.context.factory);
+        connection.context.hkdf = HKDF.create(
+                connection.context.suite.hash(), connection.context.factory);
 
         return connection;
+    }
+
+    private void init(Action action) {
+        action.set(output);
+        action.set(context);
+        action.set(buffer);
     }
 
     private static class ActionHolder {

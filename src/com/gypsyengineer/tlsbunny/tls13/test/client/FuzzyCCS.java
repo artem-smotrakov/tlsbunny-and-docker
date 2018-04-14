@@ -1,11 +1,11 @@
 package com.gypsyengineer.tlsbunny.tls13.test.client;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.*;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.*;
+import com.gypsyengineer.tlsbunny.tls13.fuzzer.FuzzyChangeCipherSpec;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
 public class FuzzyCCS {
-
-    public static final String HTTP_GET_REQUEST = "GET / HTTP/1.1\n\n";
 
     public static void main(String[] args) throws Exception {
         Config config = new CommonConfig();
@@ -23,16 +23,16 @@ public class FuzzyCCS {
                     .set(testOutput)
                     .send(new OutgoingClientHello())
                     .send(fuzzyChangeCipherSpec)
-                    .expect(new IncomingServerHello())
-                    .expect(new IncomingChangeCipherSpec())
-                    .expect(new IncomingEncryptedExtensions())
-                    .expect(new IncomingCertificate())
-                    .expect(new IncomingCertificateVerify())
-                    .expect(new IncomingFinished())
+                    .require(new IncomingServerHello())
+                    .require(new IncomingChangeCipherSpec())
+                    .require(new IncomingEncryptedExtensions())
+                    .require(new IncomingCertificate())
+                    .require(new IncomingCertificateVerify())
+                    .require(new IncomingFinished())
                     .send(new OutgoingFinished())
                     .allow(new IncomingNewSessionTicket())
-                    .send(new OutgoingApplicationData(HTTP_GET_REQUEST))
-                    .expect(new IncomingApplicationData())
+                    .send(new OutgoingHttpGetRequest())
+                    .require(new IncomingApplicationData())
                     .connect()
                     .apply(analyzer);
 

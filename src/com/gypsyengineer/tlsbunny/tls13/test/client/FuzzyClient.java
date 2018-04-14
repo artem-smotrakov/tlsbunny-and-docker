@@ -1,33 +1,18 @@
 package com.gypsyengineer.tlsbunny.tls13.test.client;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class FuzzyClient {
 
-    private static final Config[] configs = new Config[] {
-            new MutatedHttpsConnection.FuzzerConfig()
-                    .target("tls_plaintext").mode("byte_flip")
-                    .minRatio(0.01).maxRatio(0.09).endTest(10).parts(5),
-            new MutatedHttpsConnection.FuzzerConfig()
-                    .target("tls_plaintext").mode("bit_flip")
-                    .minRatio(0.01).maxRatio(0.09).endTest(10).parts(5),
-            new MutatedHttpsConnection.FuzzerConfig()
-                    .target("handshake").mode("byte_flip")
-                    .minRatio(0.01).maxRatio(0.09).endTest(500).parts(5),
-            new MutatedHttpsConnection.FuzzerConfig()
-                    .target("handshake").mode("bit_flip")
-                    .minRatio(0.01).maxRatio(0.09).endTest(500).parts(5),
-            new MutatedHttpsConnection.FuzzerConfig()
-                    .target("client_hello").mode("byte_flip")
-                    .minRatio(0.01).maxRatio(0.09).endTest(500).parts(5),
-            new MutatedHttpsConnection.FuzzerConfig()
-                    .target("client_hello").mode("bit_flip")
-                    .minRatio(0.01).maxRatio(0.09).endTest(500).parts(5),
-            new MutatedHttpsConnection.FuzzerConfig()
-                    .target("finished").mode("byte_flip")
-                    .minRatio(0.01).maxRatio(0.09).endTest(500).parts(5),
-            new MutatedHttpsConnection.FuzzerConfig()
-                    .target("finished").mode("bit_flip")
-                    .minRatio(0.01).maxRatio(0.09).endTest(500).parts(5),
-    };
+    private static final List<Config> configs = new ArrayList<>();
+    static {
+        //configs.addAll(Arrays.asList(TLSPlaintextFuzzer.configs));
+        //configs.addAll(Arrays.asList(HandshakeFuzzer.configs));
+        //configs.addAll(Arrays.asList(ClientHelloFuzzer.configs));
+        configs.addAll(Arrays.asList(FinishedFuzzer.configs));
+    }
 
     public static void main(String[] args) throws InterruptedException {
         new MultipleThreads().add(configs).submit();

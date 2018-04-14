@@ -1,23 +1,26 @@
 package com.gypsyengineer.tlsbunny.tls13.test.client;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.*;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.*;
 
 public class DoubleClientHello {
 
     public static void main(String[] args) throws Exception {
+        CommonConfig config = new CommonConfig();
+
         Engine.init()
-                .target("localhost")
-                .target(10101)
+                .target(config.host())
+                .target(config.port())
                 .send(new OutgoingClientHello())
-                .expect(new IncomingServerHello())
-                .expect(new IncomingChangeCipherSpec())
-                .expect(new IncomingEncryptedExtensions())
-                .expect(new IncomingCertificate())
-                .expect(new IncomingCertificateVerify())
-                .expect(new IncomingFinished())
-                .produce(new OutgoingFinished())
+                .require(new IncomingServerHello())
+                .require(new IncomingChangeCipherSpec())
+                .require(new IncomingEncryptedExtensions())
+                .require(new IncomingCertificate())
+                .require(new IncomingCertificateVerify())
+                .require(new IncomingFinished())
+                .run(new OutgoingFinished())
                 .send(new OutgoingClientHello())
-                .expect(new IncomingAlert())
+                .require(new IncomingAlert())
                 .connect();
     }
 }

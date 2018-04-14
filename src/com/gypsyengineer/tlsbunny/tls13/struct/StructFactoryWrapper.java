@@ -173,13 +173,18 @@ public class StructFactoryWrapper implements StructFactory {
     }
 
     @Override
-    public ServerHello createServerHello() {
-        return factory.createServerHello();
+    public ServerHello createServerHello(
+            ProtocolVersion version, Random random, byte[] legacy_session_id_echo,
+            CipherSuite cipher_suite, CompressionMethod legacy_compression_method,
+            List<Extension> extensions) {
+
+        return factory.createServerHello(version, random, legacy_session_id_echo,
+                cipher_suite, legacy_compression_method, extensions);
     }
 
     @Override
-    public KeyShare.ClientHello createKeyShareForClientHello(KeyShareEntry entry) {
-        return factory.createKeyShareForClientHello(entry);
+    public KeyShare.ClientHello createKeyShareForClientHello(KeyShareEntry... entries) {
+        return factory.createKeyShareForClientHello(entries);
     }
 
     @Override

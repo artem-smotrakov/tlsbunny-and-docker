@@ -4,6 +4,9 @@ import java.util.Random;
 
 public abstract class AbstractFlipFuzzer implements Fuzzer<byte[]> {
 
+    static final int FROM_THE_BEGINNING = 0;
+    static final int NOT_SPECIFIED = -1;
+
     final double minRatio;
     final double maxRatio;
     private final int startIndex;
@@ -50,7 +53,7 @@ public abstract class AbstractFlipFuzzer implements Fuzzer<byte[]> {
 
     int getEndIndex(byte[] array) {
         if (endIndex > 0) {
-            // TODO: should it check if array.length < endIndex ?
+            // TODO: should it run if array.length < endIndex ?
             return endIndex;
         }
 

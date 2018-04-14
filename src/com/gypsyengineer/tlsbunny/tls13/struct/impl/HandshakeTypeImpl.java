@@ -48,4 +48,51 @@ public class HandshakeTypeImpl implements HandshakeType {
         return this.value == other.value;
     }
 
+    @Override
+    public String toString() {
+        // yes, the multiple ifs below look just terrible
+        // although it's not clear how to avoid them:
+        // - "switch" doesn't work because we can't use HandshakeType.getCode() for "case"
+        // - creating a map {code, description} doesn't work because standard types in HandshakeType
+        //   are not initialized at the moment of initializing of the map
+        String template = "handshake type (%d)";
+        if (client_hello.getValue() == value) {
+            template = "client_hello (%s)";
+        }
+        if (server_hello.getValue() == value) {
+            template = "server_hello (%s)";
+        }
+        if (encrypted_extensions.getValue() == value) {
+            template = "encrypted_extensions (%s)";
+        }
+        if (certificate.getValue() == value) {
+            template = "certificate (%s)";
+        }
+        if (certificate_verify.getValue() == value) {
+            template = "certificate_verify (%s)";
+        }
+        if (certificate_request.getValue() == value) {
+            template = "certificate_request (%s)";
+        }
+        if (finished.getValue() == value) {
+            template = "finished (%s)";
+        }
+        if (end_of_early_data.getValue() == value) {
+            template = "end_of_early_data (%s)";
+        }
+        if (key_update.getValue() == value) {
+            template = "key_update (%s)";
+        }
+        if (hello_retry_request.getValue() == value) {
+            template = "hello_retry_request (%s)";
+        }
+        if (message_hash.getValue() == value) {
+            template = "message_hash (%s)";
+        }
+        if (new_session_ticket.getValue() == value) {
+            template = "new_session_ticket (%s)";
+        }
+        return String.format(template, value);
+    }
+
 }
