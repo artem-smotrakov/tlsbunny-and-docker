@@ -15,12 +15,12 @@ public class IncomingChangeCipherSpec extends AbstractAction {
 
     @Override
     public Action run() throws IOException {
-        TLSPlaintext tlsPlaintext = factory.parser().parseTLSPlaintext(in);
+        TLSPlaintext tlsPlaintext = context.factory.parser().parseTLSPlaintext(in);
         if (!tlsPlaintext.containsChangeCipherSpec()) {
             throw new IOException("expected a change cipher spec message");
         }
 
-        ChangeCipherSpec ccs = factory.parser().parseChangeCipherSpec(tlsPlaintext.getFragment());
+        ChangeCipherSpec ccs = context.factory.parser().parseChangeCipherSpec(tlsPlaintext.getFragment());
         if (!ccs.isValid()) {
             throw new IOException("unexpected content in change_cipher_spec message");
         }

@@ -26,7 +26,7 @@ public class ProcessingTLSPlaintext extends AbstractAction {
 
     @Override
     public Action run() throws Exception {
-        TLSPlaintext tlsPlaintext = factory.parser().parseTLSPlaintext(in);
+        TLSPlaintext tlsPlaintext = context.factory.parser().parseTLSPlaintext(in);
 
         ContentType type = tlsPlaintext.getType();
         if (expectedType != NO_TYPE_SPECIFIED && !expectedType.equals(type)) {

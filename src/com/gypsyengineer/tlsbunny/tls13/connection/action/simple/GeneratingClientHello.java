@@ -1,4 +1,4 @@
-package com.gypsyengineer.tlsbunny.tls13.connection.action.composite;
+package com.gypsyengineer.tlsbunny.tls13.connection.action.simple;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.action.AbstractAction;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
@@ -8,11 +8,11 @@ import com.gypsyengineer.tlsbunny.tls13.utils.Helper;
 import java.io.IOException;
 import java.util.List;
 
-public class OutgoingClientHello extends AbstractAction {
+public class GeneratingClientHello extends AbstractAction {
 
     @Override
     public String name() {
-        return "ClientHello";
+        return "generating ClientHello";
     }
 
     @Override

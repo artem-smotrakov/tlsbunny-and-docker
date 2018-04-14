@@ -66,7 +66,7 @@ public class OutgoingCertificateVerify extends AbstractAction {
                 CERTIFICATE_VERIFY_PREFIX,
                 CERTIFICATE_VERIFY_CONTEXT_STRING,
                 new byte[] { 0 },
-                TranscriptHash.compute(suite.hash(), context.allMessages()));
+                TranscriptHash.compute(context.suite.hash(), context.allMessages()));
 
         Signature signature = Signature.getInstance("SHA256withECDSA");
         signature.initSign(
@@ -74,14 +74,14 @@ public class OutgoingCertificateVerify extends AbstractAction {
                         new PKCS8EncodedKeySpec(key_data)));
         signature.update(content);
 
-        return factory.createCertificateVerify(
+        return context.factory.createCertificateVerify(
                 SignatureScheme.ecdsa_secp256r1_sha256, signature.sign());
     }
 
     // TODO: move this method to handshakeDecryptor to avoid code duplicates
     //       run other classes for outgoing handshake messages
     TLSPlaintext[] encrypt(Handshake message) throws Exception {
-        return factory.createTLSPlaintexts(
+        return context.factory.createTLSPlaintexts(
                 ContentType.application_data,
                 ProtocolVersion.TLSv12,
                 encrypt(message.encoding()));
@@ -90,7 +90,7 @@ public class OutgoingCertificateVerify extends AbstractAction {
     // TODO: move this method to handshakeDecryptor to avoid code duplicates
     //       run other classes for outgoing handshake messages
     private byte[] encrypt(byte[] data) throws Exception {
-        TLSInnerPlaintext tlsInnerPlaintext = factory.createTLSInnerPlaintext(
+        TLSInnerPlaintext tlsInnerPlaintext = context.factory.createTLSInnerPlaintext(
                 ContentType.handshake, data, NO_PADDING);
         byte[] plaintext = tlsInnerPlaintext.encoding();
 

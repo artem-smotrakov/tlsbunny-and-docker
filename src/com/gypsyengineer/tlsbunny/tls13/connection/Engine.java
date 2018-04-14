@@ -35,12 +35,6 @@ public class Engine {
     private Output output = new Output();
     private String host = "localhost";
     private int port = 443;
-    private StructFactory factory = StructFactory.getDefault();
-    private NamedGroup group = NamedGroup.secp256r1;
-    private SignatureScheme scheme = SignatureScheme.ecdsa_secp256r1_sha256;
-    private CipherSuite suite = CipherSuite.TLS_AES_128_GCM_SHA256;
-    private Negotiator negotiator;
-    private HKDF hkdf;
     private Status status = Status.not_started;
     private ByteBuffer buffer = NOTHING;
     private Context context = new Context();
@@ -55,7 +49,10 @@ public class Engine {
     private String label = String.valueOf(System.currentTimeMillis());
 
     private Engine() {
-
+        context.group = NamedGroup.secp256r1;
+        context.scheme = SignatureScheme.ecdsa_secp256r1_sha256;
+        context.suite = CipherSuite.TLS_AES_128_GCM_SHA256;
+        context.factory = StructFactory.getDefault();
     }
 
     public Engine target(String host) {
@@ -92,22 +89,22 @@ public class Engine {
     }
 
     public Engine set(StructFactory factory) {
-        this.factory = factory;
+        this.context.factory = factory;
         return this;
     }
 
     public Engine set(SignatureScheme scheme) {
-        this.scheme = scheme;
+        this.context.scheme = scheme;
         return this;
     }
 
     public Engine set(NamedGroup group) {
-        this.group = group;
+        this.context.group = group;
         return this;
     }
 
     public Engine set(Negotiator negotiator) {
-        this.negotiator = negotiator;
+        this.context.negotiator = negotiator;
         return this;
     }
 
@@ -142,8 +139,6 @@ public class Engine {
         status = Status.running;
         try (Connection connection = Connection.create(host, port)) {
             buffer = NOTHING;
-            context = new Context();
-            context.factory = factory;
 
             loop: for (ActionHolder holder : actions) {
                 Action action = holder.action;
@@ -289,10 +284,10 @@ public class Engine {
             InvalidAlgorithmParameterException, NoSuchAlgorithmException {
 
         Engine connection = new Engine();
-        connection.negotiator = ECDHENegotiator.create(
-                (NamedGroup.Secp) connection.group, connection.factory);
-        connection.hkdf = HKDF.create(
-                connection.suite.hash(), connection.factory);
+        connection.context.negotiator = ECDHENegotiator.create(
+                (NamedGroup.Secp) connection.context.group, connection.context.factory);
+        connection.context.hkdf = HKDF.create(
+                connection.context.suite.hash(), connection.context.factory);
 
         return connection;
     }
@@ -300,12 +295,6 @@ public class Engine {
     private void init(Action action) {
         action.set(output);
         action.set(context);
-        action.set(group);
-        action.set(scheme);
-        action.set(suite);
-        action.set(negotiator);
-        action.set(factory);
-        action.set(hkdf);
         action.set(buffer);
     }
 

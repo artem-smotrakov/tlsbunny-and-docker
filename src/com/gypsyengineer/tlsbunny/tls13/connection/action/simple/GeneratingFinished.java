@@ -19,11 +19,11 @@ public class GeneratingFinished extends AbstractAction {
 
     @Override
     public Action run() throws IOException, NoSuchAlgorithmException, InvalidKeyException {
-        byte[] verify_data = hkdf.hmac(
+        byte[] verify_data = context.hkdf.hmac(
                 context.finished_key,
-                TranscriptHash.compute(suite.hash(), context.allMessages()));
+                TranscriptHash.compute(context.suite.hash(), context.allMessages()));
 
-        Finished finished = factory.createFinished(verify_data);
+        Finished finished = context.factory.createFinished(verify_data);
         out = ByteBuffer.wrap(finished.encoding());
 
         return this;

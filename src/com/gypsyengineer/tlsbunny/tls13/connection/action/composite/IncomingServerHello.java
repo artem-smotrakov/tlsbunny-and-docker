@@ -20,10 +20,10 @@ public class IncomingServerHello extends AbstractAction {
 
     @Override
     public Action run() throws Exception {
-        TLSPlaintext tlsPlaintext = factory.parser().parseTLSPlaintext(in);
+        TLSPlaintext tlsPlaintext = context.factory.parser().parseTLSPlaintext(in);
 
         if (tlsPlaintext.containsAlert()) {
-            Alert alert = factory.parser().parseAlert(tlsPlaintext.getFragment());
+            Alert alert = context.factory.parser().parseAlert(tlsPlaintext.getFragment());
             context.setAlert(alert);
             throw new IOException(String.format("received an alert: %s", alert));
         }
@@ -32,7 +32,7 @@ public class IncomingServerHello extends AbstractAction {
             throw new IOException("expected a handshake message");
         }
 
-        Handshake handshake = factory.parser().parseHandshake(tlsPlaintext.getFragment());
+        Handshake handshake = context.factory.parser().parseHandshake(tlsPlaintext.getFragment());
         if (!handshake.containsServerHello()) {
             throw new IOException("expected a ServerHello message");
         }
@@ -43,10 +43,10 @@ public class IncomingServerHello extends AbstractAction {
     }
 
     private void processServerHello(Handshake handshake) throws Exception {
-        ServerHello serverHello = factory.parser().parseServerHello(handshake.getBody());
+        ServerHello serverHello = context.factory.parser().parseServerHello(handshake.getBody());
 
-        if (!suite.equals(serverHello.getCipherSuite())) {
-            output.info("expected cipher suite: %s", suite);
+        if (!context.suite.equals(serverHello.getCipherSuite())) {
+            output.info("expected cipher suite: %s", context.suite);
             output.info("received cipher suite: %s", serverHello.getCipherSuite());
             throw new RuntimeException("unexpected ciphersuite");
         }
@@ -58,83 +58,83 @@ public class IncomingServerHello extends AbstractAction {
         }
 
         KeyShare.ServerHello keyShare = findKeyShare(serverHello);
-        if (!group.equals(keyShare.getServerShare().getNamedGroup())) {
-            output.info("expected group: %s", group);
+        if (!context.group.equals(keyShare.getServerShare().getNamedGroup())) {
+            output.info("expected group: %s", context.group);
             output.info("received group: %s", keyShare.getServerShare().getNamedGroup());
             throw new RuntimeException("unexpected group");
         }
 
-        negotiator.processKeyShareEntry(keyShare.getServerShare());
-        context.dh_shared_secret = negotiator.generateSecret();
+        context.negotiator.processKeyShareEntry(keyShare.getServerShare());
+        context.dh_shared_secret = context.negotiator.generateSecret();
 
         context.setServerHello(handshake);
 
-        byte[] psk = zeroes(hkdf.getHashLength());
+        byte[] psk = zeroes(context.hkdf.getHashLength());
 
         Handshake wrappedClientHello = context.getFirstClientHello();
 
-        context.early_secret = hkdf.extract(ZERO_SALT, psk);
-        context.binder_key = hkdf.deriveSecret(
+        context.early_secret = context.hkdf.extract(ZERO_SALT, psk);
+        context.binder_key = context.hkdf.deriveSecret(
                 context.early_secret,
                 concatenate(context.ext_binder, context.res_binder));
-        context.client_early_traffic_secret = hkdf.deriveSecret(
+        context.client_early_traffic_secret = context.hkdf.deriveSecret(
                 context.early_secret,
                 context.c_e_traffic,
                 wrappedClientHello);
-        context.early_exporter_master_secret = hkdf.deriveSecret(
+        context.early_exporter_master_secret = context.hkdf.deriveSecret(
                 context.early_secret,
                 context.e_exp_master,
                 wrappedClientHello);
 
-        context.handshake_secret_salt = hkdf.deriveSecret(
+        context.handshake_secret_salt = context.hkdf.deriveSecret(
                 context.early_secret, context.derived);
 
-        context.handshake_secret = hkdf.extract(
+        context.handshake_secret = context.hkdf.extract(
                 context.handshake_secret_salt, context.dh_shared_secret);
-        context.client_handshake_traffic_secret = hkdf.deriveSecret(
+        context.client_handshake_traffic_secret = context.hkdf.deriveSecret(
                 context.handshake_secret,
                 context.c_hs_traffic,
                 wrappedClientHello, handshake);
-        context.server_handshake_traffic_secret = hkdf.deriveSecret(
+        context.server_handshake_traffic_secret = context.hkdf.deriveSecret(
                 context.handshake_secret,
                 context.s_hs_traffic,
                 wrappedClientHello, handshake);
-        context.master_secret = hkdf.extract(
-                hkdf.deriveSecret(context.handshake_secret, context.derived),
-                zeroes(hkdf.getHashLength()));
+        context.master_secret = context.hkdf.extract(
+                context.hkdf.deriveSecret(context.handshake_secret, context.derived),
+                zeroes(context.hkdf.getHashLength()));
 
-        context.client_handshake_write_key = hkdf.expandLabel(
+        context.client_handshake_write_key = context.hkdf.expandLabel(
                 context.client_handshake_traffic_secret,
                 context.key,
                 ZERO_HASH_VALUE,
-                suite.keyLength());
-        context.client_handshake_write_iv = hkdf.expandLabel(
+                context.suite.keyLength());
+        context.client_handshake_write_iv = context.hkdf.expandLabel(
                 context.client_handshake_traffic_secret,
                 context.iv,
                 ZERO_HASH_VALUE,
-                suite.ivLength());
-        context.server_handshake_write_key = hkdf.expandLabel(
+                context.suite.ivLength());
+        context.server_handshake_write_key = context.hkdf.expandLabel(
                 context.server_handshake_traffic_secret,
                 context.key,
                 ZERO_HASH_VALUE,
-                suite.keyLength());
-        context.server_handshake_write_iv = hkdf.expandLabel(
+                context.suite.keyLength());
+        context.server_handshake_write_iv = context.hkdf.expandLabel(
                 context.server_handshake_traffic_secret,
                 context.iv,
                 ZERO_HASH_VALUE,
-                suite.ivLength());
-        context.finished_key = hkdf.expandLabel(
+                context.suite.ivLength());
+        context.finished_key = context.hkdf.expandLabel(
                 context.client_handshake_traffic_secret,
                 context.finished,
                 ZERO_HASH_VALUE,
-                hkdf.getHashLength());
+                context.hkdf.getHashLength());
 
         context.handshakeEncryptor = AEAD.createEncryptor(
-                suite.cipher(),
+                context.suite.cipher(),
                 context.client_handshake_write_key,
                 context.client_handshake_write_iv);
         context.handshakeDecryptor = AEAD.createDecryptor(
-                suite.cipher(),
+                context.suite.cipher(),
                 context.server_handshake_write_key,
                 context.server_handshake_write_iv);
     }
@@ -142,7 +142,7 @@ public class IncomingServerHello extends AbstractAction {
     private KeyShare.ServerHello findKeyShare(ServerHello hello)
             throws IOException {
 
-        return factory.parser()
+        return context.factory.parser()
                 .parseKeyShareFromServerHello(
                     hello.findExtension(ExtensionType.key_share)
                             .getExtensionData().bytes());
@@ -151,7 +151,7 @@ public class IncomingServerHello extends AbstractAction {
     private SupportedVersions.ServerHello findSupportedVersion(ServerHello hello)
             throws IOException {
 
-        return factory.parser().parseSupportedVersionsServerHello(
+        return context.factory.parser().parseSupportedVersionsServerHello(
                 hello.findExtension(ExtensionType.supported_versions)
                         .getExtensionData().bytes());
     }

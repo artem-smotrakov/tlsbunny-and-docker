@@ -14,8 +14,8 @@ public class OutgoingChangeCipherSpec extends AbstractAction {
 
     @Override
     public Action run() throws Exception {
-        ChangeCipherSpec ccs = factory.createChangeCipherSpec(ChangeCipherSpec.VALID_VALUE);
-        TLSPlaintext[] tlsPlaintexts = factory.createTLSPlaintexts(
+        ChangeCipherSpec ccs = context.factory.createChangeCipherSpec(ChangeCipherSpec.VALID_VALUE);
+        TLSPlaintext[] tlsPlaintexts = context.factory.createTLSPlaintexts(
                 ContentType.change_cipher_spec,
                 ProtocolVersion.TLSv12,
                 ccs.encoding());

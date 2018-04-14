@@ -27,7 +27,7 @@ public class ProcessingEncryptedAlert extends AbstractAction {
 
     @Override
     public Action run() throws Exception {
-        TLSPlaintext tlsPlaintext = factory.parser().parseTLSPlaintext(in);
+        TLSPlaintext tlsPlaintext = context.factory.parser().parseTLSPlaintext(in);
 
         if (!tlsPlaintext.containsApplicationData()) {
             throw new IOException("expected encrypted data");
@@ -47,14 +47,14 @@ public class ProcessingEncryptedAlert extends AbstractAction {
 
         byte[] plaintext = decryptor.decrypt(tlsPlaintext);
         try {
-            TLSInnerPlaintext tlsInnerPlaintext = factory.parser()
+            TLSInnerPlaintext tlsInnerPlaintext = context.factory.parser()
                     .parseTLSInnerPlaintext(plaintext);
 
             if (!tlsInnerPlaintext.containsAlert()) {
                 throw new IOException("expected an alert");
             }
 
-            Alert alert = factory.parser().parseAlert(tlsInnerPlaintext.getContent());
+            Alert alert = context.factory.parser().parseAlert(tlsInnerPlaintext.getContent());
             context.setAlert(alert);
             output.info("received an alert: %s", alert);
         } catch (Exception e) {
