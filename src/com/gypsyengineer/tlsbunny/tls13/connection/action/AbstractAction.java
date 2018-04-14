@@ -13,8 +13,9 @@ import java.nio.ByteBuffer;
 
 public abstract class AbstractAction implements Action {
 
-    static final long DEFAULT_SEED = 0;
-    static final long SEED = Long.getLong("tlsbunny.seed", DEFAULT_SEED);
+    // TODO: it should be moved to a common class
+    public static final long DEFAULT_SEED = 0;
+    public static final long SEED = Long.getLong("tlsbunny.seed", DEFAULT_SEED);
 
     protected StructFactory factory;
     protected ByteBuffer in;
