@@ -17,9 +17,12 @@ public class HelloRetryRequest {
     public static void main(String[] args) throws Exception {
         CommonConfig config = new CommonConfig();
 
+        // TODO: fix it
         Engine.init()
                 .target(config.host())
                 .target(config.port())
+
+                // send first ClientHello with empty key_share extension
                 .run(new GeneratingClientHello()
                         .supportedVersion(TLSv13)
                         .group(secp256r1)
@@ -32,19 +35,31 @@ public class HelloRetryRequest {
                         .type(handshake)
                         .version(TLSv12))
                 .send(new OutgoingData())
+
+                // receive a HelloRetryRequest
                 .require(new IncomingData())
                 .run(new ProcessingTLSPlaintext()
                         .expect(handshake))
                 .run(new ProcessingHandshake()
                         .expect(server_hello)
-                        .run((context, message) -> context.setServerHello(message)))
+                        .run((context, message) -> context.setHelloRetryRequest(message)))
                 .run(new ProcessingHelloRetryRequest())
+
+                // send second ClientHello
                 .run(new GeneratingClientHello()
                         .supportedVersion(TLSv13)
                         .group(secp256r1)
                         .signatureScheme(ecdsa_secp256r1_sha256)
                         .keyShareEntry(context -> context.negotiator.createKeyShareEntry()))
+                .run(new WrappingIntoHandshake()
+                        .type(client_hello)
+                        .run((context, message) -> context.setSecondClientHello(message)))
+                .run(new WrappingIntoTLSPlaintexts()
+                        .type(handshake)
+                        .version(TLSv12))
                 .send(new OutgoingData())
+
+                // receive a ServerHello
                 .require(new IncomingData())
                 .run(new ProcessingTLSPlaintext()
                         .expect(handshake))
