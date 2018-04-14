@@ -11,10 +11,11 @@ import java.util.List;
 
 public class GeneratingClientHello extends AbstractAction {
 
-    private ProtocolVersion[] versions;
-    private SignatureScheme[] schemes;
-    private NamedGroup[] groups;
-    private KeyShareEntryFactory[] factories;
+    private ProtocolVersion[] versions = new ProtocolVersion[0];
+    private SignatureScheme[] schemes = new SignatureScheme[0];
+    private NamedGroup[] groups = new NamedGroup[0];
+    private KeyShareEntryFactory[] keyShareEntryFactories = new KeyShareEntryFactory[0];
+    private KeyShareFactory[] keyShareFactories = new KeyShareFactory[0];
 
     @Override
     public String name() {
@@ -36,8 +37,13 @@ public class GeneratingClientHello extends AbstractAction {
         return this;
     }
 
-    public GeneratingClientHello keyShare(KeyShareEntryFactory... factories) {
-        this.factories = factories;
+    public GeneratingClientHello keyShareEntry(KeyShareEntryFactory... keyShareEntryFactories) {
+        this.keyShareEntryFactories = keyShareEntryFactories;
+        return this;
+    }
+
+    public GeneratingClientHello keyShare(KeyShareFactory... keyShareFactories) {
+        this.keyShareFactories = keyShareFactories;
         return this;
     }
 
@@ -57,7 +63,11 @@ public class GeneratingClientHello extends AbstractAction {
             extensions.add(wrap(context.factory.createNamedGroupList(group)));
         }
 
-        for (KeyShareEntryFactory factory : factories) {
+        for (KeyShareFactory factory : keyShareFactories) {
+            extensions.add(wrap(factory.create(context)));
+        }
+
+        for (KeyShareEntryFactory factory : keyShareEntryFactories) {
             extensions.add(wrap(context.factory.createKeyShareForClientHello(
                     factory.create(context))));
         }
@@ -76,5 +86,9 @@ public class GeneratingClientHello extends AbstractAction {
 
     public interface KeyShareEntryFactory {
         KeyShareEntry create(Context context) throws Exception;
+    }
+
+    public interface KeyShareFactory {
+        KeyShare create(Context context) throws Exception;
     }
 }

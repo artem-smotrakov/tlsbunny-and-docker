@@ -183,8 +183,8 @@ public class StructFactoryWrapper implements StructFactory {
     }
 
     @Override
-    public KeyShare.ClientHello createKeyShareForClientHello(KeyShareEntry entry) {
-        return factory.createKeyShareForClientHello(entry);
+    public KeyShare.ClientHello createKeyShareForClientHello(KeyShareEntry... entries) {
+        return factory.createKeyShareForClientHello(entries);
     }
 
     @Override

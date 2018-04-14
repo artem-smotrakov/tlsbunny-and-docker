@@ -63,7 +63,7 @@ public interface StructFactory {
                                   List<Extension> extensions);
     
     // create extensions
-    KeyShare.ClientHello createKeyShareForClientHello(KeyShareEntry entry);
+    KeyShare.ClientHello createKeyShareForClientHello(KeyShareEntry... entries);
     SupportedVersions.ClientHello createSupportedVersionForClientHello(ProtocolVersion version);
     SignatureSchemeList createSignatureSchemeList(SignatureScheme scheme);
     NamedGroupList createNamedGroupList(NamedGroup group);
