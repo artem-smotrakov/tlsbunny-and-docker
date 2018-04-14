@@ -5,6 +5,8 @@ import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
 
 import java.util.Random;
 
+import static com.gypsyengineer.tlsbunny.utils.Utils.SEED;
+
 public class GeneratingRandomFinishedKey extends AbstractAction {
 
     @Override

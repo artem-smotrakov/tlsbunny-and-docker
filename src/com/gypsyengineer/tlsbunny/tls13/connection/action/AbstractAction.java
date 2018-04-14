@@ -11,11 +11,9 @@ import com.gypsyengineer.tlsbunny.utils.Output;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-public abstract class AbstractAction implements Action {
+import static com.gypsyengineer.tlsbunny.utils.Utils.SEED;
 
-    // TODO: it should be moved to a common class
-    public static final long DEFAULT_SEED = 0;
-    public static final long SEED = Long.getLong("tlsbunny.seed", DEFAULT_SEED);
+public abstract class AbstractAction implements Action {
 
     protected StructFactory factory;
     protected ByteBuffer in;
