@@ -31,7 +31,7 @@ public class ProcessingTLSPlaintext extends AbstractAction {
         ContentType type = tlsPlaintext.getType();
         if (expectedType != NO_TYPE_SPECIFIED && !expectedType.equals(type)) {
             throw new IOException(
-                    String.format("expected %s, but found %", expectedType, type));
+                    String.format("expected %s, but found %s", expectedType, type));
         }
 
         out = ByteBuffer.wrap(tlsPlaintext.getFragment());
