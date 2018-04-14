@@ -33,7 +33,7 @@ public class WrappingIntoTLSPlaintexts extends AbstractAction {
         byte[] content = new byte[in.remaining()];
         in.get(content);
 
-        out = Helper.store(factory.createTLSPlaintexts(type, version, content));
+        out = Helper.store(context.factory.createTLSPlaintexts(type, version, content));
 
         return this;
     }

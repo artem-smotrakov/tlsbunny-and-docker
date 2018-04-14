@@ -59,7 +59,38 @@ public class ProtocolVersionImpl implements ProtocolVersion {
 
     @Override
     public String toString() {
-        return String.format("0x%s%s", Integer.toHexString(major), Integer.toHexString(minor));
+        // yes, the multiple ifs below look just terrible
+        // although it's not clear how to avoid them:
+        // - "switch" doesn't work because we can't use ProtocolVersion.getMinor() for "case"
+        // - creating a map {code, description} doesn't work because standard types in ProtocolVersion
+        //   are not initialized at the moment of initializing of the map
+        String template = "protocol version (0x%s%s)";
+        if (SSLv3.getMinor() == minor && SSLv3.getMajor() == major) {
+            template = "SSLv3 (0x%s%s)";
+        }
+        if (TLSv10.getMinor() == minor && TLSv10.getMajor() == major) {
+            template = "TLSv10 (0x%s%s)";
+        }
+        if (TLSv11.getMinor() == minor && TLSv11.getMajor() == major) {
+            template = "TLSv11 (0x%s%s)";
+        }
+        if (TLSv12.getMinor() == minor && TLSv12.getMajor() == major) {
+            template = "TLSv12 (0x%s%s)";
+        }
+        if (TLSv13.getMinor() == minor && TLSv13.getMajor() == major) {
+            template = "TLSv13 (0x%s%s)";
+        }
+
+        return String.format(template, Integer.toHexString(major), Integer.toHexString(minor));
     }
-    
+
+    @Override
+    public int getMinor() {
+        return minor;
+    }
+
+    @Override
+    public int getMajor() {
+        return major;
+    }
 }

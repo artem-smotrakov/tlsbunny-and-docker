@@ -26,7 +26,7 @@ public class IncomingEncryptedExtensions extends AbstractAction {
     }
 
     private void processEncryptedExtensions(Handshake handshake) {
-        factory.parser().parseEncryptedExtensions(handshake.getBody());
+        context.factory.parser().parseEncryptedExtensions(handshake.getBody());
         context.setEncryptedExtensions(handshake);
     }
 }

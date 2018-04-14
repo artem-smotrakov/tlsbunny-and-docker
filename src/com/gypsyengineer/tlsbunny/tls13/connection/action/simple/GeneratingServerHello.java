@@ -17,17 +17,17 @@ public class GeneratingServerHello extends AbstractAction {
     @Override
     public Action run() throws Exception {
         List<Extension> extensions = List.of(
-                wrap(factory.createSupportedVersionForClientHello(ProtocolVersion.TLSv13)),
-                wrap(factory.createSignatureSchemeList(scheme)),
-                wrap(factory.createNamedGroupList(group)),
-                wrap(factory.createKeyShareForClientHello(negotiator.createKeyShareEntry())));
+                wrap(context.factory.createSupportedVersionForClientHello(ProtocolVersion.TLSv13)),
+                wrap(context.factory.createSignatureSchemeList(context.scheme)),
+                wrap(context.factory.createNamedGroupList(context.group)),
+                wrap(context.factory.createKeyShareForClientHello(context.negotiator.createKeyShareEntry())));
 
-        ServerHello hello = factory.createServerHello(
+        ServerHello hello = context.factory.createServerHello(
                 ProtocolVersion.TLSv12,
                 createRandom(),
                 StructFactory.EMPTY_SESSION_ID,
                 CipherSuite.TLS_AES_128_GCM_SHA256,
-                factory.createCompressionMethod(0),
+                context.factory.createCompressionMethod(0),
                 extensions);
 
         out = ByteBuffer.wrap(hello.encoding());

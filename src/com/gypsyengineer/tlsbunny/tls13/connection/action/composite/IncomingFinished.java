@@ -35,19 +35,19 @@ public class IncomingFinished extends AbstractAction {
     private void processFinished(Handshake handshake)
             throws NoSuchAlgorithmException, IOException, InvalidKeyException {
 
-        Finished message = factory.parser().parseFinished(
+        Finished message = context.factory.parser().parseFinished(
                 handshake.getBody(),
-                suite.hashLength());
+                context.suite.hashLength());
 
-        byte[] verify_key = hkdf.expandLabel(
+        byte[] verify_key = context.hkdf.expandLabel(
                 context.server_handshake_traffic_secret,
                 context.finished,
                 ZERO_HASH_VALUE,
-                hkdf.getHashLength());
+                context.hkdf.getHashLength());
 
-        byte[] verify_data = hkdf.hmac(
+        byte[] verify_data = context.hkdf.hmac(
                 verify_key,
-                TranscriptHash.compute(suite.hash(), context.allMessages()));
+                TranscriptHash.compute(context.suite.hash(), context.allMessages()));
 
         boolean success = Arrays.equals(verify_data, message.getVerifyData());
         if (!success) {
@@ -56,15 +56,15 @@ public class IncomingFinished extends AbstractAction {
 
         context.setServerFinished(handshake);
 
-        context.client_application_traffic_secret_0 = hkdf.deriveSecret(
+        context.client_application_traffic_secret_0 = context.hkdf.deriveSecret(
                 context.master_secret,
                 context.c_ap_traffic,
                 context.allMessages());
-        context.server_application_traffic_secret_0 = hkdf.deriveSecret(
+        context.server_application_traffic_secret_0 = context.hkdf.deriveSecret(
                 context.master_secret,
                 context.s_ap_traffic,
                 context.allMessages());
-        context.exporter_master_secret = hkdf.deriveSecret(
+        context.exporter_master_secret = context.hkdf.deriveSecret(
                 context.master_secret,
                 context.exp_master,
                 context.allMessages());

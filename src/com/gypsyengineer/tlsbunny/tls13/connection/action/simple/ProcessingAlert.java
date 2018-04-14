@@ -13,7 +13,7 @@ public class ProcessingAlert extends AbstractAction {
 
     @Override
     public Action run() {
-        Alert alert = factory.parser().parseAlert(in);
+        Alert alert = context.factory.parser().parseAlert(in);
         context.setAlert(alert);
 
         output.info("received an alert: %s", alert);

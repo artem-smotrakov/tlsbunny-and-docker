@@ -2,9 +2,9 @@ package com.gypsyengineer.tlsbunny.tls13.handshake;
 
 import com.gypsyengineer.tlsbunny.tls.Vector;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AEAD;
-import com.gypsyengineer.tlsbunny.tls13.struct.Alert;
-import com.gypsyengineer.tlsbunny.tls13.struct.Handshake;
-import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
+import com.gypsyengineer.tlsbunny.tls13.crypto.HKDF;
+import com.gypsyengineer.tlsbunny.tls13.struct.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,6 +46,11 @@ public class Context {
     private Handshake clientFinished;
 
     public StructFactory factory;
+    public SignatureScheme scheme;
+    public NamedGroup group;
+    public CipherSuite suite;
+    public Negotiator negotiator;
+    public HKDF hkdf;
 
     // TODO: these fields should have private or package access
     public byte[] dh_shared_secret;
@@ -125,6 +130,14 @@ public class Context {
 
         handshakeEncryptor = null;
         handshakeDecryptor = null;
+        applicationDataDecryptor = null;
+        applicationDataEnctyptor = null;
+
+        scheme = null;
+        group = null;
+        suite = null;
+        negotiator = null;
+        hkdf = null;
     }
 
     public boolean hasFirstClientHello() {

@@ -41,60 +41,6 @@ public class ActionChain implements Action {
     }
 
     @Override
-    public Action set(StructFactory factory) {
-        for (Action action : actions) {
-            action.set(factory);
-        }
-
-        return this;
-    }
-
-    @Override
-    public Action set(SignatureScheme scheme) {
-        for (Action action : actions) {
-            action.set(scheme);
-        }
-
-        return this;
-    }
-
-    @Override
-    public Action set(NamedGroup group) {
-        for (Action action : actions) {
-            action.set(group);
-        }
-
-        return this;
-    }
-
-    @Override
-    public Action set(CipherSuite suite) {
-        for (Action action : actions) {
-            action.set(suite);
-        }
-
-        return this;
-    }
-
-    @Override
-    public Action set(Negotiator negotiator) {
-        for (Action action : actions) {
-            action.set(negotiator);
-        }
-
-        return this;
-    }
-
-    @Override
-    public Action set(HKDF hkdf) {
-        for (Action action : actions) {
-            action.set(hkdf);
-        }
-
-        return this;
-    }
-
-    @Override
     public Action set(Context context) {
         for (Action action : actions) {
             action.set(context);

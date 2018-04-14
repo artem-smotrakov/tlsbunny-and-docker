@@ -28,7 +28,7 @@ public class FuzzyChangeCipherSpec extends AbstractAction implements Fuzzer<Chan
     @Override
     public Action run() throws Exception {
         ChangeCipherSpec ccs = fuzz(NO_INPUT);
-        TLSPlaintext[] tlsPlaintexts = factory.createTLSPlaintexts(
+        TLSPlaintext[] tlsPlaintexts = context.factory.createTLSPlaintexts(
                 ContentType.change_cipher_spec,
                 ProtocolVersion.TLSv12,
                 ccs.encoding());
@@ -83,7 +83,7 @@ public class FuzzyChangeCipherSpec extends AbstractAction implements Fuzzer<Chan
 
     @Override
     public ChangeCipherSpec fuzz(ChangeCipherSpec object) {
-        return factory.createChangeCipherSpec(value);
+        return context.factory.createChangeCipherSpec(value);
     }
 
     @Override

@@ -2,29 +2,20 @@ package com.gypsyengineer.tlsbunny.tls13.connection.action;
 
 import com.gypsyengineer.tlsbunny.tls.Random;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AEAD;
-import com.gypsyengineer.tlsbunny.tls13.crypto.HKDF;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
-import com.gypsyengineer.tlsbunny.tls13.handshake.Negotiator;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
+import static com.gypsyengineer.tlsbunny.utils.Utils.SEED;
+
 public abstract class AbstractAction implements Action {
 
-    static final long DEFAULT_SEED = 0;
-    static final long SEED = Long.getLong("tlsbunny.seed", DEFAULT_SEED);
-
-    protected StructFactory factory;
     protected ByteBuffer in;
     protected ByteBuffer out;
     protected Output output;
-    protected SignatureScheme scheme;
-    protected NamedGroup group;
-    protected CipherSuite suite;
-    protected Negotiator negotiator;
-    protected HKDF hkdf;
     protected Context context;
 
     @Override
@@ -35,42 +26,6 @@ public abstract class AbstractAction implements Action {
     @Override
     public Action set(Output output) {
         this.output = output;
-        return this;
-    }
-
-    @Override
-    public Action set(StructFactory factory) {
-        this.factory = factory;
-        return this;
-    }
-
-    @Override
-    public Action set(SignatureScheme scheme) {
-        this.scheme = scheme;
-        return this;
-    }
-
-    @Override
-    public Action set(NamedGroup group) {
-        this.group = group;
-        return this;
-    }
-
-    @Override
-    public Action set(CipherSuite suite) {
-        this.suite = suite;
-        return this;
-    }
-
-    @Override
-    public Action set(Negotiator negotiator) {
-        this.negotiator = negotiator;
-        return this;
-    }
-
-    @Override
-    public Action set(HKDF hkdf) {
-        this.hkdf = hkdf;
         return this;
     }
 
@@ -124,10 +79,12 @@ public abstract class AbstractAction implements Action {
         // TODO: set the test of messages
     }
 
-    protected byte[] processEncrypted(AEAD decryptor, ContentType expectedType) throws Exception {
-        TLSPlaintext tlsPlaintext = factory.parser().parseTLSPlaintext(in);
+    protected byte[] processEncrypted(AEAD decryptor, ContentType expectedType)
+            throws Exception {
+
+        TLSPlaintext tlsPlaintext = context.factory.parser().parseTLSPlaintext(in);
         if (tlsPlaintext.containsAlert()) {
-            Alert alert = factory.parser().parseAlert(tlsPlaintext.getFragment());
+            Alert alert = context.factory.parser().parseAlert(tlsPlaintext.getFragment());
             context.setAlert(alert);
             throw new IOException(String.format("received an alert: %s", alert));
         }
@@ -136,11 +93,11 @@ public abstract class AbstractAction implements Action {
             throw new IOException("expected a TLSCiphertext");
         }
 
-        TLSInnerPlaintext tlsInnerPlaintext = factory.parser().parseTLSInnerPlaintext(
+        TLSInnerPlaintext tlsInnerPlaintext = context.factory.parser().parseTLSInnerPlaintext(
                 decryptor.decrypt(tlsPlaintext));
 
         if (!expectedType.isAlert() && tlsInnerPlaintext.containsAlert()) {
-            Alert alert = factory.parser().parseAlert(tlsInnerPlaintext.getContent());
+            Alert alert = context.factory.parser().parseAlert(tlsInnerPlaintext.getContent());
             context.setAlert(alert);
             throw new IOException(String.format("received an alert: %s", alert));
         }
@@ -155,31 +112,31 @@ public abstract class AbstractAction implements Action {
     }
 
     protected Handshake processEncryptedHandshake() throws Exception {
-        return factory.parser().parseHandshake(
+        return context.factory.parser().parseHandshake(
                 processEncrypted(context.handshakeDecryptor, ContentType.handshake));
     }
 
     protected Handshake toHandshake(HandshakeMessage message) throws IOException {
-        return factory.createHandshake(message.type(), message.encoding());
+        return context.factory.createHandshake(message.type(), message.encoding());
     }
 
     protected Extension wrap(SupportedVersions supportedVersions) throws IOException {
-        return factory.createExtension(
+        return context.factory.createExtension(
                 ExtensionType.supported_versions, supportedVersions.encoding());
     }
 
     protected Extension wrap(SignatureSchemeList signatureSchemeList) throws IOException {
-        return factory.createExtension(
+        return context.factory.createExtension(
                 ExtensionType.signature_algorithms, signatureSchemeList.encoding());
     }
 
     protected Extension wrap(NamedGroupList namedGroupList) throws IOException {
-        return factory.createExtension(
+        return context.factory.createExtension(
                 ExtensionType.supported_groups, namedGroupList.encoding());
     }
 
     protected Extension wrap(KeyShare keyShare) throws IOException {
-        return factory.createExtension(
+        return context.factory.createExtension(
                 ExtensionType.key_share, keyShare.encoding());
     }
 

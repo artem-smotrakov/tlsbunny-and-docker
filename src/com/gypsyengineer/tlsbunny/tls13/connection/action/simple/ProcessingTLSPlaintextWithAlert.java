@@ -16,13 +16,13 @@ public class ProcessingTLSPlaintextWithAlert extends AbstractAction {
 
     @Override
     public Action run() throws Exception {
-        TLSPlaintext tlsPlaintext = factory.parser().parseTLSPlaintext(in);
+        TLSPlaintext tlsPlaintext = context.factory.parser().parseTLSPlaintext(in);
 
         if (!tlsPlaintext.containsAlert()) {
             throw new IOException("expected an alert");
         }
 
-        Alert alert = factory.parser().parseAlert(tlsPlaintext.getFragment());
+        Alert alert = context.factory.parser().parseAlert(tlsPlaintext.getFragment());
         context.setAlert(alert);
 
         output.info("received an alert: %s", alert);

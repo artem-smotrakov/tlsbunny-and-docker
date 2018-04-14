@@ -18,20 +18,20 @@ public class OutgoingClientHello extends AbstractAction {
     @Override
     public Action run() throws Exception {
         List<Extension> extensions = List.of(
-                wrap(factory.createSupportedVersionForClientHello(ProtocolVersion.TLSv13)),
-                wrap(factory.createSignatureSchemeList(scheme)),
-                wrap(factory.createNamedGroupList(group)),
-                wrap(factory.createKeyShareForClientHello(negotiator.createKeyShareEntry())));
+                wrap(context.factory.createSupportedVersionForClientHello(ProtocolVersion.TLSv13)),
+                wrap(context.factory.createSignatureSchemeList(context.scheme)),
+                wrap(context.factory.createNamedGroupList(context.group)),
+                wrap(context.factory.createKeyShareForClientHello(context.negotiator.createKeyShareEntry())));
 
-        ClientHello hello = factory.createClientHello(ProtocolVersion.TLSv12,
+        ClientHello hello = context.factory.createClientHello(ProtocolVersion.TLSv12,
                 createRandom(),
                 StructFactory.EMPTY_SESSION_ID,
                 List.of(CipherSuite.TLS_AES_128_GCM_SHA256),
-                List.of(factory.createCompressionMethod(0)),
+                List.of(context.factory.createCompressionMethod(0)),
                 extensions);
 
         Handshake handshake = toHandshake(hello);
-        TLSPlaintext[] tlsPlaintexts = factory.createTLSPlaintexts(
+        TLSPlaintext[] tlsPlaintexts = context.factory.createTLSPlaintexts(
                 ContentType.handshake,
                 ProtocolVersion.TLSv10,
                 handshake.encoding());

@@ -33,7 +33,7 @@ public class OutgoingApplicationData extends AbstractAction {
 
     @Override
     public Action run() throws Exception {
-        TLSPlaintext[] tlsPlaintexts = factory.createTLSPlaintexts(
+        TLSPlaintext[] tlsPlaintexts = context.factory.createTLSPlaintexts(
                 ContentType.application_data,
                 ProtocolVersion.TLSv12,
                 encrypt(data));
@@ -44,7 +44,7 @@ public class OutgoingApplicationData extends AbstractAction {
     }
 
     private byte[] encrypt(byte[] data) throws Exception {
-        TLSInnerPlaintext tlsInnerPlaintext = factory.createTLSInnerPlaintext(
+        TLSInnerPlaintext tlsInnerPlaintext = context.factory.createTLSInnerPlaintext(
                 ContentType.application_data, data, NO_PADDING);
         byte[] plaintext = tlsInnerPlaintext.encoding();
 

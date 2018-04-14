@@ -172,11 +172,15 @@ public class StructFactoryImpl implements StructFactory {
     }
 
     @Override
-    public KeyShare.ClientHello createKeyShareForClientHello(KeyShareEntry entry) {
-        return new KeyShareImpl.ClientHelloImpl(
+    public KeyShare.ClientHello createKeyShareForClientHello(KeyShareEntry... entries) {
+        if (entries.length > 0) {
+            return new KeyShareImpl.ClientHelloImpl(
                     Vector.wrap(
-                            KeyShare.ClientHello.LENGTH_BYTES, 
-                            entry));
+                            KeyShare.ClientHello.LENGTH_BYTES,
+                            entries));
+        }
+
+        return new KeyShareImpl.ClientHelloImpl();
     }
 
     @Override
