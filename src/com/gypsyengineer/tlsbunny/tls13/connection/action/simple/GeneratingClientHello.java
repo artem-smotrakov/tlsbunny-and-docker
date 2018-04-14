@@ -6,6 +6,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.*;
 import com.gypsyengineer.tlsbunny.tls13.utils.Helper;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.List;
 
 public class GeneratingClientHello extends AbstractAction {
@@ -30,23 +31,7 @@ public class GeneratingClientHello extends AbstractAction {
                 List.of(context.factory.createCompressionMethod(0)),
                 extensions);
 
-        Handshake handshake = toHandshake(hello);
-        TLSPlaintext[] tlsPlaintexts = context.factory.createTLSPlaintexts(
-                ContentType.handshake,
-                ProtocolVersion.TLSv10,
-                handshake.encoding());
-
-        out = Helper.store(tlsPlaintexts);
-
-        if (context.hasFirstClientHello() && context.hasSecondClientHello()) {
-            throw new IOException("already received two ClientHello messages");
-        }
-
-        if (context.hasFirstClientHello()) {
-            context.setSecondClientHello(handshake);
-        } else {
-            context.setFirstClientHello(handshake);
-        }
+        out = ByteBuffer.wrap(hello.encoding());
 
         return this;
     }
