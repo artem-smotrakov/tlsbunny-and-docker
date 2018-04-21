@@ -6,14 +6,10 @@ public class UInt32 implements Struct {
 
     public static final int ENCODING_LENGTH = 4;
 
-    public final long value;
+    public final byte[] value;
 
-    public UInt32(long value) {
+    private UInt32(byte[] value) {
         this.value = value;
-    }
-
-    public long getValue() {
-        return value;
     }
 
     @Override
@@ -23,11 +19,13 @@ public class UInt32 implements Struct {
     
     @Override
     public byte[] encoding() {
-        return ByteBuffer.allocate(ENCODING_LENGTH).putLong(value).array();
+        return ByteBuffer.allocate(ENCODING_LENGTH).put(value).array();
     }
 
     public static UInt32 parse(ByteBuffer data) {
-        return new UInt32(data.getLong() & 0xFFFFFFFF);
+        byte[] value = new byte[ENCODING_LENGTH];
+        data.get(value);
+        return new UInt32(value);
     }
 
 }
