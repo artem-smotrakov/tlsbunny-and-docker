@@ -112,6 +112,11 @@ public class DetailedHttpsConnection {
                         .type(application_data))
                 .send(new OutgoingData())
 
+                // receive application data
+                .require(new IncomingData())
+                .run(new ProcessingApplicationDataTLSCiphertext())
+                .run(new PrintingData())
+
                 .connect()
                 .run(new NoAlertCheck());
     }
