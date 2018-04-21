@@ -151,7 +151,7 @@ public class Engine {
                             action.run();
                             connection.send(action.data());
                         } catch (Exception e) {
-                            output.info("error: %s", e.getMessage());
+                            output.achtung("error:", e);
                             status = Status.could_not_send;
                             return this;
                         }
@@ -164,7 +164,7 @@ public class Engine {
                             action.run();
                             combineData(action);
                         } catch (Exception e) {
-                            output.info("error: %s", e);
+                            output.achtung("error:", e);
                             status = Status.unexpected_message;
                             return this;
                         }
@@ -193,7 +193,7 @@ public class Engine {
                             action.run();
                             combineData(action);
                         } catch (Exception e) {
-                            output.info("error: %s", e.getMessage());
+                            output.achtung("error:", e);
                             status = Status.unexpected_error;
                             return this;
                         }
