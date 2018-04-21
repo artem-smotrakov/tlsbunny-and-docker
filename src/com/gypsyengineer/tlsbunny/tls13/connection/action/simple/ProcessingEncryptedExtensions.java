@@ -17,7 +17,6 @@ public class ProcessingEncryptedExtensions extends AbstractAction {
     @Override
     public Action run() throws Exception {
         EncryptedExtensions extensions = context.factory.parser().parseEncryptedExtensions(in);
-        out = ByteBuffer.wrap(extensions.encoding());
         output.info("received an EncryptedExtensions message");
 
         return this;

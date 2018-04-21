@@ -16,7 +16,6 @@ public class ProcessingServerHello extends AbstractAction {
     @Override
     public Action run() throws Exception {
         ServerHello serverHello = context.factory.parser().parseServerHello(in);
-        out = ByteBuffer.wrap(serverHello.encoding());
         output.info("received a ServerHello message");
 
         return this;
