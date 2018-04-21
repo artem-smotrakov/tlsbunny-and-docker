@@ -45,7 +45,7 @@ public class ProcessingHandshakeTLSCiphertext extends AbstractAction {
         }
 
         out = ByteBuffer.wrap(tlsInnerPlaintext.getContent());
-        output.info("decrypted a TLSCipertext");
+        output.info("decrypted a TLSCiphertext");
 
         return this;
     }
