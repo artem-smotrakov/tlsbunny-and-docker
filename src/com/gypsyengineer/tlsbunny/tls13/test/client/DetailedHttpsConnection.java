@@ -94,8 +94,7 @@ public class DetailedHttpsConnection {
                 .run(new WrappingIntoHandshake()
                         .type(finished)
                         .run((context, message) -> context.setClientFinished(message)))
-                .run(new WrappingIntoTLSCiphertext(Phase.handshake)
-                        .type(handshake))
+                .run(new WrappingHandshakeDataIntoTLSCiphertext())
                 .send(new OutgoingData())
 
                 // receive NewSessionTicket
@@ -108,8 +107,7 @@ public class DetailedHttpsConnection {
 
                 // send application data
                 .run(new PreparingHttpGetRequest())
-                .run(new WrappingIntoTLSCiphertext(Phase.application_data)
-                        .type(application_data))
+                .run(new WrappingApplicationDataIntoTLSCiphertext())
                 .send(new OutgoingData())
 
                 // receive application data
