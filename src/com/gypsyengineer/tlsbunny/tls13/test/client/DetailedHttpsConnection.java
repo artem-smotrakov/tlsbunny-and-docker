@@ -2,6 +2,7 @@ package com.gypsyengineer.tlsbunny.tls13.test.client;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertCheck;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.Phase;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.IncomingChangeCipherSpec;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 
@@ -94,7 +95,7 @@ public class DetailedHttpsConnection {
                 .run(new WrappingIntoHandshake()
                         .type(finished)
                         .run((context, message) -> context.setClientFinished(message)))
-                .run(new WrappingIntoTLSCiphertext(WrappingIntoTLSCiphertext.Phase.handshake)
+                .run(new WrappingIntoTLSCiphertext(Phase.handshake)
                         .type(handshake))
                 .send(new OutgoingData())
 
@@ -107,7 +108,7 @@ public class DetailedHttpsConnection {
 
                 // send application data
                 .run(new PreparingHttpGetRequest())
-                .run(new WrappingIntoTLSCiphertext(WrappingIntoTLSCiphertext.Phase.application_data)
+                .run(new WrappingIntoTLSCiphertext(Phase.application_data)
                         .type(application_data))
                 .send(new OutgoingData())
 

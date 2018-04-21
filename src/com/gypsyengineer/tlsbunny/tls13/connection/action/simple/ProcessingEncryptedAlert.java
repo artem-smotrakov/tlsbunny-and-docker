@@ -2,6 +2,7 @@ package com.gypsyengineer.tlsbunny.tls13.connection.action.simple;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.action.AbstractAction;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.Phase;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AEAD;
 import com.gypsyengineer.tlsbunny.tls13.struct.Alert;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext;
@@ -11,8 +12,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 public class ProcessingEncryptedAlert extends AbstractAction {
-
-    enum Phase { handshake, application_data }
 
     private final Phase phase;
 

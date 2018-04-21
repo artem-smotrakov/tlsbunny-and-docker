@@ -2,6 +2,7 @@ package com.gypsyengineer.tlsbunny.tls13.connection.action.simple;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.action.AbstractAction;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.Phase;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AEAD;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AesGcm;
 import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
@@ -13,8 +14,6 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv12;
 import static com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext.NO_PADDING;
 
 public class WrappingIntoTLSCiphertext extends AbstractAction {
-
-    public enum Phase { handshake, application_data }
 
     private final Phase phase;
     private ContentType type;
