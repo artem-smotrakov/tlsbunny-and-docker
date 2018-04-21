@@ -32,16 +32,19 @@ RUN mkdir -p /var/src/gnutls
 RUN mkdir -p /var/src/tlsbunny
 
 WORKDIR /var/src
-#RUN wget https://ftp.gnu.org/gnu/nettle/nettle-3.4.tar.gz
-#RUN tar xf nettle-3.4.tar.gz
+RUN wget https://ftp.gnu.org/gnu/nettle/nettle-3.4.tar.gz
+RUN tar xf nettle-3.4.tar.gz
+# for debug purposes
 ADD nettle-3.4 /var/src/nettle-3.4
+
 WORKDIR /var/src/nettle-3.4
 RUN ./configure --disable-openssl --enable-shared
 RUN make
 RUN make install
 
-#RUN git clone https://gitlab.com/gnutls/gnutls.git ${GNUTLS_SRC}
-ADD gnutls ${GNUTLS_SRC}
+RUN git clone https://gitlab.com/gnutls/gnutls.git ${GNUTLS_SRC}
+# for debug purposes
+# ADD gnutls ${GNUTLS_SRC}
 
 WORKDIR ${GNUTLS_SRC}
 RUN make bootstrap
