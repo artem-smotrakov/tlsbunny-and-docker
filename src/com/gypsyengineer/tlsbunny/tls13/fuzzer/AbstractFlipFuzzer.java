@@ -103,6 +103,14 @@ public abstract class AbstractFlipFuzzer implements Fuzzer<byte[]> {
         random.setSeed(state);
     }
 
+    @Override
+    public final byte[] fuzz(byte[] array) {
+        random.setSeed(state);
+        return fuzzImpl(array);
+    }
+
+    protected abstract byte[] fuzzImpl(byte[] array);
+
     double getRatio() {
         return minRatio + (maxRatio - minRatio) * random.nextDouble();
     }

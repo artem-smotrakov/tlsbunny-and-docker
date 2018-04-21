@@ -60,16 +60,38 @@ public class MutatedStructFactory extends StructFactoryWrapper
                 type, version, content);
 
         if (target == Target.tls_plaintext) {
+            int index = 0;
+            output.info("fuzz TLSPlaintext[%d] (total is %d)",
+                    index, tlsPlaintexts.length);
+            try {
+                tlsPlaintexts[index] = new MutatedStruct(
+                        fuzz(tlsPlaintexts[index].encoding()));
+            } catch (IOException e) {
+                output.achtung("I couldn't fuzz TLSPlaintext[%d]: %s",
+                        e.getMessage(), index);
+            }
+        }
+
+        return tlsPlaintexts;
+    }
+
+    @Override
+    public TLSPlaintext createTLSPlaintext(
+            ContentType type, ProtocolVersion version, byte[] content) {
+
+        TLSPlaintext tlsPlaintext = factory.createTLSPlaintext(
+                type, version, content);
+
+        if (target == Target.tls_plaintext) {
             output.info("fuzz TLSPlaintext");
             try {
-                tlsPlaintexts[0] = new MutatedStruct(
-                        fuzz(tlsPlaintexts[0].encoding()));
+                tlsPlaintext = new MutatedStruct(fuzz(tlsPlaintext.encoding()));
             } catch (IOException e) {
                 output.achtung("I couldn't fuzz TLSPlaintext: %s", e.getMessage());
             }
         }
 
-        return tlsPlaintexts;
+        return tlsPlaintext;
     }
 
     @Override
