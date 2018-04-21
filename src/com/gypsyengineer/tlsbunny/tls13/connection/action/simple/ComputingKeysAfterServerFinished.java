@@ -3,11 +3,11 @@ package com.gypsyengineer.tlsbunny.tls13.connection.action.simple;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.AbstractAction;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
 
-public class ComputingKeysAfterFinished extends AbstractAction {
+public class ComputingKeysAfterServerFinished extends AbstractAction {
 
     @Override
     public String name() {
-        return "computing keys after Finished";
+        return "computing keys after receiving server's Finished";
     }
 
     @Override
