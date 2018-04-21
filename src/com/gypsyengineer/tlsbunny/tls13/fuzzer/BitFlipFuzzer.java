@@ -13,7 +13,7 @@ public class BitFlipFuzzer extends AbstractFlipFuzzer {
     }
 
     @Override
-    public byte[] fuzz(byte[] array) {
+    protected byte[] fuzzImpl(byte[] array) {
         BitSet bits = BitSet.valueOf(array);
         double ratio = getRatio();
         int start = getStartIndex();
