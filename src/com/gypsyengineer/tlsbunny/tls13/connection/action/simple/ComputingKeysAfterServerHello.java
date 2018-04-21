@@ -1,82 +1,27 @@
-package com.gypsyengineer.tlsbunny.tls13.connection.action.composite;
+package com.gypsyengineer.tlsbunny.tls13.connection.action.simple;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.action.AbstractAction;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AEAD;
-import com.gypsyengineer.tlsbunny.tls13.struct.*;
+import com.gypsyengineer.tlsbunny.tls13.struct.Handshake;
 
 import static com.gypsyengineer.tlsbunny.tls13.handshake.Context.ZERO_HASH_VALUE;
 import static com.gypsyengineer.tlsbunny.tls13.handshake.Context.ZERO_SALT;
-import static com.gypsyengineer.tlsbunny.tls13.utils.Helper.findKeyShare;
-import static com.gypsyengineer.tlsbunny.tls13.utils.Helper.findSupportedVersion;
 import static com.gypsyengineer.tlsbunny.utils.Utils.concatenate;
 import static com.gypsyengineer.tlsbunny.utils.Utils.zeroes;
 
-import java.io.IOException;
-
-public class IncomingServerHello extends AbstractAction {
+public class ComputingKeysAfterServerHello extends AbstractAction {
 
     @Override
     public String name() {
-        return "ServerHello";
+        return "computing keys after ServerHello";
     }
 
     @Override
     public Action run() throws Exception {
-        TLSPlaintext tlsPlaintext = context.factory.parser().parseTLSPlaintext(in);
-
-        if (tlsPlaintext.containsAlert()) {
-            Alert alert = context.factory.parser().parseAlert(tlsPlaintext.getFragment());
-            context.setAlert(alert);
-            throw new IOException(String.format("received an alert: %s", alert));
-        }
-
-        if (!tlsPlaintext.containsHandshake()) {
-            throw new IOException("expected a handshake message");
-        }
-
-        Handshake handshake = context.factory.parser().parseHandshake(tlsPlaintext.getFragment());
-        if (!handshake.containsServerHello()) {
-            throw new IOException("expected a ServerHello message");
-        }
-
-        processServerHello(handshake);
-
-        return this;
-    }
-
-    private void processServerHello(Handshake handshake) throws Exception {
-        ServerHello serverHello = context.factory.parser().parseServerHello(handshake.getBody());
-
-        if (!context.suite.equals(serverHello.getCipherSuite())) {
-            output.info("expected cipher suite: %s", context.suite);
-            output.info("received cipher suite: %s", serverHello.getCipherSuite());
-            throw new RuntimeException("unexpected ciphersuite");
-        }
-
-        SupportedVersions.ServerHello selected_version = findSupportedVersion(
-                context.factory, serverHello);
-        if (!selected_version.equals(ProtocolVersion.TLSv13)) {
-            output.info("ServerHello.selected version: %s", selected_version.getSelectedVersion());
-            // TODO: when TLSBUNNY 1.3 spec is finished, we should throw an exception here
-        }
-
-        // TODO: we look for only first key share, but there may be multiple key shares
-        KeyShare.ServerHello keyShare = findKeyShare(context.factory, serverHello);
-        if (!context.group.equals(keyShare.getServerShare().getNamedGroup())) {
-            output.info("expected group: %s", context.group);
-            output.info("received group: %s", keyShare.getServerShare().getNamedGroup());
-            throw new RuntimeException("unexpected group");
-        }
-
-        context.negotiator.processKeyShareEntry(keyShare.getServerShare());
-        context.dh_shared_secret = context.negotiator.generateSecret();
-
-        context.setServerHello(handshake);
-
         byte[] psk = zeroes(context.hkdf.getHashLength());
-
-        Handshake wrappedClientHello = context.getFirstClientHello();
+        Handshake clientHello = context.getFirstClientHello();
+        Handshake serverHello = context.getServerHello();
 
         context.early_secret = context.hkdf.extract(ZERO_SALT, psk);
         context.binder_key = context.hkdf.deriveSecret(
@@ -85,11 +30,11 @@ public class IncomingServerHello extends AbstractAction {
         context.client_early_traffic_secret = context.hkdf.deriveSecret(
                 context.early_secret,
                 context.c_e_traffic,
-                wrappedClientHello);
+                clientHello);
         context.early_exporter_master_secret = context.hkdf.deriveSecret(
                 context.early_secret,
                 context.e_exp_master,
-                wrappedClientHello);
+                clientHello);
 
         context.handshake_secret_salt = context.hkdf.deriveSecret(
                 context.early_secret, context.derived);
@@ -99,11 +44,11 @@ public class IncomingServerHello extends AbstractAction {
         context.client_handshake_traffic_secret = context.hkdf.deriveSecret(
                 context.handshake_secret,
                 context.c_hs_traffic,
-                wrappedClientHello, handshake);
+                clientHello, serverHello);
         context.server_handshake_traffic_secret = context.hkdf.deriveSecret(
                 context.handshake_secret,
                 context.s_hs_traffic,
-                wrappedClientHello, handshake);
+                clientHello, serverHello);
         context.master_secret = context.hkdf.extract(
                 context.hkdf.deriveSecret(context.handshake_secret, context.derived),
                 zeroes(context.hkdf.getHashLength()));
@@ -142,6 +87,8 @@ public class IncomingServerHello extends AbstractAction {
                 context.suite.cipher(),
                 context.server_handshake_write_key,
                 context.server_handshake_write_iv);
+
+        return this;
     }
 
 }

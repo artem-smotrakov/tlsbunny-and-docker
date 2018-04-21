@@ -1,8 +1,7 @@
 package com.gypsyengineer.tlsbunny.tls13.utils;
 
-import com.gypsyengineer.tlsbunny.tls13.struct.Extension;
-import com.gypsyengineer.tlsbunny.tls13.struct.ExtensionType;
-import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
+import com.gypsyengineer.tlsbunny.tls.Struct;
+import com.gypsyengineer.tlsbunny.tls13.struct.*;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -35,4 +34,22 @@ public class Helper {
 
         return null;
     }
- }
+
+    public static KeyShare.ServerHello findKeyShare(StructFactory factory, ServerHello hello)
+            throws IOException {
+
+        return factory.parser()
+                .parseKeyShareFromServerHello(
+                        hello.findExtension(ExtensionType.key_share)
+                                .getExtensionData().bytes());
+    }
+
+    public static SupportedVersions.ServerHello findSupportedVersion(
+            StructFactory factory, ServerHello hello) throws IOException {
+
+        return factory.parser().parseSupportedVersionsServerHello(
+                hello.findExtension(ExtensionType.supported_versions)
+                        .getExtensionData().bytes());
+    }
+
+}

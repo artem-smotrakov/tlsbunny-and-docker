@@ -2,21 +2,19 @@ package com.gypsyengineer.tlsbunny.tls13.connection.action.simple;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.action.AbstractAction;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
-import com.gypsyengineer.tlsbunny.tls13.struct.*;
+import com.gypsyengineer.tlsbunny.tls13.struct.CertificateVerify;
 
-import java.nio.ByteBuffer;
-
-public class ProcessingServerHello extends AbstractAction {
+public class ProcessingCertificateVerify extends AbstractAction {
 
     @Override
     public String name() {
-        return "processing a ServerHello";
+        return "processing a CertificateVerify";
     }
 
     @Override
     public Action run() throws Exception {
-        ServerHello serverHello = context.factory.parser().parseServerHello(in);
-        output.info("received a ServerHello message");
+        CertificateVerify certificateVerify = context.factory.parser().parseCertificateVerify(in);
+        output.info("received a CertificateVerify message");
 
         return this;
     }

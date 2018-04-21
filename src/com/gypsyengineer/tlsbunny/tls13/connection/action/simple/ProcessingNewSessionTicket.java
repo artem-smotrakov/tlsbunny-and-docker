@@ -2,23 +2,20 @@ package com.gypsyengineer.tlsbunny.tls13.connection.action.simple;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.action.AbstractAction;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
-import com.gypsyengineer.tlsbunny.tls13.struct.*;
+import com.gypsyengineer.tlsbunny.tls13.struct.NewSessionTicket;
 
-import java.nio.ByteBuffer;
-
-public class ProcessingServerHello extends AbstractAction {
+public class ProcessingNewSessionTicket extends AbstractAction {
 
     @Override
     public String name() {
-        return "processing a ServerHello";
+        return "processing NewSessionTicket";
     }
 
     @Override
     public Action run() throws Exception {
-        ServerHello serverHello = context.factory.parser().parseServerHello(in);
-        output.info("received a ServerHello message");
+        NewSessionTicket ticket = context.factory.parser().parseNewSessionTicket(in);
+        output.info("received a NewSessionTicket message");
 
         return this;
     }
-
 }

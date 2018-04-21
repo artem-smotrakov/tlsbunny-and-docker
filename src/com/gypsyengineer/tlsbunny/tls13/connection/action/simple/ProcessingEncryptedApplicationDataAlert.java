@@ -1,8 +1,10 @@
 package com.gypsyengineer.tlsbunny.tls13.connection.action.simple;
 
+import static com.gypsyengineer.tlsbunny.tls13.connection.action.Phase.application_data;
+
 public class ProcessingEncryptedApplicationDataAlert extends ProcessingEncryptedAlert {
 
     public ProcessingEncryptedApplicationDataAlert() {
-        super(Phase.application_data);
+        super(application_data);
     }
 }
