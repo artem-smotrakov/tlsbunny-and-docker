@@ -3,13 +3,12 @@ package com.gypsyengineer.tlsbunny.tls13.connection.action.simple;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.AbstractAction;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
 import com.gypsyengineer.tlsbunny.tls13.struct.Certificate;
-import com.gypsyengineer.tlsbunny.tls13.struct.EncryptedExtensions;
 
 public class ProcessingCertificate extends AbstractAction {
 
     @Override
     public String name() {
-        return "processing an Certificate";
+        return "processing a Certificate";
     }
 
     @Override
