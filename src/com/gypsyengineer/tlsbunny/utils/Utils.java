@@ -68,6 +68,10 @@ public class Utils {
         return result;
     }
 
+    public static byte[] zeroes(int length) {
+        return new byte[length];
+    }
+
     public static void sleep(long millis) {
         try {
             Thread.sleep(millis);
