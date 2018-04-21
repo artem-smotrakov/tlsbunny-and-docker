@@ -2,7 +2,6 @@ package com.gypsyengineer.tlsbunny.tls13.test.client;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertCheck;
-import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.IncomingAlert;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.IncomingChangeCipherSpec;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 
@@ -107,7 +106,7 @@ public class DetailedHttpsConnection {
                 .run(new ProcessingNewSessionTicket())
 
                 // send application data
-                .run(new GeneratingApplicationData().data("GET / HTTP/1.1\n\n"))
+                .run(new PreparingHttpGetRequest())
                 .run(new WrappingIntoTLSCiphertext(WrappingIntoTLSCiphertext.Phase.application_data)
                         .type(application_data))
                 .send(new OutgoingData())

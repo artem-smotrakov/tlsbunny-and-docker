@@ -5,24 +5,31 @@ import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
 
 import java.nio.ByteBuffer;
 
-public class GeneratingApplicationData extends AbstractAction {
+public class PreparingApplicationData extends AbstractAction {
 
     private byte[] data;
+
+    public PreparingApplicationData(byte[] data) {
+        this.data = data;
+    }
+
+    public PreparingApplicationData() {
+        this(new byte[0]);
+    }
 
     @Override
     public String name() {
         return "generating application data";
     }
 
-    public GeneratingApplicationData data(String string) {
+    public PreparingApplicationData data(String string) {
         data = string.getBytes();
         return this;
     }
 
     @Override
-    public Action run() throws Exception {
+    public Action run() {
         out = ByteBuffer.wrap(data);
-
         return this;
     }
 
