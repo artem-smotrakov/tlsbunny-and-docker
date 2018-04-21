@@ -60,12 +60,15 @@ public class MutatedStructFactory extends StructFactoryWrapper
                 type, version, content);
 
         if (target == Target.tls_plaintext) {
-            output.info("fuzz TLSPlaintext");
+            int index = 0;
+            output.info("fuzz TLSPlaintext[%d] (total is %d)",
+                    index, tlsPlaintexts.length);
             try {
-                tlsPlaintexts[0] = new MutatedStruct(
-                        fuzz(tlsPlaintexts[0].encoding()));
+                tlsPlaintexts[index] = new MutatedStruct(
+                        fuzz(tlsPlaintexts[index].encoding()));
             } catch (IOException e) {
-                output.achtung("I couldn't fuzz TLSPlaintext: %s", e.getMessage());
+                output.achtung("I couldn't fuzz TLSPlaintext[%d]: %s",
+                        e.getMessage(), index);
             }
         }
 
