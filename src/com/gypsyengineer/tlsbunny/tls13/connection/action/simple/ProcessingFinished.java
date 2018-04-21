@@ -35,6 +35,8 @@ public class ProcessingFinished extends AbstractAction {
             throw new RuntimeException("verification of Finished failed");
         }
 
+        context.verifyServerFinished();
+
         output.info("verified Finished message");
 
         return this;

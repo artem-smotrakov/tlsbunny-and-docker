@@ -45,6 +45,8 @@ public class Context {
     private Handshake clientCertificateVerify;
     private Handshake clientFinished;
 
+    private boolean serverFinishedVerified = false;
+
     public StructFactory factory;
     public SignatureScheme scheme;
     public NamedGroup group;
@@ -101,6 +103,8 @@ public class Context {
         clientCertificate = null;
         clientCertificateVerify = null;
         clientFinished = null;
+
+        serverFinishedVerified = false;
 
         dh_shared_secret = null;
         early_secret = null;
@@ -220,8 +224,8 @@ public class Context {
         this.serverFinished = serverFinished;
     }
 
-    public Handshake getEndOfEarlyData() {
-        return endOfEarlyData;
+    public void verifyServerFinished() {
+        serverFinishedVerified = true;
     }
 
     public void setEndOfEarlyData(Handshake endOfEarlyData) {
@@ -262,7 +266,7 @@ public class Context {
                 serverCertificateRequest,
                 serverCertificate,
                 serverCertificateVerify,
-                serverFinished,
+                serverFinishedVerified ? serverFinished : null,
                 endOfEarlyData,
                 clientCertificate,
                 clientCertificateVerify,
