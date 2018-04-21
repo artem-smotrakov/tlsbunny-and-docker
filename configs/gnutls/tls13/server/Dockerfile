@@ -26,39 +26,36 @@ RUN apt-get install -y texinfo texlive texlive-generic-recommended texlive-extra
 RUN apt-get install -y libgmp-dev wget
 
 ENV GNUTLS_SRC /var/src/gnutls
-ENV GNUTLS_DIR /var/gnutls
-ENV LIBNETTLE_SRC /var/src/libnettle
-ENV LIBNETTLE_DIR /var/libnettle
 ENV TLSBUNNY /var/src/tlsbunny
 
 RUN mkdir -p /var/src/gnutls
 RUN mkdir -p /var/src/tlsbunny
-RUN mkdir -p /var/gnutls
-RUN mkdir -p /var/src/libnettle /var/libnettle
 
 WORKDIR /var/src
-#RUN wget https://ftp.gnu.org/gnu/nettle/nettle-3.4.tar.gz
-#RUN tar xf nettle-3.4.tar.gz
+RUN wget https://ftp.gnu.org/gnu/nettle/nettle-3.4.tar.gz
+RUN tar xf nettle-3.4.tar.gz
+# for debug purposes
 ADD nettle-3.4 /var/src/nettle-3.4
+
 WORKDIR /var/src/nettle-3.4
 RUN ./configure --disable-openssl --enable-shared
 RUN make
 RUN make install
 
-#RUN git clone https://gitlab.com/gnutls/gnutls.git ${GNUTLS_SRC}
-ADD gnutls ${GNUTLS_SRC}
+RUN git clone https://gitlab.com/gnutls/gnutls.git ${GNUTLS_SRC}
+# for debug purposes
+# ADD gnutls ${GNUTLS_SRC}
 
 WORKDIR ${GNUTLS_SRC}
 RUN make bootstrap
-RUN ./configure --with-included-libtasn1
-RUN make
-RUN make install
-
-ENV GNUTLS /var/openssl/bin/gnutls
-ENV LD_LIBRARY_PATH /var/gnutls/lib
+RUN LD_LIBRARY_PATH=/usr/local/lib ./configure --with-included-libtasn1 --with-guile-site-dir=no
+RUN LD_LIBRARY_PATH=/usr/local/lib make
+RUN LD_LIBRARY_PATH=/usr/local/lib make install
 
 EXPOSE 20101
 ADD . ${TLSBUNNY}
 WORKDIR ${TLSBUNNY}
+
+ENV LD_LIBRARY_PATH /usr/local/lib:/usr/lib/x86_64-linux-gnu/
 
 CMD [ "bash", "scripts/start_gnutls_tls13_server.sh" ]
