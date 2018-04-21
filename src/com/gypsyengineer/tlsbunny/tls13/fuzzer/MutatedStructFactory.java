@@ -73,6 +73,25 @@ public class MutatedStructFactory extends StructFactoryWrapper
     }
 
     @Override
+    public TLSPlaintext createTLSPlaintext(
+            ContentType type, ProtocolVersion version, byte[] content) {
+
+        TLSPlaintext tlsPlaintext = factory.createTLSPlaintext(
+                type, version, content);
+
+        if (target == Target.tls_plaintext) {
+            output.info("fuzz TLSPlaintext");
+            try {
+                tlsPlaintext = new MutatedStruct(fuzz(tlsPlaintext.encoding()));
+            } catch (IOException e) {
+                output.achtung("I couldn't fuzz TLSPlaintext: %s", e.getMessage());
+            }
+        }
+
+        return tlsPlaintext;
+    }
+
+    @Override
     public Handshake createHandshake(HandshakeType type, byte[] content) {
         Handshake handshake = factory.createHandshake(type, content);
 
