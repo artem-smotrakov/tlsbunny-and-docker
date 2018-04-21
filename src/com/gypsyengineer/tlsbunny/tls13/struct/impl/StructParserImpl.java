@@ -1,42 +1,8 @@
 package com.gypsyengineer.tlsbunny.tls13.struct.impl;
 
-import com.gypsyengineer.tlsbunny.tls.Bytes;
-import com.gypsyengineer.tlsbunny.tls.Random;
-import com.gypsyengineer.tlsbunny.tls.UInt16;
-import com.gypsyengineer.tlsbunny.tls.UInt24;
-import com.gypsyengineer.tlsbunny.tls.Vector;
-import com.gypsyengineer.tlsbunny.tls13.struct.Alert;
-import com.gypsyengineer.tlsbunny.tls13.struct.AlertDescription;
-import com.gypsyengineer.tlsbunny.tls13.struct.AlertLevel;
-import com.gypsyengineer.tlsbunny.tls13.struct.Certificate;
-import com.gypsyengineer.tlsbunny.tls13.struct.CertificateEntry;
-import com.gypsyengineer.tlsbunny.tls13.struct.CertificateRequest;
-import com.gypsyengineer.tlsbunny.tls13.struct.CertificateVerify;
-import com.gypsyengineer.tlsbunny.tls13.struct.ChangeCipherSpec;
-import com.gypsyengineer.tlsbunny.tls13.struct.CipherSuite;
-import com.gypsyengineer.tlsbunny.tls13.struct.ClientHello;
-import com.gypsyengineer.tlsbunny.tls13.struct.CompressionMethod;
-import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
-import com.gypsyengineer.tlsbunny.tls13.struct.EncryptedExtensions;
-import com.gypsyengineer.tlsbunny.tls13.struct.EndOfEarlyData;
-import com.gypsyengineer.tlsbunny.tls13.struct.Extension;
-import com.gypsyengineer.tlsbunny.tls13.struct.ExtensionType;
-import com.gypsyengineer.tlsbunny.tls13.struct.Finished;
-import com.gypsyengineer.tlsbunny.tls13.struct.Handshake;
-import com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType;
-import com.gypsyengineer.tlsbunny.tls13.struct.HelloRetryRequest;
-import com.gypsyengineer.tlsbunny.tls13.struct.KeyShare;
-import com.gypsyengineer.tlsbunny.tls13.struct.KeyShareEntry;
-import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
-import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroupList;
-import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
-import com.gypsyengineer.tlsbunny.tls13.struct.ServerHello;
-import com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme;
-import com.gypsyengineer.tlsbunny.tls13.struct.SignatureSchemeList;
-import com.gypsyengineer.tlsbunny.tls13.struct.StructParser;
-import com.gypsyengineer.tlsbunny.tls13.struct.SupportedVersions;
-import com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext;
-import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
+import com.gypsyengineer.tlsbunny.tls.*;
+import com.gypsyengineer.tlsbunny.tls13.struct.*;
+
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
@@ -371,5 +337,20 @@ public class StructParserImpl implements StructParser {
         buffer.get(Y);
 
         return new UncompressedPointRepresentationImpl(X, Y);
+    }
+
+    @Override
+    public NewSessionTicket parseNewSessionTicket(ByteBuffer buffer) {
+        return new NewSessionTicketImpl(
+                UInt32.parse(buffer),
+                UInt32.parse(buffer),
+                Vector.parseOpaqueVector(buffer,
+                        NewSessionTicket.NONCE_LENGTH_BYTES),
+                Vector.parseOpaqueVector(buffer,
+                        NewSessionTicket.TICKET_LENTGH_BYTES),
+                Vector.parse(
+                        buffer,
+                        NewSessionTicket.EXTENSIONS_LENGTH_BYTES,
+                        buf -> parseExtension(buf)));
     }
 }

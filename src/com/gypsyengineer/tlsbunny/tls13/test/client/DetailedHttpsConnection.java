@@ -2,6 +2,7 @@ package com.gypsyengineer.tlsbunny.tls13.test.client;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertCheck;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.IncomingAlert;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.IncomingChangeCipherSpec;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 
@@ -18,6 +19,8 @@ public class DetailedHttpsConnection {
         CommonConfig config = new CommonConfig();
 
         // TODO: fix it
+        // TODO: WrappingIntoHandshake and ProcessingHandshake
+        //       should have methods for updating context
         Engine.init()
                 .target(config.host())
                 .target(config.port())
@@ -36,7 +39,7 @@ public class DetailedHttpsConnection {
                         .version(TLSv12))
                 .send(new OutgoingData())
 
-                // receive a ServerHello, EnctyptedExtensions, Certificate,
+                // receive a ServerHello, EncryptedExtensions, Certificate,
                 // CertificateVerify and Finished messages
                 .require(new IncomingData())
 
@@ -83,7 +86,23 @@ public class DetailedHttpsConnection {
                         .expect(finished)
                         .run((context, message) -> context.setServerFinished(message)))
                 .run(new ProcessingFinished())
-                .run(new ComputingKeysAfterFinished())
+                .run(new ComputingKeysAfterServerFinished())
+
+                // send Finished
+                .run(new GeneratingFinished())
+                .run(new ComputingKeysAfterClientFinished())
+                .run(new WrappingIntoHandshake()
+                        .type(finished)
+                        .run((context, message) -> context.setClientFinished(message)))
+                .run(new WrappingIntoTLSCiphertext(WrappingIntoTLSCiphertext.Phase.handshake))
+                .send(new OutgoingData())
+
+                // receive NewSessionTicket
+                .require(new IncomingData())
+                .run(new ProcessingApplicationDataTLSCiphertext())
+                .run(new ProcessingHandshake()
+                        .expect(new_session_ticket))
+                .run(new ProcessingNewSessionTicket())
 
                 .connect()
                 .run(new NoAlertCheck());

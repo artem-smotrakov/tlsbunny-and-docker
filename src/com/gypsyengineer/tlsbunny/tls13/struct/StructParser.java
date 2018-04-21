@@ -42,6 +42,7 @@ public interface StructParser {
     NamedGroup parseNamedGroup(ByteBuffer buffer);
     UncompressedPointRepresentation parseUncompressedPointRepresentation(
             ByteBuffer buffer, int coordinate_length);
+    NewSessionTicket parseNewSessionTicket(ByteBuffer buffer);
 
     default ContentType parseContentType(byte[] bytes) {
         return parseContentType(ByteBuffer.wrap(bytes));
@@ -184,5 +185,9 @@ public interface StructParser {
 
         return parseUncompressedPointRepresentation(
                 ByteBuffer.wrap(bytes), coordinate_length);
+    }
+
+    default NewSessionTicket parseNewSessionTicket(byte[] bytes) {
+        return parseNewSessionTicket(ByteBuffer.wrap(bytes));
     }
 }
