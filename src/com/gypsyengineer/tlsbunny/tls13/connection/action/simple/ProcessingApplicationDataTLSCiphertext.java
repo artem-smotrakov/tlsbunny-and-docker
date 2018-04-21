@@ -1,54 +1,13 @@
 package com.gypsyengineer.tlsbunny.tls13.connection.action.simple;
 
-import com.gypsyengineer.tlsbunny.tls13.connection.action.AbstractAction;
-import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.Phase;
 import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
-import com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext;
-import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
 
-import java.io.IOException;
-import java.nio.ByteBuffer;
+public class ProcessingApplicationDataTLSCiphertext extends ProcessingTLSCiphertext {
 
-public class ProcessingApplicationDataTLSCiphertext extends AbstractAction {
-
-    public static final ContentType NO_TYPE_SPECIFIED = null;
-
-    private ContentType expectedType = NO_TYPE_SPECIFIED;
-
-    public ProcessingApplicationDataTLSCiphertext expect(ContentType type) {
-        expectedType = type;
-        return this;
+    public ProcessingApplicationDataTLSCiphertext() {
+        super(Phase.application_data);
+        expect(ContentType.application_data);
     }
-
-
-    @Override
-    public String name() {
-        return "processing TLSCiphertext";
-    }
-
-    @Override
-    public Action run() throws Exception {
-        TLSPlaintext tlsPlaintext = context.factory.parser().parseTLSPlaintext(in);
-
-        if (!tlsPlaintext.containsApplicationData()) {
-            throw new IOException("expected a TLSCiphertext");
-        }
-
-        byte[] plaintext = context.applicationDataDecryptor.decrypt(tlsPlaintext);
-        TLSInnerPlaintext tlsInnerPlaintext = context.factory.parser()
-                .parseTLSInnerPlaintext(plaintext);
-
-        ContentType type = tlsInnerPlaintext.getType();
-        if (expectedType != NO_TYPE_SPECIFIED && !expectedType.equals(type)) {
-            throw new IOException(
-                    String.format("expected %s, but found %s", expectedType, type));
-        }
-
-        out = ByteBuffer.wrap(tlsInnerPlaintext.getContent());
-        output.info("decrypted a TLSCiphertext");
-
-        return this;
-    }
-
     
 }

@@ -81,8 +81,7 @@ public class DetailedHttpsConnection {
                 .run(new ProcessingCertificateVerify())
 
                 // process Finished
-                .run(new ProcessingHandshakeTLSCiphertext()
-                        .expect(handshake))
+                .run(new ProcessingHandshakeTLSCiphertext())
                 .run(new ProcessingHandshake()
                         .expect(finished)
                         .run((context, message) -> context.setServerFinished(message)))
@@ -101,7 +100,8 @@ public class DetailedHttpsConnection {
 
                 // receive NewSessionTicket
                 .require(new IncomingData())
-                .run(new ProcessingApplicationDataTLSCiphertext())
+                .run(new ProcessingApplicationDataTLSCiphertext()
+                        .expect(handshake))
                 .run(new ProcessingHandshake()
                         .expect(new_session_ticket))
                 .run(new ProcessingNewSessionTicket())
