@@ -7,7 +7,10 @@ import com.gypsyengineer.tlsbunny.tls13.struct.*;
 
 import static com.gypsyengineer.tlsbunny.tls13.handshake.Context.ZERO_HASH_VALUE;
 import static com.gypsyengineer.tlsbunny.tls13.handshake.Context.ZERO_SALT;
+import static com.gypsyengineer.tlsbunny.tls13.utils.Helper.findKeyShare;
+import static com.gypsyengineer.tlsbunny.tls13.utils.Helper.findSupportedVersion;
 import static com.gypsyengineer.tlsbunny.utils.Utils.concatenate;
+import static com.gypsyengineer.tlsbunny.utils.Utils.zeroes;
 
 import java.io.IOException;
 
@@ -51,13 +54,15 @@ public class IncomingServerHello extends AbstractAction {
             throw new RuntimeException("unexpected ciphersuite");
         }
 
-        SupportedVersions.ServerHello selected_version = findSupportedVersion(serverHello);
+        SupportedVersions.ServerHello selected_version = findSupportedVersion(
+                context.factory, serverHello);
         if (!selected_version.equals(ProtocolVersion.TLSv13)) {
             output.info("ServerHello.selected version: %s", selected_version.getSelectedVersion());
             // TODO: when TLSBUNNY 1.3 spec is finished, we should throw an exception here
         }
 
-        KeyShare.ServerHello keyShare = findKeyShare(serverHello);
+        // TODO: we look for only first key share, but there may be multiple key shares
+        KeyShare.ServerHello keyShare = findKeyShare(context.factory, serverHello);
         if (!context.group.equals(keyShare.getServerShare().getNamedGroup())) {
             output.info("expected group: %s", context.group);
             output.info("received group: %s", keyShare.getServerShare().getNamedGroup());
@@ -139,24 +144,4 @@ public class IncomingServerHello extends AbstractAction {
                 context.server_handshake_write_iv);
     }
 
-    private KeyShare.ServerHello findKeyShare(ServerHello hello)
-            throws IOException {
-
-        return context.factory.parser()
-                .parseKeyShareFromServerHello(
-                    hello.findExtension(ExtensionType.key_share)
-                            .getExtensionData().bytes());
-    }
-
-    private SupportedVersions.ServerHello findSupportedVersion(ServerHello hello)
-            throws IOException {
-
-        return context.factory.parser().parseSupportedVersionsServerHello(
-                hello.findExtension(ExtensionType.supported_versions)
-                        .getExtensionData().bytes());
-    }
-
-    private static byte[] zeroes(int length) {
-        return new byte[length];
-    }
 }
