@@ -5,20 +5,14 @@ import java.nio.ByteBuffer;
 public class UInt32 implements Struct {
 
     public static final int ENCODING_LENGTH = 4;
-    public static final int MAX = Integer.MAX_VALUE;
-    public static final int MIN = 0;
 
-    public final int value;
+    public final long value;
 
-    public UInt32(int value) {
-        if (value < MIN || value > MAX) {
-            throw new IllegalArgumentException();
-        }
-
+    public UInt32(long value) {
         this.value = value;
     }
 
-    public int getValue() {
+    public long getValue() {
         return value;
     }
 
@@ -29,11 +23,11 @@ public class UInt32 implements Struct {
     
     @Override
     public byte[] encoding() {
-        return ByteBuffer.allocate(ENCODING_LENGTH).putInt(value).array();
+        return ByteBuffer.allocate(ENCODING_LENGTH).putLong(value).array();
     }
 
     public static UInt32 parse(ByteBuffer data) {
-        return new UInt32(data.getInt() & 0xFFFFFFFF);
+        return new UInt32(data.getLong() & 0xFFFFFFFF);
     }
 
 }
