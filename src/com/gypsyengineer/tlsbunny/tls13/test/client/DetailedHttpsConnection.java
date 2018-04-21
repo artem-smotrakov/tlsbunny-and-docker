@@ -2,12 +2,11 @@ package com.gypsyengineer.tlsbunny.tls13.test.client;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertCheck;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.IncomingChangeCipherSpec;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
-import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.client_hello;
-import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.encrypted_extensions;
-import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.server_hello;
+import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.*;
 import static com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup.secp256r1;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv12;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv13;
@@ -37,25 +36,55 @@ public class DetailedHttpsConnection {
                         .version(TLSv12))
                 .send(new OutgoingData())
 
-                // receive a ServerHello
+                // receive a ServerHello, EnctyptedExtensions, Certificate,
+                // CertificateVerify and Finished messages
                 .require(new IncomingData())
+
+                // process ServerHello
                 .run(new ProcessingTLSPlaintext()
                         .expect(handshake))
                 .run(new ProcessingHandshake()
                         .expect(server_hello)
                         .run((context, message) -> context.setServerHello(message)))
-                .run(new ProcessingHelloRetryRequest())
+                .run(new ProcessingServerHello())
+                .run(new NegotiatingDHSecret())
+                .run(new ComputingKeysAfterServerHello())
 
-                // receive an EncryptedExtensions
-                .require(new IncomingData())
-                .run(new ProcessingTLSPlaintext()
+                .allow(new IncomingChangeCipherSpec())
+
+                // process EncryptedExtensions
+                .run(new ProcessingHandshakeTLSCiphertext()
                         .expect(handshake))
                 .run(new ProcessingHandshake()
                         .expect(encrypted_extensions)
                         .run((context, message) -> context.setEncryptedExtensions(message)))
                 .run(new ProcessingEncryptedExtensions())
 
-                // receive
+                // process Certificate
+                .run(new ProcessingHandshakeTLSCiphertext()
+                        .expect(handshake))
+                .run(new ProcessingHandshake()
+                        .expect(certificate)
+                        .run((context, message) -> context.setServerCertificate(message)))
+                .run(new ProcessingCertificate())
+
+                // process CertificateVerify
+                .run(new ProcessingHandshakeTLSCiphertext()
+                        .expect(handshake))
+                .run(new ProcessingHandshake()
+                        .expect(certificate_verify)
+                        .run((context, message) -> context.setServerCertificateVerify(message)))
+                .run(new ProcessingCertificateVerify())
+
+                // process Finished
+                .run(new ProcessingHandshakeTLSCiphertext()
+                        .expect(handshake))
+                .run(new ProcessingHandshake()
+                        .expect(finished)
+                        .run((context, message) -> context.setServerFinished(message)))
+                .run(new ProcessingFinished())
+                .run(new ComputingKeysAfterFinished())
+
                 .connect()
                 .run(new NoAlertCheck());
     }
