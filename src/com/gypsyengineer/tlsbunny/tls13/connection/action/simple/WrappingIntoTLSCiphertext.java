@@ -17,11 +17,16 @@ public class WrappingIntoTLSCiphertext extends AbstractAction {
     public enum Phase { handshake, application_data }
 
     private final Phase phase;
+    private ContentType type;
 
     public WrappingIntoTLSCiphertext(Phase phase) {
         this.phase = phase;
     }
 
+    public WrappingIntoTLSCiphertext type(ContentType type) {
+        this.type = type;
+        return this;
+    }
 
     @Override
     public String name() {
@@ -46,7 +51,7 @@ public class WrappingIntoTLSCiphertext extends AbstractAction {
         }
 
         TLSInnerPlaintext tlsInnerPlaintext = context.factory.createTLSInnerPlaintext(
-                ContentType.handshake, content, NO_PADDING);
+                type, content, NO_PADDING);
         byte[] plaintext = tlsInnerPlaintext.encoding();
 
         encryptor.start();

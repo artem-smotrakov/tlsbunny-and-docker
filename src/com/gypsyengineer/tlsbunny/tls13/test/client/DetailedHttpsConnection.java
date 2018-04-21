@@ -6,6 +6,7 @@ import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.IncomingAler
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.IncomingChangeCipherSpec;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 
+import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.application_data;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
 import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.*;
 import static com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup.secp256r1;
@@ -94,7 +95,8 @@ public class DetailedHttpsConnection {
                 .run(new WrappingIntoHandshake()
                         .type(finished)
                         .run((context, message) -> context.setClientFinished(message)))
-                .run(new WrappingIntoTLSCiphertext(WrappingIntoTLSCiphertext.Phase.handshake))
+                .run(new WrappingIntoTLSCiphertext(WrappingIntoTLSCiphertext.Phase.handshake)
+                        .type(handshake))
                 .send(new OutgoingData())
 
                 // receive NewSessionTicket
@@ -103,6 +105,12 @@ public class DetailedHttpsConnection {
                 .run(new ProcessingHandshake()
                         .expect(new_session_ticket))
                 .run(new ProcessingNewSessionTicket())
+
+                // send application data
+                .run(new GeneratingApplicationData().data("GET / HTTP/1.1\n\n"))
+                .run(new WrappingIntoTLSCiphertext(WrappingIntoTLSCiphertext.Phase.application_data)
+                        .type(application_data))
+                .send(new OutgoingData())
 
                 .connect()
                 .run(new NoAlertCheck());
