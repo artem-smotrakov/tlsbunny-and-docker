@@ -10,6 +10,22 @@ import java.util.List;
 
 public class Context {
 
+    public enum Element {
+        first_client_hello,
+        hello_retry_request,
+        second_client_hello,
+        server_hello,
+        encrypted_extensions,
+        server_certificate_request,
+        server_certificate,
+        server_certificate_verify,
+        server_finished,
+        end_of_early_data,
+        client_certificate,
+        client_certificate_verify,
+        client_finished
+    }
+
     // TODO: find a better place for these constants
     // TODO: these constants shouldn't be public
     public static final byte[] ext_binder      = "ext binder".getBytes();
@@ -254,6 +270,52 @@ public class Context {
 
     public void setClientFinished(Handshake clientFinished) {
         this.clientFinished = clientFinished;
+    }
+
+    public void set(Element element, Handshake message) {
+        switch (element) {
+            case first_client_hello:
+                setFirstClientHello(message);
+                break;
+            case hello_retry_request:
+                setHelloRetryRequest(message);
+                break;
+            case second_client_hello:
+                setSecondClientHello(message);
+                break;
+            case server_hello:
+                setServerHello(message);
+                break;
+            case encrypted_extensions:
+                setEncryptedExtensions(message);
+                break;
+            case server_certificate_request:
+                setServerCertificateRequest(message);
+                break;
+            case server_certificate:
+                setServerCertificate(message);
+                break;
+            case server_certificate_verify:
+                setServerCertificateVerify(message);
+                break;
+            case server_finished:
+                setServerFinished(message);
+                break;
+            case end_of_early_data:
+                setEndOfEarlyData(message);
+                break;
+            case client_certificate:
+                setClientCertificate(message);
+                break;
+            case client_certificate_verify:
+                setClientCertificateVerify(message);
+                break;
+            case client_finished:
+                setClientFinished(message);
+                break;
+            default:
+                throw new IllegalArgumentException();
+        }
     }
 
     public Handshake[] allMessages() {

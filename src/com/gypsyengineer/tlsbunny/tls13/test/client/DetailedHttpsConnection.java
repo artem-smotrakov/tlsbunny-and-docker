@@ -5,6 +5,7 @@ import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Phase;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.IncomingChangeCipherSpec;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
+import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.application_data;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
@@ -19,9 +20,6 @@ public class DetailedHttpsConnection {
     public static void main(String[] args) throws Exception {
         CommonConfig config = new CommonConfig();
 
-        // TODO: fix it
-        // TODO: WrappingIntoHandshake and ProcessingHandshake
-        //       should have methods for updating context
         Engine.init()
                 .target(config.host())
                 .target(config.port())
@@ -34,7 +32,7 @@ public class DetailedHttpsConnection {
                         .keyShareEntry(context -> context.negotiator.createKeyShareEntry()))
                 .run(new WrappingIntoHandshake()
                         .type(client_hello)
-                        .run((context, message) -> context.setFirstClientHello(message)))
+                        .updateContext(Context.Element.first_client_hello))
                 .run(new WrappingIntoTLSPlaintexts()
                         .type(handshake)
                         .version(TLSv12))
@@ -49,7 +47,7 @@ public class DetailedHttpsConnection {
                         .expect(handshake))
                 .run(new ProcessingHandshake()
                         .expect(server_hello)
-                        .run((context, message) -> context.setServerHello(message)))
+                        .updateContext(Context.Element.server_hello))
                 .run(new ProcessingServerHello())
                 .run(new NegotiatingDHSecret())
                 .run(new ComputingKeysAfterServerHello())
@@ -61,7 +59,7 @@ public class DetailedHttpsConnection {
                         .expect(handshake))
                 .run(new ProcessingHandshake()
                         .expect(encrypted_extensions)
-                        .run((context, message) -> context.setEncryptedExtensions(message)))
+                        .updateContext(Context.Element.encrypted_extensions))
                 .run(new ProcessingEncryptedExtensions())
 
                 // process Certificate
@@ -69,7 +67,7 @@ public class DetailedHttpsConnection {
                         .expect(handshake))
                 .run(new ProcessingHandshake()
                         .expect(certificate)
-                        .run((context, message) -> context.setServerCertificate(message)))
+                        .updateContext(Context.Element.server_certificate))
                 .run(new ProcessingCertificate())
 
                 // process CertificateVerify
@@ -77,14 +75,14 @@ public class DetailedHttpsConnection {
                         .expect(handshake))
                 .run(new ProcessingHandshake()
                         .expect(certificate_verify)
-                        .run((context, message) -> context.setServerCertificateVerify(message)))
+                        .updateContext(Context.Element.server_certificate_verify))
                 .run(new ProcessingCertificateVerify())
 
                 // process Finished
                 .run(new ProcessingHandshakeTLSCiphertext())
                 .run(new ProcessingHandshake()
                         .expect(finished)
-                        .run((context, message) -> context.setServerFinished(message)))
+                        .updateContext(Context.Element.server_finished))
                 .run(new ProcessingFinished())
                 .run(new ComputingKeysAfterServerFinished())
 
@@ -93,7 +91,7 @@ public class DetailedHttpsConnection {
                 .run(new ComputingKeysAfterClientFinished())
                 .run(new WrappingIntoHandshake()
                         .type(finished)
-                        .run((context, message) -> context.setClientFinished(message)))
+                        .updateContext(Context.Element.client_finished))
                 .run(new WrappingHandshakeDataIntoTLSCiphertext())
                 .send(new OutgoingData())
 
