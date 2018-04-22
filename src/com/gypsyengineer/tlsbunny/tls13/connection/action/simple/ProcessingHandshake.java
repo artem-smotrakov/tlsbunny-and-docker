@@ -16,6 +16,7 @@ public class ProcessingHandshake extends AbstractAction {
 
     private HandshakeType expectedType = NO_TYPE_SPECIFIED;
     private ContextUpdater contextUpdater;
+    private Context.Element element;
 
     public ProcessingHandshake expect(HandshakeType type) {
         expectedType = type;
@@ -29,6 +30,11 @@ public class ProcessingHandshake extends AbstractAction {
 
     public ProcessingHandshake run(ContextUpdater contextUpdater) {
         this.contextUpdater = contextUpdater;
+        return this;
+    }
+
+    public ProcessingHandshake updateContext(Context.Element element) {
+        this.element = element;
         return this;
     }
 
@@ -46,8 +52,11 @@ public class ProcessingHandshake extends AbstractAction {
             contextUpdater.run(context, handshake);
         }
 
+        if (element != null) {
+            context.set(element, handshake);
+        }
+
         out = ByteBuffer.wrap(handshake.getBody());
-        output.info("received a Handshake message");
 
         return this;
     }

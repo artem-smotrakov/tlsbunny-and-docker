@@ -13,6 +13,7 @@ public class WrappingIntoHandshake extends AbstractAction {
 
     private HandshakeType type;
     private ContextUpdater contextUpdater;
+    private Context.Element element;
 
     public WrappingIntoHandshake type(HandshakeType type) {
         this.type = type;
@@ -29,6 +30,11 @@ public class WrappingIntoHandshake extends AbstractAction {
         return String.format("wrapping into Handshake (%s)", type);
     }
 
+    public WrappingIntoHandshake updateContext(Context.Element element) {
+        this.element = element;
+        return this;
+    }
+
     @Override
     public Action run() throws Exception {
         byte[] content = new byte[in.remaining()];
@@ -38,6 +44,10 @@ public class WrappingIntoHandshake extends AbstractAction {
 
         if (contextUpdater != NOT_SPECIFIED) {
             contextUpdater.run(context, handshake);
+        }
+
+        if (element != null) {
+            context.set(element, handshake);
         }
 
         out = ByteBuffer.wrap(handshake.encoding());
