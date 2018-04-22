@@ -2,17 +2,14 @@ package com.gypsyengineer.tlsbunny.tls13.test.client;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertCheck;
-import com.gypsyengineer.tlsbunny.tls13.connection.action.Phase;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.IncomingChangeCipherSpec;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 
-import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.application_data;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
 import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.*;
 import static com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup.secp256r1;
-import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv12;
-import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv13;
+import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.*;
 import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp256r1_sha256;
 
 public class DetailedHttpsConnection {
@@ -26,7 +23,7 @@ public class DetailedHttpsConnection {
 
                 // send ClientHello
                 .run(new GeneratingClientHello()
-                        .supportedVersion(TLSv13)
+                        .supportedVersion(TLSv13_draft_26)
                         .group(secp256r1)
                         .signatureScheme(ecdsa_secp256r1_sha256)
                         .keyShareEntry(context -> context.negotiator.createKeyShareEntry()))
