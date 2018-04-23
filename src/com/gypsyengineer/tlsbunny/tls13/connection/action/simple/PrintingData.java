@@ -14,7 +14,7 @@ public class PrintingData extends AbstractAction {
     public Action run() throws Exception {
         byte[] data = new byte[in.remaining()];
         in.get(data);
-        output.info(new String(data));
+        output.info("received application data:%n%s", new String(data));
 
         return this;
     }
