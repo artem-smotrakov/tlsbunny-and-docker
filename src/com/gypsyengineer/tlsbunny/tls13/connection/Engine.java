@@ -37,9 +37,10 @@ public class Engine {
     private int port = 443;
     private Status status = Status.not_started;
     private ByteBuffer buffer = NOTHING;
+    private ByteBuffer applicationData = NOTHING;
     private Context context = new Context();
 
-    // if true, always check for CCS when read data
+    // if true, always check for CCS when read out
     private boolean alwaysCheckForCCS = true;
 
     // if true, then stop if an alert occurred
@@ -149,7 +150,7 @@ public class Engine {
                         try {
                             output.info("send: %s", action.name());
                             action.run();
-                            connection.send(action.data());
+                            connection.send(action.out());
                         } catch (Exception e) {
                             output.achtung("error:", e);
                             status = Status.could_not_send;
@@ -173,9 +174,9 @@ public class Engine {
                         output.info("allow: %s", action.name());
                         read(connection, action);
 
-                        // TODO: if an action decrypts data, but the action fails,
+                        // TODO: if an action decrypts out, but the action fails,
                         //       then decryption in the next action is going to fail
-                        //       this may be fixed by propagating decrypted data
+                        //       this may be fixed by propagating decrypted out
                         //       to the next action
                         buffer.mark();
                         try {
@@ -184,7 +185,7 @@ public class Engine {
                         } catch (Exception e) {
                             output.info("error: %s", e);
                             output.info("skip %s", action.name());
-                            buffer.reset(); // restore data
+                            buffer.reset(); // restore out
                         }
                         break;
                     case run:
@@ -242,13 +243,18 @@ public class Engine {
     }
 
     private void combineData(Action action) {
-        if (action.produced()) {
-            ByteBuffer data = action.data();
-            ByteBuffer combined = ByteBuffer.allocate(buffer.remaining() + data.remaining());
-            combined.put(action.data());
+        ByteBuffer out = action.out();
+        if (out != null && out.remaining() > 0) {
+            ByteBuffer combined = ByteBuffer.allocate(buffer.remaining() + out.remaining());
+            combined.put(action.out());
             combined.put(buffer);
             buffer = combined;
             buffer.position(0);
+        }
+
+        ByteBuffer data = action.applicationData();
+        if (data != null && data.remaining() > 0) {
+            applicationData = data;
         }
     }
 
@@ -256,13 +262,13 @@ public class Engine {
         while (buffer.remaining() == 0 && !context.hasAlert()) {
             buffer = ByteBuffer.wrap(connection.read());
             if (buffer.remaining() == 0) {
-                throw new IOException("no data received");
+                throw new IOException("no out received");
             }
         }
 
         checkCCS();
 
-        action.set(buffer);
+        action.in(buffer);
     }
 
     private void checkCCS() {
@@ -275,7 +281,7 @@ public class Engine {
                 incomingCCS.run();
                 output.info("found %s", incomingCCS.name());
             } catch (Exception e) {
-                buffer.reset(); // restore data
+                buffer.reset(); // restore out
             }
         }
     }
@@ -295,7 +301,8 @@ public class Engine {
     private void init(Action action) {
         action.set(output);
         action.set(context);
-        action.set(buffer);
+        action.in(buffer);
+        action.applicationData(applicationData);
     }
 
     private static class ActionHolder {

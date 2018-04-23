@@ -6,13 +6,15 @@ import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.IncomingChan
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 
+import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.application_data;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
 import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.*;
 import static com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup.secp256r1;
-import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.*;
+import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv12;
+import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv13_draft_26;
 import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp256r1_sha256;
 
-public class DetailedHttpsConnection {
+public class PicotlsClient {
 
     public static void main(String[] args) throws Exception {
         CommonConfig config = new CommonConfig();
@@ -83,6 +85,9 @@ public class DetailedHttpsConnection {
                 .run(new ProcessingFinished())
                 .run(new ComputingKeysAfterServerFinished())
 
+                // store application data which we can't decrypt yet
+                .run(new PreservingEncryptedApplicationData())
+
                 // send Finished
                 .run(new GeneratingFinished())
                 .run(new ComputingKeysAfterClientFinished())
@@ -92,22 +97,12 @@ public class DetailedHttpsConnection {
                 .run(new WrappingHandshakeDataIntoTLSCiphertext())
                 .send(new OutgoingData())
 
-                // receive NewSessionTicket
-                .require(new IncomingData())
+                // restore the stored application data
+                .run(new RestoringEncryptedApplicationData())
+
+                // decrypt the application data
                 .run(new ProcessingApplicationDataTLSCiphertext()
-                        .expect(handshake))
-                .run(new ProcessingHandshake()
-                        .expect(new_session_ticket))
-                .run(new ProcessingNewSessionTicket())
-
-                // send application data
-                .run(new PreparingHttpGetRequest())
-                .run(new WrappingApplicationDataIntoTLSCiphertext())
-                .send(new OutgoingData())
-
-                // receive application data
-                .require(new IncomingData())
-                .run(new ProcessingApplicationDataTLSCiphertext())
+                        .expect(application_data))
                 .run(new PrintingData())
 
                 .connect()

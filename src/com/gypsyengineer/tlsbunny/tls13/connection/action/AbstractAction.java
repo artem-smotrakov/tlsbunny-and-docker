@@ -15,6 +15,8 @@ public abstract class AbstractAction implements Action {
 
     protected ByteBuffer in;
     protected ByteBuffer out;
+    protected ByteBuffer applicationDataIn;
+    protected ByteBuffer applicationDataOut;
     protected Output output;
     protected Context context;
 
@@ -36,48 +38,28 @@ public abstract class AbstractAction implements Action {
     }
 
     @Override
-    public Action set(ByteBuffer buffer) {
+    public Action in(ByteBuffer buffer) {
         this.in = buffer;
         return this;
     }
 
     @Override
-    public boolean produced() {
-        return out != null && out.remaining() > 0;
-    }
-
-    @Override
-    public ByteBuffer data() {
+    public ByteBuffer out() {
         return out;
     }
 
-    // helper methods
-
-    protected void updateContext(Handshake handshake) {
-        if (handshake.containsClientHello()) {
-            if (!context.hasFirstClientHello()) {
-                context.setFirstClientHello(handshake);
-            } else if (!context.hasSecondClientHello()) {
-                context.setSecondClientHello(handshake);
-            } else {
-                throw new IllegalArgumentException(
-                        "two ClientHello messages have been already set");
-            }
-        }
-
-        if (handshake.containsServerHello()) {
-            context.setServerHello(handshake);
-        }
-
-        if (handshake.containsEncryptedExtensions()) {
-            context.setEncryptedExtensions(handshake);
-        }
-
-        // TODO: we need to be able to set both server and client
-        //       Certificates and CertificateVerify messages
-
-        // TODO: set the test of messages
+    @Override
+    public Action applicationData(ByteBuffer buffer) {
+        applicationDataIn = buffer;
+        return this;
     }
+
+    @Override
+    public ByteBuffer applicationData() {
+        return applicationDataOut;
+    }
+
+    // helper methods
 
     protected byte[] processEncrypted(AEAD decryptor, ContentType expectedType)
             throws Exception {
