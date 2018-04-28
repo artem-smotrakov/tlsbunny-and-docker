@@ -11,7 +11,8 @@ public class FuzzyClient {
         //configs.addAll(Arrays.asList(TLSPlaintextFuzzer.configs));
         //configs.addAll(Arrays.asList(HandshakeFuzzer.configs));
         //configs.addAll(Arrays.asList(ClientHelloFuzzer.configs));
-        configs.addAll(Arrays.asList(FinishedFuzzer.configs));
+        //configs.addAll(Arrays.asList(FinishedFuzzer.configs));
+        configs.addAll(Arrays.asList(CCSFuzzer.configs));
     }
 
     public static void main(String[] args) throws InterruptedException {
