@@ -39,7 +39,7 @@ CommonConfig config = new CommonConfig();
 
 ## Supported features
 
-- TLS 1.3 handshake as a client
+- TLS 1.3 (draft 26) handshake as a client
 - Client authentication
 - Key exchange with ECDHE using secp256r1 curve
 - ecdsa_secp256r1_sha256 signatures
