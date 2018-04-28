@@ -7,10 +7,10 @@ import java.util.List;
 
 public class Output implements AutoCloseable {
 
-    public static final String TLSBUNNY = "[tlsbunny]";
+    public static final String TLSBUNNY = "[tlsbunny] ";
 
     private final List<String> strings = new ArrayList<>();
-    private String prefix = "";
+    private String prefix = TLSBUNNY;
     private int index = 0;
 
     synchronized public void printf(String format, Object... params) {
@@ -19,18 +19,18 @@ public class Output implements AutoCloseable {
 
     synchronized public void prefix(String prefix) {
         if (prefix != null && !prefix.isEmpty()) {
-            this.prefix = String.format("%s %s:", TLSBUNNY, prefix);
+            this.prefix = String.format("%s%s:", TLSBUNNY, prefix);
         } else {
             this.prefix = String.format("%s:", TLSBUNNY);
         }
     }
 
     public void info(String format, Object... values) {
-        printf("%s %s%n", prefix, String.format(format, values));
+        printf("%s%s%n", prefix, String.format(format, values));
     }
 
     public void achtung(String format, Object... values) {
-        printf("%s achtung: %s%n", prefix, String.format(format, values));
+        printf("%sachtung: %s%n", prefix, String.format(format, values));
     }
 
     public void achtung(String message, Throwable e) {

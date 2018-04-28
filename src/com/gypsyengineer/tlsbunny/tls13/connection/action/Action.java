@@ -9,8 +9,11 @@ public interface Action {
     String name();
     Action set(Output output);
     Action set(Context context);
-    Action set(ByteBuffer buffer);
     Action run() throws Exception;
-    boolean produced();
-    ByteBuffer data();
+
+    Action in(ByteBuffer buffer);
+    ByteBuffer out();
+
+    Action applicationData(ByteBuffer buffer);
+    ByteBuffer applicationData();
 }
