@@ -198,6 +198,23 @@ public class MutatedStructFactory extends StructFactoryWrapper
     }
 
     @Override
+    public ChangeCipherSpec createChangeCipherSpec(int value) {
+        ChangeCipherSpec ccs = factory.createChangeCipherSpec(value);
+
+        if (target == Target.ccs) {
+            output.info("fuzz ChangeCipherSpec");
+            try {
+                byte[] fuzzed = fuzz(ccs.encoding());
+                ccs = new MutatedStruct(fuzzed.length, fuzzed);
+            } catch (IOException e) {
+                output.achtung("I couldn't fuzz ChangeCipherSpec: %s", e.getMessage());
+            }
+        }
+
+        return ccs;
+    }
+
+    @Override
     public byte[] fuzz(byte[] encoding) {
         byte[] fuzzed = fuzzer.fuzz(encoding);
         if (Arrays.equals(encoding, fuzzed)) {
