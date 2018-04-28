@@ -44,3 +44,19 @@ CommonConfig config = new CommonConfig();
 - Key exchange with ECDHE using secp256r1 curve
 - ecdsa_secp256r1_sha256 signatures
 - AES-GCM cipher with 128-bit key
+
+## Some test results
+
+| Test        | OpenSSL           | GnuTLS  | picotls | wolfSSL |
+| ------------- |-------------| -----|---------------|-------|
+| TLSPlaintext fuzzing      |       |       |         |      |
+| Handshake fuzzing        |         |       |      |      |
+| ClientHello fuzzing         |         |       |      |      |
+| Certificate fuzzing         |         |       |      |      |
+| CertificateVerify fuzzing         |         |       |      |      |
+| Finished fuzzing         |         |       |      |      |
+| Double ClientHello         |         |       |      |      |
+| Invalid CCS          |         |       |      |      |
+| CCS after handshake is done         |         |       |      |      |
+| Multiple CCS         |         |       |      |      |
+| Start with CCS         |         |       |      |      |
