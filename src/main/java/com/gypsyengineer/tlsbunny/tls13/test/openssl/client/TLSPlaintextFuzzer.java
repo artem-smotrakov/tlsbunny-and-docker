@@ -17,13 +17,13 @@ public class TLSPlaintextFuzzer extends HandshakeMessageFuzzer {
                     .mode(byte_flip)
                     .minRatio(0.01)
                     .maxRatio(0.09)
-                    .endTest(10)
+                    .endTest(100)
                     .parts(5),
             new TLSPlaintextFuzzerConfig(commonConfig)
                     .mode(bit_flip)
                     .minRatio(0.01)
                     .maxRatio(0.09)
-                    .endTest(10)
+                    .endTest(100)
                     .parts(5),
     };
 
