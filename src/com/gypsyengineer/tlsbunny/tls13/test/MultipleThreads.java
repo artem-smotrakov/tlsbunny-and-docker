@@ -1,4 +1,4 @@
-package com.gypsyengineer.tlsbunny.tls13.test.client;
+package com.gypsyengineer.tlsbunny.tls13.test;
 
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -1,24 +1,25 @@
-package com.gypsyengineer.tlsbunny.tls13.test.client;
+package com.gypsyengineer.tlsbunny.tls13.test.openssl.client;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.*;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.*;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
+import com.gypsyengineer.tlsbunny.tls13.test.*;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Mode.bit_flip;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Mode.byte_flip;
-import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Target.handshake;
+import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Target.tls_plaintext;
 
-public class HandshakeFuzzer extends HandshakeMessageFuzzer {
+public class TLSPlaintextFuzzer extends HandshakeMessageFuzzer {
 
     static final Config[] configs = new Config[] {
-            new HandshakeFuzzerConfig(commonConfig)
+            new TLSPlaintextFuzzerConfig(commonConfig)
                     .mode(byte_flip)
                     .minRatio(0.01)
                     .maxRatio(0.09)
                     .endTest(10)
                     .parts(5),
-            new HandshakeFuzzerConfig(commonConfig)
+            new TLSPlaintextFuzzerConfig(commonConfig)
                     .mode(bit_flip)
                     .minRatio(0.01)
                     .maxRatio(0.09)
@@ -26,12 +27,12 @@ public class HandshakeFuzzer extends HandshakeMessageFuzzer {
                     .parts(5),
     };
 
-    public HandshakeFuzzer(Output output, HandshakeFuzzerConfig config) {
+    public TLSPlaintextFuzzer(Output output, TLSPlaintextFuzzerConfig config) {
         super(output, config);
     }
 
     @Override
-    Engine connect(StructFactory factory) throws Exception {
+    protected Engine connect(StructFactory factory) throws Exception {
         return Engine.init()
                 .target(config.host())
                 .target(config.port())
@@ -56,12 +57,12 @@ public class HandshakeFuzzer extends HandshakeMessageFuzzer {
         new MultipleThreads().add(configs).submit();
     }
 
-    public static class HandshakeFuzzerConfig extends FuzzerConfig {
+    public static class TLSPlaintextFuzzerConfig extends FuzzerConfig {
 
-        public HandshakeFuzzerConfig(CommonConfig commonConfig) {
+        public TLSPlaintextFuzzerConfig(CommonConfig commonConfig) {
             super(commonConfig);
-            set(() -> new HandshakeFuzzer(new Output(), this));
-            target(handshake);
+            set(() -> new TLSPlaintextFuzzer(new Output(), this));
+            target(tls_plaintext);
         }
 
     }

@@ -1,4 +1,7 @@
-package com.gypsyengineer.tlsbunny.tls13.test.client;
+package com.gypsyengineer.tlsbunny.tls13.test.openssl.client;
+
+import com.gypsyengineer.tlsbunny.tls13.test.Config;
+import com.gypsyengineer.tlsbunny.tls13.test.MultipleThreads;
 
 import java.util.ArrayList;
 import java.util.Arrays;
