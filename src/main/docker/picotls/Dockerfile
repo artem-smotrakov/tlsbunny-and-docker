@@ -4,7 +4,7 @@
 # the following command builds a docker image
 # it should be run from the root of tlsbunny repository
 #
-# docker build --file configs/picotls/tls13/server/Dockerfile --tag picotls/server/tls13 .
+# docker build --file src/main/docker/picotls/Dockerfile --tag picotls/server/tls13 .
 #
 # the following command starts a picotls server
 #
