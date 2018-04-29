@@ -4,7 +4,7 @@ import com.gypsyengineer.tlsbunny.tls13.connection.*;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.*;
 import com.gypsyengineer.tlsbunny.tls13.test.CommonConfig;
 
-public class HttpsConnection {
+public class HttpsClient {
 
     public static void main(String[] args) throws Exception {
         CommonConfig config = new CommonConfig();
