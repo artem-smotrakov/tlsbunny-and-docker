@@ -8,7 +8,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
 import com.gypsyengineer.tlsbunny.tls13.utils.Helper;
 
-public class FuzzyChangeCipherSpec extends AbstractAction implements Fuzzer<ChangeCipherSpec> {
+public class InvalidChangeCipherSpec extends AbstractAction implements Fuzzer<ChangeCipherSpec> {
 
     public static final String STATE_DELIMITER = ":";
     public static final String STATE_PREFIX = "fuzzy_ccs";

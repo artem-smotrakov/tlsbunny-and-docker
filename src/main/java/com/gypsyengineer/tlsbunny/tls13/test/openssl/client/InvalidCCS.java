@@ -2,29 +2,29 @@ package com.gypsyengineer.tlsbunny.tls13.test.openssl.client;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.*;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.*;
-import com.gypsyengineer.tlsbunny.tls13.fuzzer.FuzzyChangeCipherSpec;
+import com.gypsyengineer.tlsbunny.tls13.fuzzer.InvalidChangeCipherSpec;
 import com.gypsyengineer.tlsbunny.tls13.test.CommonConfig;
 import com.gypsyengineer.tlsbunny.tls13.test.Config;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
-public class FuzzyCCS {
+public class InvalidCCS {
 
     public static void main(String[] args) throws Exception {
         Config config = new CommonConfig();
         Output output = new Output();
-        FuzzyChangeCipherSpec fuzzyChangeCipherSpec = new FuzzyChangeCipherSpec();
+        InvalidChangeCipherSpec invalidChangeCipherSpec = new InvalidChangeCipherSpec();
         Analyzer analyzer = new NoAlertAnalyzer().set(output);
 
-        while (fuzzyChangeCipherSpec.canFuzz()) {
+        while (invalidChangeCipherSpec.canFuzz()) {
             Output testOutput = new Output();
-            testOutput.info("test: %s", fuzzyChangeCipherSpec.getState());
+            testOutput.info("test: %s", invalidChangeCipherSpec.getState());
             Engine.init()
-                    .label(fuzzyChangeCipherSpec.getState())
+                    .label(invalidChangeCipherSpec.getState())
                     .target(config.host())
                     .target(config.port())
                     .set(testOutput)
                     .send(new OutgoingClientHello())
-                    .send(fuzzyChangeCipherSpec)
+                    .send(invalidChangeCipherSpec)
                     .require(new IncomingServerHello())
                     .require(new IncomingChangeCipherSpec())
                     .require(new IncomingEncryptedExtensions())
@@ -38,7 +38,7 @@ public class FuzzyCCS {
                     .connect()
                     .apply(analyzer);
 
-            fuzzyChangeCipherSpec.moveOn();
+            invalidChangeCipherSpec.moveOn();
         }
 
         analyzer.run();
