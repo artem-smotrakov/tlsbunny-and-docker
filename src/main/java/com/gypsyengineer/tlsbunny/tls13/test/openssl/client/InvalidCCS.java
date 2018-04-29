@@ -10,7 +10,7 @@ import com.gypsyengineer.tlsbunny.utils.Output;
 public class InvalidCCS {
 
     public static void main(String[] args) throws Exception {
-        Config config = new CommonConfig();
+        Config config = CommonConfig.load();
         Output output = new Output();
         InvalidChangeCipherSpec invalidChangeCipherSpec = new InvalidChangeCipherSpec();
         Analyzer analyzer = new NoAlertAnalyzer().set(output);

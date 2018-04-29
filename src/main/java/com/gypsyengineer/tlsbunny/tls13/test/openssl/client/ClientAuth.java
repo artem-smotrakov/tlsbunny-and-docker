@@ -8,7 +8,7 @@ import com.gypsyengineer.tlsbunny.tls13.test.Config;
 public class ClientAuth {
 
     public static void main(String[] args) throws Exception {
-        Config config = new CommonConfig();
+        Config config = CommonConfig.load();
 
         Engine.init()
                 .target(config.host())

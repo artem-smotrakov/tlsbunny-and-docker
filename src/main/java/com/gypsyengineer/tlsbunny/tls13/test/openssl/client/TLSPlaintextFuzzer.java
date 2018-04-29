@@ -12,7 +12,7 @@ import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Target.tls_plaintext;
 
 public class TLSPlaintextFuzzer extends HandshakeMessageFuzzer {
 
-    private static final CommonConfig commonConfig = new CommonConfig();
+    private static final CommonConfig commonConfig = CommonConfig.load();
 
     static final Config[] configs = new Config[] {
             new TLSPlaintextFuzzerConfig(commonConfig)

@@ -7,7 +7,7 @@ import com.gypsyengineer.tlsbunny.tls13.test.CommonConfig;
 public class HttpsClient {
 
     public static void main(String[] args) throws Exception {
-        CommonConfig config = new CommonConfig();
+        CommonConfig config = CommonConfig.load();
 
         Engine.init()
                 .target(config.host())

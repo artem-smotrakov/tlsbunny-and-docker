@@ -12,7 +12,7 @@ import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Target.certificate_verify;
 
 public class CertificateVerifyFuzzer extends HandshakeMessageFuzzer {
 
-    private static final CommonConfig commonConfig = new CommonConfig();
+    private static final CommonConfig commonConfig = CommonConfig.load();
 
     static final Config[] configs = new Config[] {
             new CertificateVerifyFuzzerConfig(commonConfig)

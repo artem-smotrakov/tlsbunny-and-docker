@@ -15,31 +15,24 @@ public class CommonConfig implements Config {
     public static final int DEFAULT_THREADS = 3;
     public static final String DEFAULT_CLIENT_CERTIFICATE = "certs/client_cert.der";
     public static final String DEFAULT_CLIENT_KEY = "certs/client_key.pkcs8";
-
     public static final Target DEFAULT_TARGET = Target.tls_plaintext;
     public static final Mode DEFAULT_MODE = Mode.bit_flip;
 
-    String host = System.getProperty("tlsbunny.host", DEFAULT_HOST).trim();
-    int port = Integer.getInteger("tlsbunny.port", DEFAULT_PORT);
-    double minRatio = getDouble("tlsbunny.min.ratio", DEFAULT_MIN_RATIO);
-    double maxRatio = getDouble("tlsbunny.max.ratio", DEFAULT_MAX_RATIO);
-    int threads = Integer.getInteger("tlsbunny.threads", DEFAULT_THREADS);
-    int parts = Integer.getInteger("tlsbunny.parts", DEFAULT_PARTS);
-    long startTest = Long.getLong("tlsbunny.start.test", DEFAULT_START_TEST);
-    long endTest = Long.getLong("tlsbunny.ebd.test", DEFAULT_END_TEST);
+    String host;
+    int port;
+    double minRatio;
+    double maxRatio;
+    int threads;
+    int parts;
+    long startTest;
+    long endTest;
     Target target;
     Mode mode;
-    String clientCertificate = System.getProperty(
-            "tlsbunny.client.cert", DEFAULT_CLIENT_CERTIFICATE);
-    String clientKey = System.getProperty(
-            "tlsbunny.client.key", DEFAULT_CLIENT_KEY);
+    String clientCertificate;
+    String clientKey;
 
-    public CommonConfig() {
-        String value = System.getProperty("tlsbunny.target");
-        target = value != null ? Target.valueOf(value) : DEFAULT_TARGET;
+    private CommonConfig() {
 
-        value = System.getProperty("tlsbunny.mode");
-        mode = value != null ? Mode.valueOf(value) : DEFAULT_MODE;
     }
 
     @Override
@@ -159,6 +152,31 @@ public class CommonConfig implements Config {
         clone.mode = mode;
 
         return clone;
+    }
+
+    public static CommonConfig load() {
+        CommonConfig config = new CommonConfig();
+
+        config.target = System.getProperty("tlsbunny.target") != null
+                ? Target.valueOf(System.getProperty("tlsbunny.target"))
+                : DEFAULT_TARGET;
+        config.mode = System.getProperty("tlsbunny.mode") != null
+                ? Mode.valueOf(System.getProperty("tlsbunny.mode"))
+                : DEFAULT_MODE;
+        config.host = System.getProperty("tlsbunny.host", DEFAULT_HOST).trim();
+        config.port = Integer.getInteger("tlsbunny.port", DEFAULT_PORT);
+        config.minRatio = getDouble("tlsbunny.min.ratio", DEFAULT_MIN_RATIO);
+        config.maxRatio = getDouble("tlsbunny.max.ratio", DEFAULT_MAX_RATIO);
+        config.threads = Integer.getInteger("tlsbunny.threads", DEFAULT_THREADS);
+        config.parts = Integer.getInteger("tlsbunny.parts", DEFAULT_PARTS);
+        config.startTest = Long.getLong("tlsbunny.start.test", DEFAULT_START_TEST);
+        config.endTest = Long.getLong("tlsbunny.ebd.test", DEFAULT_END_TEST);
+        config.clientCertificate = System.getProperty(
+                "tlsbunny.client.cert", DEFAULT_CLIENT_CERTIFICATE);
+        config.clientKey = System.getProperty(
+                "tlsbunny.client.key", DEFAULT_CLIENT_KEY);
+
+        return config;
     }
 
     private static Double getDouble(String name, double defaultValue) {

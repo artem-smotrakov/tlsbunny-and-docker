@@ -16,7 +16,7 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp
 public class HelloRetryRequest {
 
     public static void main(String[] args) throws Exception {
-        CommonConfig config = new CommonConfig();
+        CommonConfig config = CommonConfig.load();
 
         // TODO: fix it
         Engine.init()
