@@ -1,6 +1,8 @@
 # tlsbunny
 
-This is a framework for building negative tests and fuzzers for TLS 1.3 implementations. The framework provides a set of basic actions which can be used in TLS 1.3 communication, for example:
+This is a framework for building negative tests and fuzzers for TLS 1.3 implementations.
+The idea is to decompose handshake process and data exchange to simple steps which are easy to configure.
+The framework provides a set of basic steps which can be used in TLS 1.3 communication, for example:
 
 - generating a ClientHello message
 - wrapping a handshake message into a Handshake structure
