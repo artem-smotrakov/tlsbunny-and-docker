@@ -12,6 +12,8 @@ import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Target.certificate_verify;
 
 public class CertificateVerifyFuzzer extends HandshakeMessageFuzzer {
 
+    private static final CommonConfig commonConfig = CommonConfig.load();
+
     static final Config[] configs = new Config[] {
             new CertificateVerifyFuzzerConfig(commonConfig)
                     .mode(byte_flip)
@@ -66,7 +68,7 @@ public class CertificateVerifyFuzzer extends HandshakeMessageFuzzer {
 
         public CertificateVerifyFuzzerConfig(CommonConfig commonConfig) {
             super(commonConfig);
-            set(() -> new CertificateVerifyFuzzer(new Output(), this));
+            factory(() -> new CertificateVerifyFuzzer(new Output(), this));
             target(certificate_verify);
         }
 

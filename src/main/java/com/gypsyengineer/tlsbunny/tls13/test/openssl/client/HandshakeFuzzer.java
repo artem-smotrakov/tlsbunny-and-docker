@@ -12,18 +12,20 @@ import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Target.handshake;
 
 public class HandshakeFuzzer extends HandshakeMessageFuzzer {
 
+    private static final CommonConfig commonConfig = CommonConfig.load();
+
     static final Config[] configs = new Config[] {
             new HandshakeFuzzerConfig(commonConfig)
                     .mode(byte_flip)
                     .minRatio(0.01)
                     .maxRatio(0.09)
-                    .endTest(10)
+                    .endTest(1000)
                     .parts(5),
             new HandshakeFuzzerConfig(commonConfig)
                     .mode(bit_flip)
                     .minRatio(0.01)
                     .maxRatio(0.09)
-                    .endTest(10)
+                    .endTest(1000)
                     .parts(5),
     };
 
@@ -61,7 +63,7 @@ public class HandshakeFuzzer extends HandshakeMessageFuzzer {
 
         public HandshakeFuzzerConfig(CommonConfig commonConfig) {
             super(commonConfig);
-            set(() -> new HandshakeFuzzer(new Output(), this));
+            factory(() -> new HandshakeFuzzer(new Output(), this));
             target(handshake);
         }
 

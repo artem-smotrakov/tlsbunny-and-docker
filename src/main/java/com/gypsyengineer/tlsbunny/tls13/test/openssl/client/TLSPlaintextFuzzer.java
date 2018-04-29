@@ -12,18 +12,20 @@ import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Target.tls_plaintext;
 
 public class TLSPlaintextFuzzer extends HandshakeMessageFuzzer {
 
+    private static final CommonConfig commonConfig = CommonConfig.load();
+
     static final Config[] configs = new Config[] {
             new TLSPlaintextFuzzerConfig(commonConfig)
                     .mode(byte_flip)
                     .minRatio(0.01)
                     .maxRatio(0.09)
-                    .endTest(10)
+                    .endTest(100)
                     .parts(5),
             new TLSPlaintextFuzzerConfig(commonConfig)
                     .mode(bit_flip)
                     .minRatio(0.01)
                     .maxRatio(0.09)
-                    .endTest(10)
+                    .endTest(100)
                     .parts(5),
     };
 
@@ -61,7 +63,7 @@ public class TLSPlaintextFuzzer extends HandshakeMessageFuzzer {
 
         public TLSPlaintextFuzzerConfig(CommonConfig commonConfig) {
             super(commonConfig);
-            set(() -> new TLSPlaintextFuzzer(new Output(), this));
+            factory(() -> new TLSPlaintextFuzzer(new Output(), this));
             target(tls_plaintext);
         }
 

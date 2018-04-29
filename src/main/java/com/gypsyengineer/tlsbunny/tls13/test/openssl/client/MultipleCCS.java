@@ -11,7 +11,7 @@ public class MultipleCCS {
     public static int N = 100;
 
     public static void main(String[] args) throws Exception {
-        CommonConfig config = new CommonConfig();
+        CommonConfig config = CommonConfig.load();
         Output output = new Output();
 
         output.info("test 0: send a CCS message after each handshake message");

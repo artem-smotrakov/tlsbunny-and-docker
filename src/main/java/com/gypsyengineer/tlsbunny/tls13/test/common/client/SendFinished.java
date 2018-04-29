@@ -13,7 +13,7 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv12;
 public class SendFinished {
 
     public static void main(String[] args) throws Exception {
-        CommonConfig config = new CommonConfig();
+        CommonConfig config = CommonConfig.load();
 
         Engine.init()
                 .target(config.host())
