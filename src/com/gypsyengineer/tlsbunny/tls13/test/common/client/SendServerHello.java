@@ -1,8 +1,9 @@
-package com.gypsyengineer.tlsbunny.tls13.test.client;
+package com.gypsyengineer.tlsbunny.tls13.test.common.client;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.AlertCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
+import com.gypsyengineer.tlsbunny.tls13.test.CommonConfig;
 
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.alert;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;

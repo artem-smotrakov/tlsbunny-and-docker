@@ -55,6 +55,7 @@ public class IncomingFinished extends AbstractAction {
         }
 
         context.setServerFinished(handshake);
+        context.verifyServerFinished();
 
         context.client_application_traffic_secret_0 = context.hkdf.deriveSecret(
                 context.master_secret,

@@ -1,8 +1,9 @@
-package com.gypsyengineer.tlsbunny.tls13.test.client;
+package com.gypsyengineer.tlsbunny.tls13.test.openssl.client;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.*;
+import com.gypsyengineer.tlsbunny.tls13.test.CommonConfig;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
 public class MultipleCCS {
@@ -53,6 +54,7 @@ public class MultipleCCS {
                         .send(new OutgoingClientHello())
                         .send(i, () -> new OutgoingChangeCipherSpec())
                         .require(new IncomingServerHello())
+                        .require(new IncomingChangeCipherSpec())
                         .require(new IncomingEncryptedExtensions())
                         .require(new IncomingCertificate())
                         .require(new IncomingCertificateVerify())

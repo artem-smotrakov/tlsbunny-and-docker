@@ -1,8 +1,9 @@
-package com.gypsyengineer.tlsbunny.tls13.test.client;
+package com.gypsyengineer.tlsbunny.tls13.test.openssl.client;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.*;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
+import com.gypsyengineer.tlsbunny.tls13.test.*;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Mode.bit_flip;
@@ -31,7 +32,7 @@ public class CCSFuzzer extends HandshakeMessageFuzzer {
     }
 
     @Override
-    Engine connect(StructFactory factory) throws Exception {
+    protected Engine connect(StructFactory factory) throws Exception {
         return Engine.init()
                 .target(config.host())
                 .target(config.port())

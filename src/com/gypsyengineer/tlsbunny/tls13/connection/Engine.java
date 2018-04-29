@@ -40,8 +40,8 @@ public class Engine {
     private ByteBuffer applicationData = NOTHING;
     private Context context = new Context();
 
-    // if true, always check for CCS when read out
-    private boolean alwaysCheckForCCS = true;
+    // if true, always check for CCS after receiving data
+    private boolean checkForCCS = false;
 
     // if true, then stop if an alert occurred
     private boolean stopIfAlert = true;
@@ -66,13 +66,13 @@ public class Engine {
         return this;
     }
 
-    public Engine dontStopIfAlert() {
+    public Engine continueIfAlert() {
         stopIfAlert = false;
         return this;
     }
 
-    public Engine dontExpectCCS () {
-        alwaysCheckForCCS = false;
+    public Engine checkForCCS() {
+        checkForCCS = true;
         return this;
     }
 
@@ -272,7 +272,7 @@ public class Engine {
     }
 
     private void checkCCS() {
-        if (alwaysCheckForCCS) {
+        if (checkForCCS) {
             buffer.mark();
             try {
                 IncomingChangeCipherSpec incomingCCS = new IncomingChangeCipherSpec();

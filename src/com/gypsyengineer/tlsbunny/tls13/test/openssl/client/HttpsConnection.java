@@ -1,9 +1,10 @@
-package com.gypsyengineer.tlsbunny.tls13.test.client;
+package com.gypsyengineer.tlsbunny.tls13.test.openssl.client;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.*;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.*;
+import com.gypsyengineer.tlsbunny.tls13.test.CommonConfig;
 
-public class DoubleClientHello {
+public class HttpsConnection {
 
     public static void main(String[] args) throws Exception {
         CommonConfig config = new CommonConfig();
@@ -12,15 +13,19 @@ public class DoubleClientHello {
                 .target(config.host())
                 .target(config.port())
                 .send(new OutgoingClientHello())
+                .send(new OutgoingChangeCipherSpec())
                 .require(new IncomingServerHello())
                 .require(new IncomingChangeCipherSpec())
                 .require(new IncomingEncryptedExtensions())
                 .require(new IncomingCertificate())
                 .require(new IncomingCertificateVerify())
                 .require(new IncomingFinished())
-                .run(new OutgoingFinished())
-                .send(new OutgoingClientHello())
-                .require(new IncomingAlert())
-                .connect();
+                .send(new OutgoingFinished())
+                .allow(new IncomingNewSessionTicket())
+                .send(new OutgoingHttpGetRequest())
+                .require(new IncomingApplicationData())
+                .connect()
+                .run(new NoAlertCheck());
     }
+
 }

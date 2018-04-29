@@ -1,19 +1,21 @@
-package com.gypsyengineer.tlsbunny.tls13.test.client;
+package com.gypsyengineer.tlsbunny.tls13.test;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.*;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.MutatedStructFactory;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
+import com.gypsyengineer.tlsbunny.tls13.test.CommonConfig;
+import com.gypsyengineer.tlsbunny.tls13.test.Config;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
 import java.io.IOException;
 
 public abstract class HandshakeMessageFuzzer implements Runnable {
 
-    static final CommonConfig commonConfig = new CommonConfig();
+    protected static final CommonConfig commonConfig = new CommonConfig();
 
-    final Output output;
-    final Config config;
-    final MutatedStructFactory fuzzer;
+    protected final Output output;
+    protected final Config config;
+    protected final MutatedStructFactory fuzzer;
 
     public HandshakeMessageFuzzer(Output output, Config config) {
         fuzzer = new MutatedStructFactory(
@@ -66,6 +68,6 @@ public abstract class HandshakeMessageFuzzer implements Runnable {
         }
     }
 
-    abstract Engine connect(StructFactory factory) throws Exception;
+    protected abstract Engine connect(StructFactory factory) throws Exception;
 
 }
