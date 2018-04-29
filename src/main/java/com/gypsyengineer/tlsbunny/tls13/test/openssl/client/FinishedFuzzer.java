@@ -12,6 +12,8 @@ import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Target.finished;
 
 public class FinishedFuzzer extends HandshakeMessageFuzzer {
 
+    private static final CommonConfig commonConfig = new CommonConfig();
+
     static final Config[] configs = new Config[] {
             new FinishedFuzzerConfig(commonConfig)
                     .mode(byte_flip)
@@ -61,7 +63,7 @@ public class FinishedFuzzer extends HandshakeMessageFuzzer {
 
         public FinishedFuzzerConfig(CommonConfig commonConfig) {
             super(commonConfig);
-            set(() -> new FinishedFuzzer(new Output(), this));
+            factory(() -> new FinishedFuzzer(new Output(), this));
             target(finished);
         }
 

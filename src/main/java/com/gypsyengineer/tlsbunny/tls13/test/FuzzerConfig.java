@@ -16,7 +16,7 @@ public class FuzzerConfig implements Config {
         this.commonConfig = commonConfig;
     }
 
-    public FuzzerConfig set(FuzzerFactory fuzzerFactory) {
+    public FuzzerConfig factory(FuzzerFactory fuzzerFactory) {
         this.fuzzerFactory = fuzzerFactory;
         return this;
     }
@@ -130,6 +130,6 @@ public class FuzzerConfig implements Config {
 
     @Override
     public FuzzerConfig copy() {
-        return new FuzzerConfig(commonConfig.copy()).set(fuzzerFactory);
+        return new FuzzerConfig(commonConfig.copy()).factory(fuzzerFactory);
     }
 }

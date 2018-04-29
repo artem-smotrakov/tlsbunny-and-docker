@@ -11,8 +11,6 @@ import java.io.IOException;
 
 public abstract class HandshakeMessageFuzzer implements Runnable {
 
-    protected static final CommonConfig commonConfig = new CommonConfig();
-
     protected final Output output;
     protected final Config config;
     protected final MutatedStructFactory fuzzer;

@@ -12,6 +12,8 @@ import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Target.client_hello;
 
 public class ClientHelloFuzzer extends HandshakeMessageFuzzer {
 
+    private static final CommonConfig commonConfig = new CommonConfig();
+
     static final Config[] configs = new Config[] {
             new ClientHelloFuzzerConfig(commonConfig)
                     .mode(byte_flip)
@@ -61,7 +63,7 @@ public class ClientHelloFuzzer extends HandshakeMessageFuzzer {
 
         public ClientHelloFuzzerConfig(CommonConfig commonConfig) {
             super(commonConfig);
-            set(() -> new ClientHelloFuzzer(new Output(), this));
+            factory(() -> new ClientHelloFuzzer(new Output(), this));
             target(client_hello);
         }
 
