@@ -14,6 +14,7 @@ public class HttpsConnection {
                 .send(new OutgoingClientHello())
                 .send(new OutgoingChangeCipherSpec())
                 .require(new IncomingServerHello())
+                .require(new IncomingChangeCipherSpec())
                 .require(new IncomingEncryptedExtensions())
                 .require(new IncomingCertificate())
                 .require(new IncomingCertificateVerify())
