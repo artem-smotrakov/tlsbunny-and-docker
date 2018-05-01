@@ -17,13 +17,13 @@ public class HandshakeFuzzer extends HandshakeMessageFuzzer {
                     .mode(byte_flip)
                     .minRatio(0.01)
                     .maxRatio(0.09)
-                    .endTest(10)
+                    .endTest(1000)
                     .parts(5),
             new HandshakeFuzzerConfig(commonConfig)
                     .mode(bit_flip)
                     .minRatio(0.01)
                     .maxRatio(0.09)
-                    .endTest(10)
+                    .endTest(1000)
                     .parts(5),
     };
 

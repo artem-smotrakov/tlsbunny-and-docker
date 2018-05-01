@@ -12,7 +12,7 @@ public class ProcessingNewSessionTicket extends AbstractAction {
     }
 
     @Override
-    public Action run() throws Exception {
+    public Action run() {
         NewSessionTicket ticket = context.factory.parser().parseNewSessionTicket(in);
         output.info("received a NewSessionTicket message");
 

@@ -6,6 +6,7 @@ import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
 import com.gypsyengineer.tlsbunny.tls13.utils.Helper;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 
 public class WrappingIntoTLSPlaintexts extends AbstractAction {
@@ -29,7 +30,7 @@ public class WrappingIntoTLSPlaintexts extends AbstractAction {
     }
 
     @Override
-    public Action run() throws Exception {
+    public Action run() throws IOException {
         byte[] content = new byte[in.remaining()];
         in.get(content);
 

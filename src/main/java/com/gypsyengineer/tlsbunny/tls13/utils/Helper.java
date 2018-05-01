@@ -1,6 +1,5 @@
 package com.gypsyengineer.tlsbunny.tls13.utils;
 
-import com.gypsyengineer.tlsbunny.tls.Struct;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
 
 import java.io.IOException;

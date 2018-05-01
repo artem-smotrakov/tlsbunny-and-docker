@@ -2,6 +2,8 @@ package com.gypsyengineer.tlsbunny.tls13.connection.action.composite;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.action.AbstractAction;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.ActionFailed;
+import com.gypsyengineer.tlsbunny.tls13.crypto.AEADException;
 import com.gypsyengineer.tlsbunny.tls13.crypto.TranscriptHash;
 import com.gypsyengineer.tlsbunny.tls13.struct.Finished;
 import com.gypsyengineer.tlsbunny.tls13.struct.Handshake;
@@ -21,13 +23,17 @@ public class IncomingFinished extends AbstractAction {
     }
 
     @Override
-    public Action run() throws Exception {
+    public Action run() throws ActionFailed, IOException, AEADException {
         Handshake handshake = processEncryptedHandshake();
         if (!handshake.containsFinished()) {
-            throw new IOException("expected a Finished message");
+            throw new ActionFailed("expected a Finished message");
         }
 
-        processFinished(handshake);
+        try {
+            processFinished(handshake);
+        } catch (NoSuchAlgorithmException | InvalidKeyException e) {
+            throw new ActionFailed(e);
+        }
 
         return this;
     }

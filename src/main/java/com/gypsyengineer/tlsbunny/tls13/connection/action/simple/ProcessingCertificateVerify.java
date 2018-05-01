@@ -12,7 +12,7 @@ public class ProcessingCertificateVerify extends AbstractAction {
     }
 
     @Override
-    public Action run() throws Exception {
+    public Action run() {
         CertificateVerify certificateVerify = context.factory.parser().parseCertificateVerify(in);
         output.info("received a CertificateVerify message");
 

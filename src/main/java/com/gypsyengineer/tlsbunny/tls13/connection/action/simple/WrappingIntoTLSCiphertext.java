@@ -4,10 +4,13 @@ import com.gypsyengineer.tlsbunny.tls13.connection.action.AbstractAction;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Phase;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AEAD;
+import com.gypsyengineer.tlsbunny.tls13.crypto.AEADException;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AesGcm;
 import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext;
 import com.gypsyengineer.tlsbunny.tls13.utils.Helper;
+
+import java.io.IOException;
 
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.application_data;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv12;
@@ -33,7 +36,7 @@ public class WrappingIntoTLSCiphertext extends AbstractAction {
     }
 
     @Override
-    public Action run() throws Exception {
+    public Action run() throws AEADException, IOException {
         byte[] content = new byte[in.remaining()];
         in.get(content);
 

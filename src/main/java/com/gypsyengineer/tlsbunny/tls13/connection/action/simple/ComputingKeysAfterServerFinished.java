@@ -2,6 +2,10 @@ package com.gypsyengineer.tlsbunny.tls13.connection.action.simple;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.action.AbstractAction;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.ActionFailed;
+import com.gypsyengineer.tlsbunny.tls13.crypto.AEADException;
+
+import java.io.IOException;
 
 public class ComputingKeysAfterServerFinished extends AbstractAction {
 
@@ -11,7 +15,7 @@ public class ComputingKeysAfterServerFinished extends AbstractAction {
     }
 
     @Override
-    public Action run() throws Exception {
+    public Action run() throws IOException {
         context.client_application_traffic_secret_0 = context.hkdf.deriveSecret(
                 context.master_secret,
                 context.c_ap_traffic,

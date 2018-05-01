@@ -2,6 +2,8 @@ package com.gypsyengineer.tlsbunny.tls13.connection.action.composite;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.action.AbstractAction;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.ActionFailed;
+import com.gypsyengineer.tlsbunny.tls13.crypto.AEADException;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
 import com.gypsyengineer.tlsbunny.tls13.utils.Helper;
 
@@ -17,10 +19,10 @@ public class IncomingCertificateRequest extends AbstractAction {
     }
 
     @Override
-    public Action run() throws Exception {
+    public Action run() throws ActionFailed, AEADException, IOException {
         Handshake handshake = processEncryptedHandshake();
         if (!handshake.containsCertificateRequest()) {
-            throw new IOException("expected a CertificateRequest message");
+            throw new ActionFailed("expected a CertificateRequest message");
         }
 
         processCertificateRequest(handshake);

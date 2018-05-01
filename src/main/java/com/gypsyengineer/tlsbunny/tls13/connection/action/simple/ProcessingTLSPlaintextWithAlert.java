@@ -2,6 +2,7 @@ package com.gypsyengineer.tlsbunny.tls13.connection.action.simple;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.action.AbstractAction;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.ActionFailed;
 import com.gypsyengineer.tlsbunny.tls13.struct.Alert;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
 
@@ -15,11 +16,11 @@ public class ProcessingTLSPlaintextWithAlert extends AbstractAction {
     }
 
     @Override
-    public Action run() throws Exception {
+    public Action run() throws ActionFailed {
         TLSPlaintext tlsPlaintext = context.factory.parser().parseTLSPlaintext(in);
 
         if (!tlsPlaintext.containsAlert()) {
-            throw new IOException("expected an alert");
+            throw new ActionFailed("expected an alert");
         }
 
         Alert alert = context.factory.parser().parseAlert(tlsPlaintext.getFragment());

@@ -6,12 +6,12 @@ import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 
 public interface Negotiator {
 
-    KeyShareEntry createKeyShareEntry() throws Exception;
-    void processKeyShareEntry(KeyShareEntry entry) throws Exception;
+    KeyShareEntry createKeyShareEntry() throws NegotiatorException;
+    void processKeyShareEntry(KeyShareEntry entry) throws NegotiatorException;
     byte[] generateSecret();
 
-    public static Negotiator create(NamedGroup group, StructFactory factory) 
-            throws Exception {
+    static Negotiator create(NamedGroup group, StructFactory factory)
+            throws NegotiatorException {
         
         if (group instanceof NamedGroup.FFDHE) {
             return FFDHENegotiator.create((NamedGroup.FFDHE) group, factory);

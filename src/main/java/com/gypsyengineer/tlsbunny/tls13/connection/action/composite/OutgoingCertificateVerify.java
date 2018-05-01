@@ -2,7 +2,9 @@ package com.gypsyengineer.tlsbunny.tls13.connection.action.composite;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.action.AbstractAction;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.ActionFailed;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AEAD;
+import com.gypsyengineer.tlsbunny.tls13.crypto.AEADException;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AesGcm;
 import com.gypsyengineer.tlsbunny.tls13.crypto.TranscriptHash;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
@@ -12,8 +14,8 @@ import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.security.KeyFactory;
-import java.security.Signature;
+import java.security.*;
+import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 
 import static com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext.NO_PADDING;
@@ -48,7 +50,7 @@ public class OutgoingCertificateVerify extends AbstractAction {
     }
 
     @Override
-    public Action run() throws Exception {
+    public Action run() throws IOException, AEADException, ActionFailed {
         CertificateVerify certificateVerify = createCertificateVerify();
         Handshake handshake = toHandshake(certificateVerify);
 
@@ -61,26 +63,34 @@ public class OutgoingCertificateVerify extends AbstractAction {
         return this;
     }
 
-    private CertificateVerify createCertificateVerify() throws Exception {
-        byte[] content = Utils.concatenate(
-                CERTIFICATE_VERIFY_PREFIX,
-                CERTIFICATE_VERIFY_CONTEXT_STRING,
-                new byte[] { 0 },
-                TranscriptHash.compute(context.suite.hash(), context.allMessages()));
+    private CertificateVerify createCertificateVerify() throws IOException, ActionFailed {
 
-        Signature signature = Signature.getInstance("SHA256withECDSA");
-        signature.initSign(
-                KeyFactory.getInstance("EC").generatePrivate(
-                        new PKCS8EncodedKeySpec(key_data)));
-        signature.update(content);
+        try {
+            byte[] content = Utils.concatenate(
+                    CERTIFICATE_VERIFY_PREFIX,
+                    CERTIFICATE_VERIFY_CONTEXT_STRING,
+                    new byte[]{0},
+                    TranscriptHash.compute(context.suite.hash(), context.allMessages()));
 
-        return context.factory.createCertificateVerify(
-                SignatureScheme.ecdsa_secp256r1_sha256, signature.sign());
+            Signature signature = Signature.getInstance("SHA256withECDSA");
+            signature.initSign(
+                    KeyFactory.getInstance("EC").generatePrivate(
+                            new PKCS8EncodedKeySpec(key_data)));
+            signature.update(content);
+
+            return context.factory.createCertificateVerify(
+                    SignatureScheme.ecdsa_secp256r1_sha256, signature.sign());
+        } catch (NoSuchAlgorithmException | SignatureException
+                | InvalidKeyException | InvalidKeySpecException e) {
+
+            // TODO: can we get rid of these exceptions?
+            throw new ActionFailed(e);
+        }
     }
 
     // TODO: move this method to handshakeDecryptor to avoid code duplicates
     //       run other classes for outgoing handshake messages
-    TLSPlaintext[] encrypt(Handshake message) throws Exception {
+    TLSPlaintext[] encrypt(Handshake message) throws IOException, AEADException {
         return context.factory.createTLSPlaintexts(
                 ContentType.application_data,
                 ProtocolVersion.TLSv12,
@@ -89,7 +99,7 @@ public class OutgoingCertificateVerify extends AbstractAction {
 
     // TODO: move this method to handshakeDecryptor to avoid code duplicates
     //       run other classes for outgoing handshake messages
-    private byte[] encrypt(byte[] data) throws Exception {
+    private byte[] encrypt(byte[] data) throws IOException, AEADException {
         TLSInnerPlaintext tlsInnerPlaintext = context.factory.createTLSInnerPlaintext(
                 ContentType.handshake, data, NO_PADDING);
         byte[] plaintext = tlsInnerPlaintext.encoding();

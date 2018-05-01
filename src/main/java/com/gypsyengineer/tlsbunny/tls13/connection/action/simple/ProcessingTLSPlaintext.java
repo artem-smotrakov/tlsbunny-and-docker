@@ -2,6 +2,7 @@ package com.gypsyengineer.tlsbunny.tls13.connection.action.simple;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.action.AbstractAction;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.ActionFailed;
 import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
 
@@ -25,12 +26,12 @@ public class ProcessingTLSPlaintext extends AbstractAction {
     }
 
     @Override
-    public Action run() throws Exception {
+    public Action run() throws ActionFailed {
         TLSPlaintext tlsPlaintext = context.factory.parser().parseTLSPlaintext(in);
 
         ContentType type = tlsPlaintext.getType();
         if (expectedType != NO_TYPE_SPECIFIED && !expectedType.equals(type)) {
-            throw new IOException(
+            throw new ActionFailed(
                     String.format("expected %s, but found %s", expectedType, type));
         }
 

@@ -2,7 +2,10 @@ package com.gypsyengineer.tlsbunny.tls13.connection.action.composite;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.action.AbstractAction;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.ActionFailed;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AEAD;
+import com.gypsyengineer.tlsbunny.tls13.crypto.AEADException;
+import com.gypsyengineer.tlsbunny.tls13.handshake.NegotiatorException;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
 
 import static com.gypsyengineer.tlsbunny.tls13.handshake.Context.ZERO_HASH_VALUE;
@@ -22,22 +25,24 @@ public class IncomingServerHello extends AbstractAction {
     }
 
     @Override
-    public Action run() throws Exception {
+    public Action run()
+            throws ActionFailed, NegotiatorException, IOException, AEADException {
+
         TLSPlaintext tlsPlaintext = context.factory.parser().parseTLSPlaintext(in);
 
         if (tlsPlaintext.containsAlert()) {
             Alert alert = context.factory.parser().parseAlert(tlsPlaintext.getFragment());
             context.setAlert(alert);
-            throw new IOException(String.format("received an alert: %s", alert));
+            throw new ActionFailed(String.format("received an alert: %s", alert));
         }
 
         if (!tlsPlaintext.containsHandshake()) {
-            throw new IOException("expected a handshake message");
+            throw new ActionFailed("expected a handshake message");
         }
 
         Handshake handshake = context.factory.parser().parseHandshake(tlsPlaintext.getFragment());
         if (!handshake.containsServerHello()) {
-            throw new IOException("expected a ServerHello message");
+            throw new ActionFailed("expected a ServerHello message");
         }
 
         processServerHello(handshake);
@@ -45,19 +50,20 @@ public class IncomingServerHello extends AbstractAction {
         return this;
     }
 
-    private void processServerHello(Handshake handshake) throws Exception {
+    private void processServerHello(Handshake handshake) throws ActionFailed, IOException, NegotiatorException, AEADException {
         ServerHello serverHello = context.factory.parser().parseServerHello(handshake.getBody());
 
         if (!context.suite.equals(serverHello.getCipherSuite())) {
             output.info("expected cipher suite: %s", context.suite);
             output.info("received cipher suite: %s", serverHello.getCipherSuite());
-            throw new RuntimeException("unexpected ciphersuite");
+            throw new ActionFailed("unexpected ciphersuite");
         }
 
         SupportedVersions.ServerHello selected_version = findSupportedVersion(
                 context.factory, serverHello);
         if (!selected_version.equals(ProtocolVersion.TLSv13)) {
-            output.info("ServerHello.selected version: %s", selected_version.getSelectedVersion());
+            output.info("ServerHello.selected version: %s",
+                    selected_version.getSelectedVersion());
             // TODO: when TLSBUNNY 1.3 spec is finished, we should throw an exception here
         }
 

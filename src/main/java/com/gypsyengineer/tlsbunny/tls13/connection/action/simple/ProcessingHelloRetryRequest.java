@@ -5,6 +5,7 @@ import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
 import com.gypsyengineer.tlsbunny.tls13.struct.HelloRetryRequest;
 import com.gypsyengineer.tlsbunny.tls13.struct.ServerHello;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 
 public class ProcessingHelloRetryRequest extends AbstractAction {
@@ -15,7 +16,7 @@ public class ProcessingHelloRetryRequest extends AbstractAction {
     }
 
     @Override
-    public Action run() throws Exception {
+    public Action run() throws IOException {
         HelloRetryRequest helloRetryRequest = context.factory.parser().parseHelloRetryRequest(in);
         out = ByteBuffer.wrap(helloRetryRequest.encoding());
         output.info("received a HelloRetryRequest message");

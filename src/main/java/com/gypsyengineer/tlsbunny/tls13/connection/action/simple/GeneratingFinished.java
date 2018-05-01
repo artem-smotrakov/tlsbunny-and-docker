@@ -2,6 +2,7 @@ package com.gypsyengineer.tlsbunny.tls13.connection.action.simple;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.action.AbstractAction;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.ActionFailed;
 import com.gypsyengineer.tlsbunny.tls13.crypto.TranscriptHash;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
 
@@ -18,13 +19,17 @@ public class GeneratingFinished extends AbstractAction {
     }
 
     @Override
-    public Action run() throws IOException, NoSuchAlgorithmException, InvalidKeyException {
-        byte[] verify_data = context.hkdf.hmac(
-                context.finished_key,
-                TranscriptHash.compute(context.suite.hash(), context.allMessages()));
+    public Action run() throws IOException, ActionFailed {
+        try {
+            byte[] verify_data = context.hkdf.hmac(
+                    context.finished_key,
+                    TranscriptHash.compute(context.suite.hash(), context.allMessages()));
 
-        Finished finished = context.factory.createFinished(verify_data);
-        out = ByteBuffer.wrap(finished.encoding());
+            Finished finished = context.factory.createFinished(verify_data);
+            out = ByteBuffer.wrap(finished.encoding());
+        } catch (NoSuchAlgorithmException e) {
+            throw new ActionFailed(e);
+        }
 
         return this;
     }

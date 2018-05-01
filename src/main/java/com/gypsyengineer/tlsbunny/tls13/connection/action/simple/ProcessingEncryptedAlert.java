@@ -2,8 +2,10 @@ package com.gypsyengineer.tlsbunny.tls13.connection.action.simple;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.action.AbstractAction;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.ActionFailed;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Phase;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AEAD;
+import com.gypsyengineer.tlsbunny.tls13.crypto.AEADException;
 import com.gypsyengineer.tlsbunny.tls13.struct.Alert;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
@@ -25,11 +27,11 @@ public class ProcessingEncryptedAlert extends AbstractAction {
     }
 
     @Override
-    public Action run() throws Exception {
+    public Action run() throws ActionFailed, AEADException {
         TLSPlaintext tlsPlaintext = context.factory.parser().parseTLSPlaintext(in);
 
         if (!tlsPlaintext.containsApplicationData()) {
-            throw new IOException("expected encrypted data");
+            throw new ActionFailed("expected encrypted data");
         }
 
         AEAD decryptor;
@@ -50,13 +52,13 @@ public class ProcessingEncryptedAlert extends AbstractAction {
                     .parseTLSInnerPlaintext(plaintext);
 
             if (!tlsInnerPlaintext.containsAlert()) {
-                throw new IOException("expected an alert");
+                throw new ActionFailed("expected an alert");
             }
 
             Alert alert = context.factory.parser().parseAlert(tlsInnerPlaintext.getContent());
             context.setAlert(alert);
             output.info("received an alert: %s", alert);
-        } catch (Exception e) {
+        } catch (ActionFailed e) {
             out = ByteBuffer.wrap(plaintext);
             throw e;
         }

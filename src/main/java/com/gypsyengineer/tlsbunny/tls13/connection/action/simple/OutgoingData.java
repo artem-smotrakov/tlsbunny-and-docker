@@ -13,7 +13,7 @@ public class OutgoingData extends AbstractAction {
     }
 
     @Override
-    public Action run() throws Exception {
+    public Action run() {
         out = ByteBuffer.allocate(in.remaining());
         out.put(in);
         out.position(0);

@@ -12,12 +12,16 @@ import javax.crypto.NoSuchPaddingException;
 
 public interface AEAD {
 
-    public static enum Method {
-        AES_128_GCM, AES_256_GCM, CHACHA20_POLY1305, AES_128_CCM, AES_128_CCM_8,
+    enum Method {
+        AES_128_GCM,
+        AES_256_GCM,
+        CHACHA20_POLY1305,
+        AES_128_CCM,
+        AES_128_CCM_8,
         UNKNOWN
     }
 
-    public static interface Factory {
+    interface Factory {
         AEAD create(byte[] key, byte[] iv) throws Exception;
     }
 
@@ -27,15 +31,15 @@ public interface AEAD {
     int getKeyLength();
     int getIvLength();
 
-    void start() throws Exception;
-    byte[] update(byte[] data) throws Exception;
-    void updateAAD(byte[] data) throws Exception;
-    byte[] finish() throws Exception;
+    void start() throws AEADException;
+    byte[] update(byte[] data) throws AEADException;
+    void updateAAD(byte[] data) throws AEADException;
+    byte[] finish() throws AEADException;
 
-    byte[] decrypt(TLSPlaintext tlsCiphertext) throws Exception;
+    byte[] decrypt(TLSPlaintext tlsCiphertext) throws AEADException;
     
     static AEAD createEncryptor(Method cipher, byte[] key, byte[] iv)
-            throws NoSuchAlgorithmException, NoSuchPaddingException {
+            throws AEADException {
         
         switch (cipher) {
             case AES_128_GCM:
@@ -51,7 +55,7 @@ public interface AEAD {
     }
     
     static AEAD createDecryptor(Method cipher, byte[] key, byte[] iv)
-            throws NoSuchAlgorithmException, NoSuchPaddingException {
+            throws AEADException {
         
         switch (cipher) {
             case AES_128_GCM:
@@ -60,10 +64,10 @@ public interface AEAD {
             case CHACHA20_POLY1305:
             case AES_128_CCM:
             case AES_128_CCM_8:
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException("Unsupported cipher: " + cipher);
+            default:
+                throw new IllegalArgumentException("Unknown cipher: " + cipher);
         }
-        
-        throw new IllegalArgumentException();
     }
 
     static byte[] getAdditionalData(int length) throws IOException {

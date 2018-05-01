@@ -2,8 +2,10 @@ package com.gypsyengineer.tlsbunny.tls13.connection.action.simple;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.action.AbstractAction;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
+import com.gypsyengineer.tlsbunny.tls13.handshake.NegotiatorException;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.List;
 
@@ -15,7 +17,7 @@ public class GeneratingServerHello extends AbstractAction {
     }
 
     @Override
-    public Action run() throws Exception {
+    public Action run() throws IOException, NegotiatorException {
         List<Extension> extensions = List.of(
                 wrap(context.factory.createSupportedVersionForClientHello(ProtocolVersion.TLSv13)),
                 wrap(context.factory.createSignatureSchemeList(context.scheme)),
