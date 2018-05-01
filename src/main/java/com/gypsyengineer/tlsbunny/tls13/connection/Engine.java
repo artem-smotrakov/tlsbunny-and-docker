@@ -155,7 +155,7 @@ public class Engine {
                             action.run();
                             connection.send(action.out());
                         } catch (ActionFailed | AEADException | NegotiatorException | IOException e) {
-                            output.achtung("error:", e.getMessage());
+                            output.achtung("error: %s", e.getMessage());
                             status = Status.could_not_send;
                             return this;
                         }
@@ -168,7 +168,7 @@ public class Engine {
                             action.run();
                             combineData(action);
                         } catch (ActionFailed | AEADException | NegotiatorException | IOException e) {
-                            output.achtung("error:", e.getMessage());
+                            output.achtung("error: %s", e.getMessage());
                             status = Status.unexpected_error;
                             return this;
                         }
@@ -186,7 +186,7 @@ public class Engine {
                             action.run();
                             combineData(action);
                         } catch (ActionFailed | AEADException | NegotiatorException | IOException e) {
-                            output.info("error: %s", e);
+                            output.info("error: %s", e.getMessage());
                             output.info("skip %s", action.name());
                             buffer.reset(); // restore out
                         }
