@@ -24,7 +24,4 @@ public interface Config {
     Config startTest(long test);
     Config endTest(long test);
     Config parts(int parts);
-
-    Runnable create();
-    Config copy();
 }

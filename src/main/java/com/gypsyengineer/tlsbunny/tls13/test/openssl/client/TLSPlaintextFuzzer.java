@@ -12,9 +12,7 @@ import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Target.tls_plaintext;
 
 public class TLSPlaintextFuzzer extends HandshakeMessageFuzzer {
 
-    private static final CommonConfig commonConfig = CommonConfig.load();
-
-    static final Config[] configs = new Config[] {
+    static final FuzzerConfig[] configs = new FuzzerConfig[] {
             new TLSPlaintextFuzzerConfig(commonConfig)
                     .mode(byte_flip)
                     .minRatio(0.01)
@@ -52,7 +50,8 @@ public class TLSPlaintextFuzzer extends HandshakeMessageFuzzer {
                 .allow(new IncomingNewSessionTicket())
                 .send(new OutgoingHttpGetRequest())
                 .require(new IncomingApplicationData())
-                .connect();
+                .connect()
+                .apply(config.analyzer());
     }
 
     public static void main(String[] args) throws InterruptedException {
@@ -61,10 +60,14 @@ public class TLSPlaintextFuzzer extends HandshakeMessageFuzzer {
 
     public static class TLSPlaintextFuzzerConfig extends FuzzerConfig {
 
-        public TLSPlaintextFuzzerConfig(CommonConfig commonConfig) {
+        public TLSPlaintextFuzzerConfig(Config commonConfig) {
             super(commonConfig);
-            factory(() -> new TLSPlaintextFuzzer(new Output(), this));
             target(tls_plaintext);
+        }
+
+        @Override
+        public Runnable create() {
+            return new TLSPlaintextFuzzer(new Output(), this);
         }
 
     }

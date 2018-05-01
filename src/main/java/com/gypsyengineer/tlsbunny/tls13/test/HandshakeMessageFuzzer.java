@@ -3,19 +3,19 @@ package com.gypsyengineer.tlsbunny.tls13.test;
 import com.gypsyengineer.tlsbunny.tls13.connection.*;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.MutatedStructFactory;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
-import com.gypsyengineer.tlsbunny.tls13.test.CommonConfig;
-import com.gypsyengineer.tlsbunny.tls13.test.Config;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
 import java.io.IOException;
 
 public abstract class HandshakeMessageFuzzer implements Runnable {
 
+    public static final Config commonConfig = CommonConfig.load();
+
     protected final Output output;
-    protected final Config config;
+    protected final FuzzerConfig config;
     protected final MutatedStructFactory fuzzer;
 
-    public HandshakeMessageFuzzer(Output output, Config config) {
+    public HandshakeMessageFuzzer(Output output, FuzzerConfig config) {
         fuzzer = new MutatedStructFactory(
                 StructFactory.getDefault(),
                 output,
@@ -51,7 +51,11 @@ public abstract class HandshakeMessageFuzzer implements Runnable {
                 output.info("test %d", fuzzer.getTest());
                 output.info("now fuzzer's state is '%s'", fuzzer.getState());
                 try {
-                    connect(fuzzer);
+                    Engine engine = connect(fuzzer);
+
+                    if (config.hasAnalyzer()) {
+                        engine.apply(config.analyzer());
+                    }
                 } finally {
                     output.flush();
                     fuzzer.moveOn();

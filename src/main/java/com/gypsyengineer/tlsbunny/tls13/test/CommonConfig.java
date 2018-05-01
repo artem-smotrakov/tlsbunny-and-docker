@@ -3,6 +3,7 @@ package com.gypsyengineer.tlsbunny.tls13.test;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.Mode;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.Target;
 
+// TODO: this class should be renamed to SystemPropertiesConfig
 public class CommonConfig implements Config {
 
     public static final int DEFAULT_PARTS = 4;
@@ -135,23 +136,6 @@ public class CommonConfig implements Config {
     public Config mode(Mode mode) {
         this.mode = mode;
         return this;
-    }
-
-    @Override
-    public CommonConfig copy() {
-        CommonConfig clone = new CommonConfig();
-        clone.host = host;
-        clone.port = port;
-        clone.minRatio = minRatio;
-        clone.maxRatio = maxRatio;
-        clone.threads = threads;
-        clone.parts = parts;
-        clone.startTest = startTest;
-        clone.endTest = endTest;
-        clone.target = target;
-        clone.mode = mode;
-
-        return clone;
     }
 
     public static CommonConfig load() {

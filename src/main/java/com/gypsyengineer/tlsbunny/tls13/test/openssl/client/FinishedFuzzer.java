@@ -12,9 +12,7 @@ import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Target.finished;
 
 public class FinishedFuzzer extends HandshakeMessageFuzzer {
 
-    private static final CommonConfig commonConfig = CommonConfig.load();
-
-    static final Config[] configs = new Config[] {
+    static final FuzzerConfig[] configs = new FuzzerConfig[] {
             new FinishedFuzzerConfig(commonConfig)
                     .mode(byte_flip)
                     .minRatio(0.01)
@@ -52,7 +50,8 @@ public class FinishedFuzzer extends HandshakeMessageFuzzer {
                 .allow(new IncomingNewSessionTicket())
                 .send(new OutgoingHttpGetRequest())
                 .require(new IncomingApplicationData())
-                .connect();
+                .connect()
+                .apply(config.analyzer());
     }
 
     public static void main(String[] args) throws InterruptedException {
@@ -61,10 +60,14 @@ public class FinishedFuzzer extends HandshakeMessageFuzzer {
 
     public static class FinishedFuzzerConfig extends FuzzerConfig {
 
-        public FinishedFuzzerConfig(CommonConfig commonConfig) {
+        public FinishedFuzzerConfig(Config commonConfig) {
             super(commonConfig);
-            factory(() -> new FinishedFuzzer(new Output(), this));
             target(finished);
+        }
+
+        @Override
+        public Runnable create() {
+            return new FinishedFuzzer(new Output(), this);
         }
 
     }

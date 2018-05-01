@@ -4,132 +4,133 @@ import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.Mode;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.Target;
 
-public class FuzzerConfig implements Config {
+public class SplittedFuzzerConfig extends FuzzerConfig {
 
-    private final Config commonConfig;
-    private Analyzer analyzer;
+    public static final int ALWAYS_ONE_PART = 1;
 
-    public FuzzerConfig(Config commonConfig) {
-        this.commonConfig = commonConfig;
+    private final FuzzerConfig config;
+    private final long startTest;
+    private final long endTest;
+
+    public SplittedFuzzerConfig(FuzzerConfig config, long startTest, long endTest) {
+        super(config);
+        this.config = config;
+        this.startTest = startTest;
+        this.endTest = endTest;
     }
 
     @Override
     public String host() {
-        return commonConfig.host();
+        return config.host();
     }
 
     @Override
     public int port() {
-        return commonConfig.port();
+        return config.port();
     }
 
     @Override
     public Target target() {
-        return commonConfig.target();
+        return config.target();
     }
 
     @Override
     public Mode mode() {
-        return commonConfig.mode();
+        return config.mode();
     }
 
     @Override
     public double minRatio() {
-        return commonConfig.minRatio();
+        return config.minRatio();
     }
 
     @Override
     public double maxRatio() {
-        return commonConfig.maxRatio();
+        return config.maxRatio();
     }
 
     @Override
     public int threads() {
-        return commonConfig.threads();
+        return config.threads();
     }
 
     @Override
     public int parts() {
-        return commonConfig.parts();
+        return ALWAYS_ONE_PART;
     }
 
     @Override
     public long startTest() {
-        return commonConfig.startTest();
+        return startTest;
     }
 
     @Override
     public long endTest() {
-        return commonConfig.endTest();
+        return endTest;
     }
 
     @Override
     public String clientCertificate() {
-        return commonConfig.clientCertificate();
+        return config.clientCertificate();
     }
 
     @Override
     public String clientKey() {
-        return commonConfig.clientKey();
+        return config.clientKey();
     }
 
     @Override
     public FuzzerConfig target(Target target) {
-        commonConfig.target(target);
-        return this;
+        return config.target(target);
     }
 
     @Override
     public FuzzerConfig mode(Mode mode) {
-        commonConfig.mode(mode);
-        return this;
+        return config.mode(mode);
     }
 
     @Override
     public FuzzerConfig minRatio(double minRatio) {
-        commonConfig.minRatio(minRatio);
-        return this;
+        return config.minRatio(minRatio);
     }
 
     @Override
     public FuzzerConfig maxRatio(double maxRatio) {
-        commonConfig.maxRatio(maxRatio);
-        return this;
+        return config.maxRatio(maxRatio);
     }
 
     @Override
     public FuzzerConfig startTest(long test) {
-        commonConfig.startTest(test);
-        return this;
+        throw new UnsupportedOperationException("what the hell? I can't set start test!");
     }
 
     @Override
     public FuzzerConfig endTest(long test) {
-        commonConfig.endTest(test);
-        return this;
+        throw new UnsupportedOperationException("what the hell? I can't set end test!");
     }
 
     @Override
     public FuzzerConfig parts(int parts) {
-        commonConfig.parts(parts);
-        return this;
+        throw new UnsupportedOperationException("what the hell? I can't set parts!");
     }
 
+    @Override
     public FuzzerConfig analyzer(Analyzer analyzer) {
-        this.analyzer = analyzer;
-        return this;
+        return config.analyzer(analyzer);
     }
 
+    @Override
     public boolean hasAnalyzer() {
-        return analyzer != null;
+        return config.hasAnalyzer();
     }
 
+    @Override
     public Analyzer analyzer() {
-        return analyzer;
+        return config.analyzer();
     }
 
+    @Override
     public Runnable create() {
-        throw new UnsupportedOperationException("what the hell? I can't create a fuzzer!");
+        return config.create();
     }
-
 }

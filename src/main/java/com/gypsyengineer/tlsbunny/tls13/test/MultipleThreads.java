@@ -1,5 +1,8 @@
 package com.gypsyengineer.tlsbunny.tls13.test;
 
+import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
+import com.gypsyengineer.tlsbunny.utils.Output;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -11,18 +14,24 @@ import static com.gypsyengineer.tlsbunny.utils.Utils.info;
 
 public class MultipleThreads {
 
-    private final List<Config> configs = new ArrayList<>();
+    private final List<FuzzerConfig> configs = new ArrayList<>();
+    private Analyzer analyzer;
 
-    public MultipleThreads add(List<Config> configs) {
-        for (Config config : configs) {
+    public MultipleThreads add(List<FuzzerConfig> configs) {
+        for (FuzzerConfig config : configs) {
             this.configs.add(config);
         }
 
         return this;
     }
 
-    public MultipleThreads add(Config... configs) {
+    public MultipleThreads add(FuzzerConfig... configs) {
         return add(Arrays.asList(configs));
+    }
+
+    public MultipleThreads set(Analyzer analyzer) {
+        this.analyzer = analyzer;
+        return this;
     }
 
     public void submit() throws InterruptedException {
@@ -36,7 +45,7 @@ public class MultipleThreads {
         info("we are going to use %d threads", threads);
         ExecutorService executor = Executors.newFixedThreadPool(threads);
         try {
-            for (Config config : configs) {
+            for (FuzzerConfig config : configs) {
                 submit(executor, config);
             }
         } finally {
@@ -47,25 +56,34 @@ public class MultipleThreads {
         executor.awaitTermination(365, TimeUnit.DAYS);
 
         info("phew, we are done!");
+
+        if (analyzer != Analyzer.NOTHING) {
+            try (Output output = new Output()) {
+                analyzer.set(output);
+                analyzer.run();
+            }
+        }
     }
 
-    private static void submit(ExecutorService executor, Config config) {
-        for (Config subConfig : split(config)) {
+    private void submit(ExecutorService executor, FuzzerConfig config) {
+        for (FuzzerConfig subConfig : split(config)) {
             executor.submit(subConfig.create());
         }
     }
 
-    private static Config[] split(Config config) {
-        Config[] configs = new Config[config.parts()];
+    private FuzzerConfig[] split(FuzzerConfig config) {
+        FuzzerConfig[] configs = new FuzzerConfig[config.parts()];
         long perThread = (config.endTest() - config.startTest()) / config.parts();
         long start = config.startTest();
         long end = start + perThread;
 
         for (int i = 0; i < config.parts(); i++) {
-            Config subConfig = config.copy();
-            subConfig.parts(1);
-            subConfig.startTest(start);
-            subConfig.endTest(end);
+            FuzzerConfig subConfig = new SplittedFuzzerConfig(config, start, end);
+
+            if (analyzer != Analyzer.NOTHING) {
+                subConfig.analyzer(analyzer);
+            }
+
             configs[i] = subConfig;
         }
 
