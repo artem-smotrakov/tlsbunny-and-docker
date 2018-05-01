@@ -11,7 +11,7 @@ public class PrintingData extends AbstractAction {
     }
 
     @Override
-    public Action run() throws Exception {
+    public Action run() {
         byte[] data = new byte[in.remaining()];
         in.get(data);
         output.info("received application data:%n%s", new String(data));

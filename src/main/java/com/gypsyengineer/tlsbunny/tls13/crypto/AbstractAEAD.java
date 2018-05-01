@@ -36,13 +36,15 @@ public abstract class AbstractAEAD implements AEAD {
     }
 
     @Override
-    public byte[] update(byte[] plaintext) throws Exception {
-        throw new UnsupportedOperationException();
+    public byte[] update(byte[] plaintext) {
+        throw new UnsupportedOperationException(
+                "What the hell? I can't do encryption or decryption");
     }
 
     @Override
     public int getKeyLength() {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException(
+                "What the hell? I con't know about key length!");
     }
 
 }

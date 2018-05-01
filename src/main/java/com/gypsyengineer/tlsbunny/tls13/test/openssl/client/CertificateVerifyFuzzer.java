@@ -12,9 +12,7 @@ import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Target.certificate_verify;
 
 public class CertificateVerifyFuzzer extends HandshakeMessageFuzzer {
 
-    private static final CommonConfig commonConfig = CommonConfig.load();
-
-    static final Config[] configs = new Config[] {
+    static final FuzzerConfig[] configs = new FuzzerConfig[] {
             new CertificateVerifyFuzzerConfig(commonConfig)
                     .mode(byte_flip)
                     .minRatio(0.01)
@@ -57,7 +55,8 @@ public class CertificateVerifyFuzzer extends HandshakeMessageFuzzer {
                 .allow(new IncomingNewSessionTicket())
                 .send(new OutgoingHttpGetRequest())
                 .require(new IncomingApplicationData())
-                .connect();
+                .connect()
+                .apply(config.analyzer());
     }
 
     public static void main(String[] args) throws InterruptedException {
@@ -66,10 +65,14 @@ public class CertificateVerifyFuzzer extends HandshakeMessageFuzzer {
 
     public static class CertificateVerifyFuzzerConfig extends FuzzerConfig {
 
-        public CertificateVerifyFuzzerConfig(CommonConfig commonConfig) {
+        public CertificateVerifyFuzzerConfig(Config commonConfig) {
             super(commonConfig);
-            factory(() -> new CertificateVerifyFuzzer(new Output(), this));
             target(certificate_verify);
+        }
+
+        @Override
+        public Runnable create() {
+            return new CertificateVerifyFuzzer(new Output(), this);
         }
 
     }

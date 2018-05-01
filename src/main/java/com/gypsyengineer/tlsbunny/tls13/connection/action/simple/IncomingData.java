@@ -3,6 +3,7 @@ package com.gypsyengineer.tlsbunny.tls13.connection.action.simple;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.AbstractAction;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 
 public class IncomingData extends AbstractAction {
@@ -13,7 +14,7 @@ public class IncomingData extends AbstractAction {
     }
 
     @Override
-    public Action run() throws Exception {
+    public Action run() {
         out = ByteBuffer.allocate(in.remaining());
         out.put(in);
         out.position(0);

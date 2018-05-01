@@ -3,7 +3,10 @@ package com.gypsyengineer.tlsbunny.tls13.connection.action.simple;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.AbstractAction;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AEAD;
+import com.gypsyengineer.tlsbunny.tls13.crypto.AEADException;
 import com.gypsyengineer.tlsbunny.tls13.struct.Handshake;
+
+import java.io.IOException;
 
 import static com.gypsyengineer.tlsbunny.tls13.handshake.Context.ZERO_HASH_VALUE;
 import static com.gypsyengineer.tlsbunny.tls13.handshake.Context.ZERO_SALT;
@@ -18,7 +21,7 @@ public class ComputingKeysAfterServerHello extends AbstractAction {
     }
 
     @Override
-    public Action run() throws Exception {
+    public Action run() throws IOException, AEADException {
         byte[] psk = zeroes(context.hkdf.getHashLength());
         Handshake clientHello = context.getFirstClientHello();
         Handshake serverHello = context.getServerHello();

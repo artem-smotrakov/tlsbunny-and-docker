@@ -5,6 +5,8 @@ import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
 import com.gypsyengineer.tlsbunny.tls13.utils.Helper;
 
+import java.io.IOException;
+
 public class OutgoingChangeCipherSpec extends AbstractAction {
 
     @Override
@@ -13,7 +15,7 @@ public class OutgoingChangeCipherSpec extends AbstractAction {
     }
 
     @Override
-    public Action run() throws Exception {
+    public Action run() throws IOException {
         ChangeCipherSpec ccs = context.factory.createChangeCipherSpec(ChangeCipherSpec.VALID_VALUE);
         TLSPlaintext[] tlsPlaintexts = context.factory.createTLSPlaintexts(
                 ContentType.change_cipher_spec,

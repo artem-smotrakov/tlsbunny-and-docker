@@ -17,7 +17,7 @@ dependencies {
 task buildOpensslDocker(type: Exec) {
     commandLine 'docker',
             'build',
-            '--file', 'configs/openssl/tls13/server/Dockerfile',
+            '--file', 'src/main/docker/openssl/Dockerfile',
             '--tag', 'openssl/server/tls13',
             '.'
 }
@@ -25,7 +25,7 @@ task buildOpensslDocker(type: Exec) {
 task buildPicotlsDocker(type: Exec) {
     commandLine 'docker',
             'build',
-            '--file', 'configs/picotls/tls13/server/Dockerfile',
+            '--file', 'src/main/docker/picotls/Dockerfile',
             '--tag', 'picotls/server/tls13',
             '.'
 }
@@ -33,7 +33,7 @@ task buildPicotlsDocker(type: Exec) {
 task buildGnutlsDocker(type: Exec) {
     commandLine 'docker',
             'build',
-            '--file', 'configs/gnutls/tls13/server/Dockerfile',
+            '--file', 'src/main/docker/gnutls/Dockerfile',
             '--tag', 'gnutls/server/tls13',
             '.'
 }

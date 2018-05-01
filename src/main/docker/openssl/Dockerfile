@@ -4,7 +4,7 @@
 # the following command builds a docker image
 # it should be run from the root of tlsbunny repository
 #
-# docker build --file configs/openssl/tls13/server/Dockerfile --tag openssl/server/tls13 .
+# docker build --file src/main/docker/openssl/Dockerfile --tag openssl/server/tls13 .
 #
 # the following command starts an OpenSSL server
 #

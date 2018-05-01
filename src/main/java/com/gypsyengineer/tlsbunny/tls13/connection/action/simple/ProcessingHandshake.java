@@ -2,6 +2,7 @@ package com.gypsyengineer.tlsbunny.tls13.connection.action.simple;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.action.AbstractAction;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.ActionFailed;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.struct.Handshake;
 import com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType;
@@ -39,12 +40,12 @@ public class ProcessingHandshake extends AbstractAction {
     }
 
     @Override
-    public Action run() throws Exception {
+    public Action run() throws ActionFailed {
         Handshake handshake = context.factory.parser().parseHandshake(in);
 
         HandshakeType type = handshake.getMessageType();
         if (expectedType != NO_TYPE_SPECIFIED && !expectedType.equals(type)) {
-            throw new IOException(
+            throw new ActionFailed(
                     String.format("expected %s, but found %s", expectedType, type));
         }
 

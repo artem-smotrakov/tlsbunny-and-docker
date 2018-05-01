@@ -2,8 +2,11 @@ package com.gypsyengineer.tlsbunny.tls13.connection.action.simple;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.action.AbstractAction;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
+import com.gypsyengineer.tlsbunny.tls13.handshake.NegotiatorException;
 import com.gypsyengineer.tlsbunny.tls13.struct.KeyShare;
 import com.gypsyengineer.tlsbunny.tls13.struct.ServerHello;
+
+import java.io.IOException;
 
 import static com.gypsyengineer.tlsbunny.tls13.utils.Helper.findKeyShare;
 
@@ -15,7 +18,7 @@ public class NegotiatingDHSecret extends AbstractAction {
     }
 
     @Override
-    public Action run() throws Exception {
+    public Action run() throws IOException, NegotiatorException {
         // TODO: we look for only first key share, but there may be multiple key shares
         ServerHello serverHello = context.factory.parser().parseServerHello(
                 context.getServerHello().getBody());

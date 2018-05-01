@@ -12,20 +12,18 @@ import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Target.client_hello;
 
 public class ClientHelloFuzzer extends HandshakeMessageFuzzer {
 
-    private static final CommonConfig commonConfig = CommonConfig.load();
-
-    static final Config[] configs = new Config[] {
+    static final FuzzerConfig[] configs = new FuzzerConfig[] {
             new ClientHelloFuzzerConfig(commonConfig)
                     .mode(byte_flip)
                     .minRatio(0.01)
                     .maxRatio(0.09)
-                    .endTest(1000)
+                    .endTest(10)
                     .parts(5),
             new ClientHelloFuzzerConfig(commonConfig)
                     .mode(bit_flip)
                     .minRatio(0.01)
                     .maxRatio(0.09)
-                    .endTest(1000)
+                    .endTest(10)
                     .parts(5),
     };
 
@@ -52,7 +50,8 @@ public class ClientHelloFuzzer extends HandshakeMessageFuzzer {
                 .allow(new IncomingNewSessionTicket())
                 .send(new OutgoingHttpGetRequest())
                 .require(new IncomingApplicationData())
-                .connect();
+                .connect()
+                .apply(config.analyzer());
     }
 
     public static void main(String[] args) throws InterruptedException {
@@ -61,10 +60,14 @@ public class ClientHelloFuzzer extends HandshakeMessageFuzzer {
 
     public static class ClientHelloFuzzerConfig extends FuzzerConfig {
 
-        public ClientHelloFuzzerConfig(CommonConfig commonConfig) {
+        public ClientHelloFuzzerConfig(Config commonConfig) {
             super(commonConfig);
-            factory(() -> new ClientHelloFuzzer(new Output(), this));
             target(client_hello);
+        }
+
+        @Override
+        public Runnable create() {
+            return new ClientHelloFuzzer(new Output(), this);
         }
 
     }

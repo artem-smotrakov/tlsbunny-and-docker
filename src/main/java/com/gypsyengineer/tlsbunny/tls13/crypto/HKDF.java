@@ -34,12 +34,12 @@ public class HKDF {
     }
 
     // HKDF-Extract(salt, IKM) -> PRK
-    public byte[] extract(byte[] salt, byte[] IKM) throws InvalidKeyException {
+    public byte[] extract(byte[] salt, byte[] IKM) {
         return hmac(salt, IKM);
     }
 
     // HKDF-Expand(PRK, info, L) -> OKM
-    public byte[] expand(byte[] PRK, byte[] info, int L) throws InvalidKeyException {
+    public byte[] expand(byte[] PRK, byte[] info, int L) {
         int maxLen = 255 * hashLen;
         if (L > maxLen) {
             throw new IllegalArgumentException();
@@ -49,7 +49,14 @@ public class HKDF {
         ByteBuffer T = ByteBuffer.allocate(N * hashLen);
         byte[] t = new byte[0];
         mac.reset();
-        mac.init(new SecretKeySpec(PRK, mac.getAlgorithm()));
+
+        try {
+            mac.init(new SecretKeySpec(PRK, mac.getAlgorithm()));
+        } catch (InvalidKeyException e) {
+            throw new RuntimeException(
+                    "What the hell? InvalidKeyException should not occur!", e);
+        }
+
         for (int i = 1; i <= N; i++) {
             t = mac.doFinal(concatenate(t, info, new byte[] { (byte) i }));
             T.put(t);
@@ -61,7 +68,7 @@ public class HKDF {
     // HKDF-Expand-Label(Secret, Label, Context, Length) =
     //     HKDF-Expand(Secret, HkdfLabel, Length)
     public byte[] expandLabel(byte[] secret, byte[] label, byte[] context, int length)
-            throws IOException, InvalidKeyException {
+            throws IOException {
 
         return expand(secret, 
                 createHkdfLabel(length, label, context).encoding(),
@@ -72,20 +79,26 @@ public class HKDF {
     //        HKDF-Expand-Label(Secret, Label,
     //                          Transcript-Hash(Messages), Hash.length)
     public byte[] deriveSecret(byte[] secret, byte[] label, Handshake... messages)
-            throws IOException, InvalidKeyException {
+            throws IOException {
 
         return expandLabel(secret, label, transcriptHash.compute(messages), hashLen);
     }
 
     // HMAC-Hash() function
-    public byte[] hmac(byte[] key, byte[] input) throws InvalidKeyException {
+    public byte[] hmac(byte[] key, byte[] input) {
         mac.reset();
-        mac.init(new RawKey(key, mac.getAlgorithm()));
+
+        try {
+            mac.init(new RawKey(key, mac.getAlgorithm()));
+        } catch (InvalidKeyException e) {
+            throw new RuntimeException(
+                    "What the hell? InvalidKeyException should not occur!", e);
+        }
         return mac.doFinal(input);
     }
 
     public static HKDF create(String algorithm, StructFactory factory) 
-            throws NoSuchAlgorithmException, IOException {
+            throws NoSuchAlgorithmException {
 
         return new HKDF(
                 MessageDigest.getInstance(algorithm).getDigestLength(),

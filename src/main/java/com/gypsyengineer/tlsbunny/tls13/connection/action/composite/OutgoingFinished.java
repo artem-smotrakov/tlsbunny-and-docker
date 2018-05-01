@@ -2,7 +2,9 @@ package com.gypsyengineer.tlsbunny.tls13.connection.action.composite;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.action.AbstractAction;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.ActionFailed;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AEAD;
+import com.gypsyengineer.tlsbunny.tls13.crypto.AEADException;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AesGcm;
 import com.gypsyengineer.tlsbunny.tls13.crypto.TranscriptHash;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
@@ -18,6 +20,9 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext.NO_PADDI
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
 import com.gypsyengineer.tlsbunny.tls13.utils.Helper;
 
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+
 public class OutgoingFinished extends AbstractAction {
 
     @Override
@@ -26,7 +31,7 @@ public class OutgoingFinished extends AbstractAction {
     }
 
     @Override
-    public Action run() throws Exception {
+    public Action run() throws IOException, AEADException, ActionFailed {
         Finished finished = createFinished();
         Handshake handshake = toHandshake(finished);
         context.setClientFinished(handshake);
@@ -70,22 +75,26 @@ public class OutgoingFinished extends AbstractAction {
         return this;
     }
 
-    private Finished createFinished() throws Exception {
-        byte[] verify_data = context.hkdf.hmac(
-                context.finished_key,
-                TranscriptHash.compute(context.suite.hash(), context.allMessages()));
+    private Finished createFinished() throws IOException, ActionFailed {
+        try {
+            byte[] verify_data = context.hkdf.hmac(
+                    context.finished_key,
+                    TranscriptHash.compute(context.suite.hash(), context.allMessages()));
 
-        return context.factory.createFinished(verify_data);
+            return context.factory.createFinished(verify_data);
+        } catch (NoSuchAlgorithmException e) {
+            throw new ActionFailed(e);
+        }
     }
 
-    TLSPlaintext[] encrypt(Handshake message) throws Exception {
+    TLSPlaintext[] encrypt(Handshake message) throws AEADException, IOException {
         return context.factory.createTLSPlaintexts(
                 ContentType.application_data,
                 ProtocolVersion.TLSv12,
                 encrypt(message.encoding()));
     }
 
-    private byte[] encrypt(byte[] data) throws Exception {
+    private byte[] encrypt(byte[] data) throws AEADException, IOException {
         TLSInnerPlaintext tlsInnerPlaintext = context.factory.createTLSInnerPlaintext(
                 ContentType.handshake, data, NO_PADDING);
         byte[] plaintext = tlsInnerPlaintext.encoding();

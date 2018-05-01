@@ -42,6 +42,12 @@ public class NoAlertAnalyzer implements Analyzer {
     @Override
     public Analyzer run() {
         output.info("let's look for connections with no alerts");
+
+        if (contexts.entrySet().isEmpty()) {
+            output.info("there is nothing to analyze!");
+            return this;
+        }
+
         int count = 0;
         for (Map.Entry<String, Holder> entry : contexts.entrySet()) {
             String label = entry.getKey();

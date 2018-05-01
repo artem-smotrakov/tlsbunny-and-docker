@@ -2,11 +2,14 @@ package com.gypsyengineer.tlsbunny.tls13.connection;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.ActionFactory;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.ActionFailed;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.IncomingChangeCipherSpec;
+import com.gypsyengineer.tlsbunny.tls13.crypto.AEADException;
 import com.gypsyengineer.tlsbunny.tls13.crypto.HKDF;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.handshake.ECDHENegotiator;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Negotiator;
+import com.gypsyengineer.tlsbunny.tls13.handshake.NegotiatorException;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
 import com.gypsyengineer.tlsbunny.utils.Connection;
 import com.gypsyengineer.tlsbunny.utils.Output;
@@ -27,7 +30,7 @@ public class Engine {
     }
 
     public enum Status {
-        not_started, running, could_not_send, unexpected_message, unexpected_error, success
+        not_started, running, could_not_send, unexpected_error, success
     }
 
     private final List<ActionHolder> actions = new ArrayList<>();
@@ -151,8 +154,8 @@ public class Engine {
                             output.info("send: %s", action.name());
                             action.run();
                             connection.send(action.out());
-                        } catch (Exception e) {
-                            output.achtung("error:", e);
+                        } catch (ActionFailed | AEADException | NegotiatorException | IOException e) {
+                            output.achtung("error:", e.getMessage());
                             status = Status.could_not_send;
                             return this;
                         }
@@ -164,9 +167,9 @@ public class Engine {
                         try {
                             action.run();
                             combineData(action);
-                        } catch (Exception e) {
-                            output.achtung("error:", e);
-                            status = Status.unexpected_message;
+                        } catch (ActionFailed | AEADException | NegotiatorException | IOException e) {
+                            output.achtung("error:", e.getMessage());
+                            status = Status.unexpected_error;
                             return this;
                         }
                         break;
@@ -182,7 +185,7 @@ public class Engine {
                         try {
                             action.run();
                             combineData(action);
-                        } catch (Exception e) {
+                        } catch (ActionFailed | AEADException | NegotiatorException | IOException e) {
                             output.info("error: %s", e);
                             output.info("skip %s", action.name());
                             buffer.reset(); // restore out
@@ -193,7 +196,7 @@ public class Engine {
                         try {
                             action.run();
                             combineData(action);
-                        } catch (Exception e) {
+                        } catch (ActionFailed | AEADException | NegotiatorException | IOException e) {
                             output.achtung("error:", e);
                             status = Status.unexpected_error;
                             return this;
@@ -286,8 +289,7 @@ public class Engine {
         }
     }
 
-    public static Engine init() throws IOException,
-            InvalidAlgorithmParameterException, NoSuchAlgorithmException {
+    public static Engine init() throws NoSuchAlgorithmException, NegotiatorException {
 
         Engine connection = new Engine();
         connection.context.negotiator = ECDHENegotiator.create(

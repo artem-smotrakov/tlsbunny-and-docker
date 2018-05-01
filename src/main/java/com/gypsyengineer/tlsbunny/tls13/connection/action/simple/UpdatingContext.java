@@ -18,7 +18,7 @@ public class UpdatingContext extends AbstractAction {
     }
 
     @Override
-    public Action run() throws Exception {
+    public Action run() {
         in.mark();
         try {
             context.set(element, context.factory.parser().parseHandshake(in));

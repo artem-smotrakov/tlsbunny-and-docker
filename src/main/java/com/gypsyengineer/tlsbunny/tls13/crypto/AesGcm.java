@@ -33,11 +33,13 @@ public abstract class AesGcm extends AbstractAEAD {
     }
 
     @Override
-    public byte[] decrypt(TLSPlaintext tlsCiphertext) throws Exception  {
-        throw new UnsupportedOperationException();
+    public byte[] decrypt(TLSPlaintext tlsCiphertext) throws AEADException {
+        throw new UnsupportedOperationException("what the hell? I can't decrypt!");
     }
 
-    byte[] getAdditionalData(ContentType type, ProtocolVersion version, UInt16 length) throws IOException {
+    byte[] getAdditionalData(ContentType type, ProtocolVersion version, UInt16 length)
+            throws IOException {
+
         return Utils.concatenate(type.encoding(), version.encoding(), length.encoding());
     }
 

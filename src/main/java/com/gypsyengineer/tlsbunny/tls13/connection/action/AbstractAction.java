@@ -2,6 +2,7 @@ package com.gypsyengineer.tlsbunny.tls13.connection.action;
 
 import com.gypsyengineer.tlsbunny.tls.Random;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AEAD;
+import com.gypsyengineer.tlsbunny.tls13.crypto.AEADException;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
 import com.gypsyengineer.tlsbunny.utils.Output;
@@ -62,30 +63,29 @@ public abstract class AbstractAction implements Action {
     // helper methods
 
     protected byte[] processEncrypted(AEAD decryptor, ContentType expectedType)
-            throws Exception {
+            throws ActionFailed, AEADException {
 
         TLSPlaintext tlsPlaintext = context.factory.parser().parseTLSPlaintext(in);
         if (tlsPlaintext.containsAlert()) {
             Alert alert = context.factory.parser().parseAlert(tlsPlaintext.getFragment());
             context.setAlert(alert);
-            throw new IOException(String.format("received an alert: %s", alert));
+            throw new ActionFailed(String.format("received an alert: %s", alert));
         }
 
         if (!tlsPlaintext.containsApplicationData()) {
-            throw new IOException("expected a TLSCiphertext");
+            throw new ActionFailed("expected a TLSCiphertext");
         }
 
-        TLSInnerPlaintext tlsInnerPlaintext = context.factory.parser().parseTLSInnerPlaintext(
-                decryptor.decrypt(tlsPlaintext));
+        TLSInnerPlaintext tlsInnerPlaintext = decrypt(decryptor, tlsPlaintext);
 
         if (!expectedType.isAlert() && tlsInnerPlaintext.containsAlert()) {
             Alert alert = context.factory.parser().parseAlert(tlsInnerPlaintext.getContent());
             context.setAlert(alert);
-            throw new IOException(String.format("received an alert: %s", alert));
+            throw new ActionFailed(String.format("received an alert: %s", alert));
         }
 
         if (!expectedType.equals(tlsInnerPlaintext.getType())) {
-            throw new IOException(
+            throw new ActionFailed(
                     String.format("expected %, but received %s",
                             expectedType, tlsInnerPlaintext.getType()));
         }
@@ -93,7 +93,7 @@ public abstract class AbstractAction implements Action {
         return tlsInnerPlaintext.getContent();
     }
 
-    protected Handshake processEncryptedHandshake() throws Exception {
+    protected Handshake processEncryptedHandshake() throws AEADException, ActionFailed {
         return context.factory.parser().parseHandshake(
                 processEncrypted(context.handshakeDecryptor, ContentType.handshake));
     }
@@ -120,6 +120,13 @@ public abstract class AbstractAction implements Action {
     protected Extension wrap(KeyShare keyShare) throws IOException {
         return context.factory.createExtension(
                 ExtensionType.key_share, keyShare.encoding());
+    }
+
+    protected TLSInnerPlaintext decrypt(AEAD decryptor, TLSPlaintext tlsPlaintext)
+            throws AEADException {
+
+        return context.factory.parser().parseTLSInnerPlaintext(
+                decryptor.decrypt(tlsPlaintext));
     }
 
     public static Random createRandom() {

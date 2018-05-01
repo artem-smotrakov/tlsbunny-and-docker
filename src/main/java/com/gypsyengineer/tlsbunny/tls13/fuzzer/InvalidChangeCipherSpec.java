@@ -2,11 +2,14 @@ package com.gypsyengineer.tlsbunny.tls13.fuzzer;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.action.AbstractAction;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.ActionFailed;
 import com.gypsyengineer.tlsbunny.tls13.struct.ChangeCipherSpec;
 import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
 import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
 import com.gypsyengineer.tlsbunny.tls13.utils.Helper;
+
+import java.io.IOException;
 
 public class InvalidChangeCipherSpec extends AbstractAction implements Fuzzer<ChangeCipherSpec> {
 
@@ -26,16 +29,20 @@ public class InvalidChangeCipherSpec extends AbstractAction implements Fuzzer<Ch
     }
 
     @Override
-    public Action run() throws Exception {
-        ChangeCipherSpec ccs = fuzz(NO_INPUT);
-        TLSPlaintext[] tlsPlaintexts = context.factory.createTLSPlaintexts(
-                ContentType.change_cipher_spec,
-                ProtocolVersion.TLSv12,
-                ccs.encoding());
+    public Action run() throws ActionFailed {
+        try {
+            ChangeCipherSpec ccs = fuzz(NO_INPUT);
+            TLSPlaintext[] tlsPlaintexts = context.factory.createTLSPlaintexts(
+                    ContentType.change_cipher_spec,
+                    ProtocolVersion.TLSv12,
+                    ccs.encoding());
 
-        in = Helper.store(tlsPlaintexts);
+            in = Helper.store(tlsPlaintexts);
 
-        return this;
+            return this;
+        } catch (IOException e) {
+            throw new ActionFailed(e);
+        }
     }
 
     @Override

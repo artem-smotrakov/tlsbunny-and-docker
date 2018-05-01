@@ -3,6 +3,7 @@ package com.gypsyengineer.tlsbunny.tls13.connection.action.composite;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.AbstractAction;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AEAD;
+import com.gypsyengineer.tlsbunny.tls13.crypto.AEADException;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AesGcm;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
 import com.gypsyengineer.tlsbunny.tls13.utils.Helper;
@@ -33,7 +34,7 @@ public class OutgoingCertificate extends AbstractAction {
     }
 
     @Override
-    public Action run() throws Exception {
+    public Action run() throws IOException, AEADException {
         Certificate certificate = createCertificate();
         Handshake handshake = toHandshake(certificate);
 
@@ -53,14 +54,14 @@ public class OutgoingCertificate extends AbstractAction {
     }
 
 
-    TLSPlaintext[] encrypt(Handshake message) throws Exception {
+    TLSPlaintext[] encrypt(Handshake message) throws IOException, AEADException {
         return context.factory.createTLSPlaintexts(
                 ContentType.application_data,
                 ProtocolVersion.TLSv12,
                 encrypt(message.encoding()));
     }
 
-    private byte[] encrypt(byte[] data) throws Exception {
+    private byte[] encrypt(byte[] data) throws IOException, AEADException {
         TLSInnerPlaintext tlsInnerPlaintext = context.factory.createTLSInnerPlaintext(
                 ContentType.handshake, data, NO_PADDING);
         byte[] plaintext = tlsInnerPlaintext.encoding();

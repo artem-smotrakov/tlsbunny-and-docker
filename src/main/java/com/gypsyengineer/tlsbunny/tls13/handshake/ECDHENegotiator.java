@@ -6,16 +6,12 @@ import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.tls13.struct.UncompressedPointRepresentation;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.KeyFactory;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
-import java.security.PublicKey;
+import java.security.*;
 import java.security.interfaces.ECPublicKey;
 import java.security.spec.ECGenParameterSpec;
 import java.security.spec.ECPoint;
 import java.security.spec.ECPublicKeySpec;
+import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
 import javax.crypto.KeyAgreement;
 
@@ -35,28 +31,37 @@ public class ECDHENegotiator extends AbstractNegotiator {
     }
 
     @Override
-    public KeyShareEntry  createKeyShareEntry() throws Exception {
-        KeyPair kp = generator.generateKeyPair();
-        keyAgreement.init(kp.getPrivate());
-        ECPoint W = ((ECPublicKey) kp.getPublic()).getW();
-        
-        return factory.createKeyShareEntry(
-                group, 
-                createUPR(W).encoding());
+    public KeyShareEntry  createKeyShareEntry() throws NegotiatorException {
+        try {
+            KeyPair kp = generator.generateKeyPair();
+            keyAgreement.init(kp.getPrivate());
+            ECPoint W = ((ECPublicKey) kp.getPublic()).getW();
+
+            return factory.createKeyShareEntry(
+                    group,
+                    createUPR(W).encoding());
+        } catch (InvalidKeyException | IOException e) {
+            throw new NegotiatorException(e);
+        }
     }
     
     @Override
-    public void processKeyShareEntry(KeyShareEntry entry) throws Exception {
+    public void processKeyShareEntry(KeyShareEntry entry) throws NegotiatorException {
         if (!group.equals(entry.getNamedGroup())) {
             throw new IllegalArgumentException();
         }
 
-        PublicKey key = KeyFactory.getInstance("EC").generatePublic(
-                new ECPublicKeySpec(
-                        convertToECPoint(entry), 
-                        secpParameters.ecParameterSpec));
+        try {
+            PublicKey key = KeyFactory.getInstance("EC").generatePublic(
+                    new ECPublicKeySpec(
+                            convertToECPoint(entry),
+                            secpParameters.ecParameterSpec));
 
-        keyAgreement.doPhase(key, true);
+            keyAgreement.doPhase(key, true);
+        } catch (NoSuchAlgorithmException | IOException | InvalidKeyException
+                | InvalidKeySpecException e) {
+            throw new NegotiatorException(e);
+        }
     }
 
     @Override
@@ -87,17 +92,21 @@ public class ECDHENegotiator extends AbstractNegotiator {
     }
     
     public static ECDHENegotiator create(NamedGroup.Secp group, StructFactory factory) 
-            throws NoSuchAlgorithmException, InvalidAlgorithmParameterException {
-        
-        KeyPairGenerator generator = KeyPairGenerator.getInstance("EC");
-        ECGenParameterSpec spec = new ECGenParameterSpec(group.getCurve());
-        generator.initialize(spec);
+            throws NegotiatorException {
 
-        return new ECDHENegotiator(
-                group, 
-                SecpParameters.create(group), 
-                KeyAgreement.getInstance("ECDH"),
-                generator, factory);
+        try {
+            KeyPairGenerator generator = KeyPairGenerator.getInstance("EC");
+            ECGenParameterSpec spec = new ECGenParameterSpec(group.getCurve());
+            generator.initialize(spec);
+
+            return new ECDHENegotiator(
+                    group,
+                    SecpParameters.create(group),
+                    KeyAgreement.getInstance("ECDH"),
+                    generator, factory);
+        } catch (NoSuchAlgorithmException | InvalidAlgorithmParameterException e) {
+            throw new NegotiatorException(e);
+        }
     }
 
     private static int getCoordinateLength(NamedGroup.Secp group) {

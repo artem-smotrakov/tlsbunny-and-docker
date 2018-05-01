@@ -3,7 +3,7 @@
 #
 # the following command builds a docker image
 #
-# docker build --file configs/gnutls/tls13/server/Dockerfile --tag gnutls/server/tls13 .
+# docker build --file src/main/docker/gnutls/Dockerfile --tag gnutls/server/tls13 .
 #
 # the following command start an the server server
 #

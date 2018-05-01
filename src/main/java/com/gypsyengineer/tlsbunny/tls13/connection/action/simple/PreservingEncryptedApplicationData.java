@@ -13,7 +13,7 @@ public class PreservingEncryptedApplicationData extends AbstractAction {
     }
 
     @Override
-    public Action run() throws Exception {
+    public Action run() {
         byte[] data = new byte[in.remaining()];
         in.get(data);
         applicationDataOut = ByteBuffer.wrap(data);
