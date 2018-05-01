@@ -19,9 +19,9 @@ public class Output implements AutoCloseable {
 
     synchronized public void prefix(String prefix) {
         if (prefix != null && !prefix.isEmpty()) {
-            this.prefix = String.format("%s%s:", TLSBUNNY, prefix);
+            this.prefix = String.format("%s%s: ", TLSBUNNY, prefix);
         } else {
-            this.prefix = String.format("%s:", TLSBUNNY);
+            this.prefix = String.format("%s: ", TLSBUNNY);
         }
     }
 
