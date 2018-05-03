@@ -50,7 +50,7 @@ public class Engine {
     private boolean stopIfAlert = true;
 
     // this is a label to mark a particular connection
-    private String label = String.valueOf(System.currentTimeMillis());
+    private String label = String.format("connection:%d", System.currentTimeMillis());
 
     private Engine() {
         context.group = NamedGroup.secp256r1;
