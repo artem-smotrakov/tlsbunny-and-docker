@@ -8,10 +8,27 @@ import java.util.List;
 public class Output implements AutoCloseable {
 
     public static final String TLSBUNNY = "[tlsbunny] ";
+    public static final int INDENT_STEP = 4;
 
     private final List<String> strings = new ArrayList<>();
     private String prefix = TLSBUNNY;
     private int index = 0;
+    private String indent = "";
+
+    synchronized public void increaseIndent() {
+        int indentLength = indent.length() + INDENT_STEP;
+        indent = new String(new char[indentLength]).replace('\0', ' ');
+    }
+
+    synchronized public void decreaseIndent() {
+        int indentLength = indent.length() - INDENT_STEP;
+
+        if (indentLength < 0) {
+            indentLength = 0;
+        }
+
+        indent = new String(new char[indentLength]).replace('\0', ' ');
+    }
 
     synchronized public void printf(String format, Object... params) {
         strings.add(String.format(format, params));
@@ -29,21 +46,21 @@ public class Output implements AutoCloseable {
         String text = String.format(format, values);
         String[] lines = text.split("\\r?\\n");
         for (String line : lines) {
-            printf("%s%s%n", prefix, line);
+            printf("%s%s%s%n", prefix, indent, line);
         }
     }
 
-    public void achtung(String format, Object... values) {
+    synchronized public void achtung(String format, Object... values) {
         printf("%sachtung: %s%n", prefix, String.format(format, values));
     }
 
-    public void achtung(String message, Throwable e) {
+    synchronized public void achtung(String message, Throwable e) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         e.printStackTrace(new PrintStream(baos, true));
         achtung(String.format("%s%n%s", message, new String(baos.toByteArray())));
     }
 
-    public void add(Output output) {
+    synchronized public void add(Output output) {
         strings.addAll(output.strings);
     }
 
@@ -61,7 +78,7 @@ public class Output implements AutoCloseable {
     }
 
     @Override
-    public void close() {
+    synchronized public void close() {
         flush();
     }
 
