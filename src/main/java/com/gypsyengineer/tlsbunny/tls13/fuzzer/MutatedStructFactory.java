@@ -10,8 +10,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.gypsyengineer.tlsbunny.utils.HexDump.toHex;
-import static com.gypsyengineer.tlsbunny.utils.HexDump.toHexDiff;
+import static com.gypsyengineer.tlsbunny.utils.HexDump.printHexDiff;
 
 public class MutatedStructFactory extends StructFactoryWrapper
         implements Fuzzer<byte[]> {
@@ -222,8 +221,8 @@ public class MutatedStructFactory extends StructFactoryWrapper
     public byte[] fuzz(byte[] encoding) {
         byte[] fuzzed = fuzzer.fuzz(encoding);
 
-        output.info("%s (original): %n%s", target, toHexDiff(encoding, fuzzed));
-        output.info("%s (fuzzed): %n%s", target, toHexDiff(fuzzed, encoding));
+        output.info("%s (original): %n%s", target, printHexDiff(encoding, fuzzed));
+        output.info("%s (fuzzed): %n%s", target, printHexDiff(fuzzed, encoding));
 
         if (Arrays.equals(encoding, fuzzed)) {
             output.achtung("nothing actually fuzzed");
