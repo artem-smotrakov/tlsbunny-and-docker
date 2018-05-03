@@ -9,7 +9,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
 import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
-import com.gypsyengineer.tlsbunny.tls13.utils.Helper;
+import com.gypsyengineer.tlsbunny.tls13.utils.TLS13Utils;
 
 import java.io.IOException;
 
@@ -41,7 +41,7 @@ public class OutgoingApplicationData extends AbstractAction {
                 ProtocolVersion.TLSv12,
                 encrypt(data));
 
-        out = Helper.store(tlsPlaintexts);
+        out = TLS13Utils.store(tlsPlaintexts);
 
         return this;
     }

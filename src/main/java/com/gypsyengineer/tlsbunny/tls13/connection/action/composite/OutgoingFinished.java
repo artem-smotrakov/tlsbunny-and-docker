@@ -18,7 +18,7 @@ import static com.gypsyengineer.tlsbunny.tls13.handshake.Context.ZERO_HASH_VALUE
 import static com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext.NO_PADDING;
 
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
-import com.gypsyengineer.tlsbunny.tls13.utils.Helper;
+import com.gypsyengineer.tlsbunny.tls13.utils.TLS13Utils;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
@@ -61,7 +61,7 @@ public class OutgoingFinished extends AbstractAction {
                 ZERO_HASH_VALUE,
                 context.suite.ivLength());
 
-        out = Helper.store(encrypt(handshake));
+        out = TLS13Utils.store(encrypt(handshake));
 
         context.applicationDataEnctyptor = AEAD.createEncryptor(
                 context.suite.cipher(),

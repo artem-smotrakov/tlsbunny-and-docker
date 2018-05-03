@@ -5,9 +5,12 @@ import com.gypsyengineer.tlsbunny.tls.UInt16;
 import com.gypsyengineer.tlsbunny.tls.UInt24;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
 import com.gypsyengineer.tlsbunny.utils.Output;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+
+import static com.gypsyengineer.tlsbunny.utils.HexDump.printHexDiff;
 
 public class MutatedStructFactory extends StructFactoryWrapper
         implements Fuzzer<byte[]> {
@@ -61,11 +64,11 @@ public class MutatedStructFactory extends StructFactoryWrapper
 
         if (target == Target.tls_plaintext) {
             int index = 0;
-            output.info("fuzz TLSPlaintext[%d] (total is %d)",
-                    index, tlsPlaintexts.length);
             try {
-                tlsPlaintexts[index] = new MutatedStruct(
-                        fuzz(tlsPlaintexts[index].encoding()));
+                byte[] encoding = tlsPlaintexts[index].encoding();
+                output.info("fuzz TLSPlaintext[%d] (total is %d)",
+                        index, tlsPlaintexts.length);
+                tlsPlaintexts[index] = new MutatedStruct(fuzz(encoding));
             } catch (IOException e) {
                 output.achtung("I couldn't fuzz TLSPlaintext[%d]: %s",
                         e.getMessage(), index);
@@ -217,6 +220,16 @@ public class MutatedStructFactory extends StructFactoryWrapper
     @Override
     public byte[] fuzz(byte[] encoding) {
         byte[] fuzzed = fuzzer.fuzz(encoding);
+
+        output.info("%s (original): %n", target);
+        output.increaseIndent();
+        output.info("%s%n", printHexDiff(encoding, fuzzed));
+        output.decreaseIndent();
+        output.info("%s (fuzzed): %n", target);
+        output.increaseIndent();
+        output.info("%s%n", printHexDiff(fuzzed, encoding));
+        output.decreaseIndent();
+
         if (Arrays.equals(encoding, fuzzed)) {
             output.achtung("nothing actually fuzzed");
         }

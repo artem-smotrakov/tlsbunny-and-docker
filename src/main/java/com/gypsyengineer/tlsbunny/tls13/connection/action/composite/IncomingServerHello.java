@@ -10,8 +10,8 @@ import com.gypsyengineer.tlsbunny.tls13.struct.*;
 
 import static com.gypsyengineer.tlsbunny.tls13.handshake.Context.ZERO_HASH_VALUE;
 import static com.gypsyengineer.tlsbunny.tls13.handshake.Context.ZERO_SALT;
-import static com.gypsyengineer.tlsbunny.tls13.utils.Helper.findKeyShare;
-import static com.gypsyengineer.tlsbunny.tls13.utils.Helper.findSupportedVersion;
+import static com.gypsyengineer.tlsbunny.tls13.utils.TLS13Utils.findKeyShare;
+import static com.gypsyengineer.tlsbunny.tls13.utils.TLS13Utils.findSupportedVersion;
 import static com.gypsyengineer.tlsbunny.utils.Utils.concatenate;
 import static com.gypsyengineer.tlsbunny.utils.Utils.zeroes;
 

@@ -8,7 +8,7 @@ import com.gypsyengineer.tlsbunny.tls13.crypto.AEADException;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AesGcm;
 import com.gypsyengineer.tlsbunny.tls13.crypto.TranscriptHash;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
-import com.gypsyengineer.tlsbunny.tls13.utils.Helper;
+import com.gypsyengineer.tlsbunny.tls13.utils.TLS13Utils;
 import com.gypsyengineer.tlsbunny.utils.Utils;
 
 import java.io.IOException;
@@ -58,7 +58,7 @@ public class OutgoingCertificateVerify extends AbstractAction {
         //       since it sets a client CertificateVerify in context
         context.setClientCertificateVerify(handshake);
 
-        out = Helper.store(encrypt(handshake));
+        out = TLS13Utils.store(encrypt(handshake));
 
         return this;
     }
