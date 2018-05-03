@@ -15,7 +15,7 @@ public class HexDump {
         StringBuilder builder = new StringBuilder();
 
         for (int rowOffset = offset; rowOffset < offset + length; rowOffset += width) {
-            builder.append(String.format("%06d:  ", rowOffset));
+            builder.append(String.format("%04x:  ", rowOffset));
 
             for (int index = 0; index < width; index++) {
                 int k = rowOffset + index;
@@ -47,7 +47,7 @@ public class HexDump {
         StringBuilder builder = new StringBuilder();
 
         for (int rowOffset = offset; rowOffset < offset + length; rowOffset += width) {
-            builder.append(String.format("%06d:  ", rowOffset));
+            builder.append(String.format("%04x:  ", rowOffset));
 
             for (int index = 0; index < width; index++) {
                 int k = rowOffset + index;
