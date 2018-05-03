@@ -4,7 +4,7 @@ import com.gypsyengineer.tlsbunny.tls13.connection.action.AbstractAction;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
 import com.gypsyengineer.tlsbunny.tls13.handshake.NegotiatorException;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
-import com.gypsyengineer.tlsbunny.tls13.utils.Helper;
+import com.gypsyengineer.tlsbunny.tls13.utils.TLS13Utils;
 
 import java.io.IOException;
 import java.util.List;
@@ -37,7 +37,7 @@ public class OutgoingClientHello extends AbstractAction {
                 ProtocolVersion.TLSv10,
                 handshake.encoding());
 
-        out = Helper.store(tlsPlaintexts);
+        out = TLS13Utils.store(tlsPlaintexts);
 
         if (context.hasFirstClientHello() && context.hasSecondClientHello()) {
             throw new IOException("already received two ClientHello messages");

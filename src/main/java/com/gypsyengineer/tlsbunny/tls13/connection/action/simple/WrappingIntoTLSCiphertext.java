@@ -8,7 +8,7 @@ import com.gypsyengineer.tlsbunny.tls13.crypto.AEADException;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AesGcm;
 import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext;
-import com.gypsyengineer.tlsbunny.tls13.utils.Helper;
+import com.gypsyengineer.tlsbunny.tls13.utils.TLS13Utils;
 
 import java.io.IOException;
 
@@ -62,7 +62,7 @@ public class WrappingIntoTLSCiphertext extends AbstractAction {
         encryptor.update(plaintext);
         byte[] ciphertext = encryptor.finish();
 
-        out = Helper.store(context.factory.createTLSPlaintexts(application_data, TLSv12, ciphertext));
+        out = TLS13Utils.store(context.factory.createTLSPlaintexts(application_data, TLSv12, ciphertext));
 
         return this;
     }

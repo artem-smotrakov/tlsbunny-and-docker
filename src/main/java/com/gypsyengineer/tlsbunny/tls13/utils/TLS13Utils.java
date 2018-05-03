@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.List;
 
-public class Helper {
+public class TLS13Utils {
 
     public static ByteBuffer store(TLSPlaintext[] tlsPlaintexts) throws IOException {
         int length = 0;

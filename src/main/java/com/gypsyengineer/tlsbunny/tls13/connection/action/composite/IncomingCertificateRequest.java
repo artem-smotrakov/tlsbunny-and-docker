@@ -5,7 +5,7 @@ import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.ActionFailed;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AEADException;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
-import com.gypsyengineer.tlsbunny.tls13.utils.Helper;
+import com.gypsyengineer.tlsbunny.tls13.utils.TLS13Utils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -36,7 +36,7 @@ public class IncomingCertificateRequest extends AbstractAction {
         context.certificate_request_context = certificateRequest.getCertificateRequestContext();
         context.setServerCertificateRequest(handshake);
 
-        Extension extension = Helper.findExtension(
+        Extension extension = TLS13Utils.findExtension(
                 ExtensionType.signature_algorithms,
                 certificateRequest.getExtensions().toList());
 

@@ -2,12 +2,10 @@ package com.gypsyengineer.tlsbunny.tls13.connection.action.simple;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.action.AbstractAction;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
-import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
-import com.gypsyengineer.tlsbunny.tls13.utils.Helper;
+import com.gypsyengineer.tlsbunny.tls13.utils.TLS13Utils;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
 public class WrappingIntoTLSPlaintexts extends AbstractAction {
 
@@ -34,7 +32,7 @@ public class WrappingIntoTLSPlaintexts extends AbstractAction {
         byte[] content = new byte[in.remaining()];
         in.get(content);
 
-        out = Helper.store(context.factory.createTLSPlaintexts(type, version, content));
+        out = TLS13Utils.store(context.factory.createTLSPlaintexts(type, version, content));
 
         return this;
     }

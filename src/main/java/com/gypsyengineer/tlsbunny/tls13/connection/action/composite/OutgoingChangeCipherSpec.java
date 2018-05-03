@@ -3,7 +3,7 @@ package com.gypsyengineer.tlsbunny.tls13.connection.action.composite;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.AbstractAction;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
-import com.gypsyengineer.tlsbunny.tls13.utils.Helper;
+import com.gypsyengineer.tlsbunny.tls13.utils.TLS13Utils;
 
 import java.io.IOException;
 
@@ -22,7 +22,7 @@ public class OutgoingChangeCipherSpec extends AbstractAction {
                 ProtocolVersion.TLSv12,
                 ccs.encoding());
 
-        out = Helper.store(tlsPlaintexts);
+        out = TLS13Utils.store(tlsPlaintexts);
 
         return this;
     }

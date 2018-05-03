@@ -5,9 +5,12 @@ import com.gypsyengineer.tlsbunny.tls.UInt16;
 import com.gypsyengineer.tlsbunny.tls.UInt24;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
 import com.gypsyengineer.tlsbunny.utils.Output;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+
+import static com.gypsyengineer.tlsbunny.utils.HexDump.toHex;
 
 public class MutatedStructFactory extends StructFactoryWrapper
         implements Fuzzer<byte[]> {
@@ -61,11 +64,16 @@ public class MutatedStructFactory extends StructFactoryWrapper
 
         if (target == Target.tls_plaintext) {
             int index = 0;
-            output.info("fuzz TLSPlaintext[%d] (total is %d)",
-                    index, tlsPlaintexts.length);
             try {
-                tlsPlaintexts[index] = new MutatedStruct(
-                        fuzz(tlsPlaintexts[index].encoding()));
+                byte[] encoding = tlsPlaintexts[index].encoding();
+                output.info("fuzz TLSPlaintext[%d] (total is %d)",
+                        index, tlsPlaintexts.length);
+                output.info("tls_plaintext (original): %n%s", toHex(encoding));
+
+                byte[] fuzzed = fuzz(encoding);
+                output.info("tls_plaintext (fuzzed): %n%s", toHex(fuzzed));
+
+                tlsPlaintexts[index] = new MutatedStruct(fuzzed);
             } catch (IOException e) {
                 output.achtung("I couldn't fuzz TLSPlaintext[%d]: %s",
                         e.getMessage(), index);

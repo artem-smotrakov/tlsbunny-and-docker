@@ -8,7 +8,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.ServerHello;
 
 import java.io.IOException;
 
-import static com.gypsyengineer.tlsbunny.tls13.utils.Helper.findKeyShare;
+import static com.gypsyengineer.tlsbunny.tls13.utils.TLS13Utils.findKeyShare;
 
 public class NegotiatingDHSecret extends AbstractAction {
 

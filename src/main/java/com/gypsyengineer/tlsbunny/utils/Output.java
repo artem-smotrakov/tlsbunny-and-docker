@@ -26,7 +26,11 @@ public class Output implements AutoCloseable {
     }
 
     public void info(String format, Object... values) {
-        printf("%s%s%n", prefix, String.format(format, values));
+        String text = String.format(format, values);
+        String[] lines = text.split("\\r?\\n");
+        for (String line : lines) {
+            printf("%s%s%n", prefix, line);
+        }
     }
 
     public void achtung(String format, Object... values) {

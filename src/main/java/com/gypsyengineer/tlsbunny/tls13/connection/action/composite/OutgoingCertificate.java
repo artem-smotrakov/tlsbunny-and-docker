@@ -6,7 +6,7 @@ import com.gypsyengineer.tlsbunny.tls13.crypto.AEAD;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AEADException;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AesGcm;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
-import com.gypsyengineer.tlsbunny.tls13.utils.Helper;
+import com.gypsyengineer.tlsbunny.tls13.utils.TLS13Utils;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -42,7 +42,7 @@ public class OutgoingCertificate extends AbstractAction {
         //       since it sets a client certificate in context
         context.setClientCertificate(handshake);
 
-        out = Helper.store(encrypt(handshake));
+        out = TLS13Utils.store(encrypt(handshake));
 
         return this;
     }
