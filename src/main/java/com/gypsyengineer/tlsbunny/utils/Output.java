@@ -7,6 +7,8 @@ import java.util.List;
 
 public class Output implements AutoCloseable {
 
+    public static final String ANSI_RED = "\u001B[31m";
+    public static final String ANSI_RESET = "\u001B[0m";
     public static final String TLSBUNNY = "[tlsbunny] ";
     public static final int INDENT_STEP = 4;
 
@@ -51,7 +53,8 @@ public class Output implements AutoCloseable {
     }
 
     synchronized public void achtung(String format, Object... values) {
-        printf("%sachtung: %s%n", prefix, String.format(format, values));
+        printf("%s%sachtung: %s%s%n",
+                prefix, ANSI_RED, String.format(format, values), ANSI_RESET);
     }
 
     synchronized public void achtung(String message, Throwable e) {
