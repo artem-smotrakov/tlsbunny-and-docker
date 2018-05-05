@@ -8,10 +8,10 @@ public class FuzzyClient {
     public static void main(String[] args) throws InterruptedException {
         new MultipleThreads()
                 .add(TLSPlaintextFuzzer.configs)
-                //.add(HandshakeFuzzer.configs)
-                //.add(ClientHelloFuzzer.configs)
-                //.add(FinishedFuzzer.configs)
-                //.add(CCSFuzzer.configs)
+                .add(HandshakeFuzzer.configs)
+                .add(ClientHelloFuzzer.configs)
+                .add(FinishedFuzzer.configs)
+                .add(CCSFuzzer.configs)
                 .set(new NoAlertAnalyzer())
                 .submit();
     }
