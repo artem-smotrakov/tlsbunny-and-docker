@@ -197,7 +197,7 @@ public class Engine {
                             action.run();
                             combineData(action);
                         } catch (ActionFailed | AEADException | NegotiatorException | IOException e) {
-                            output.achtung("error:", e);
+                            output.achtung("error: %s", e.getMessage());
                             status = Status.unexpected_error;
                             return this;
                         }
