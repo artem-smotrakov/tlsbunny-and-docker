@@ -12,6 +12,8 @@ import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Target.certificate;
 
 public class CertificateFuzzer extends HandshakeMessageFuzzer {
 
+    public static final Config commonConfig = CommonConfig.load();
+
     static final FuzzerConfig[] configs = new FuzzerConfig[] {
             new CertificateFuzzerConfig(commonConfig)
                     .mode(byte_flip)
