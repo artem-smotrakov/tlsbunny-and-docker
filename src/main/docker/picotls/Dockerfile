@@ -30,7 +30,8 @@ RUN git clone https://github.com/h2o/picotls ${PICOTLS}
 WORKDIR ${PICOTLS}
 RUN git submodule init
 RUN git submodule update
-RUN cmake . && make
+RUN cmake -DCMAKE_C_FLAGS="-fsanitize=address -fno-omit-frame-pointer -g -O1" -DCMAKE_EXE_LINKER_FLAGS=-fsanitize=address .
+RUN CFLAGS="-fsanitize=address -fno-omit-frame-pointer -g -O1" LDFLAGS=-fsanitize=address make
 
 EXPOSE 20101
 
