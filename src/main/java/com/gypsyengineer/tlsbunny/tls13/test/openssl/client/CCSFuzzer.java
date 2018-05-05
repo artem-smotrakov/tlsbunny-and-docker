@@ -12,6 +12,8 @@ import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Target.ccs;
 
 public class CCSFuzzer extends HandshakeMessageFuzzer {
 
+    public static final Config commonConfig = CommonConfig.load();
+
     static final FuzzerConfig[] configs = new FuzzerConfig[] {
             new CCSFuzzerConfig(commonConfig)
                     .mode(byte_flip)

@@ -12,6 +12,8 @@ import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Target.handshake;
 
 public class HandshakeFuzzer extends HandshakeMessageFuzzer {
 
+    public static final Config commonConfig = CommonConfig.load();
+
     static final FuzzerConfig[] configs = new FuzzerConfig[] {
             new HandshakeFuzzerConfig(commonConfig)
                     .mode(byte_flip)
