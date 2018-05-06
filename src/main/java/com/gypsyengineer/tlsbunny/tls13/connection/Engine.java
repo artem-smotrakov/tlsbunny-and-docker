@@ -147,13 +147,14 @@ public class Engine {
         return this;
     }
 
-    public Engine connect() throws Exception {
+    public Engine connect() throws EngineException {
         context.negotiator.set(output);
         status = Status.running;
         try (Connection connection = Connection.create(host, port)) {
             buffer = NOTHING;
 
-            loop: for (ActionHolder holder : actions) {
+            loop:
+            for (ActionHolder holder : actions) {
                 Action action = holder.action;
                 init(action);
 
@@ -219,6 +220,8 @@ public class Engine {
                     break;
                 }
             }
+        } catch (IOException e) {
+            throw new EngineException(e);
         } finally {
             output.flush();
         }
@@ -251,9 +254,9 @@ public class Engine {
         return status;
     }
 
-    private Engine reportError(Throwable e) throws Exception {
+    private Engine reportError(Throwable e) throws EngineException {
         if (strict) {
-            throw new Exception("unexpected exception", e);
+            throw new EngineException("unexpected exception", e);
         }
 
         output.achtung("error: %s", e.getMessage());
