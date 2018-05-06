@@ -140,6 +140,7 @@ public class Engine {
     }
 
     public Engine connect() throws IOException {
+        context.negotiator.set(output);
         status = Status.running;
         try (Connection connection = Connection.create(host, port)) {
             buffer = NOTHING;
@@ -290,7 +291,6 @@ public class Engine {
     }
 
     public static Engine init() throws NoSuchAlgorithmException, NegotiatorException {
-
         Engine connection = new Engine();
         connection.context.negotiator = ECDHENegotiator.create(
                 (NamedGroup.Secp) connection.context.group, connection.context.factory);
