@@ -49,6 +49,9 @@ public class Engine {
     // if true, then stop if an alert occurred
     private boolean stopIfAlert = true;
 
+    // if true, then an exception is thrown in case of error
+    private boolean strict = false;
+
     // this is a label to mark a particular connection
     private String label = String.format("connection:%d", System.currentTimeMillis());
 
@@ -66,6 +69,11 @@ public class Engine {
 
     public Engine target(int port) {
         this.port = port;
+        return this;
+    }
+
+    public Engine strict() {
+        this.strict = true;
         return this;
     }
 
@@ -139,12 +147,14 @@ public class Engine {
         return this;
     }
 
-    public Engine connect() throws IOException {
+    public Engine connect() throws EngineException {
+        context.negotiator.set(output);
         status = Status.running;
         try (Connection connection = Connection.create(host, port)) {
             buffer = NOTHING;
 
-            loop: for (ActionHolder holder : actions) {
+            loop:
+            for (ActionHolder holder : actions) {
                 Action action = holder.action;
                 init(action);
 
@@ -155,9 +165,8 @@ public class Engine {
                             action.run();
                             connection.send(action.out());
                         } catch (ActionFailed | AEADException | NegotiatorException | IOException e) {
-                            output.achtung("error: %s", e.getMessage());
                             status = Status.could_not_send;
-                            return this;
+                            return reportError(e);
                         }
                         break;
                     case require:
@@ -168,9 +177,8 @@ public class Engine {
                             action.run();
                             combineData(action);
                         } catch (ActionFailed | AEADException | NegotiatorException | IOException e) {
-                            output.achtung("error: %s", e.getMessage());
                             status = Status.unexpected_error;
-                            return this;
+                            return reportError(e);
                         }
                         break;
                     case allow:
@@ -197,9 +205,8 @@ public class Engine {
                             action.run();
                             combineData(action);
                         } catch (ActionFailed | AEADException | NegotiatorException | IOException e) {
-                            output.achtung("error: %s", e.getMessage());
                             status = Status.unexpected_error;
-                            return this;
+                            return reportError(e);
                         }
 
                         break;
@@ -213,6 +220,8 @@ public class Engine {
                     break;
                 }
             }
+        } catch (IOException e) {
+            throw new EngineException(e);
         } finally {
             output.flush();
         }
@@ -243,6 +252,15 @@ public class Engine {
 
     public Status status() {
         return status;
+    }
+
+    private Engine reportError(Throwable e) throws EngineException {
+        if (strict) {
+            throw new EngineException("unexpected exception", e);
+        }
+
+        output.achtung("error: %s", e.getMessage());
+        return this;
     }
 
     private void combineData(Action action) {
@@ -290,14 +308,13 @@ public class Engine {
     }
 
     public static Engine init() throws NoSuchAlgorithmException, NegotiatorException {
+        Engine engine = new Engine();
+        engine.context.negotiator = ECDHENegotiator.create(
+                (NamedGroup.Secp) engine.context.group, engine.context.factory);
+        engine.context.hkdf = HKDF.create(
+                engine.context.suite.hash(), engine.context.factory);
 
-        Engine connection = new Engine();
-        connection.context.negotiator = ECDHENegotiator.create(
-                (NamedGroup.Secp) connection.context.group, connection.context.factory);
-        connection.context.hkdf = HKDF.create(
-                connection.context.suite.hash(), connection.context.factory);
-
-        return connection;
+        return engine;
     }
 
     private void init(Action action) {
