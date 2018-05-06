@@ -97,13 +97,11 @@ public class ECDHENegotiator extends AbstractNegotiator {
                         entry.getKeyExchange().bytes(), 
                         getCoordinateLength(getGroup()));
 
-        // TODO: is it correct to use BigInteger(int, byte[]) to set the sign +1
-        //       instead of BigInteger(byte[]) ?
         return new ECPoint(
-                new BigInteger(1, upr.getX()),
-                new BigInteger(1, upr.getY()));
+                toPositiveBigInteger(upr.getX()),
+                toPositiveBigInteger(upr.getY()));
     }
-    
+
     private UncompressedPointRepresentation createUPR(ECPoint point) {
         int coordinate_length = getCoordinateLength(getGroup());
         return factory.createUncompressedPointRepresentation(
@@ -111,8 +109,10 @@ public class ECDHENegotiator extends AbstractNegotiator {
                 toBytes(point.getAffineY(), coordinate_length));
     }
 
-    // validates an EC public key defined by section 5.6.2.3.2 of NIST SP 56A
-    // and section 5.2.2 of X9.62:
+    // validates an EC public key as defined in TLS 1.3 spec
+    // https://tools.ietf.org/html/draft-ietf-tls-tls13-26#section-4.2.8.2
+    //
+    // See details in section 5.6.2.3.2 of NIST SP 56A and section 5.2.2 of X9.62:
     // - https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-56Ar2.pdf
     // - http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.202.2977&rep=rep1&type=pdf
     private void validate(ECPoint point) throws NegotiatorException {
@@ -141,10 +141,14 @@ public class ECDHENegotiator extends AbstractNegotiator {
 
         // step #3: verify that y^2 == x^3 + ax + b (mod p)
         BigInteger a = secpParameters.ecParameterSpec.getCurve().getA();
-        BigInteger b = secpParameters.ecParameterSpec.getCurve().getA();
-        BigInteger lhs = y.multiply(y).mod(p);
-        BigInteger rhs = x.multiply(x).add(a).multiply(x).add(b).mod(p);
-        if (!lhs.equals(rhs)) {
+        BigInteger b = secpParameters.ecParameterSpec.getCurve().getB();
+        BigInteger left = y.multiply(y).mod(p);
+        BigInteger ax = a.multiply(x);
+        BigInteger xxx = x.multiply(x).multiply(x);
+        BigInteger right = xxx.add(ax).add(b).mod(p);
+        if (!left.equals(right)) {
+            output.achtung("a = %s", a.toString());
+            output.achtung("b = %s", b.toString());
             reportError("point is not on the curve");
         }
     }
@@ -182,6 +186,10 @@ public class ECDHENegotiator extends AbstractNegotiator {
         } catch (NoSuchAlgorithmException | InvalidAlgorithmParameterException e) {
             throw new NegotiatorException(e);
         }
+    }
+
+    private static BigInteger toPositiveBigInteger(byte[] bytes) {
+        return new BigInteger(1, bytes);
     }
 
     private static int getCoordinateLength(NamedGroup.Secp group) {
