@@ -291,13 +291,13 @@ public class Engine {
     }
 
     public static Engine init() throws NoSuchAlgorithmException, NegotiatorException {
-        Engine connection = new Engine();
-        connection.context.negotiator = ECDHENegotiator.create(
-                (NamedGroup.Secp) connection.context.group, connection.context.factory);
-        connection.context.hkdf = HKDF.create(
-                connection.context.suite.hash(), connection.context.factory);
+        Engine engine = new Engine();
+        engine.context.negotiator = ECDHENegotiator.create(
+                (NamedGroup.Secp) engine.context.group, engine.context.factory);
+        engine.context.hkdf = HKDF.create(
+                engine.context.suite.hash(), engine.context.factory);
 
-        return connection;
+        return engine;
     }
 
     private void init(Action action) {
