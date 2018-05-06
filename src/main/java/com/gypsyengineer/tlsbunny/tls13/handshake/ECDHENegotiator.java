@@ -18,6 +18,9 @@ public class ECDHENegotiator extends AbstractNegotiator {
     private final KeyAgreement keyAgreement;
     private final KeyPairGenerator generator;
 
+    // if true, the negotiator throws an exception if validation fails
+    private boolean strictValidation = false;
+
     private ECDHENegotiator(NamedGroup.Secp group, SecpParameters secpParameters, 
             KeyAgreement keyAgreement, KeyPairGenerator generator, StructFactory factory) {
         
@@ -25,6 +28,11 @@ public class ECDHENegotiator extends AbstractNegotiator {
         this.secpParameters = secpParameters;
         this.keyAgreement = keyAgreement;
         this.generator = generator;
+    }
+
+    public ECDHENegotiator strictValidation() {
+        this.strictValidation = true;
+        return this;
     }
 
     @Override
@@ -114,7 +122,8 @@ public class ECDHENegotiator extends AbstractNegotiator {
         if (x == null || y == null) {
             output.info("x = %s", x.toString());
             output.info("y = %s", y.toString());
-            //throw new NegotiatorException("point is at infinity");
+
+            reportError("point is at infinity");
         }
 
         // step #2: verify x and y are in range [0, p-1]
@@ -122,12 +131,12 @@ public class ECDHENegotiator extends AbstractNegotiator {
         if (x.signum() == -1 || x.compareTo(p) != -1) {
             output.achtung("x = %s", x.toString());
             output.achtung("p = %s", p.toString());
-            throw new NegotiatorException("x is out of range [0, p-1]");
+            reportError("x is out of range [0, p-1]");
         }
         if (y.signum() == -1 || y.compareTo(p) != -1) {
             output.achtung("y = %s", y.toString());
             output.achtung("p = %s", p.toString());
-            throw new NegotiatorException("y is out of range [0, p-1]");
+            reportError("y is out of range [0, p-1]");
         }
 
         // step #3: verify that y^2 == x^3 + ax + b (mod p)
@@ -136,9 +145,16 @@ public class ECDHENegotiator extends AbstractNegotiator {
         BigInteger lhs = y.multiply(y).mod(p);
         BigInteger rhs = x.multiply(x).add(a).multiply(x).add(b).mod(p);
         if (!lhs.equals(rhs)) {
-            output.achtung("point is not on the curve");
-            throw new NegotiatorException("point is not on the curve");
+            reportError("point is not on the curve");
         }
+    }
+
+    private void reportError(String message) throws NegotiatorException {
+        if (strictValidation) {
+            throw new NegotiatorException(message);
+        }
+
+        output.achtung(message);
     }
 
     private BigInteger getP() throws NegotiatorException {
