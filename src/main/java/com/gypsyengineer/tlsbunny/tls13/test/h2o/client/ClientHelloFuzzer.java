@@ -22,16 +22,14 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp
 
 public class ClientHelloFuzzer extends HandshakeMessageFuzzer {
 
-    public static final Config commonConfig = CommonConfig.load();
-
     static final FuzzerConfig[] configs = new FuzzerConfig[] {
-            new ClientHelloFuzzerConfig(commonConfig)
+            new ClientHelloFuzzerConfig(CommonConfig.load())
                     .mode(byte_flip)
                     .minRatio(0.01)
                     .maxRatio(0.09)
                     .endTest(10)
                     .parts(5),
-            new ClientHelloFuzzerConfig(commonConfig)
+            new ClientHelloFuzzerConfig(CommonConfig.load())
                     .mode(bit_flip)
                     .minRatio(0.01)
                     .maxRatio(0.09)

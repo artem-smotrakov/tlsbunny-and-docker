@@ -22,16 +22,14 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp
 
 public class FinishedFuzzer extends HandshakeMessageFuzzer {
 
-    public static final Config commonConfig = CommonConfig.load();
-
     static final FuzzerConfig[] configs = new FuzzerConfig[] {
-            new FinishedFuzzerConfig(commonConfig)
+            new FinishedFuzzerConfig(CommonConfig.load())
                     .mode(byte_flip)
                     .minRatio(0.01)
                     .maxRatio(0.09)
                     .endTest(1000)
                     .parts(5),
-            new FinishedFuzzerConfig(commonConfig)
+            new FinishedFuzzerConfig(CommonConfig.load())
                     .mode(bit_flip)
                     .minRatio(0.01)
                     .maxRatio(0.09)

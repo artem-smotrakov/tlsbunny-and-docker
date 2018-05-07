@@ -171,9 +171,8 @@ public class Engine {
                         break;
                     case require:
                         output.info("require: %s", action.name());
-                        read(connection, action);
-
                         try {
+                            read(connection, action);
                             action.run();
                             combineData(action);
                         } catch (ActionFailed | AEADException | NegotiatorException | IOException e) {
@@ -183,14 +182,14 @@ public class Engine {
                         break;
                     case allow:
                         output.info("allow: %s", action.name());
-                        read(connection, action);
 
                         // TODO: if an action decrypts out, but the action fails,
                         //       then decryption in the next action is going to fail
                         //       this may be fixed by propagating decrypted out
                         //       to the next action
-                        buffer.mark();
                         try {
+                            read(connection, action);
+                            buffer.mark();
                             action.run();
                             combineData(action);
                         } catch (ActionFailed | AEADException | NegotiatorException | IOException e) {
@@ -283,7 +282,7 @@ public class Engine {
         while (buffer.remaining() == 0 && !context.hasAlert()) {
             buffer = ByteBuffer.wrap(connection.read());
             if (buffer.remaining() == 0) {
-                throw new IOException("no out received");
+                throw new IOException("no data received");
             }
         }
 

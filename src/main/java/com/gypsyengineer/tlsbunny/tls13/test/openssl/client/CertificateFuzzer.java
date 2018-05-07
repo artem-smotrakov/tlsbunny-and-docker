@@ -12,16 +12,14 @@ import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Target.certificate;
 
 public class CertificateFuzzer extends HandshakeMessageFuzzer {
 
-    public static final Config commonConfig = CommonConfig.load();
-
     static final FuzzerConfig[] configs = new FuzzerConfig[] {
-            new CertificateFuzzerConfig(commonConfig)
+            new CertificateFuzzerConfig(CommonConfig.load())
                     .mode(byte_flip)
                     .minRatio(0.01)
                     .maxRatio(0.09)
                     .endTest(10)
                     .parts(5),
-            new CertificateFuzzerConfig(commonConfig)
+            new CertificateFuzzerConfig(CommonConfig.load())
                     .mode(bit_flip)
                     .minRatio(0.01)
                     .maxRatio(0.09)

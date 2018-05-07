@@ -313,15 +313,17 @@ public class MutatedStructFactory extends StructFactoryWrapper
         switch (target) {
             case tls_plaintext:
                 // in case of TLSPlaintext we don't fuzz the content of the message
-                // but only content type, protocol version and lenght fields
+                // but only content type, protocol version and length fields
+                start = 0;
                 end = ContentType.ENCODING_LENGTH
                         + ProtocolVersion.ENCODING_LENGTH
-                        + UInt16.ENCODING_LENGTH;
+                        + UInt16.ENCODING_LENGTH - 1;
                 break;
             case handshake:
                 // in case of Handshake message we don't fuzz the content of the message
                 // but only handshake type and length fields
-                end = HandshakeType.ENCODING_LENGTH + UInt24.ENCODING_LENGTH;
+                start = 0;
+                end = HandshakeType.ENCODING_LENGTH + UInt24.ENCODING_LENGTH - 1;
                 break;
         }
 
