@@ -33,11 +33,6 @@ public class WeakECDHENegotiator extends AbstractNegotiator {
         this.generator = generator;
     }
 
-    public WeakECDHENegotiator strictValidation() {
-        this.strictValidation = true;
-        return this;
-    }
-
     /*
      * (borrowed from wycheproof)
      *
@@ -53,7 +48,7 @@ public class WeakECDHENegotiator extends AbstractNegotiator {
             BigInteger p = ECUtils.getP(curve);
 
             while (true) {
-                // Generate a point on the original curve
+                // generate a point on the original curve
                 KeyPair keyPair = generator.generateKeyPair();
                 ECPublicKey pub = (ECPublicKey) keyPair.getPublic();
                 ECPoint w = pub.getW();
@@ -76,10 +71,10 @@ public class WeakECDHENegotiator extends AbstractNegotiator {
                 BigInteger b = y.multiply(y).subtract(x.multiply(xSqr.add(a))).mod(p);
                 EllipticCurve newCurve = new EllipticCurve(curve.getField(), a, b);
 
-                // Just a sanity check.
+                // just a sanity check
                 ECUtils.checkPointOnCurve(w, newCurve);
 
-                // Cofactor and order are of course wrong.
+                // cofactor and order are of course wrong
                 ECParameterSpec spec = new ECParameterSpec(newCurve, w, p, 1);
 
                 return factory.createKeyShareEntry(
@@ -108,9 +103,8 @@ public class WeakECDHENegotiator extends AbstractNegotiator {
                             point,
                             secpParameters.ecParameterSpec));
 
-            throw new NegotiatorException("I can't really process key share entry!")
-        } catch (NoSuchAlgorithmException | IOException | InvalidKeyException
-                | InvalidKeySpecException e) {
+            throw new NegotiatorException("I can't really process key share entry!");
+        } catch (NoSuchAlgorithmException | IOException | InvalidKeySpecException e) {
             throw new NegotiatorException(e);
         }
     }
