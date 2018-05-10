@@ -51,4 +51,17 @@ public class TLS13Utils {
                         .getExtensionData().bytes());
     }
 
+    public static int getCoordinateLength(NamedGroup.Secp group) {
+        switch (group.getCurve()) {
+            case "secp256r1":
+                return 32;
+            case "secp384r1":
+                return 48;
+            case "secp521r1":
+                return 66;
+        }
+
+        throw new IllegalArgumentException(String.format("unknown group: %s", group));
+    }
+
 }

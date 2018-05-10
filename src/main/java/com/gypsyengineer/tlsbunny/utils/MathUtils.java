@@ -1,10 +1,42 @@
 package com.gypsyengineer.tlsbunny.utils;
 
 import java.math.BigInteger;
+import java.util.Arrays;
 
 public class MathUtils {
 
     public static final BigInteger THREE = new BigInteger("3");
+
+    public static BigInteger toPositiveBigInteger(byte[] bytes) {
+        return new BigInteger(1, bytes);
+    }
+
+    public static byte[] toBytes(BigInteger n, int length) {
+        byte[] bytes = n.toByteArray();
+
+        if (bytes.length > length) {
+            int i = 0;
+            while (i < bytes.length && bytes[i] == 0) {
+                i++;
+            }
+
+            if (i == bytes.length) {
+                throw new IllegalArgumentException();
+            }
+
+            return Arrays.copyOfRange(bytes, i, bytes.length);
+        }
+
+        if (bytes.length < length) {
+            byte[] result = new byte[length];
+            System.arraycopy(bytes, 0, result, length - bytes.length,
+                    bytes.length);
+
+            return result;
+        }
+
+        return bytes;
+    }
 
     /**
      * (borrowed from wycheproof)

@@ -10,7 +10,7 @@ public interface Negotiator {
     Negotiator set(Output output);
     KeyShareEntry createKeyShareEntry() throws NegotiatorException;
     void processKeyShareEntry(KeyShareEntry entry) throws NegotiatorException;
-    byte[] generateSecret();
+    byte[] generateSecret() throws NegotiatorException;
 
     static Negotiator create(NamedGroup group, StructFactory factory)
             throws NegotiatorException {

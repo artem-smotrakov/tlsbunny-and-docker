@@ -6,29 +6,26 @@ import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.tls13.struct.UncompressedPointRepresentation;
 import com.gypsyengineer.tlsbunny.utils.ECException;
 import com.gypsyengineer.tlsbunny.utils.ECUtils;
+import com.gypsyengineer.tlsbunny.utils.MathException;
 
+import javax.crypto.KeyAgreement;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.*;
 import java.security.interfaces.ECPublicKey;
 import java.security.spec.*;
-import javax.crypto.KeyAgreement;
 
 import static com.gypsyengineer.tlsbunny.tls13.utils.TLS13Utils.getCoordinateLength;
-import static com.gypsyengineer.tlsbunny.utils.MathUtils.toBytes;
-import static com.gypsyengineer.tlsbunny.utils.MathUtils.toPositiveBigInteger;
+import static com.gypsyengineer.tlsbunny.utils.MathUtils.*;
 
-public class ECDHENegotiator extends AbstractNegotiator {
+public class WeakECDHENegotiator extends AbstractNegotiator {
 
     private final SecpParameters secpParameters;
     private final KeyAgreement keyAgreement;
     private final KeyPairGenerator generator;
 
-    // if true, the negotiator throws an exception if validation fails
-    private boolean strictValidation = false;
-
-    private ECDHENegotiator(NamedGroup.Secp group, SecpParameters secpParameters, 
-            KeyAgreement keyAgreement, KeyPairGenerator generator, StructFactory factory) {
+    private WeakECDHENegotiator(NamedGroup.Secp group, SecpParameters secpParameters,
+                                KeyAgreement keyAgreement, KeyPairGenerator generator, StructFactory factory) {
         
         super(group, factory);
         this.secpParameters = secpParameters;
@@ -36,28 +33,60 @@ public class ECDHENegotiator extends AbstractNegotiator {
         this.generator = generator;
     }
 
-    public ECDHENegotiator strictValidation() {
+    public WeakECDHENegotiator strictValidation() {
         this.strictValidation = true;
         return this;
     }
 
+    /*
+     * (borrowed from wycheproof)
+     *
+     * Returns a weak public key of order 3 such that the public key point is on the curve specified
+     * in ecParams. This method is used to check ECC implementations for missing step in the
+     * verification of the public key. E.g. implementations of ECDH must verify that the public key
+     * contains a point on the curve as well as public and secret key are using the same curve.
+     */
     @Override
     public KeyShareEntry  createKeyShareEntry() throws NegotiatorException {
         try {
-            KeyPair kp = generator.generateKeyPair();
-            keyAgreement.init(kp.getPrivate());
-            ECPoint W = ((ECPublicKey) kp.getPublic()).getW();
+            EllipticCurve curve = secpParameters.ecParameterSpec.getCurve();
+            BigInteger p = ECUtils.getP(curve);
 
-            // TODO: consider adding a self-check to make sure that the key
-            //       passes checks defined by NIST and Section 5.2.2 of X9.62
-            //       in other words:
-            //
-            //   validate(w);
+            while (true) {
+                // Generate a point on the original curve
+                KeyPair keyPair = generator.generateKeyPair();
+                ECPublicKey pub = (ECPublicKey) keyPair.getPublic();
+                ECPoint w = pub.getW();
+                BigInteger x = w.getAffineX();
+                BigInteger y = w.getAffineY();
 
-            return factory.createKeyShareEntry(
-                    group,
-                    createUPR(W).encoding());
-        } catch (InvalidKeyException | IOException e) {
+                // Find the curve parameters a,b such that 3*w = infinity.
+                // This is the case if the following equations are satisfied:
+                //    3x == l^2 (mod p)
+                //    l == (3x^2 + a) / 2*y (mod p)
+                //    y^2 == x^3 + ax + b (mod p)
+                BigInteger l;
+                try {
+                    l = modSqrt(x.multiply(THREE), p);
+                } catch (MathException ex) {
+                    continue;
+                }
+                BigInteger xSqr = x.multiply(x).mod(p);
+                BigInteger a = l.multiply(y.add(y)).subtract(xSqr.multiply(THREE)).mod(p);
+                BigInteger b = y.multiply(y).subtract(x.multiply(xSqr.add(a))).mod(p);
+                EllipticCurve newCurve = new EllipticCurve(curve.getField(), a, b);
+
+                // Just a sanity check.
+                ECUtils.checkPointOnCurve(w, newCurve);
+
+                // Cofactor and order are of course wrong.
+                ECParameterSpec spec = new ECParameterSpec(newCurve, w, p, 1);
+
+                return factory.createKeyShareEntry(
+                        group,
+                        createUPR(w).encoding());
+            }
+        } catch (IOException | ECException e) {
             throw new NegotiatorException(e);
         }
     }
@@ -79,7 +108,7 @@ public class ECDHENegotiator extends AbstractNegotiator {
                             point,
                             secpParameters.ecParameterSpec));
 
-            keyAgreement.doPhase(key, true);
+            throw new NegotiatorException("I can't really process key share entry!")
         } catch (NoSuchAlgorithmException | IOException | InvalidKeyException
                 | InvalidKeySpecException e) {
             throw new NegotiatorException(e);
@@ -87,8 +116,8 @@ public class ECDHENegotiator extends AbstractNegotiator {
     }
 
     @Override
-    public byte[] generateSecret() {
-        return keyAgreement.generateSecret();
+    public byte[] generateSecret() throws NegotiatorException {
+        throw new NegotiatorException("I can't really generate secret!");
     }
     
     private NamedGroup.Secp getGroup() {
@@ -138,19 +167,11 @@ public class ECDHENegotiator extends AbstractNegotiator {
 
             ECUtils.checkPointOnCurve(point, curve);
         } catch (ECException e) {
-            reportError(e);
-        }
-    }
-
-    private void reportError(Exception e) throws NegotiatorException {
-        if (strictValidation) {
             throw new NegotiatorException(e);
         }
-
-        output.achtung("%s", e.getMessage());
     }
     
-    public static ECDHENegotiator create(NamedGroup.Secp group, StructFactory factory) 
+    public static WeakECDHENegotiator create(NamedGroup.Secp group, StructFactory factory)
             throws NegotiatorException {
 
         try {
@@ -158,7 +179,7 @@ public class ECDHENegotiator extends AbstractNegotiator {
             ECGenParameterSpec spec = new ECGenParameterSpec(group.getCurve());
             generator.initialize(spec);
 
-            return new ECDHENegotiator(
+            return new WeakECDHENegotiator(
                     group,
                     SecpParameters.create(group),
                     KeyAgreement.getInstance("ECDH"),
