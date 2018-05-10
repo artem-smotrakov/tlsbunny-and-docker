@@ -4,6 +4,9 @@ import com.gypsyengineer.tlsbunny.tls13.struct.KeyShareEntry;
 import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.tls13.struct.UncompressedPointRepresentation;
+import com.gypsyengineer.tlsbunny.utils.ECException;
+import com.gypsyengineer.tlsbunny.utils.ECUtils;
+
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.*;
@@ -116,58 +119,32 @@ public class ECDHENegotiator extends AbstractNegotiator {
     // - https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-56Ar2.pdf
     // - http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.202.2977&rep=rep1&type=pdf
     private void validate(ECPoint point) throws NegotiatorException {
-        // step #1: verify the public key is not the point at infinity
-        BigInteger x = point.getAffineX();
-        BigInteger y = point.getAffineY();
-        if (x == null || y == null) {
+        try {
+            EllipticCurve curve = secpParameters.ecParameterSpec.getCurve();
+            BigInteger x = point.getAffineX();
+            BigInteger y = point.getAffineY();
+            BigInteger p = ECUtils.getP(curve);
+            BigInteger a = curve.getA();
+            BigInteger b = curve.getB();
+
+            output.achtung("p = %s", p.toString());
             output.info("x = %s", x.toString());
             output.info("y = %s", y.toString());
-
-            reportError("point is at infinity");
-        }
-
-        // step #2: verify x and y are in range [0, p-1]
-        BigInteger p = getP();
-        if (x.signum() == -1 || x.compareTo(p) != -1) {
-            output.achtung("x = %s", x.toString());
-            output.achtung("p = %s", p.toString());
-            reportError("x is out of range [0, p-1]");
-        }
-        if (y.signum() == -1 || y.compareTo(p) != -1) {
-            output.achtung("y = %s", y.toString());
-            output.achtung("p = %s", p.toString());
-            reportError("y is out of range [0, p-1]");
-        }
-
-        // step #3: verify that y^2 == x^3 + ax + b (mod p)
-        BigInteger a = secpParameters.ecParameterSpec.getCurve().getA();
-        BigInteger b = secpParameters.ecParameterSpec.getCurve().getB();
-        BigInteger left = y.multiply(y).mod(p);
-        BigInteger ax = a.multiply(x);
-        BigInteger xxx = x.multiply(x).multiply(x);
-        BigInteger right = xxx.add(ax).add(b).mod(p);
-        if (!left.equals(right)) {
             output.achtung("a = %s", a.toString());
             output.achtung("b = %s", b.toString());
-            reportError("point is not on the curve");
+
+            ECUtils.checkPointOnCurve(point, curve);
+        } catch (ECException e) {
+            reportError(e);
         }
     }
 
-    private void reportError(String message) throws NegotiatorException {
+    private void reportError(Exception e) throws NegotiatorException {
         if (strictValidation) {
-            throw new NegotiatorException(message);
+            throw new NegotiatorException(e);
         }
 
-        output.achtung(message);
-    }
-
-    private BigInteger getP() throws NegotiatorException {
-        ECField field = secpParameters.ecParameterSpec.getCurve().getField();
-        if (field instanceof ECFieldFp) {
-            return ((ECFieldFp) field).getP();
-        }
-
-        throw new NegotiatorException("only curves over prime order fields are supported");
+        output.achtung("%s", e.getMessage());
     }
     
     public static ECDHENegotiator create(NamedGroup.Secp group, StructFactory factory) 
