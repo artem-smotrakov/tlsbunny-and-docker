@@ -38,6 +38,30 @@ task buildGnutlsDocker(type: Exec) {
             '.'
 }
 
+task runPicotlsDockerDaemon {
+    doLast {
+        exec {
+            ignoreExitValue = true
+            commandLine 'docker', 'container', 'kill', 'picotls_server_tls13'
+        }
+        exec {
+            ignoreExitValue = true
+            commandLine 'docker', 'rm', 'picotls_server_tls13'
+        }
+        exec {
+            commandLine 'docker',
+                    'run',
+                    '--name', 'picotls_server_tls13',
+                    '-d',
+                    '-p', '20101:20101',
+                    'picotls/server/tls13'
+        }
+        exec {
+            commandLine 'sleep', '3'
+        }
+    }
+}
+
 // tasks for running tests for OpenSSL
 
 task opensslHttpsClient(type: JavaExec) {
@@ -66,4 +90,19 @@ task picotlsClient(type: JavaExec) {
     classpath sourceSets.main.runtimeClasspath
     applicationDefaultJvmArgs = ["-Dtlsbunny.port=20101"]
     main = "com.gypsyengineer.tlsbunny.tls13.test.picotls.client.PicotlsClient"
+}
+
+task picotlsFuzzyClient(type: JavaExec) {
+    classpath sourceSets.main.runtimeClasspath
+    systemProperty 'tlsbunny.port', '20101'
+    systemProperty 'tlsbunny.threads', '1'
+    main = "com.gypsyengineer.tlsbunny.tls13.test.picotls.client.FuzzyClient"
+}
+
+task runPicotlsFuzzing {
+    dependsOn 'picotlsFuzzyClient'
+    dependsOn 'buildPicotlsDocker'
+    dependsOn 'runPicotlsDockerDaemon'
+    tasks.findByName('runPicotlsDockerDaemon').mustRunAfter 'buildPicotlsDocker'
+    tasks.findByName('picotlsFuzzyClient').mustRunAfter 'runPicotlsDockerDaemon'
 }

@@ -37,7 +37,7 @@ public class DetailedHttpsConnection {
                         .version(TLSv12))
                 .send(new OutgoingData())
 
-                // receive a ServerHello, EncryptedExtensions, Certificate,
+                // receive ServerHello, EncryptedExtensions, Certificate,
                 // CertificateVerify and Finished messages
                 .require(new IncomingData())
 
