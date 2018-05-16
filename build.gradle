@@ -88,6 +88,16 @@ task runPicotlsDockerDaemon {
     }
 }
 
+task killPicotlsDockerContainer(type: Exec) {
+    ignoreExitValue = true
+    commandLine 'docker', 'container', 'kill', 'picotls_server_tls13'
+}
+
+task removePicotlsDockerContainer(type: Exec) {
+    ignoreExitValue = true
+    commandLine 'docker', 'rm', 'picotls_server_tls13'
+}
+
 task picotlsClient(type: JavaExec) {
     classpath sourceSets.main.runtimeClasspath
     applicationDefaultJvmArgs = ["-Dtlsbunny.port=20101"]
@@ -101,10 +111,22 @@ task picotlsFuzzyClient(type: JavaExec) {
     main = "com.gypsyengineer.tlsbunny.tls13.test.picotls.client.FuzzyClient"
 }
 
+// build a Docker image with PicoTLS, run a local server in a Docker container,
+// and start fuzzing
 task runPicotlsFuzzyClient {
-    dependsOn 'picotlsFuzzyClient'
     dependsOn 'buildPicotlsDocker'
     dependsOn 'runPicotlsDockerDaemon'
-    tasks.findByName('runPicotlsDockerDaemon').mustRunAfter 'buildPicotlsDocker'
-    tasks.findByName('picotlsFuzzyClient').mustRunAfter 'runPicotlsDockerDaemon'
+    dependsOn 'picotlsFuzzyClient'
+    dependsOn 'killPicotlsDockerContainer'
+    dependsOn 'removePicotlsDockerContainer'
+
+    // build and start the server
+    tasks.findByName('runPicotlsDockerDaemon').mustRunAfter('buildPicotlsDocker')
+
+    // run fuzzing
+    tasks.findByName('picotlsFuzzyClient').mustRunAfter('runPicotlsDockerDaemon')
+
+    // cleanup
+    tasks.findByName('killPicotlsDockerContainer').mustRunAfter('picotlsFuzzyClient')
+    tasks.findByName('removePicotlsDockerContainer').mustRunAfter('killPicotlsDockerContainer')
 }
