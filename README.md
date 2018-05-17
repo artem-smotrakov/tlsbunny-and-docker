@@ -65,3 +65,8 @@ Engine.init()
 | Multiple CCS                |                 |         |        |                       |                 |
 | Start with CCS              |                 |         |        |                       |                 |
 | Weak ECDHE key              |                 |         |        |                       |                 |
+
+## Alternatives
+
+- [tlsfuzzer](https://github.com/tomato42/tlsfuzzer): SSL and TLS protocol test suite and fuzzer (python)
+- [TLS-Attacker](https://github.com/RUB-NDS/TLS-Attacker): TLS-Attacker is a Java-based framework for analyzing TLS libraries. It is developed by the Ruhr University Bochum and the Hackmanit GmbH.
