@@ -19,7 +19,7 @@ The framework also provides an engine which runs specified actions. The engine s
 Here is an example on HTTPS connection using TLS 1.3:
 
 ```
-CommonConfig config = new CommonConfig();
+CommonConfig config = CommonConfig.load();
 
 Engine.init()
         .target(config.host())
@@ -27,6 +27,7 @@ Engine.init()
         .send(new OutgoingClientHello())
         .send(new OutgoingChangeCipherSpec())
         .require(new IncomingServerHello())
+        .require(new IncomingChangeCipherSpec())
         .require(new IncomingEncryptedExtensions())
         .require(new IncomingCertificate())
         .require(new IncomingCertificateVerify())
@@ -49,18 +50,18 @@ Engine.init()
 
 ## Some test results
 
-|                             | OpenSSL (+ASan) | GnuTLS  | NSS    | picotls (+ASan) | wolfSSL (+ASan) |
-| ----------------------------|-----------------|---------|--------|-----------------|-----------------|
-| TLSPlaintext fuzzing        | 200  tests      |         |        |                 |                 |
-| Handshake fuzzing           | 2000 tests      |         |        |                 |                 |
-| ClientHello fuzzing         | 2000 tests      |         |        |                 |                 |
-| Certificate fuzzing         |                 |         |        |                 |                 |
-| CertificateVerify fuzzing   |                 |         |        |                 |                 |
-| Finished fuzzing            | 2000 tests      |         |        |                 |                 |
-| CCS fuzzing                 | 20   tests      |         |        |                 |                 |
-| Double ClientHello          |                 |         |        |                 |                 |
-| Invalid CCS                 |                 |         |        |                 |                 |
-| CCS after handshake is done |                 |         |        |                 |                 |
-| Multiple CCS                |                 |         |        |                 |                 |
-| Start with CCS              |                 |         |        |                 |                 |
-| Weak ECDHE key              |                 |         |        |                 |                 |
+|                             | OpenSSL (+ASan) | GnuTLS  | NSS    | h2o + picotls (+ASan) | wolfSSL (+ASan) |
+| ----------------------------|-----------------|---------|--------|-----------------------|-----------------|
+| TLSPlaintext fuzzing        | 200  tests      |         |        |                       |                 |
+| Handshake fuzzing           | 2000 tests      |         |        |                       |                 |
+| ClientHello fuzzing         | 2000 tests      |         |        |                       |                 |
+| Certificate fuzzing         |                 |         |        |                       |                 |
+| CertificateVerify fuzzing   |                 |         |        |                       |                 |
+| Finished fuzzing            | 2000 tests      |         |        |                       |                 |
+| CCS fuzzing                 | 20   tests      |         |        |                       |                 |
+| Double ClientHello          |                 |         |        |                       |                 |
+| Invalid CCS                 |                 |         |        |                       |                 |
+| CCS after handshake is done |                 |         |        |                       |                 |
+| Multiple CCS                |                 |         |        |                       |                 |
+| Start with CCS              |                 |         |        |                       |                 |
+| Weak ECDHE key              |                 |         |        |                       |                 |
