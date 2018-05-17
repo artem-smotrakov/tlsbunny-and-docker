@@ -7,7 +7,7 @@
 #
 # the following command start an the server server
 #
-# docker run -p 20101:20101 gnutls/server/tls13
+# docker run -p 50101:50101 gnutls/server/tls13
 #
 # good luck!
 #
@@ -31,11 +31,14 @@ ENV TLSBUNNY /var/src/tlsbunny
 RUN mkdir -p /var/src/gnutls
 RUN mkdir -p /var/src/tlsbunny
 
+# TODO check downloaded archive
 WORKDIR /var/src
 RUN wget https://ftp.gnu.org/gnu/nettle/nettle-3.4.tar.gz
 RUN tar xf nettle-3.4.tar.gz
-# for debug purposes
-ADD nettle-3.4 /var/src/nettle-3.4
+
+ENV CFLAGS="-fsanitize=address -fno-omit-frame-pointer -g -O1"
+ENV CXXFLAGS="-fsanitize=address -fno-omit-frame-pointer"
+ENV LDFLAGS="-fsanitize=address"
 
 WORKDIR /var/src/nettle-3.4
 RUN ./configure --disable-openssl --enable-shared
@@ -43,16 +46,17 @@ RUN make
 RUN make install
 
 RUN git clone https://gitlab.com/gnutls/gnutls.git ${GNUTLS_SRC}
-# for debug purposes
-# ADD gnutls ${GNUTLS_SRC}
 
 WORKDIR ${GNUTLS_SRC}
 RUN make bootstrap
-RUN LD_LIBRARY_PATH=/usr/local/lib ./configure --with-included-libtasn1 --with-guile-site-dir=no
+RUN LD_LIBRARY_PATH=/usr/local/lib ./configure \
+    --with-included-libtasn1 \
+    --with-guile-site-dir=no \
+    --disable-guile
 RUN LD_LIBRARY_PATH=/usr/local/lib make
 RUN LD_LIBRARY_PATH=/usr/local/lib make install
 
-EXPOSE 20101
+EXPOSE 50101
 ADD . ${TLSBUNNY}
 WORKDIR ${TLSBUNNY}
 

@@ -24,6 +24,7 @@ RUN mkdir -p /var/src
 
 WORKDIR /var/src
 RUN wget https://wolfssl.com/downloads/wolfssl-3.14.0.zip
+RUN bash -c "[[ `sha256sum openssl-1.1.1-pre6.tar.gz | cut -d ' ' -f 1` = `cat /var/src/tlsbunny/src/main/docker/wolfssl/wolfssl-3.14.0.zip.sha256` ]]"
 RUN unzip wolfssl-3.14.0.zip
 ENV WOLFSSL_SRC=/var/src/wolfssl-3.14.0
 

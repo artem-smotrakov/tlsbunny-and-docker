@@ -1,5 +1,5 @@
 # this is a dockerfile which builds OpenSSL with TLS 1.3 support,
-# and start a local server and fuzz an OpenSSL server
+# and start a local server
 #
 # the following command builds a docker image
 # it should be run from the root of tlsbunny repository
@@ -28,25 +28,21 @@ RUN apt-get install -y gcc
 
 RUN mkdir -p /var/src/openssl
 RUN mkdir -p /var/src/tlsbunny
-RUN mkdir -p /var/openssl
 
-ENV TLSBUNNY /var/src/tlsbunny
-ENV OPENSSL_SRC /var/src/openssl
-ENV OPENSSL_DIR /var/openssl
+RUN git clone https://github.com/openssl/openssl /var/src/openssl
 
-ADD . ${TLSBUNNY}
-WORKDIR /var/ws
-
-RUN git clone https://github.com/openssl/openssl ${OPENSSL_SRC}
-#ADD openssl_src ${OPENSSL_SRC}
-
-WORKDIR ${OPENSSL_SRC}
-RUN bash ${TLSBUNNY}/scripts/build_openssl_tls13.sh
-
-ENV OPENSSL /var/openssl/bin/openssl
-ENV LD_LIBRARY_PATH /var/openssl/lib
+WORKDIR /var/src/openssl
+RUN ./config \
+	--debug \
+	enable-asan enable-tls1_3 enable-ssl-trace
+RUN make
+RUN make install
 
 EXPOSE 10101
-WORKDIR ${TLSBUNNY}
+
+ENV LD_LIBRARY_PATH /usr/local/lib
+
+ADD . /var/src/tlsbunny
+WORKDIR /var/src/tlsbunny
 
 CMD [ "bash", "scripts/start_openssl_tls13_server.sh" ]
