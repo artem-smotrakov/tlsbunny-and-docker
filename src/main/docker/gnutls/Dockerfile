@@ -7,7 +7,7 @@
 #
 # the following command start an the server server
 #
-# docker run -p 20101:20101 gnutls/server/tls13
+# docker run -p 50101:50101 gnutls/server/tls13
 #
 # good luck!
 #
@@ -52,7 +52,7 @@ RUN LD_LIBRARY_PATH=/usr/local/lib ./configure --with-included-libtasn1 --with-g
 RUN LD_LIBRARY_PATH=/usr/local/lib make
 RUN LD_LIBRARY_PATH=/usr/local/lib make install
 
-EXPOSE 20101
+EXPOSE 50101
 ADD . ${TLSBUNNY}
 WORKDIR ${TLSBUNNY}
 
