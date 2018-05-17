@@ -179,12 +179,87 @@ task runPicotlsFuzzyClient {
     tasks.findByName('picotlsFuzzyClient').mustRunAfter('runPicotlsDockerDaemon')
 }
 
+// tasks for running tests for h2o + picotls
+
+task buildH2ODocker(type: Exec) {
+    commandLine 'docker',
+            'build',
+            '--file', 'src/main/docker/h2o/Dockerfile',
+            '--tag',  'h2o/server/tls13',
+            '.'
+}
+
+task runH2ODockerDaemon {
+    doLast {
+        exec {
+            ignoreExitValue = true
+            commandLine 'docker', 'container', 'kill', 'h2o_server_tls13'
+        }
+        exec {
+            ignoreExitValue = true
+            commandLine 'docker', 'rm', 'h2o_server_tls13'
+        }
+        exec {
+            commandLine 'docker',
+                    'run',
+                    '--name', 'h2o_server_tls13',
+                    '-d',
+                    '-p', '30101:30101',
+                    'h2o/server/tls13'
+        }
+
+        // a little delay to let the server start
+        exec {
+            commandLine 'sleep', '3'
+        }
+    }
+}
+
+task killH2ODockerContainer(type: Exec) {
+    ignoreExitValue = true
+    commandLine 'docker', 'container', 'kill', 'h2o_server_tls13'
+}
+
+task removeH2ODockerContainer(type: Exec) {
+    ignoreExitValue = true
+    commandLine 'docker', 'rm', 'h2o_server_tls13'
+}
+
+task h2oClient(type: JavaExec) {
+    classpath sourceSets.main.runtimeClasspath
+    applicationDefaultJvmArgs = ["-Dtlsbunny.port=30101"]
+    main = "com.gypsyengineer.tlsbunny.tls13.test.h2o.client.HttpsClient"
+}
+
+task h2oFuzzyClient(type: JavaExec) {
+    classpath sourceSets.main.runtimeClasspath
+    systemProperty 'tlsbunny.port', '30101'
+    systemProperty 'tlsbunny.threads', '3'
+    main = "com.gypsyengineer.tlsbunny.tls13.test.h2o.client.FuzzyClient"
+}
+
+// build a docker image with a h2o server, run a local server in a docker container,
+// and finally start fuzzing
+task runH2OFuzzyClient {
+    dependsOn 'buildH2ODocker'
+    dependsOn 'runH2ODockerDaemon'
+    dependsOn 'h2oFuzzyClient'
+
+    // build and start the server
+    tasks.findByName('runH2ODockerDaemon').mustRunAfter('buildH2ODocker')
+
+    // run fuzzing
+    tasks.findByName('h2oFuzzyClient').mustRunAfter('runH2ODockerDaemon')
+}
+
 // run fuzzing for all targets
 
 task runAllFuzzing() {
+    dependsOn 'runH2OFuzzyClient'
     dependsOn 'runPicotlsFuzzyClient'
     dependsOn 'runOpensslFuzzyClient'
 
     // define order
     tasks.findByName('runOpensslFuzzyClient').mustRunAfter('runPicotlsFuzzyClient')
+    tasks.findByName('runH2OFuzzyClient').mustRunAfter('runOpensslFuzzyClient')
 }

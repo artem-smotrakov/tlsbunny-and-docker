@@ -8,7 +8,7 @@
 #
 # the following command starts a local h2o server
 #
-# $ docker run -p 20101:20101 h2o/server/tls13
+# $ docker run -p 30101:30101 h2o/server/tls13
 #
 # good luck!
 #

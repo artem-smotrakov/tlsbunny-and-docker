@@ -14,7 +14,7 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv12;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv13_draft_26;
 import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp256r1_sha256;
 
-public class DetailedHttpsConnection {
+public class HttpsClient {
 
     public static void main(String[] args) throws Exception {
         CommonConfig config = CommonConfig.load();
