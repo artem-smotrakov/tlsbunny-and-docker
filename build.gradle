@@ -14,15 +14,6 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.+'
 }
 
-// run fuzzing for all targets
-task runAllFuzzing() {
-    dependsOn 'runPicotlsFuzzyClient'
-    dependsOn 'runOpensslFuzzyClient'
-
-    // define order
-    tasks.findByName('runOpensslFuzzyClient').mustRunAfter('runPicotlsFuzzyClient')
-}
-
 // tasks for running tests for GnuTLS
 
 task buildGnutlsDocker(type: Exec) {
@@ -107,18 +98,12 @@ task runOpensslFuzzyClient {
     dependsOn 'buildOpensslDocker'
     dependsOn 'runOpensslDockerDaemon'
     dependsOn 'opensslFuzzyClient'
-    dependsOn 'killOpensslDockerContainer'
-    dependsOn 'removeOpensslDockerContainer'
 
     // build and start the server
     tasks.findByName('runOpensslDockerDaemon').mustRunAfter('buildOpensslDocker')
 
     // run fuzzing
     tasks.findByName('opensslFuzzyClient').mustRunAfter('runOpensslDockerDaemon')
-
-    // cleanup
-    tasks.findByName('killOpensslDockerContainer').mustRunAfter('opensslFuzzyClient')
-    tasks.findByName('removeOpensslDockerContainer').mustRunAfter('killOpensslDockerContainer')
 }
 
 // tasks for running tests for picotls
@@ -186,16 +171,20 @@ task runPicotlsFuzzyClient {
     dependsOn 'buildPicotlsDocker'
     dependsOn 'runPicotlsDockerDaemon'
     dependsOn 'picotlsFuzzyClient'
-    dependsOn 'killPicotlsDockerContainer'
-    dependsOn 'removePicotlsDockerContainer'
 
     // build and start the server
     tasks.findByName('runPicotlsDockerDaemon').mustRunAfter('buildPicotlsDocker')
 
     // run fuzzing
     tasks.findByName('picotlsFuzzyClient').mustRunAfter('runPicotlsDockerDaemon')
+}
 
-    // cleanup
-    tasks.findByName('killPicotlsDockerContainer').mustRunAfter('picotlsFuzzyClient')
-    tasks.findByName('removePicotlsDockerContainer').mustRunAfter('killPicotlsDockerContainer')
+// run fuzzing for all targets
+
+task runAllFuzzing() {
+    dependsOn 'runPicotlsFuzzyClient'
+    dependsOn 'runOpensslFuzzyClient'
+
+    // define order
+    tasks.findByName('runOpensslFuzzyClient').mustRunAfter('runPicotlsFuzzyClient')
 }
