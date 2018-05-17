@@ -1,5 +1,5 @@
 # this is a dockerfile which builds OpenSSL with TLS 1.3 support,
-# and start a local server and fuzz an OpenSSL server
+# and start a local server
 #
 # the following command builds a docker image
 # it should be run from the root of tlsbunny repository
