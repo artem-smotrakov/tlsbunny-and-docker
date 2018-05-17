@@ -18,7 +18,7 @@ The framework also provides an engine which runs specified actions. The engine s
 
 Here is an example on HTTPS connection using TLS 1.3:
 
-```
+```java
 CommonConfig config = CommonConfig.load();
 
 Engine.init()
