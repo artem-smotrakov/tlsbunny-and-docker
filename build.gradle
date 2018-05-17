@@ -14,6 +14,18 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.+'
 }
 
+// tasks for running tests for GnuTLS
+
+task buildGnutlsDocker(type: Exec) {
+    commandLine 'docker',
+            'build',
+            '--file', 'src/main/docker/gnutls/Dockerfile',
+            '--tag', 'gnutls/server/tls13',
+            '.'
+}
+
+// tasks for running tests for OpenSSL
+
 task buildOpensslDocker(type: Exec) {
     commandLine 'docker',
             'build',
@@ -22,19 +34,85 @@ task buildOpensslDocker(type: Exec) {
             '.'
 }
 
+task runOpensslDockerDaemon {
+    doLast {
+        exec {
+            ignoreExitValue = true
+            commandLine 'docker', 'container', 'kill', 'openssl_server_tls13'
+        }
+        exec {
+            ignoreExitValue = true
+            commandLine 'docker', 'rm', 'openssl_server_tls13'
+        }
+        exec {
+            commandLine 'docker',
+                    'run',
+                    '--name', 'openssl_server_tls13',
+                    '-d',
+                    '-p', '10101:10101',
+                    'openssl/server/tls13'
+        }
+
+        // a little delay to let the server start
+        exec {
+            commandLine 'sleep', '3'
+        }
+    }
+}
+
+task killOpensslDockerContainer(type: Exec) {
+    ignoreExitValue = true
+    commandLine 'docker', 'container', 'kill', 'openssl_server_tls13'
+}
+
+task removeOpensslDockerContainer(type: Exec) {
+    ignoreExitValue = true
+    commandLine 'docker', 'rm', 'openssl_server_tls13'
+}
+
+task opensslHttpsClient(type: JavaExec) {
+    classpath sourceSets.main.runtimeClasspath
+    main = "com.gypsyengineer.tlsbunny.tls13.test.openssl.client.HttpsClient"
+}
+
+task opensslFuzzyClient(type: JavaExec) {
+    classpath sourceSets.main.runtimeClasspath
+    systemProperty 'tlsbunny.port', '10101'
+    systemProperty 'tlsbunny.threads', '1'
+    main = "com.gypsyengineer.tlsbunny.tls13.test.openssl.client.FuzzyClient"
+}
+
+task opensslClientAuth(type: JavaExec) {
+    classpath sourceSets.main.runtimeClasspath
+    main = "com.gypsyengineer.tlsbunny.tls13.test.openssl.client.ClientAuth"
+}
+
+task opensslFuzzyClientAuth(type: JavaExec) {
+    classpath sourceSets.main.runtimeClasspath
+    main = "com.gypsyengineer.tlsbunny.tls13.test.openssl.client.FuzzyClientAuth"
+}
+
+// build a docker image with a openssl server, run a local server in a docker container,
+// and finally start fuzzing
+task runOpensslFuzzyClient {
+    dependsOn 'buildOpensslDocker'
+    dependsOn 'runOpensslDockerDaemon'
+    dependsOn 'opensslFuzzyClient'
+
+    // build and start the server
+    tasks.findByName('runOpensslDockerDaemon').mustRunAfter('buildOpensslDocker')
+
+    // run fuzzing
+    tasks.findByName('opensslFuzzyClient').mustRunAfter('runOpensslDockerDaemon')
+}
+
+// tasks for running tests for picotls
+
 task buildPicotlsDocker(type: Exec) {
     commandLine 'docker',
             'build',
             '--file', 'src/main/docker/picotls/Dockerfile',
             '--tag', 'picotls/server/tls13',
-            '.'
-}
-
-task buildGnutlsDocker(type: Exec) {
-    commandLine 'docker',
-            'build',
-            '--file', 'src/main/docker/gnutls/Dockerfile',
-            '--tag', 'gnutls/server/tls13',
             '.'
 }
 
@@ -56,35 +134,23 @@ task runPicotlsDockerDaemon {
                     '-p', '20101:20101',
                     'picotls/server/tls13'
         }
+
+        // a little delay to let the server start
         exec {
             commandLine 'sleep', '3'
         }
     }
 }
 
-// tasks for running tests for OpenSSL
-
-task opensslHttpsClient(type: JavaExec) {
-    classpath sourceSets.main.runtimeClasspath
-    main = "com.gypsyengineer.tlsbunny.tls13.test.openssl.client.HttpsClient"
+task killPicotlsDockerContainer(type: Exec) {
+    ignoreExitValue = true
+    commandLine 'docker', 'container', 'kill', 'picotls_server_tls13'
 }
 
-task opensslFuzzyClient(type: JavaExec) {
-    classpath sourceSets.main.runtimeClasspath
-    main = "com.gypsyengineer.tlsbunny.tls13.test.openssl.client.FuzzyClient"
+task removePicotlsDockerContainer(type: Exec) {
+    ignoreExitValue = true
+    commandLine 'docker', 'rm', 'picotls_server_tls13'
 }
-
-task opensslClientAuth(type: JavaExec) {
-    classpath sourceSets.main.runtimeClasspath
-    main = "com.gypsyengineer.tlsbunny.tls13.test.openssl.client.ClientAuth"
-}
-
-task opensslFuzzyClientAuth(type: JavaExec) {
-    classpath sourceSets.main.runtimeClasspath
-    main = "com.gypsyengineer.tlsbunny.tls13.test.openssl.client.FuzzyClientAuth"
-}
-
-// tasks for running tests for picotls
 
 task picotlsClient(type: JavaExec) {
     classpath sourceSets.main.runtimeClasspath
@@ -99,10 +165,26 @@ task picotlsFuzzyClient(type: JavaExec) {
     main = "com.gypsyengineer.tlsbunny.tls13.test.picotls.client.FuzzyClient"
 }
 
-task runPicotlsFuzzing {
-    dependsOn 'picotlsFuzzyClient'
+// build a docker image with a picotls server, run a local server in a docker container,
+// and finally start fuzzing
+task runPicotlsFuzzyClient {
     dependsOn 'buildPicotlsDocker'
     dependsOn 'runPicotlsDockerDaemon'
-    tasks.findByName('runPicotlsDockerDaemon').mustRunAfter 'buildPicotlsDocker'
-    tasks.findByName('picotlsFuzzyClient').mustRunAfter 'runPicotlsDockerDaemon'
+    dependsOn 'picotlsFuzzyClient'
+
+    // build and start the server
+    tasks.findByName('runPicotlsDockerDaemon').mustRunAfter('buildPicotlsDocker')
+
+    // run fuzzing
+    tasks.findByName('picotlsFuzzyClient').mustRunAfter('runPicotlsDockerDaemon')
+}
+
+// run fuzzing for all targets
+
+task runAllFuzzing() {
+    dependsOn 'runPicotlsFuzzyClient'
+    dependsOn 'runOpensslFuzzyClient'
+
+    // define order
+    tasks.findByName('runOpensslFuzzyClient').mustRunAfter('runPicotlsFuzzyClient')
 }

@@ -19,9 +19,25 @@ public class ByteFlipFuzzer extends AbstractFlipFuzzer implements Fuzzer<byte[]>
             n = 1;
         }
 
-        for (int i = 0; i < n; i++) {
+        int[] processed = new int[n];
+        int i = 0;
+        while (i < n) {
             int pos = start + random.nextInt(end - start);
+
+            boolean found = false;
+            for (int k = 0; k < n; k++) {
+                if (processed[k] == pos) {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (found) {
+                continue;
+            }
+
             fuzzed[pos] = (byte) random.nextInt(256);
+            i++;
         }
 
         return fuzzed;
