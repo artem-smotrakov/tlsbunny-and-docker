@@ -92,15 +92,10 @@ task opensslFuzzyClientAuth(type: JavaExec) {
     main = "com.gypsyengineer.tlsbunny.tls13.test.openssl.client.FuzzyClientAuth"
 }
 
-// build a docker image with a openssl server, run a local server in a docker container,
-// and finally start fuzzing
+// run a local server in a docker container and start fuzzing
 task runOpensslFuzzyClient {
-    dependsOn 'buildOpensslDocker'
     dependsOn 'runOpensslDockerDaemon'
     dependsOn 'opensslFuzzyClient'
-
-    // build and start the server
-    tasks.findByName('runOpensslDockerDaemon').mustRunAfter('buildOpensslDocker')
 
     // run fuzzing
     tasks.findByName('opensslFuzzyClient').mustRunAfter('runOpensslDockerDaemon')
@@ -165,15 +160,10 @@ task picotlsFuzzyClient(type: JavaExec) {
     main = "com.gypsyengineer.tlsbunny.tls13.test.picotls.client.FuzzyClient"
 }
 
-// build a docker image with a picotls server, run a local server in a docker container,
-// and finally start fuzzing
+// run a local server in a docker container and start fuzzing
 task runPicotlsFuzzyClient {
-    dependsOn 'buildPicotlsDocker'
     dependsOn 'runPicotlsDockerDaemon'
     dependsOn 'picotlsFuzzyClient'
-
-    // build and start the server
-    tasks.findByName('runPicotlsDockerDaemon').mustRunAfter('buildPicotlsDocker')
 
     // run fuzzing
     tasks.findByName('picotlsFuzzyClient').mustRunAfter('runPicotlsDockerDaemon')
@@ -238,21 +228,23 @@ task h2oFuzzyClient(type: JavaExec) {
     main = "com.gypsyengineer.tlsbunny.tls13.test.h2o.client.FuzzyClient"
 }
 
-// build a docker image with a h2o server, run a local server in a docker container,
-// and finally start fuzzing
+// run a local server in a docker container and start fuzzing
 task runH2OFuzzyClient {
-    dependsOn 'buildH2ODocker'
     dependsOn 'runH2ODockerDaemon'
     dependsOn 'h2oFuzzyClient'
-
-    // build and start the server
-    tasks.findByName('runH2ODockerDaemon').mustRunAfter('buildH2ODocker')
 
     // run fuzzing
     tasks.findByName('h2oFuzzyClient').mustRunAfter('runH2ODockerDaemon')
 }
 
 // run fuzzing for all targets
+
+task buildAllDocker() {
+    dependsOn 'buildGnutlsDocker'
+    dependsOn 'buildPicotlsDocker'
+    dependsOn 'buildOpensslDocker'
+    dependsOn 'buildH2ODocker'
+}
 
 task runAllFuzzing() {
     dependsOn 'runH2OFuzzyClient'
