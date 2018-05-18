@@ -94,14 +94,6 @@ public class HttpsClient {
                 .run(new WrappingHandshakeDataIntoTLSCiphertext())
                 .send(new OutgoingData())
 
-                // receive NewSessionTicket
-                .require(new IncomingData())
-                .run(new ProcessingApplicationDataTLSCiphertext()
-                        .expect(handshake))
-                .run(new ProcessingHandshake()
-                        .expect(new_session_ticket))
-                .run(new ProcessingNewSessionTicket())
-
                 // send application data
                 .run(new PreparingHttpGetRequest())
                 .run(new WrappingApplicationDataIntoTLSCiphertext())
@@ -113,6 +105,9 @@ public class HttpsClient {
                 .run(new PrintingData())
 
                 .connect()
+
+                // GnuTLS server actually sends a "close_notify" alert
+                // but we just ignore it for now
                 .run(new NoAlertCheck());
     }
 
