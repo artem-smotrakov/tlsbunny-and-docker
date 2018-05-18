@@ -24,6 +24,64 @@ task buildGnutlsDocker(type: Exec) {
             '.'
 }
 
+task runGnutlsDockerDaemon {
+    doLast {
+        exec {
+            ignoreExitValue = true
+            commandLine 'docker', 'container', 'kill', 'gnutls_server_tls13'
+        }
+        exec {
+            ignoreExitValue = true
+            commandLine 'docker', 'rm', 'gnutls_server_tls13'
+        }
+        exec {
+            commandLine 'docker',
+                    'run',
+                    '--name', 'gnutls_server_tls13',
+                    '-d',
+                    '-p', '50101:50101',
+                    'gnutls/server/tls13'
+        }
+
+        // a little delay to let the server start
+        exec {
+            commandLine 'sleep', '3'
+        }
+    }
+}
+
+task killGnutlsDockerContainer(type: Exec) {
+    ignoreExitValue = true
+    commandLine 'docker', 'container', 'kill', 'gnutls_server_tls13'
+}
+
+task removeGnutlsDockerContainer(type: Exec) {
+    ignoreExitValue = true
+    commandLine 'docker', 'rm', 'gnutls_server_tls13'
+}
+
+task gnutlsClient(type: JavaExec) {
+    classpath sourceSets.main.runtimeClasspath
+    applicationDefaultJvmArgs = ["-Dtlsbunny.port=20101"]
+    main = "com.gypsyengineer.tlsbunny.tls13.test.gnutls.client.HttpsClient"
+}
+
+task gnutlsFuzzyClient(type: JavaExec) {
+    classpath sourceSets.main.runtimeClasspath
+    systemProperty 'tlsbunny.port', '50101'
+    systemProperty 'tlsbunny.threads', '1'
+    main = "com.gypsyengineer.tlsbunny.tls13.test.gnutls.client.FuzzyClient"
+}
+
+// run a local server in a docker container and start fuzzing
+task runGnutlsFuzzyClient {
+    dependsOn 'runGnutlsDockerDaemon'
+    dependsOn 'gnutlsFuzzyClient'
+
+    // run fuzzing
+    tasks.findByName('gnutlsFuzzyClient').mustRunAfter('runGnutlsDockerDaemon')
+}
+
 // tasks for running tests for OpenSSL
 
 task buildOpensslDocker(type: Exec) {
@@ -246,12 +304,9 @@ task buildAllDocker() {
     dependsOn 'buildH2ODocker'
 }
 
-task runAllFuzzing() {
+task runFuzzyClients() {
     dependsOn 'runH2OFuzzyClient'
     dependsOn 'runPicotlsFuzzyClient'
     dependsOn 'runOpensslFuzzyClient'
-
-    // define order
-    tasks.findByName('runOpensslFuzzyClient').mustRunAfter('runPicotlsFuzzyClient')
-    tasks.findByName('runH2OFuzzyClient').mustRunAfter('runOpensslFuzzyClient')
+    dependsOn 'runGnutlsFuzzyClient'
 }
