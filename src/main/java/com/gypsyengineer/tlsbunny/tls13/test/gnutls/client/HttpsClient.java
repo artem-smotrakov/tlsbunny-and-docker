@@ -5,7 +5,9 @@ import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.*;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
+import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.tls13.test.CommonConfig;
+import com.gypsyengineer.tlsbunny.tls13.test.Config;
 
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
 import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.*;
@@ -17,11 +19,14 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp
 public class HttpsClient {
 
     public static void main(String[] args) throws Exception {
-        CommonConfig config = CommonConfig.load();
+        go(CommonConfig.load(), StructFactory.getDefault());
+    }
 
-        Engine.init()
+    public static Engine go(Config config, StructFactory factory) throws Exception {
+        return Engine.init()
                 .target(config.host())
                 .target(config.port())
+                .set(factory)
 
                 // send ClientHello
                 .run(new GeneratingClientHello()
