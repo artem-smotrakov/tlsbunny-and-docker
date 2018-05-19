@@ -20,6 +20,9 @@ public interface ProtocolVersion extends Struct {
     ProtocolVersion TLSv13_draft_26 = StructFactory.getDefault()
             .createProtocolVestion(0x7f, 0x1a);
 
+    ProtocolVersion TLSv13_draft_28 = StructFactory.getDefault()
+            .createProtocolVestion(0x7f, 0x1c);
+
     int getMinor();
     int getMajor();
 }
