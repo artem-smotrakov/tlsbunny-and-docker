@@ -42,7 +42,7 @@ RUN ./configure --disable-openssl --enable-shared && make && make install
 
 RUN git clone https://gitlab.com/gnutls/gnutls.git ${GNUTLS_SRC} && \
     cd ${GNUTLS_SRC} && make bootstrap && \
-    LD_LIBRARY_PATH=/usr/local/lib
+    LD_LIBRARY_PATH=/usr/local/lib \
         ./configure \
             --with-included-libtasn1 \
             --with-guile-site-dir=no \
