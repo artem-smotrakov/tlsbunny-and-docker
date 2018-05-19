@@ -50,21 +50,42 @@ Engine.init()
 
 ## Some test results
 
-|                             | OpenSSL (+ASan) | GnuTLS (+ASan)  | NSS    | h2o + picotls (+ASan) | wolfSSL (+ASan) |
-| ----------------------------|-----------------|-----------------|--------|-----------------------|-----------------|
-| TLSPlaintext fuzzing        | 200  tests      |                 |        |                       |                 |
-| Handshake fuzzing           | 2000 tests      |                 |        |                       |                 |
-| ClientHello fuzzing         | 2000 tests      |                 |        |                       |                 |
-| Certificate fuzzing         |                 |                 |        |                       |                 |
-| CertificateVerify fuzzing   |                 |                 |        |                       |                 |
-| Finished fuzzing            | 2000 tests      |                 |        |                       |                 |
-| CCS fuzzing                 | 20   tests      |                 |        |                       |                 |
-| Double ClientHello          |                 |                 |        |                       |                 |
-| Invalid CCS                 |                 |                 |        |                       |                 |
-| CCS after handshake is done |                 |                 |        |                       |                 |
-| Multiple CCS                |                 |                 |        |                       |                 |
-| Start with CCS              |                 |                 |        |                       |                 |
-| Weak ECDHE key              |                 |                 |        |                       |                 |
+### TLS server
+
+|                                          | OpenSSL (+ASan) | GnuTLS (+ASan)  | NSS (+ASan)   | h2o + picotls (+ASan) | wolfSSL (+ASan) |
+| -----------------------------------------|-----------------|-----------------|---------------|-----------------------|-----------------|
+| TLSPlaintext fuzzing                     | 200  tests      |                 |               |                       |                 |
+| Handshake fuzzing                        | 2000 tests      |                 |               |                       |                 |
+| ClientHello fuzzing                      | 2000 tests      |                 |               |                       |                 |
+| Certificate fuzzing (client auth)        |                 |                 |               |                       |                 |
+| CertificateVerify fuzzing (client auth)  |                 |                 |               |                       |                 |
+| Finished fuzzing                         | 2000 tests      |                 |               |                       |                 |
+| CCS fuzzing                              | 20   tests      |                 |               |                       |                 |
+| Double ClientHello                       |                 |                 |               |                       |                 |
+| Invalid CCS                              |                 |                 |               |                       |                 |
+| CCS after handshake is done              |                 |                 |               |                       |                 |
+| Multiple CCS                             |                 |                 |               |                       |                 |
+| Start with CCS                           |                 |                 |               |                       |                 |
+| Weak ECDHE key                           |                 |                 |               |                       |                 |
+
+### TLS client
+
+|                             | OpenSSL (+ASan) | GnuTLS (+ASan)  | NSS (+ASan)   | h2o + picotls (+ASan) | wolfSSL (+ASan) |
+| ----------------------------|-----------------|-----------------|---------------|-----------------------|-----------------|
+| TLSPlaintext fuzzing        |                 |                 |               |                       |                 |
+| Handshake fuzzing           |                 |                 |               |                       |                 |
+| ServerHello fuzzing         |                 |                 |               |                       |                 |
+| EncryptedExtensions fuzzing |                 |                 |               |                       |                 |
+| Certificate fuzzing         |                 |                 |               |                       |                 |
+| CertificateVerify fuzzing   |                 |                 |               |                       |                 |
+| Finished fuzzing            |                 |                 |               |                       |                 |
+| CCS fuzzing                 |                 |                 |               |                       |                 |
+| Double ServerHello          |                 |                 |               |                       |                 |
+| Invalid CCS                 |                 |                 |               |                       |                 |
+| CCS after handshake is done |                 |                 |               |                       |                 |
+| Multiple CCS                |                 |                 |               |                       |                 |
+| Start with CCS              |                 |                 |               |                       |                 |
+| Weak ECDHE key              |                 |                 |               |                       |                 |
 
 ## Alternatives
 
