@@ -16,45 +16,39 @@ FROM ubuntu
 
 MAINTAINER artem.smotrakov@gmail.com
 
-RUN apt-get update
-RUN apt-get update --fix-missing
-RUN apt-get install -y dash git-core autoconf libtool gettext autopoint
-RUN apt-get install -y automake autogen nettle-dev libp11-kit-dev libtspi-dev libunistring-dev
-RUN apt-get install -y guile-2.0 guile-2.0-libs guile-2.0-dev libtasn1-6 libtasn1-6-dev libidn2-0-dev gawk gperf
-RUN apt-get install -y libunbound-dev dns-root-data bison help2man gtk-doc-tools
-RUN apt-get install -y texinfo texlive texlive-generic-recommended texlive-extra-utils
-RUN apt-get install -y libgmp-dev wget
+RUN apt-get update && apt-get install -y \
+    dash git-core autoconf libtool gettext autopoint \
+    automake autogen nettle-dev libp11-kit-dev libtspi-dev libunistring-dev \
+    guile-2.0 guile-2.0-libs guile-2.0-dev libtasn1-6 libtasn1-6-dev libidn2-0-dev gawk gperf \
+    libunbound-dev dns-root-data bison help2man gtk-doc-tools \
+    texinfo texlive texlive-generic-recommended texlive-extra-utils \
+    libgmp-dev wget
 
 ENV GNUTLS_SRC /var/src/gnutls
 ENV TLSBUNNY /var/src/tlsbunny
 
-RUN mkdir -p /var/src/gnutls
-RUN mkdir -p /var/src/tlsbunny
+RUN mkdir -p /var/src/gnutls && mkdir -p /var/src/tlsbunny
 
 # TODO check downloaded archive
 WORKDIR /var/src
-RUN wget https://ftp.gnu.org/gnu/nettle/nettle-3.4.tar.gz
-RUN tar xf nettle-3.4.tar.gz
+RUN wget https://ftp.gnu.org/gnu/nettle/nettle-3.4.tar.gz && tar xf nettle-3.4.tar.gz
 
 ENV CFLAGS="-fsanitize=address -fno-omit-frame-pointer -g -O1"
 ENV CXXFLAGS="-fsanitize=address -fno-omit-frame-pointer"
 ENV LDFLAGS="-fsanitize=address"
 
 WORKDIR /var/src/nettle-3.4
-RUN ./configure --disable-openssl --enable-shared
-RUN make
-RUN make install
+RUN ./configure --disable-openssl --enable-shared && make && make install
 
-RUN git clone https://gitlab.com/gnutls/gnutls.git ${GNUTLS_SRC}
-
-WORKDIR ${GNUTLS_SRC}
-RUN make bootstrap
-RUN LD_LIBRARY_PATH=/usr/local/lib ./configure \
-    --with-included-libtasn1 \
-    --with-guile-site-dir=no \
-    --disable-guile
-RUN LD_LIBRARY_PATH=/usr/local/lib make
-RUN LD_LIBRARY_PATH=/usr/local/lib make install
+RUN git clone https://gitlab.com/gnutls/gnutls.git ${GNUTLS_SRC} && \
+    cd ${GNUTLS_SRC} && make bootstrap && \
+    LD_LIBRARY_PATH=/usr/local/lib
+        ./configure \
+            --with-included-libtasn1 \
+            --with-guile-site-dir=no \
+            --disable-guile && \
+    LD_LIBRARY_PATH=/usr/local/lib make && \
+    LD_LIBRARY_PATH=/usr/local/lib make install
 
 EXPOSE 50101
 ADD . ${TLSBUNNY}

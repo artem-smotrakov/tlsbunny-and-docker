@@ -17,40 +17,34 @@ FROM ubuntu
 
 MAINTAINER artem.smotrakov@gmail.com
 
-RUN apt-get update --fix-missing
-RUN apt-get install -y git
-RUN apt-get install -y make cmake
-RUN apt-get install -y gcc g++
-RUN apt-get install -y pkg-config
-RUN apt-get install -y wget
-RUN apt-get install -y zlib1g zlib1g-dev
+RUN apt-get update && apt-get install -y \
+    cmake gcc git g++ make pkg-config wget zlib1g zlib1g-dev
 
 RUN mkdir -p /var/src
 ADD . /var/src/tlsbunny
 
 # build OpenSSL 1.1.1
 WORKDIR /var/src
-RUN wget https://www.openssl.org/source/openssl-1.1.1-pre6.tar.gz
-RUN bash -c "[[ `sha256sum openssl-1.1.1-pre6.tar.gz | cut -d ' ' -f 1` = `cat /var/src/tlsbunny/src/main/docker/h2o/openssl-1.1.1-pre6.tar.gz.sha256` ]]"
-RUN tar xf openssl-1.1.1-pre6.tar.gz
-WORKDIR /var/src/openssl-1.1.1-pre6
-RUN ./config --prefix=/usr && make && make install
+RUN wget https://www.openssl.org/source/openssl-1.1.1-pre6.tar.gz && \
+    bash -c "[[ `sha256sum openssl-1.1.1-pre6.tar.gz | cut -d ' ' -f 1` = `cat /var/src/tlsbunny/src/main/docker/h2o/openssl-1.1.1-pre6.tar.gz.sha256` ]]" && \
+    tar xf openssl-1.1.1-pre6.tar.gz && \
+    cd /var/src/openssl-1.1.1-pre6 && \
+    ./config \
+        --prefix=/usr \
+        --debug \
+        enable-asan && \
+    make && make install
 
 # build h2o
-WORKDIR /var/src
-RUN git clone https://github.com/h2o/h2o
-WORKDIR /var/src/h2o
-
 ENV CFLAGS="-fsanitize=address -fno-omit-frame-pointer -g -O1"
 ENV LDFLAGS="-fsanitize=address -lssl -lcrypto -L/usr/lib"
-
-RUN cmake \
-    -DCMAKE_C_FLAGS=${CFLAGS} \
-    -DCMAKE_EXE_LINKER_FLAGS=${LDFLAGS} \
-    -DWITH_PICOTLS=on \
-    .
-RUN make
-RUN make install
+WORKDIR /var/src
+RUN git clone https://github.com/h2o/h2o && cd /var/src/h2o && \
+    cmake \
+        -DCMAKE_C_FLAGS=${CFLAGS} \
+        -DCMAKE_EXE_LINKER_FLAGS=${LDFLAGS} \
+        -DWITH_PICOTLS=on . && \
+    make && make install
 
 # start h2o server
 EXPOSE 30101

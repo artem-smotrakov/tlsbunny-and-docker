@@ -21,22 +21,20 @@ FROM ubuntu
 
 MAINTAINER artem.smotrakov@gmail.com
 
-RUN apt-get update
-RUN apt-get install -y git
-RUN apt-get install -y make
-RUN apt-get install -y gcc
+RUN apt-get update && apt-get install -y \
+    gcc git make
 
-RUN mkdir -p /var/src/openssl
-RUN mkdir -p /var/src/tlsbunny
+RUN mkdir -p /var/src/openssl /var/src/tlsbunny
 
-RUN git clone https://github.com/openssl/openssl /var/src/openssl
-
-WORKDIR /var/src/openssl
-RUN ./config \
-	--debug \
-	enable-asan enable-tls1_3 enable-ssl-trace
-RUN make
-RUN make install
+RUN git clone https://github.com/openssl/openssl /var/src/openssl && \
+    cd /var/src/openssl && \
+    ./config \
+	    --prefix=/usr \
+	    --debug \
+	    enable-asan \
+	    enable-tls1_3 \
+	    enable-ssl-trace && \
+	make && make install
 
 EXPOSE 10101
 

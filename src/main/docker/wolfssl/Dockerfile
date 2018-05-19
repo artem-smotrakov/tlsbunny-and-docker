@@ -17,30 +17,24 @@ FROM ubuntu
 
 MAINTAINER artem.smotrakov@gmail.com
 
-RUN apt-get update --fix-missing
-RUN apt-get install -y make cmake gcc g++ pkg-config
+RUN apt-get update && apt-get install -y cmake gcc g++ make pkg-config
 
 RUN mkdir -p /var/src
 
-WORKDIR /var/src
-RUN wget https://wolfssl.com/downloads/wolfssl-3.14.0.zip
-RUN bash -c "[[ `sha256sum openssl-1.1.1-pre6.tar.gz | cut -d ' ' -f 1` = `cat /var/src/tlsbunny/src/main/docker/wolfssl/wolfssl-3.14.0.zip.sha256` ]]"
-RUN unzip wolfssl-3.14.0.zip
-ENV WOLFSSL_SRC=/var/src/wolfssl-3.14.0
-
-WORKDIR /var/src/wolfssl-3.14.0
-
 ENV CFLAGS="-fsanitize=address -fno-omit-frame-pointer"
 ENV CXXFLAGS="-fsanitize=address -fno-omit-frame-pointer"
-ENV LDFLAGS=-fsanitize=address
+ENV LDFLAGS="-fsanitize=address"
 
-RUN CFLAGS=${CFLAGS} CXXFLAGS=${CXXFLAGS} LDFLAGS=${LDFLAGS} \
-	./configure \
-		--enable-tls13 \
-		--enable-debug
-
-RUN CFLAGS=${CFLAGS} CXXFLAGS=${CXXFLAGS} LDFLAGS=${LDFLAGS} make
-RUN make install
+WORKDIR /var/src
+RUN wget https://wolfssl.com/downloads/wolfssl-3.14.0.zip && \
+    bash -c "[[ `sha256sum openssl-1.1.1-pre6.tar.gz | cut -d ' ' -f 1` = `cat /var/src/tlsbunny/src/main/docker/wolfssl/wolfssl-3.14.0.zip.sha256` ]]" && \
+    unzip wolfssl-3.14.0.zip && \
+    cd /var/src/wolfssl-3.14.0 && \
+    CFLAGS=${CFLAGS} CXXFLAGS=${CXXFLAGS} LDFLAGS=${LDFLAGS} \
+	    ./configure \
+		    --enable-tls13 \
+		    --enable-debug && \
+    CFLAGS=${CFLAGS} CXXFLAGS=${CXXFLAGS} LDFLAGS=${LDFLAGS} make && make install
 
 EXPOSE 40101
 
