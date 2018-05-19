@@ -32,7 +32,7 @@ public class FinishedFuzzer extends HandshakeMessageFuzzer {
 
     @Override
     protected Engine connect(StructFactory factory) throws Exception {
-        return HttpsClient.go(config, factory).apply(config.analyzer());
+        return HttpsClient.go(config, factory);
     }
 
     public static void main(String[] args) throws InterruptedException {
