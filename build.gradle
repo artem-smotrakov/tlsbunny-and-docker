@@ -20,7 +20,7 @@ task buildGnutlsDocker(type: Exec) {
     commandLine 'docker',
             'build',
             '--file', 'src/main/docker/gnutls/Dockerfile',
-            '--tag', 'gnutls/server/tls13',
+            '--tag',  'gnutls/server/tls13',
             '.'
 }
 
@@ -88,7 +88,7 @@ task buildOpensslDocker(type: Exec) {
     commandLine 'docker',
             'build',
             '--file', 'src/main/docker/openssl/Dockerfile',
-            '--tag', 'openssl/server/tls13',
+            '--tag',  'openssl/server/tls13',
             '.'
 }
 
@@ -165,7 +165,7 @@ task buildPicotlsDocker(type: Exec) {
     commandLine 'docker',
             'build',
             '--file', 'src/main/docker/picotls/Dockerfile',
-            '--tag', 'picotls/server/tls13',
+            '--tag',  'picotls/server/tls13',
             '.'
 }
 
@@ -295,6 +295,74 @@ task runH2OFuzzyClient {
     tasks.findByName('h2oFuzzyClient').mustRunAfter('runH2ODockerDaemon')
 }
 
+// tasks for running tests for NSS
+
+task buildNssDocker(type: Exec) {
+    commandLine 'docker',
+            'build',
+            '--file', 'src/main/docker/nss/Dockerfile',
+            '--tag',  'nss/server/tls13',
+            '.'
+}
+
+task runNssDockerDaemon {
+    doLast {
+        exec {
+            ignoreExitValue = true
+            commandLine 'docker', 'container', 'kill', 'nss_server_tls13'
+        }
+        exec {
+            ignoreExitValue = true
+            commandLine 'docker', 'rm', 'nss_server_tls13'
+        }
+        exec {
+            commandLine 'docker',
+                    'run',
+                    '--name', 'nss_server_tls13',
+                    '-d',
+                    '-p', '60101:60101',
+                    'nss/server/tls13'
+        }
+
+        // a little delay to let the server start
+        exec {
+            commandLine 'sleep', '3'
+        }
+    }
+}
+
+task killNssDockerContainer(type: Exec) {
+    ignoreExitValue = true
+    commandLine 'docker', 'container', 'kill', 'nss_server_tls13'
+}
+
+task removeNssDockerContainer(type: Exec) {
+    ignoreExitValue = true
+    commandLine 'docker', 'rm', 'nss_server_tls13'
+}
+
+task nssClient(type: JavaExec) {
+    classpath sourceSets.main.runtimeClasspath
+    applicationDefaultJvmArgs = ["-Dtlsbunny.port=60101"]
+    main = "com.gypsyengineer.tlsbunny.tls13.test.nss.client.HttpsClient"
+}
+
+task nssFuzzyClient(type: JavaExec) {
+    classpath sourceSets.main.runtimeClasspath
+    systemProperty 'tlsbunny.port', '60101'
+    systemProperty 'tlsbunny.threads', '1'
+    main = "com.gypsyengineer.tlsbunny.tls13.test.nss.client.FuzzyClient"
+}
+
+// run a local server in a docker container and start fuzzing
+task runNssFuzzyClient {
+    dependsOn 'runNssDockerDaemon'
+    dependsOn 'nssFuzzyClient'
+
+    // run fuzzing
+    tasks.findByName('nssFuzzyClient').mustRunAfter('runNssDockerDaemon')
+}
+
 // run fuzzing for all targets
 
 task buildAllDocker() {
@@ -302,6 +370,7 @@ task buildAllDocker() {
     dependsOn 'buildPicotlsDocker'
     dependsOn 'buildOpensslDocker'
     dependsOn 'buildH2ODocker'
+    dependsOn 'buildNssDocker'
 }
 
 task runFuzzyClients() {
@@ -309,4 +378,5 @@ task runFuzzyClients() {
     dependsOn 'runPicotlsFuzzyClient'
     dependsOn 'runOpensslFuzzyClient'
     dependsOn 'runGnutlsFuzzyClient'
+    dependsOn 'runNssFuzzyClient'
 }
