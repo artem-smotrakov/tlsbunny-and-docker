@@ -17,28 +17,34 @@ FROM ubuntu
 
 MAINTAINER artem.smotrakov@gmail.com
 
-RUN apt-get update
-RUN apt-get install -y mercurial make gcc
+RUN apt-get update && apt-get install -y gcc g++ \
+    make mercurial openssl zlib1g zlib1g-dev
 
 RUN mkdir -p /var/src/
-
 WORKDIR /var/src
 
-RUN hg clone https://hg.mozilla.org/projects/nspr
-RUN hg clone https://hg.mozilla.org/projects/nss
+RUN hg clone https://hg.mozilla.org/projects/nspr && \
+    hg clone https://hg.mozilla.org/projects/nss
 
 ENV BUILD_OPT 0
 ENV USE_64 1
 ENV USE_ASAN 1
+ENV NSS_ENABLE_TLS_1_3=1
 
 WORKDIR /var/src/nss
+
+# legacy build system
+# TODO should we switch to 'bash build.sh' (requires gyp and ninja packages)
 RUN make nss_build_all
 
 EXPOSE 60101
 
-ENV LD_LIBRARY_PATH /usr/local/lib
+ENV PATH /var/src/dist/Linux4.4_x86_64_cc_glibc_PTH_64_OPT.OBJ/bin:${PATH}
+ENV LD_LIBRARY_PATH /var/src/dist/Linux4.4_x86_64_cc_glibc_PTH_64_OPT.OBJ/lib
 
 ADD . /var/src/tlsbunny
 WORKDIR /var/src/tlsbunny
+
+RUN bash scripts/create_nss_db.sh
 
 CMD [ "bash", "scripts/start_nss_tls13_server.sh" ]

@@ -17,29 +17,25 @@ FROM ubuntu
 
 MAINTAINER artem.smotrakov@gmail.com
 
-RUN apt-get update --fix-missing
-RUN apt-get install -y git make cmake gcc g++ pkg-config openssl libssl-dev
+RUN apt-get update && apt-get install -y cmake gcc git g++ \
+    libssl-dev make openssl pkg-config
 
 RUN mkdir -p /var/src/tlsbunny
 
 ENV TLSBUNNY /var/src/tlsbunny
 ENV PICOTLS /var/src/picotls
 
-RUN git clone https://github.com/h2o/picotls ${PICOTLS}
-
-WORKDIR ${PICOTLS}
-
-RUN git submodule init
-RUN git submodule update
-
 ENV CFLAGS="-fsanitize=address -fno-omit-frame-pointer -g -O1"
-ENV LDFLAGS=-fsanitize=address
+ENV LDFLAGS="-fsanitize=address"
 
-RUN cmake \
-    -DCMAKE_C_FLAGS=${CFLAGS} \
-    -DCMAKE_EXE_LINKER_FLAGS=${LDFLAGS} \
-    .
-RUN make
+RUN git clone https://github.com/h2o/picotls ${PICOTLS} && \
+    cd ${PICOTLS} && \
+    git submodule init && git submodule update && \
+    cmake \
+        -DCMAKE_C_FLAGS=${CFLAGS} \
+        -DCMAKE_EXE_LINKER_FLAGS=${LDFLAGS} \
+        . && \
+    make
 
 EXPOSE 20101
 

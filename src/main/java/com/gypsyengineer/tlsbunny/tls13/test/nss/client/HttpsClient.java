@@ -1,8 +1,7 @@
-package com.gypsyengineer.tlsbunny.tls13.test.gnutls.client;
+package com.gypsyengineer.tlsbunny.tls13.test.nss.client;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertCheck;
-import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.*;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
@@ -12,8 +11,7 @@ import com.gypsyengineer.tlsbunny.tls13.test.Config;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
 import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.*;
 import static com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup.secp256r1;
-import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv12;
-import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv13_draft_26;
+import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.*;
 import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp256r1_sha256;
 
 public class HttpsClient {
@@ -30,7 +28,7 @@ public class HttpsClient {
 
                 // send ClientHello
                 .run(new GeneratingClientHello()
-                        .supportedVersion(TLSv13_draft_26)
+                        .supportedVersion(TLSv13_draft_28)
                         .group(secp256r1)
                         .signatureScheme(ecdsa_secp256r1_sha256)
                         .keyShareEntry(context -> context.negotiator.createKeyShareEntry()))
@@ -56,34 +54,30 @@ public class HttpsClient {
                 .run(new NegotiatingDHSecret())
                 .run(new ComputingKeysAfterServerHello())
 
-                .allow(new IncomingChangeCipherSpec())
-
-                // process EncryptedExtensions
+                // selfserv sends EncryptedExtensions, Certificate, CertificateVerify and Finished
+                // messages in a single TLSPlaintext
                 .run(new ProcessingHandshakeTLSCiphertext()
                         .expect(handshake))
+
+                // process EncryptedExtensions
                 .run(new ProcessingHandshake()
                         .expect(encrypted_extensions)
                         .updateContext(Context.Element.encrypted_extensions))
                 .run(new ProcessingEncryptedExtensions())
 
                 // process Certificate
-                .run(new ProcessingHandshakeTLSCiphertext()
-                        .expect(handshake))
                 .run(new ProcessingHandshake()
                         .expect(certificate)
                         .updateContext(Context.Element.server_certificate))
                 .run(new ProcessingCertificate())
 
                 // process CertificateVerify
-                .run(new ProcessingHandshakeTLSCiphertext()
-                        .expect(handshake))
                 .run(new ProcessingHandshake()
                         .expect(certificate_verify)
                         .updateContext(Context.Element.server_certificate_verify))
                 .run(new ProcessingCertificateVerify())
 
                 // process Finished
-                .run(new ProcessingHandshakeTLSCiphertext())
                 .run(new ProcessingHandshake()
                         .expect(finished)
                         .updateContext(Context.Element.server_finished))
@@ -111,7 +105,7 @@ public class HttpsClient {
 
                 .connect()
 
-                // GnuTLS server actually sends a "close_notify" alert
+                // selfserv actually sends a "close_notify" alert
                 // but we just ignore it for now
                 .run(new NoAlertCheck());
     }
