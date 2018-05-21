@@ -15,7 +15,7 @@ public class IncomingChangeCipherSpec extends AbstractAction {
     }
 
     @Override
-    public Action run() throws ActionFailed {
+    public Action run() throws ActionFailed, IOException {
         TLSPlaintext tlsPlaintext = context.factory.parser().parseTLSPlaintext(in);
         if (!tlsPlaintext.containsChangeCipherSpec()) {
             throw new ActionFailed("expected a change cipher spec message");

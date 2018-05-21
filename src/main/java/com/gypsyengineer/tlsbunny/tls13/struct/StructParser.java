@@ -1,6 +1,8 @@
 package com.gypsyengineer.tlsbunny.tls13.struct;
 
 import com.gypsyengineer.tlsbunny.tls.Vector;
+
+import java.io.IOException;
 import java.nio.ByteBuffer;
 
 public interface StructParser {
@@ -24,7 +26,7 @@ public interface StructParser {
     HelloRetryRequest parseHelloRetryRequest(ByteBuffer buffer);
     ServerHello parseServerHello(ByteBuffer buffer);
     TLSInnerPlaintext parseTLSInnerPlaintext(ByteBuffer buffer);
-    TLSPlaintext parseTLSPlaintext(ByteBuffer buffer);
+    TLSPlaintext parseTLSPlaintext(ByteBuffer buffer) throws IOException;
     SignatureScheme parseSignatureScheme(ByteBuffer buffer);
     SignatureSchemeList parseSignatureSchemeList(ByteBuffer buffer);
     SupportedVersions.ClientHello parseSupportedVersionsClientHello(ByteBuffer buffer);
@@ -116,7 +118,7 @@ public interface StructParser {
         return parseTLSInnerPlaintext(ByteBuffer.wrap(bytes));
     }
 
-    default TLSPlaintext parseTLSPlaintext(byte[] bytes) {
+    default TLSPlaintext parseTLSPlaintext(byte[] bytes) throws IOException {
         return parseTLSPlaintext(ByteBuffer.wrap(bytes));
     }
 

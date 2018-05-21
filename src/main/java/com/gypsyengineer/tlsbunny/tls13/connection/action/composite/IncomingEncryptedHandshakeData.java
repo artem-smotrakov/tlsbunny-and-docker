@@ -7,6 +7,7 @@ import com.gypsyengineer.tlsbunny.tls13.crypto.AEADException;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 
 public class IncomingEncryptedHandshakeData extends AbstractAction {
@@ -17,7 +18,7 @@ public class IncomingEncryptedHandshakeData extends AbstractAction {
     }
 
     @Override
-    public Action run() throws ActionFailed, AEADException {
+    public Action run() throws ActionFailed, AEADException, IOException {
         TLSPlaintext tlsPlaintext = context.factory.parser().parseTLSPlaintext(in);
 
         if (!tlsPlaintext.containsApplicationData()) {

@@ -63,7 +63,7 @@ public abstract class AbstractAction implements Action {
     // helper methods
 
     protected byte[] processEncrypted(AEAD decryptor, ContentType expectedType)
-            throws ActionFailed, AEADException {
+            throws ActionFailed, AEADException, IOException {
 
         TLSPlaintext tlsPlaintext = context.factory.parser().parseTLSPlaintext(in);
         if (tlsPlaintext.containsAlert()) {
@@ -93,7 +93,9 @@ public abstract class AbstractAction implements Action {
         return tlsInnerPlaintext.getContent();
     }
 
-    protected Handshake processEncryptedHandshake() throws AEADException, ActionFailed {
+    protected Handshake processEncryptedHandshake()
+            throws AEADException, ActionFailed, IOException {
+
         return context.factory.parser().parseHandshake(
                 processEncrypted(context.handshakeDecryptor, ContentType.handshake));
     }
