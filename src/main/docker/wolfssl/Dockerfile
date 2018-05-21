@@ -17,27 +17,33 @@ FROM ubuntu
 
 MAINTAINER artem.smotrakov@gmail.com
 
-RUN apt-get update && apt-get install -y autoconf cmake gcc git g++ libtool make pkg-config
+RUN apt-get update && apt-get install -y \
+    autoconf cmake gcc git g++ libtool make pkg-config
 
 RUN mkdir -p /var/src
-
-ENV CFLAGS="-fsanitize=address -fno-omit-frame-pointer"
-ENV CXXFLAGS="-fsanitize=address -fno-omit-frame-pointer"
-ENV LDFLAGS="-fsanitize=address"
-
 WORKDIR /var/src
+ADD . /var/src/tlsbunny
+
+ENV CFLAGS "-fsanitize=address -fno-omit-frame-pointer"
+ENV CXXFLAGS "-fsanitize=address -fno-omit-frame-pointer"
+ENV LDFLAGS "-fsanitize=address"
+
+
 RUN git clone https://github.com/wolfSSL/wolfssl && \
     cd wolfssl && \
     bash autogen.sh && \
     CFLAGS=${CFLAGS} CXXFLAGS=${CXXFLAGS} LDFLAGS=${LDFLAGS} \
 	    ./configure \
 		    --enable-tls13 \
+		    --enable-tls13-draft26 \
 		    --enable-debug && \
-    CFLAGS=${CFLAGS} CXXFLAGS=${CXXFLAGS} LDFLAGS=${LDFLAGS} make && make install
+    CFLAGS=${CFLAGS} CXXFLAGS=${CXXFLAGS} LDFLAGS=${LDFLAGS} make && \
+    make install
 
 EXPOSE 40101
 
-ADD . /var/src/tlsbunny
-WORKDIR /var/src/tlsbunny
+ENV TLSBUNNY /var/src/tlsbunny
+ENV ASAN_OPTIONS "detect_leaks=0"
+WORKDIR /var/src/wolfssl
 
-CMD [ "bash", "scripts/start_wolfssl_tls13_server.sh" ]
+CMD [ "bash", "/var/src/tlsbunny/scripts/start_wolfssl_tls13_server.sh" ]
