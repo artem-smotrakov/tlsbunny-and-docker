@@ -6,6 +6,8 @@ import com.gypsyengineer.tlsbunny.tls13.connection.action.ActionFailed;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AEADException;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
 
+import java.io.IOException;
+
 public class IncomingNewSessionTicket extends AbstractAction {
 
     @Override
@@ -14,7 +16,7 @@ public class IncomingNewSessionTicket extends AbstractAction {
     }
 
     @Override
-    public Action run() throws ActionFailed, AEADException {
+    public Action run() throws ActionFailed, AEADException, IOException {
         byte[] content = processEncrypted(context.applicationDataDecryptor, ContentType.handshake);
         Handshake handshake = context.factory.parser().parseHandshake(content);
         if (!handshake.containsNewSessionTicket()) {

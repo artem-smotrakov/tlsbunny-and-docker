@@ -6,6 +6,8 @@ import com.gypsyengineer.tlsbunny.tls13.connection.action.ActionFailed;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AEADException;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
 
+import java.io.IOException;
+
 public class IncomingAlert extends AbstractAction {
 
     @Override
@@ -14,7 +16,7 @@ public class IncomingAlert extends AbstractAction {
     }
 
     @Override
-    public Action run() throws ActionFailed, AEADException {
+    public Action run() throws ActionFailed, AEADException, IOException {
         TLSPlaintext tlsPlaintext = context.factory.parser().parseTLSPlaintext(in);
 
         Alert alert;

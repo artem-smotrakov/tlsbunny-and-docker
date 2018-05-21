@@ -6,6 +6,8 @@ import com.gypsyengineer.tlsbunny.tls13.connection.action.ActionFailed;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AEADException;
 import com.gypsyengineer.tlsbunny.tls13.struct.Handshake;
 
+import java.io.IOException;
+
 public class IncomingEncryptedExtensions extends AbstractAction {
 
     @Override
@@ -14,7 +16,7 @@ public class IncomingEncryptedExtensions extends AbstractAction {
     }
 
     @Override
-    public Action run() throws ActionFailed, AEADException {
+    public Action run() throws ActionFailed, AEADException, IOException {
         Handshake handshake = processEncryptedHandshake();
         if (!handshake.containsEncryptedExtensions()) {
             throw new ActionFailed("expected a EncryptedExtensions message");

@@ -27,7 +27,7 @@ public class ProcessingEncryptedAlert extends AbstractAction {
     }
 
     @Override
-    public Action run() throws ActionFailed, AEADException {
+    public Action run() throws ActionFailed, AEADException, IOException {
         TLSPlaintext tlsPlaintext = context.factory.parser().parseTLSPlaintext(in);
 
         if (!tlsPlaintext.containsApplicationData()) {

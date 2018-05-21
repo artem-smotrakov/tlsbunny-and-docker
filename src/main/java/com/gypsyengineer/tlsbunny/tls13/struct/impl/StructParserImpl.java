@@ -3,6 +3,7 @@ package com.gypsyengineer.tlsbunny.tls13.struct.impl;
 import com.gypsyengineer.tlsbunny.tls.*;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
@@ -59,7 +60,13 @@ public class StructParserImpl implements StructParser {
     }
 
     @Override
-    public TLSPlaintext parseTLSPlaintext(ByteBuffer buffer) {
+    public TLSPlaintext parseTLSPlaintext(ByteBuffer buffer) throws IOException {
+        int n = buffer.remaining();
+        if (n < TLSPlaintext.MIN_ENCODING_LENGTH) {
+            throw new IOException(String.format(
+                    "expected at least %d bytes but received only %d",
+                            TLSPlaintext.MIN_ENCODING_LENGTH, n));
+        }
         ContentType type = parseContentType(buffer);
         ProtocolVersion legacy_record_version = parseProtocolVersion(buffer);
         UInt16 length = UInt16.parse(buffer);

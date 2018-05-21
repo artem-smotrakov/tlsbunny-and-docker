@@ -16,7 +16,7 @@ public class ProcessingTLSPlaintextWithAlert extends AbstractAction {
     }
 
     @Override
-    public Action run() throws ActionFailed {
+    public Action run() throws ActionFailed, IOException {
         TLSPlaintext tlsPlaintext = context.factory.parser().parseTLSPlaintext(in);
 
         if (!tlsPlaintext.containsAlert()) {
