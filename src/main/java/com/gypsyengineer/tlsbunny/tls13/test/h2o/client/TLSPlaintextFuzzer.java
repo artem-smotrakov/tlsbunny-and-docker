@@ -14,7 +14,7 @@ public class TLSPlaintextFuzzer extends CommonFuzzer {
 
     public static void main(String[] args) throws InterruptedException {
         new MultipleThreads()
-                .add(config -> new FinishedFuzzer(new Output(), config), tls_plaintext_configs)
+                .add(config -> new TLSPlaintextFuzzer(new Output(), config), tls_plaintext_configs)
                 .submit();
     }
 

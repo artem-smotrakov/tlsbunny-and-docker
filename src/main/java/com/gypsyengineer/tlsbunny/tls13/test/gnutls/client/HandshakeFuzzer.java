@@ -13,7 +13,7 @@ public class HandshakeFuzzer extends CommonFuzzer {
 
     public static void main(String[] args) throws InterruptedException {
         new MultipleThreads()
-                .add(config -> new FinishedFuzzer(new Output(), config), handshake_configs)
+                .add(config -> new HandshakeFuzzer(new Output(), config), handshake_configs)
                 .submit();
     }
 

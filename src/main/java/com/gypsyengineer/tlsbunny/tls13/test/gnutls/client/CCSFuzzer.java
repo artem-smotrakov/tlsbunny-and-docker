@@ -13,7 +13,7 @@ public class CCSFuzzer extends CommonFuzzer {
 
     public static void main(String[] args) throws InterruptedException {
         new MultipleThreads()
-                .add(config -> new ClientHelloFuzzer(new Output(), config), ccs_configs)
+                .add(config -> new CCSFuzzer(new Output(), config), ccs_configs)
                 .submit();
     }
 
