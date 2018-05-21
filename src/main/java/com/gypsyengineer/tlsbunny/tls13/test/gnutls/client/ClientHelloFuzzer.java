@@ -1,11 +1,11 @@
 package com.gypsyengineer.tlsbunny.tls13.test.gnutls.client;
 
 import com.gypsyengineer.tlsbunny.tls13.test.FuzzerConfig;
+import com.gypsyengineer.tlsbunny.tls13.test.common.client.CommonFuzzer;
 import com.gypsyengineer.tlsbunny.tls13.test.common.client.MultipleThreads;
-import com.gypsyengineer.tlsbunny.tls13.test.common.client.CommonClientHelloFuzzer;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
-public class ClientHelloFuzzer extends CommonClientHelloFuzzer {
+public class ClientHelloFuzzer extends CommonFuzzer {
 
     public ClientHelloFuzzer(Output output, FuzzerConfig config) {
         super(output, config, new HttpsClient());
@@ -13,7 +13,7 @@ public class ClientHelloFuzzer extends CommonClientHelloFuzzer {
 
     public static void main(String[] args) throws InterruptedException {
         new MultipleThreads()
-                .add(config -> new ClientHelloFuzzer(new Output(), config), configs)
+                .add(config -> new ClientHelloFuzzer(new Output(), config), client_hello_configs)
                 .submit();
     }
 
