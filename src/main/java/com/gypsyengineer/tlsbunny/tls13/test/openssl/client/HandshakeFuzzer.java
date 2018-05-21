@@ -8,13 +8,16 @@ import com.gypsyengineer.tlsbunny.utils.Output;
 
 public class HandshakeFuzzer extends CommonFuzzer {
 
+    public static MultipleThreads.FuzzerFactory factory =
+            config -> new HandshakeFuzzer(new Output(), config);
+
     public HandshakeFuzzer(Output output, FuzzerConfig config) {
         super(output, config, new HttpsClient());
     }
 
     public static void main(String[] args) throws InterruptedException {
         new MultipleThreads()
-                .add(config -> new HandshakeFuzzer(new Output(), config), handshake_configs)
+                .add(factory, handshake_configs)
                 .submit();
     }
 

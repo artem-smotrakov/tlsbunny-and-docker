@@ -8,13 +8,16 @@ import com.gypsyengineer.tlsbunny.utils.Output;
 
 public class ClientHelloFuzzer extends CommonFuzzer {
 
+    public static MultipleThreads.FuzzerFactory factory =
+            config -> new ClientHelloFuzzer(new Output(), config);
+
     public ClientHelloFuzzer(Output output, FuzzerConfig config) {
         super(output, config, new HttpsClient());
     }
 
     public static void main(String[] args) throws InterruptedException {
         new MultipleThreads()
-                .add(config -> new ClientHelloFuzzer(new Output(), config), client_hello_configs)
+                .add(factory, client_hello_configs)
                 .submit();
     }
 
