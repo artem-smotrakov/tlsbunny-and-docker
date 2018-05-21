@@ -1,6 +1,7 @@
 package com.gypsyengineer.tlsbunny.tls13.test.common.client;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
+import com.gypsyengineer.tlsbunny.tls13.connection.EngineException;
 import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertCheck;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.MutatedStructFactory;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
@@ -9,6 +10,7 @@ import com.gypsyengineer.tlsbunny.tls13.test.FuzzerConfig;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
 import java.io.IOException;
+import java.net.ConnectException;
 
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Mode.bit_flip;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Mode.byte_flip;
@@ -136,6 +138,9 @@ public class CommonFuzzer implements Runnable {
                     .parts(5),
     };
 
+    private static final int MAX_ATTEMPTS = 3;
+    private static final int DELAY = 3000; // in millis
+
     protected final Output output;
     protected final FuzzerConfig config;
     protected final MutatedStructFactory fuzzer;
@@ -179,19 +184,39 @@ public class CommonFuzzer implements Runnable {
             while (fuzzer.canFuzz()) {
                 output.info("test %d", fuzzer.getTest());
                 output.info("now fuzzer's state is '%s'", fuzzer.getState());
-                try {
-                    Engine engine = client.connect(config, fuzzer);
 
-                    if (config.hasAnalyzer()) {
-                        engine.apply(config.analyzer());
+                int attempt = 0;
+                while (true) {
+                    try {
+                        Engine engine = client.connect(config, fuzzer);
+
+                        if (config.hasAnalyzer()) {
+                            engine.apply(config.analyzer());
+                        }
+
+                        break;
+                    } catch (EngineException e) {
+                        Throwable cause = e.getCause();
+                        if (cause instanceof ConnectException == false) {
+                            throw e;
+                        }
+
+                        if (attempt == MAX_ATTEMPTS) {
+                            throw new IOException("looks like the server closed connection");
+                        }
+                        attempt++;
+
+                        output.info("connection failed: %s ", cause.getMessage());
+                        output.info("let's wait a bit and try again (attempt %d)", attempt);
+                        Thread.sleep(DELAY);
+
+                        continue;
                     }
-                } finally {
-                    output.flush();
-                    fuzzer.moveOn();
                 }
+
+                output.flush();
+                fuzzer.moveOn();
             }
-        } catch (IOException e) {
-            output.info("looks like the server closed connection", e);
         } catch (Exception e) {
             output.achtung("what the hell? unexpected exception", e);
         } finally {
