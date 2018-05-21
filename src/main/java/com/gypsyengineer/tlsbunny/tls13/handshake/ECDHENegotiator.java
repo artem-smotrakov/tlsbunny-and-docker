@@ -130,11 +130,11 @@ public class ECDHENegotiator extends AbstractNegotiator {
             BigInteger a = curve.getA();
             BigInteger b = curve.getB();
 
-            output.achtung("p = %s", p.toString());
+            output.info("p = %s", p.toString());
             output.info("x = %s", x.toString());
             output.info("y = %s", y.toString());
-            output.achtung("a = %s", a.toString());
-            output.achtung("b = %s", b.toString());
+            output.info("a = %s", a.toString());
+            output.info("b = %s", b.toString());
 
             ECUtils.checkPointOnCurve(point, curve);
         } catch (ECException e) {
