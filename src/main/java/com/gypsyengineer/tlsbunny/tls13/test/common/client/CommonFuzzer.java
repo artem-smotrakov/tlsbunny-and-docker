@@ -102,6 +102,23 @@ public class CommonFuzzer implements Runnable {
                     .parts(5),
     };
 
+    public static final FuzzerConfig[] certificate_verify_configs = new FuzzerConfig[] {
+            new FuzzerConfig(CommonConfig.load())
+                    .target(certificate_verify)
+                    .mode(byte_flip)
+                    .minRatio(0.01)
+                    .maxRatio(0.09)
+                    .endTest(10)
+                    .parts(5),
+            new FuzzerConfig(CommonConfig.load())
+                    .target(certificate_verify)
+                    .mode(bit_flip)
+                    .minRatio(0.01)
+                    .maxRatio(0.09)
+                    .endTest(10)
+                    .parts(5),
+    };
+
     public static final FuzzerConfig[] finished_configs = new FuzzerConfig[] {
             new FuzzerConfig(CommonConfig.load())
                     .target(finished)
