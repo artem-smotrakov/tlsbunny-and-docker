@@ -2,13 +2,13 @@ package com.gypsyengineer.tlsbunny.tls13.test.openssl.client;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.*;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.*;
-import com.gypsyengineer.tlsbunny.tls13.test.CommonConfig;
+import com.gypsyengineer.tlsbunny.tls13.test.SystemPropertiesConfig;
 import com.gypsyengineer.tlsbunny.tls13.test.Config;
 
 public class ClientAuth {
 
     public static void main(String[] args) throws Exception {
-        Config config = CommonConfig.load();
+        Config config = SystemPropertiesConfig.load();
 
         Engine.init()
                 .target(config.host())

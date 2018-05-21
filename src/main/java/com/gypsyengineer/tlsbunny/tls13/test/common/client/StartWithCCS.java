@@ -4,12 +4,12 @@ import com.gypsyengineer.tlsbunny.tls13.connection.*;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.IncomingAlert;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.OutgoingChangeCipherSpec;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.OutgoingClientHello;
-import com.gypsyengineer.tlsbunny.tls13.test.CommonConfig;
+import com.gypsyengineer.tlsbunny.tls13.test.SystemPropertiesConfig;
 
 public class StartWithCCS {
 
     public static void main(String[] args) throws Exception {
-        CommonConfig config = CommonConfig.load();
+        SystemPropertiesConfig config = SystemPropertiesConfig.load();
 
         Engine.init()
                 .target(config.host())

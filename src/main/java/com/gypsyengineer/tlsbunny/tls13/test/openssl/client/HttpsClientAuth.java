@@ -4,7 +4,7 @@ import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.*;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
-import com.gypsyengineer.tlsbunny.tls13.test.CommonConfig;
+import com.gypsyengineer.tlsbunny.tls13.test.SystemPropertiesConfig;
 import com.gypsyengineer.tlsbunny.tls13.test.Config;
 import com.gypsyengineer.tlsbunny.tls13.test.common.client.Client;
 
@@ -12,7 +12,7 @@ public class HttpsClientAuth implements Client {
 
     public static void main(String[] args) throws Exception {
         new HttpsClientAuth()
-                .connect(CommonConfig.load(), StructFactory.getDefault())
+                .connect(SystemPropertiesConfig.load(), StructFactory.getDefault())
                 .run(new NoAlertCheck());
     }
 
