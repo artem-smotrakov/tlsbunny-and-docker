@@ -24,7 +24,7 @@ task buildGnutlsDocker(type: Exec) {
             '.'
 }
 
-task runGnutlsDockerDaemon {
+task runGnutlsServer {
     doLast {
         exec {
             ignoreExitValue = true
@@ -74,12 +74,12 @@ task gnutlsFuzzyClient(type: JavaExec) {
 }
 
 // run a local server in a docker container and start fuzzing
-task runGnutlsFuzzyClient {
-    dependsOn 'runGnutlsDockerDaemon'
+task runGnutlsFuzzing {
+    dependsOn 'runGnutlsServer'
     dependsOn 'gnutlsFuzzyClient'
 
     // run fuzzing
-    tasks.findByName('gnutlsFuzzyClient').mustRunAfter('runGnutlsDockerDaemon')
+    tasks.findByName('gnutlsFuzzyClient').mustRunAfter('runGnutlsServer')
 }
 
 // tasks for running tests for OpenSSL
@@ -92,7 +92,7 @@ task buildOpensslDocker(type: Exec) {
             '.'
 }
 
-task runOpensslDockerDaemon {
+task runOpensslServer {
     doLast {
         exec {
             ignoreExitValue = true
@@ -151,12 +151,12 @@ task opensslFuzzyClientAuth(type: JavaExec) {
 }
 
 // run a local server in a docker container and start fuzzing
-task runOpensslFuzzyClient {
-    dependsOn 'runOpensslDockerDaemon'
+task runOpensslFuzzing {
+    dependsOn 'runOpensslServer'
     dependsOn 'opensslFuzzyClient'
 
     // run fuzzing
-    tasks.findByName('opensslFuzzyClient').mustRunAfter('runOpensslDockerDaemon')
+    tasks.findByName('opensslFuzzyClient').mustRunAfter('runOpensslServer')
 }
 
 // tasks for running tests for picotls
@@ -169,7 +169,7 @@ task buildPicotlsDocker(type: Exec) {
             '.'
 }
 
-task runPicotlsDockerDaemon {
+task runPicotlsServer {
     doLast {
         exec {
             ignoreExitValue = true
@@ -219,12 +219,12 @@ task picotlsFuzzyClient(type: JavaExec) {
 }
 
 // run a local server in a docker container and start fuzzing
-task runPicotlsFuzzyClient {
-    dependsOn 'runPicotlsDockerDaemon'
+task runPicotlsFuzzing {
+    dependsOn 'runPicotlsServer'
     dependsOn 'picotlsFuzzyClient'
 
     // run fuzzing
-    tasks.findByName('picotlsFuzzyClient').mustRunAfter('runPicotlsDockerDaemon')
+    tasks.findByName('picotlsFuzzyClient').mustRunAfter('runPicotlsServer')
 }
 
 // tasks for running tests for h2o + picotls
@@ -237,7 +237,7 @@ task buildH2ODocker(type: Exec) {
             '.'
 }
 
-task runH2ODockerDaemon {
+task runH2OServer {
     doLast {
         exec {
             ignoreExitValue = true
@@ -287,16 +287,17 @@ task h2oFuzzyClient(type: JavaExec) {
 }
 
 // run a local server in a docker container and start fuzzing
-task runH2OFuzzyClient {
-    dependsOn 'runH2ODockerDaemon'
+task runH2OFuzzing {
+    dependsOn 'runH2OServer'
     dependsOn 'h2oFuzzyClient'
 
     // run fuzzing
-    tasks.findByName('h2oFuzzyClient').mustRunAfter('runH2ODockerDaemon')
+    tasks.findByName('h2oFuzzyClient').mustRunAfter('runH2OServer')
 }
 
 // tasks for running tests for NSS
 
+// builds a Docker images with NSS server
 task buildNssDocker(type: Exec) {
     commandLine 'docker',
             'build',
@@ -305,7 +306,9 @@ task buildNssDocker(type: Exec) {
             '.'
 }
 
-task runNssDockerDaemon {
+// kill an NSS server (if running), remove an old Docker container,
+// and start a new one on specified port
+task runNssServer {
     doLast {
         exec {
             ignoreExitValue = true
@@ -326,16 +329,18 @@ task runNssDockerDaemon {
 
         // a little delay to let the server start
         exec {
-            commandLine 'sleep', '3'
+            commandLine 'sleep', '3'    // in seconds
         }
     }
 }
 
+// kill a docker container with NSS server
 task killNssDockerContainer(type: Exec) {
     ignoreExitValue = true
     commandLine 'docker', 'container', 'kill', 'nss_server_tls13'
 }
 
+// remove a docker container with NSS server
 task removeNssDockerContainer(type: Exec) {
     ignoreExitValue = true
     commandLine 'docker', 'rm', 'nss_server_tls13'
@@ -355,16 +360,15 @@ task nssFuzzyClient(type: JavaExec) {
 }
 
 // run a local server in a docker container and start fuzzing
-task runNssFuzzyClient {
-    dependsOn 'runNssDockerDaemon'
+task runNssFuzzing {
+    dependsOn 'runNssServer'
     dependsOn 'nssFuzzyClient'
 
     // run fuzzing
-    tasks.findByName('nssFuzzyClient').mustRunAfter('runNssDockerDaemon')
+    tasks.findByName('nssFuzzyClient').mustRunAfter('runNssServer')
 }
 
 // build all docker images
-
 task buildAllDocker() {
     dependsOn 'buildGnutlsDocker'
     dependsOn 'buildPicotlsDocker'
@@ -373,12 +377,30 @@ task buildAllDocker() {
     dependsOn 'buildNssDocker'
 }
 
-// run fuzzing for all targets
+// run all servers
+task runAllServers() {
+    dependsOn 'runNssServer'
+    dependsOn 'runH2OServer'
+    dependsOn 'runOpensslServer'
+    dependsOn 'runGnutlsServer'
+    dependsOn 'runPicotlsServer'
+}
 
-task runFuzzyClients() {
-    dependsOn 'runH2OFuzzyClient'
-    dependsOn 'runPicotlsFuzzyClient'
-    dependsOn 'runOpensslFuzzyClient'
-    dependsOn 'runGnutlsFuzzyClient'
-    dependsOn 'runNssFuzzyClient'
+// run fuzzing for all targets
+task runAllFuzzing() {
+    dependsOn 'runH2OFuzzing'
+    dependsOn 'runPicotlsFuzzing'
+    dependsOn 'runOpensslFuzzing'
+    dependsOn 'runGnutlsFuzzing'
+    dependsOn 'runNssFuzzing'
+}
+
+// check for crashes
+task checkCrashes(type: Exec) {
+    commandLine 'bash', 'scripts/check_logs_for_crashes.sh',
+            'gnutls_server_tls13',
+            'nss_server_tls13',
+            'h2o_server_tls13', 
+            'picotls_server_tls13',
+            'openssl_server_tls13'
 }

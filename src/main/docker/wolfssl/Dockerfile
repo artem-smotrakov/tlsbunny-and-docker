@@ -17,7 +17,7 @@ FROM ubuntu
 
 MAINTAINER artem.smotrakov@gmail.com
 
-RUN apt-get update && apt-get install -y cmake gcc g++ make pkg-config
+RUN apt-get update && apt-get install -y autoconf cmake gcc git g++ libtool make pkg-config
 
 RUN mkdir -p /var/src
 
@@ -26,10 +26,9 @@ ENV CXXFLAGS="-fsanitize=address -fno-omit-frame-pointer"
 ENV LDFLAGS="-fsanitize=address"
 
 WORKDIR /var/src
-RUN wget https://wolfssl.com/downloads/wolfssl-3.14.0.zip && \
-    bash -c "[[ `sha256sum openssl-1.1.1-pre6.tar.gz | cut -d ' ' -f 1` = `cat /var/src/tlsbunny/src/main/docker/wolfssl/wolfssl-3.14.0.zip.sha256` ]]" && \
-    unzip wolfssl-3.14.0.zip && \
-    cd /var/src/wolfssl-3.14.0 && \
+RUN git clone https://github.com/wolfSSL/wolfssl && \
+    cd wolfssl && \
+    bash autogen.sh && \
     CFLAGS=${CFLAGS} CXXFLAGS=${CXXFLAGS} LDFLAGS=${LDFLAGS} \
 	    ./configure \
 		    --enable-tls13 \

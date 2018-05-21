@@ -66,21 +66,21 @@ The libs above are built with enabled AddressSanitizer and debug/verbose output.
 
 ### TLS server
 
-|                                          | OpenSSL (+ASan) | GnuTLS (+ASan)  | NSS (+ASan)   | h2o + picotls (+ASan) | wolfSSL (+ASan) |
-| -----------------------------------------|-----------------|-----------------|---------------|-----------------------|-----------------|
-| TLSPlaintext fuzzing                     | 200  tests      |                 |               |                       |                 |
-| Handshake fuzzing                        | 2000 tests      |                 |               |                       |                 |
-| ClientHello fuzzing                      | 2000 tests      |                 |               |                       |                 |
-| Certificate fuzzing (client auth)        |                 |                 |               |                       |                 |
-| CertificateVerify fuzzing (client auth)  |                 |                 |               |                       |                 |
-| Finished fuzzing                         | 2000 tests      |                 |               |                       |                 |
-| CCS fuzzing                              | 20   tests      |                 |               |                       |                 |
-| Double ClientHello                       |                 |                 |               |                       |                 |
-| Invalid CCS                              |                 |                 |               |                       |                 |
-| CCS after handshake is done              |                 |                 |               |                       |                 |
-| Multiple CCS                             |                 |                 |               |                       |                 |
-| Start with CCS                           |                 |                 |               |                       |                 |
-| Weak ECDHE key                           |                 |                 |               |                       |                 |
+|                                          | Notes           | OpenSSL (+ASan) | GnuTLS (+ASan)  | NSS (+ASan)   | h2o + picotls (+ASan) | wolfSSL (+ASan) |
+| -----------------------------------------|-----------------|-----------------|-----------------|---------------|-----------------------|-----------------|
+| TLSPlaintext fuzzing                     | 200  tests      |                 | Ok              | Ok            | Ok                    |                 |
+| Handshake fuzzing                        | 2000 tests      |                 | Ok              | Ok            | Ok                    |                 |
+| ClientHello fuzzing                      | 2000 tests      |                 | Ok              | Ok            | Ok                    |                 |
+| Certificate fuzzing (client auth)        |                 |                 |                 |               |                       |                 |
+| CertificateVerify fuzzing (client auth)  |                 |                 |                 |               |                       |                 |
+| Finished fuzzing                         | 2000 tests      |                 | Ok              | Ok            | Ok                    |                 |
+| CCS fuzzing                              | 20   tests      |                 | Ok              | Ok            | Ok                    |                 |
+| Double ClientHello                       |                 |                 |                 |               |                       |                 |
+| Invalid CCS                              |                 |                 |                 |               |                       |                 |
+| CCS after handshake is done              |                 |                 |                 |               |                       |                 |
+| Multiple CCS                             |                 |                 |                 |               |                       |                 |
+| Start with CCS                           |                 |                 |                 |               |                       |                 |
+| Weak ECDHE key                           |                 |                 |                 |               |                       |                 |
 
 ### TLS client
 
