@@ -25,8 +25,8 @@ RUN mkdir -p /var/src/tlsbunny
 ENV TLSBUNNY /var/src/tlsbunny
 ENV PICOTLS /var/src/picotls
 
-ENV CFLAGS="-fsanitize=address -fno-omit-frame-pointer -g -O1"
-ENV LDFLAGS="-fsanitize=address"
+ENV CFLAGS "-fsanitize=address -fno-omit-frame-pointer -g -O1"
+ENV LDFLAGS "-fsanitize=address"
 
 RUN git clone https://github.com/h2o/picotls ${PICOTLS} && \
     cd ${PICOTLS} && \

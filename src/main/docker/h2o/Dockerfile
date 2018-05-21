@@ -36,8 +36,8 @@ RUN wget https://www.openssl.org/source/openssl-1.1.1-pre6.tar.gz && \
     make && make install
 
 # build h2o
-ENV CFLAGS="-fsanitize=address -fno-omit-frame-pointer -g -O1"
-ENV LDFLAGS="-fsanitize=address -lssl -lcrypto -L/usr/lib"
+ENV CFLAGS "-fsanitize=address -fno-omit-frame-pointer -g -O1"
+ENV LDFLAGS "-fsanitize=address -lssl -lcrypto -L/usr/lib"
 WORKDIR /var/src
 RUN git clone https://github.com/h2o/h2o && cd /var/src/h2o && \
     cmake \

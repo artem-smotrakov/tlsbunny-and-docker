@@ -33,9 +33,9 @@ RUN mkdir -p /var/src/gnutls && mkdir -p /var/src/tlsbunny
 WORKDIR /var/src
 RUN wget https://ftp.gnu.org/gnu/nettle/nettle-3.4.tar.gz && tar xf nettle-3.4.tar.gz
 
-ENV CFLAGS="-fsanitize=address -fno-omit-frame-pointer -g -O1"
-ENV CXXFLAGS="-fsanitize=address -fno-omit-frame-pointer"
-ENV LDFLAGS="-fsanitize=address"
+ENV CFLAGS "-fsanitize=address -fno-omit-frame-pointer -g -O1"
+ENV CXXFLAGS "-fsanitize=address -fno-omit-frame-pointer"
+ENV LDFLAGS "-fsanitize=address"
 
 WORKDIR /var/src/nettle-3.4
 RUN ./configure --disable-openssl --enable-shared && make && make install
