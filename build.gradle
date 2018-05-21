@@ -368,6 +368,79 @@ task runNssFuzzing {
     tasks.findByName('nssFuzzyClient').mustRunAfter('runNssServer')
 }
 
+// tasks for running tests for WolfSSL
+
+// builds a Docker images with WolfSSL server
+task buildWolfSSLDocker(type: Exec) {
+    commandLine 'docker',
+            'build',
+            '--file', 'src/main/docker/wolfssl/Dockerfile',
+            '--tag',  'wolfssl/server/tls13',
+            '.'
+}
+
+// kill an WolfSSL server (if running), remove an old Docker container,
+// and start a new one on specified port
+task runWolfsslServer {
+    doLast {
+        exec {
+            ignoreExitValue = true
+            commandLine 'docker', 'container', 'kill', 'wolfssl_server_tls13'
+        }
+        exec {
+            ignoreExitValue = true
+            commandLine 'docker', 'rm', 'wolfssl_server_tls13'
+        }
+        exec {
+            commandLine 'docker',
+                    'run',
+                    '--name', 'wolfssl_server_tls13',
+                    '-d',
+                    '-p', '40101:40101',
+                    'wolfssl/server/tls13'
+        }
+
+        // a little delay to let the server start
+        exec {
+            commandLine 'sleep', '3'    // in seconds
+        }
+    }
+}
+
+// kill a docker container with WolfSSL server
+task killWolfSSLDockerContainer(type: Exec) {
+    ignoreExitValue = true
+    commandLine 'docker', 'container', 'kill', 'wolfssl_server_tls13'
+}
+
+// remove a docker container with WolfSSL server
+task removeWolfSSLDockerContainer(type: Exec) {
+    ignoreExitValue = true
+    commandLine 'docker', 'rm', 'wolfssl_server_tls13'
+}
+
+task wolfsslClient(type: JavaExec) {
+    classpath sourceSets.main.runtimeClasspath
+    applicationDefaultJvmArgs = ["-Dtlsbunny.port=60101"]
+    main = "com.gypsyengineer.tlsbunny.tls13.test.wolfssl.client.HttpsClient"
+}
+
+task wolfsslFuzzyClient(type: JavaExec) {
+    classpath sourceSets.main.runtimeClasspath
+    systemProperty 'tlsbunny.port', '40101'
+    systemProperty 'tlsbunny.threads', '1'
+    main = "com.gypsyengineer.tlsbunny.tls13.test.wolfssl.client.FuzzyClient"
+}
+
+// run a local server in a docker container and start fuzzing
+task runWolfsslFuzzing {
+    dependsOn 'runWolfsslServer'
+    dependsOn 'wolfsslFuzzyClient'
+
+    // run fuzzing
+    tasks.findByName('wolfsslFuzzyClient').mustRunAfter('runWolfsslServer')
+}
+
 // build all docker images
 task buildAllDocker() {
     dependsOn 'buildGnutlsDocker'
@@ -375,6 +448,7 @@ task buildAllDocker() {
     dependsOn 'buildOpensslDocker'
     dependsOn 'buildH2ODocker'
     dependsOn 'buildNssDocker'
+    dependsOn 'buildWolfSSLDocker'
 }
 
 // run all servers
@@ -384,6 +458,7 @@ task runAllServers() {
     dependsOn 'runOpensslServer'
     dependsOn 'runGnutlsServer'
     dependsOn 'runPicotlsServer'
+    dependsOn 'runWolfsslServer'
 }
 
 // run fuzzing for all targets
@@ -393,6 +468,7 @@ task runAllFuzzing() {
     dependsOn 'runOpensslFuzzing'
     dependsOn 'runGnutlsFuzzing'
     dependsOn 'runNssFuzzing'
+    dependsOn 'runWolfsslFuzzing'
 }
 
 // check for crashes
@@ -402,5 +478,6 @@ task checkCrashes(type: Exec) {
             'nss_server_tls13',
             'h2o_server_tls13', 
             'picotls_server_tls13',
-            'openssl_server_tls13'
+            'openssl_server_tls13',
+            'wolfssl_server_tls13'
 }
