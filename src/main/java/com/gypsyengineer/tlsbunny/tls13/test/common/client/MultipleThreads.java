@@ -86,6 +86,9 @@ public class MultipleThreads {
             }
 
             configs[i] = subConfig;
+
+            start = end;
+            end = start + perThread;
         }
 
         return configs;
