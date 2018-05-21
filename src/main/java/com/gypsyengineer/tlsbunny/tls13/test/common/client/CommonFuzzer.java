@@ -1,19 +1,23 @@
-package com.gypsyengineer.tlsbunny.tls13.test;
+package com.gypsyengineer.tlsbunny.tls13.test.common.client;
 
-import com.gypsyengineer.tlsbunny.tls13.connection.*;
+import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
+import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertCheck;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.MutatedStructFactory;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
+import com.gypsyengineer.tlsbunny.tls13.test.FuzzerConfig;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
 import java.io.IOException;
 
-public abstract class HandshakeMessageFuzzer implements Runnable {
+public class CommonFuzzer implements Runnable {
 
     protected final Output output;
     protected final FuzzerConfig config;
     protected final MutatedStructFactory fuzzer;
 
-    public HandshakeMessageFuzzer(Output output, FuzzerConfig config) {
+    protected final Client client;
+
+    public CommonFuzzer(Output output, FuzzerConfig config, Client client) {
         fuzzer = new MutatedStructFactory(
                 StructFactory.getDefault(),
                 output,
@@ -27,13 +31,15 @@ public abstract class HandshakeMessageFuzzer implements Runnable {
 
         this.output = output;
         this.config = config;
+
+        this.client = client;
     }
 
     @Override
     public void run() {
         try {
             output.info("run a smoke test before fuzzing");
-            connect(StructFactory.getDefault()).run(new NoAlertCheck());
+            client.connect(config, StructFactory.getDefault()).run(new NoAlertCheck());
         } catch (Exception e) {
             output.achtung("smoke test failed: %s", e.getMessage());
             output.achtung("skip fuzzing");
@@ -49,7 +55,7 @@ public abstract class HandshakeMessageFuzzer implements Runnable {
                 output.info("test %d", fuzzer.getTest());
                 output.info("now fuzzer's state is '%s'", fuzzer.getState());
                 try {
-                    Engine engine = connect(fuzzer);
+                    Engine engine = client.connect(config, fuzzer);
 
                     if (config.hasAnalyzer()) {
                         engine.apply(config.analyzer());
@@ -67,7 +73,5 @@ public abstract class HandshakeMessageFuzzer implements Runnable {
             output.flush();
         }
     }
-
-    protected abstract Engine connect(StructFactory factory) throws Exception;
 
 }

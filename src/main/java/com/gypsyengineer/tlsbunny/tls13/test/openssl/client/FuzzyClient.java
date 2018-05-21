@@ -2,16 +2,17 @@ package com.gypsyengineer.tlsbunny.tls13.test.openssl.client;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertAnalyzer;
 import com.gypsyengineer.tlsbunny.tls13.test.MultipleThreads;
+import com.gypsyengineer.tlsbunny.utils.Output;
 
 public class FuzzyClient {
 
     public static void main(String[] args) throws InterruptedException {
         new MultipleThreads()
-                .add(TLSPlaintextFuzzer.configs)
-                .add(HandshakeFuzzer.configs)
-                .add(ClientHelloFuzzer.configs)
-                .add(FinishedFuzzer.configs)
-                .add(CCSFuzzer.configs)
+                .add(config -> new TLSPlaintextFuzzer(new Output(), config), TLSPlaintextFuzzer.configs)
+                .add(config -> new HandshakeFuzzer(new Output(), config), HandshakeFuzzer.configs)
+                .add(config -> new ClientHelloFuzzer(new Output(), config), ClientHelloFuzzer.configs)
+                .add(config -> new FinishedFuzzer(new Output(), config), FinishedFuzzer.configs)
+                .add(config -> new CCSFuzzer(new Output(), config), CCSFuzzer.configs)
                 .set(new NoAlertAnalyzer())
                 .submit();
     }

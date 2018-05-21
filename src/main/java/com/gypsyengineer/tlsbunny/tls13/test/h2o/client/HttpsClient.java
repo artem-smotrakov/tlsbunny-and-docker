@@ -5,7 +5,10 @@ import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.IncomingChangeCipherSpec;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
+import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.tls13.test.CommonConfig;
+import com.gypsyengineer.tlsbunny.tls13.test.Config;
+import com.gypsyengineer.tlsbunny.tls13.test.common.client.Client;
 
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
 import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.*;
@@ -14,12 +17,17 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv12;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv13_draft_26;
 import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp256r1_sha256;
 
-public class HttpsClient {
+public class HttpsClient implements Client {
 
     public static void main(String[] args) throws Exception {
-        CommonConfig config = CommonConfig.load();
+        new HttpsClient()
+                .connect(CommonConfig.load(), StructFactory.getDefault())
+                .run(new NoAlertCheck());
+    }
 
-        Engine.init()
+    @Override
+    public Engine connect(Config config, StructFactory factory) throws Exception {
+        return Engine.init()
                 .target(config.host())
                 .target(config.port())
 
@@ -104,8 +112,7 @@ public class HttpsClient {
                 .run(new ProcessingApplicationDataTLSCiphertext())
                 .run(new PrintingData())
 
-                .connect()
-                .run(new NoAlertCheck());
+                .connect();
     }
 
 }

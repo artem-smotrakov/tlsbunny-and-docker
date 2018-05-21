@@ -7,6 +7,7 @@ import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.tls13.test.CommonConfig;
 import com.gypsyengineer.tlsbunny.tls13.test.Config;
+import com.gypsyengineer.tlsbunny.tls13.test.common.client.Client;
 
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
 import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.*;
@@ -14,13 +15,16 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup.secp256r1;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.*;
 import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp256r1_sha256;
 
-public class HttpsClient {
+public class HttpsClient implements Client {
 
     public static void main(String[] args) throws Exception {
-        go(CommonConfig.load(), StructFactory.getDefault());
+        new HttpsClient()
+                .connect(CommonConfig.load(), StructFactory.getDefault())
+                .run(new NoAlertCheck());
     }
 
-    public static Engine go(Config config, StructFactory factory) throws Exception {
+    @Override
+    public Engine connect(Config config, StructFactory factory) throws Exception {
         return Engine.init()
                 .target(config.host())
                 .target(config.port())
@@ -103,11 +107,10 @@ public class HttpsClient {
                 .run(new ProcessingApplicationDataTLSCiphertext())
                 .run(new PrintingData())
 
-                .connect()
-
                 // selfserv actually sends a "close_notify" alert
                 // but we just ignore it for now
-                .run(new NoAlertCheck());
+
+                .connect();
     }
 
 }
