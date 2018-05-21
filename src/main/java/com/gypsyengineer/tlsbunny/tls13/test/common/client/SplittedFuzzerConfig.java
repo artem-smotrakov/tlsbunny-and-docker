@@ -1,8 +1,9 @@
-package com.gypsyengineer.tlsbunny.tls13.test;
+package com.gypsyengineer.tlsbunny.tls13.test.common.client;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.Mode;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.Target;
+import com.gypsyengineer.tlsbunny.tls13.test.FuzzerConfig;
 
 public class SplittedFuzzerConfig extends FuzzerConfig {
 

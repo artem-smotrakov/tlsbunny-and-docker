@@ -1,7 +1,7 @@
 package com.gypsyengineer.tlsbunny.tls13.test.picotls.client;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertAnalyzer;
-import com.gypsyengineer.tlsbunny.tls13.test.MultipleThreads;
+import com.gypsyengineer.tlsbunny.tls13.test.common.client.MultipleThreads;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
 public class FuzzyClient {

@@ -1,6 +1,7 @@
-package com.gypsyengineer.tlsbunny.tls13.test;
+package com.gypsyengineer.tlsbunny.tls13.test.common.client;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
+import com.gypsyengineer.tlsbunny.tls13.test.FuzzerConfig;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
 import java.util.ArrayList;

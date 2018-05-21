@@ -2,6 +2,7 @@ package com.gypsyengineer.tlsbunny.tls13.test.openssl.client;
 
 import com.gypsyengineer.tlsbunny.tls13.test.*;
 import com.gypsyengineer.tlsbunny.tls13.test.common.client.CommonCertificateFuzzer;
+import com.gypsyengineer.tlsbunny.tls13.test.common.client.MultipleThreads;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
 public class CertificateFuzzer extends CommonCertificateFuzzer {

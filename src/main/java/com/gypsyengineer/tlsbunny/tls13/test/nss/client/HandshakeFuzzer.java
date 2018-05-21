@@ -1,7 +1,7 @@
 package com.gypsyengineer.tlsbunny.tls13.test.nss.client;
 
 import com.gypsyengineer.tlsbunny.tls13.test.FuzzerConfig;
-import com.gypsyengineer.tlsbunny.tls13.test.MultipleThreads;
+import com.gypsyengineer.tlsbunny.tls13.test.common.client.MultipleThreads;
 import com.gypsyengineer.tlsbunny.tls13.test.common.client.CommonHandshakeFuzzer;
 import com.gypsyengineer.tlsbunny.tls13.test.gnutls.client.HttpsClient;
 import com.gypsyengineer.tlsbunny.utils.Output;

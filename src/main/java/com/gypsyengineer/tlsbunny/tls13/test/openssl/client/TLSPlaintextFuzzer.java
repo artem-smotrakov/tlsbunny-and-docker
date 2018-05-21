@@ -1,7 +1,7 @@
 package com.gypsyengineer.tlsbunny.tls13.test.openssl.client;
 
 import com.gypsyengineer.tlsbunny.tls13.test.FuzzerConfig;
-import com.gypsyengineer.tlsbunny.tls13.test.MultipleThreads;
+import com.gypsyengineer.tlsbunny.tls13.test.common.client.MultipleThreads;
 import com.gypsyengineer.tlsbunny.tls13.test.common.client.CommonTLSPlaintextFuzzer;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
