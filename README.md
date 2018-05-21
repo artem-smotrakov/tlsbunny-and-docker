@@ -42,7 +42,8 @@ Engine.init()
 
 ## Supported features
 
-- TLS 1.3 (draft 26) handshake as a client
+- [TLS 1.3 draft 26](https://tools.ietf.org/html/draft-ietf-tls-tls13-26) 
+- Handshake as a client
 - Client authentication
 - Key exchange with ECDHE using secp256r1 curve
 - ecdsa_secp256r1_sha256 signatures
@@ -100,7 +101,7 @@ The libs above are built with enabled AddressSanitizer and debug/verbose output.
 | Start with CCS              |                 |                 |               |                       |                 |
 | Weak ECDHE key              |                 |                 |               |                       |                 |
 
-## Alternatives
+## Similar projects
 
 - [tlsfuzzer](https://github.com/tomato42/tlsfuzzer): SSL and TLS protocol test suite and fuzzer (python)
 - [TLS-Attacker](https://github.com/RUB-NDS/TLS-Attacker): TLS-Attacker is a Java-based framework for analyzing TLS libraries. It is developed by the Ruhr University Bochum and the Hackmanit GmbH.
