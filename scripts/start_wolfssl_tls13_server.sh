@@ -1,8 +1,8 @@
 #!/bin/bash
 
-${WOLFSSL_SRC}/examples/server/server \
+./examples/server/server \
     -p 40101 \
     -v 4 \
-    -d -i -g \
-    -c certs/server_cert.pem \
-    -k ../../tlsbunny/certs/server_key.pem
+    -d -i -g -b -x \
+    -c certs/server-cert.pem \
+    -k certs/server-key.pem
