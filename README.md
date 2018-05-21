@@ -68,13 +68,13 @@ The libs above are built with enabled AddressSanitizer and debug/verbose output.
 
 |                                          | Notes           | OpenSSL (+ASan) | GnuTLS (+ASan)  | NSS (+ASan)   | h2o + picotls (+ASan) | wolfSSL (+ASan) |
 | -----------------------------------------|-----------------|-----------------|-----------------|---------------|-----------------------|-----------------|
-| TLSPlaintext fuzzing                     | 200  tests      |                 | Ok              | Ok            | Ok                    |                 |
-| Handshake fuzzing                        | 2000 tests      |                 | Ok              | Ok            | Ok                    |                 |
-| ClientHello fuzzing                      | 2000 tests      |                 | Ok              | Ok            | Ok                    |                 |
+| TLSPlaintext fuzzing                     | 200  tests      |                 | Ok              | Ok            | Ok                    | Ok              |
+| Handshake fuzzing                        | 2000 tests      |                 | Ok              | Ok            | Ok                    | Ok              |
+| ClientHello fuzzing                      | 2000 tests      |                 | Ok              | Ok            | Ok                    | Ok              |
 | Certificate fuzzing (client auth)        |                 |                 |                 |               |                       |                 |
 | CertificateVerify fuzzing (client auth)  |                 |                 |                 |               |                       |                 |
-| Finished fuzzing                         | 2000 tests      |                 | Ok              | Ok            | Ok                    |                 |
-| CCS fuzzing                              | 20   tests      |                 | Ok              | Ok            | Ok                    |                 |
+| Finished fuzzing                         | 2000 tests      |                 | Ok              | Ok            | Ok                    | Ok              |
+| CCS fuzzing                              | 20   tests      |                 | Ok              | Ok            | Ok                    | Ok              |
 | Double ClientHello                       |                 |                 |                 |               |                       |                 |
 | Invalid CCS                              |                 |                 |                 |               |                       |                 |
 | CCS after handshake is done              |                 |                 |                 |               |                       |                 |
