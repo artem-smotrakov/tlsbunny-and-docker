@@ -42,7 +42,6 @@ RUN git clone https://github.com/wolfSSL/wolfssl && \
 
 EXPOSE 40101
 
-ENV TLSBUNNY /var/src/tlsbunny
 ENV ASAN_OPTIONS "detect_leaks=0"
 WORKDIR /var/src/wolfssl
 
