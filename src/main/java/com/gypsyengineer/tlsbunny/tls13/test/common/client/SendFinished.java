@@ -3,7 +3,7 @@ package com.gypsyengineer.tlsbunny.tls13.test.common.client;
 import com.gypsyengineer.tlsbunny.tls13.connection.AlertCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
-import com.gypsyengineer.tlsbunny.tls13.test.CommonConfig;
+import com.gypsyengineer.tlsbunny.tls13.test.SystemPropertiesConfig;
 
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.alert;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
@@ -13,7 +13,7 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv12;
 public class SendFinished {
 
     public static void main(String[] args) throws Exception {
-        CommonConfig config = CommonConfig.load();
+        SystemPropertiesConfig config = SystemPropertiesConfig.load();
 
         Engine.init()
                 .target(config.host())

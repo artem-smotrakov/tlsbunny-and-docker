@@ -1,6 +1,7 @@
-package com.gypsyengineer.tlsbunny.tls13.test;
+package com.gypsyengineer.tlsbunny.tls13.test.common.client;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
+import com.gypsyengineer.tlsbunny.tls13.test.FuzzerConfig;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
 import java.util.ArrayList;
@@ -14,19 +15,19 @@ import static com.gypsyengineer.tlsbunny.utils.Utils.info;
 
 public class MultipleThreads {
 
-    private final List<FuzzerConfig> configs = new ArrayList<>();
+    private final List<Holder> holders = new ArrayList<>();
     private Analyzer analyzer;
 
-    public MultipleThreads add(List<FuzzerConfig> configs) {
+    public MultipleThreads add(FuzzerFactory fuzzerFactory, List<FuzzerConfig> configs) {
         for (FuzzerConfig config : configs) {
-            this.configs.add(config);
+            this.holders.add(new Holder(config, fuzzerFactory));
         }
 
         return this;
     }
 
-    public MultipleThreads add(FuzzerConfig... configs) {
-        return add(Arrays.asList(configs));
+    public MultipleThreads add(FuzzerFactory fuzzerFactory, FuzzerConfig... configs) {
+        return add(fuzzerFactory, Arrays.asList(configs));
     }
 
     public MultipleThreads set(Analyzer analyzer) {
@@ -36,17 +37,17 @@ public class MultipleThreads {
 
     public void submit() throws InterruptedException {
         int threads = 1;
-        for (Config config : configs) {
-            if (threads < config.threads()) {
-                threads = config.threads();
+        for (Holder holder : holders) {
+            if (threads < holder.fuzzerConfig.threads()) {
+                threads = holder.fuzzerConfig.threads();
             }
         }
 
         info("we are going to use %d threads", threads);
         ExecutorService executor = Executors.newFixedThreadPool(threads);
         try {
-            for (FuzzerConfig config : configs) {
-                submit(executor, config);
+            for (Holder holder : holders) {
+                submit(executor, holder);
             }
         } finally {
             executor.shutdown();
@@ -65,9 +66,9 @@ public class MultipleThreads {
         }
     }
 
-    private void submit(ExecutorService executor, FuzzerConfig config) {
-        for (FuzzerConfig subConfig : split(config)) {
-            executor.submit(subConfig.create());
+    private void submit(ExecutorService executor, Holder holder) {
+        for (FuzzerConfig subConfig : split(holder.fuzzerConfig)) {
+            executor.submit(holder.fuzzerFactory.create(subConfig));
         }
     }
 
@@ -85,9 +86,26 @@ public class MultipleThreads {
             }
 
             configs[i] = subConfig;
+
+            start = end;
+            end = start + perThread;
         }
 
         return configs;
+    }
+
+    public interface FuzzerFactory {
+        Runnable create(FuzzerConfig config);
+    }
+
+    private static class Holder {
+        FuzzerConfig fuzzerConfig;
+        FuzzerFactory fuzzerFactory;
+
+        Holder(FuzzerConfig fuzzerConfig, FuzzerFactory fuzzerFactory) {
+            this.fuzzerConfig = fuzzerConfig;
+            this.fuzzerFactory = fuzzerFactory;
+        }
     }
 
 }

@@ -3,14 +3,14 @@ package com.gypsyengineer.tlsbunny.tls13.test.openssl.client;
 import com.gypsyengineer.tlsbunny.tls13.connection.*;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.*;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.InvalidChangeCipherSpec;
-import com.gypsyengineer.tlsbunny.tls13.test.CommonConfig;
+import com.gypsyengineer.tlsbunny.tls13.test.SystemPropertiesConfig;
 import com.gypsyengineer.tlsbunny.tls13.test.Config;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
 public class InvalidCCS {
 
     public static void main(String[] args) throws Exception {
-        Config config = CommonConfig.load();
+        Config config = SystemPropertiesConfig.load();
         Output output = new Output();
         InvalidChangeCipherSpec invalidChangeCipherSpec = new InvalidChangeCipherSpec();
         Analyzer analyzer = new NoAlertAnalyzer().set(output);

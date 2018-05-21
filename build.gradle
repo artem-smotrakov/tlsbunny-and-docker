@@ -363,7 +363,7 @@ task runNssFuzzyClient {
     tasks.findByName('nssFuzzyClient').mustRunAfter('runNssDockerDaemon')
 }
 
-// run fuzzing for all targets
+// build all docker images
 
 task buildAllDocker() {
     dependsOn 'buildGnutlsDocker'
@@ -372,6 +372,8 @@ task buildAllDocker() {
     dependsOn 'buildH2ODocker'
     dependsOn 'buildNssDocker'
 }
+
+// run fuzzing for all targets
 
 task runFuzzyClients() {
     dependsOn 'runH2OFuzzyClient'

@@ -3,8 +3,7 @@ package com.gypsyengineer.tlsbunny.tls13.test;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.Mode;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.Target;
 
-// TODO: this class should be renamed to SystemPropertiesConfig
-public class CommonConfig implements Config {
+public class SystemPropertiesConfig implements Config {
 
     public static final int DEFAULT_PARTS = 4;
     public static final int DEFAULT_START_TEST = 0;
@@ -32,7 +31,7 @@ public class CommonConfig implements Config {
     String clientCertificate;
     String clientKey;
 
-    private CommonConfig() {
+    private SystemPropertiesConfig() {
 
     }
 
@@ -138,8 +137,8 @@ public class CommonConfig implements Config {
         return this;
     }
 
-    public static CommonConfig load() {
-        CommonConfig config = new CommonConfig();
+    public static SystemPropertiesConfig load() {
+        SystemPropertiesConfig config = new SystemPropertiesConfig();
 
         config.target = System.getProperty("tlsbunny.target") != null
                 ? Target.valueOf(System.getProperty("tlsbunny.target"))

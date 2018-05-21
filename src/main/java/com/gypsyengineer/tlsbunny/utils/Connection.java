@@ -12,7 +12,7 @@ import java.nio.ByteBuffer;
 public class Connection implements AutoCloseable {
 
     private static final long READ_DELAY = 100;
-    private static final long READ_TIMEOUT = 5000;
+    private static final long READ_TIMEOUT = 500;  // in millis
 
     private final Socket socket;
     private final InputStream is;

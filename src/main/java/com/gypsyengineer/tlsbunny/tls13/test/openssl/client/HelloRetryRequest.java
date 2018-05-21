@@ -3,7 +3,7 @@ package com.gypsyengineer.tlsbunny.tls13.test.openssl.client;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
-import com.gypsyengineer.tlsbunny.tls13.test.CommonConfig;
+import com.gypsyengineer.tlsbunny.tls13.test.SystemPropertiesConfig;
 
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
 import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.client_hello;
@@ -16,7 +16,7 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp
 public class HelloRetryRequest {
 
     public static void main(String[] args) throws Exception {
-        CommonConfig config = CommonConfig.load();
+        SystemPropertiesConfig config = SystemPropertiesConfig.load();
 
         // TODO: fix it
         Engine.init()

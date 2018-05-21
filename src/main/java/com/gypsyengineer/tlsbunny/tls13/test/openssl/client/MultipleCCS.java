@@ -3,7 +3,7 @@ package com.gypsyengineer.tlsbunny.tls13.test.openssl.client;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.*;
-import com.gypsyengineer.tlsbunny.tls13.test.CommonConfig;
+import com.gypsyengineer.tlsbunny.tls13.test.SystemPropertiesConfig;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
 public class MultipleCCS {
@@ -11,7 +11,7 @@ public class MultipleCCS {
     public static int N = 100;
 
     public static void main(String[] args) throws Exception {
-        CommonConfig config = CommonConfig.load();
+        SystemPropertiesConfig config = SystemPropertiesConfig.load();
         Output output = new Output();
 
         output.info("test 0: send a CCS message after each handshake message");
