@@ -101,7 +101,12 @@ public class HttpsClient implements Client {
                 .run(new WrappingHandshakeDataIntoTLSCiphertext())
                 .send(new OutgoingData())
 
-                // receive NewSessionTicket
+                // send application data
+                .run(new PreparingHttpGetRequest())
+                .run(new WrappingApplicationDataIntoTLSCiphertext())
+                .send(new OutgoingData())
+
+                // receive first NewSessionTicket
                 .require(new IncomingData())
                 .run(new ProcessingApplicationDataTLSCiphertext()
                         .expect(handshake))
@@ -109,10 +114,12 @@ public class HttpsClient implements Client {
                         .expect(new_session_ticket))
                 .run(new ProcessingNewSessionTicket())
 
-                // send application data
-                .run(new PreparingHttpGetRequest())
-                .run(new WrappingApplicationDataIntoTLSCiphertext())
-                .send(new OutgoingData())
+                // receive second NewSessionTicket
+                .require(new IncomingData())
+                .run(new ProcessingApplicationDataTLSCiphertext()
+                        .expect(handshake))
+                .run(new ProcessingHandshake().expect(new_session_ticket))
+                .run(new ProcessingNewSessionTicket())
 
                 // receive application data
                 .require(new IncomingData())
