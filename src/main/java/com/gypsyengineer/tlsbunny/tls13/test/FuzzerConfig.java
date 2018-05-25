@@ -9,6 +9,9 @@ public class FuzzerConfig implements Config {
     private final Config commonConfig;
     private Analyzer analyzer;
 
+    // timeout for reading incoming data (in millis)
+    private long timeout;
+
     public FuzzerConfig(Config commonConfig) {
         this.commonConfig = commonConfig;
     }
@@ -126,6 +129,15 @@ public class FuzzerConfig implements Config {
 
     public Analyzer analyzer() {
         return analyzer;
+    }
+
+    public long timeout() {
+        return timeout;
+    }
+
+    public FuzzerConfig timeout(long timeout) {
+        this.timeout = timeout;
+        return this;
     }
 
     public Runnable create() {
