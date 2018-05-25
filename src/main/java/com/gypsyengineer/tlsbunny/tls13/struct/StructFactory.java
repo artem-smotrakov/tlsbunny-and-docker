@@ -1,7 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls13.struct;
 
 import com.gypsyengineer.tlsbunny.tls.Random;
-import com.gypsyengineer.tlsbunny.tls.Vector;
 import com.gypsyengineer.tlsbunny.tls13.struct.impl.StructFactoryImpl;
 import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.util.Collections;
@@ -66,7 +65,7 @@ public interface StructFactory {
     KeyShare.ClientHello createKeyShareForClientHello(KeyShareEntry... entries);
     SupportedVersions.ClientHello createSupportedVersionForClientHello(ProtocolVersion version);
     SignatureSchemeList createSignatureSchemeList(SignatureScheme scheme);
-    NamedGroupList createNamedGroupList(NamedGroup group);
+    NamedGroupList createNamedGroupList(NamedGroup... groups);
     CertificateEntry.X509 createX509CertificateEntry(byte[] bytes);
     Extension createExtension(ExtensionType type, byte[] bytes);
     

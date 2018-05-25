@@ -61,9 +61,7 @@ public class GeneratingClientHello extends AbstractAction {
             extensions.add(wrap(context.factory.createSignatureSchemeList(scheme)));
         }
 
-        for (NamedGroup group : groups) {
-            extensions.add(wrap(context.factory.createNamedGroupList(group)));
-        }
+        extensions.add(wrap(context.factory.createNamedGroupList(groups)));
 
         for (KeyShareFactory factory : keyShareFactories) {
             extensions.add(wrap(factory.create(context)));

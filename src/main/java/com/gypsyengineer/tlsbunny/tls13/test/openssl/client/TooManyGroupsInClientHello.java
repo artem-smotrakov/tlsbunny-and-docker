@@ -5,27 +5,35 @@ import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.IncomingChangeCipherSpec;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
+import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
-import com.gypsyengineer.tlsbunny.tls13.test.SystemPropertiesConfig;
 import com.gypsyengineer.tlsbunny.tls13.test.Config;
+import com.gypsyengineer.tlsbunny.tls13.test.SystemPropertiesConfig;
 import com.gypsyengineer.tlsbunny.tls13.test.common.client.Client;
 
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
 import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.*;
 import static com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup.secp256r1;
-import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.*;
+import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv12;
+import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv13_draft_26;
 import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp256r1_sha256;
 
-public class HttpsClient implements Client {
+public class TooManyGroupsInClientHello implements Client {
 
     public static void main(String[] args) throws Exception {
-        new HttpsClient()
+        new TooManyGroupsInClientHello()
                 .connect(SystemPropertiesConfig.load(), StructFactory.getDefault())
                 .run(new NoAlertCheck());
     }
 
     @Override
     public Engine connect(Config config, StructFactory factory) throws Exception {
+        int n = 65535 / 2 - 48;
+        NamedGroup[] tooManyGroups = new NamedGroup[n];
+        for (int i = 0; i < n; i++) {
+            tooManyGroups[i] = secp256r1;
+        }
+
         return Engine.init()
                 .target(config.host())
                 .target(config.port())
@@ -33,7 +41,7 @@ public class HttpsClient implements Client {
                 // send ClientHello
                 .run(new GeneratingClientHello()
                         .supportedVersion(TLSv13_draft_26)
-                        .group(secp256r1)
+                        .group(tooManyGroups)
                         .signatureScheme(ecdsa_secp256r1_sha256)
                         .keyShareEntry(context -> context.negotiator.createKeyShareEntry()))
                 .run(new WrappingIntoHandshake()
