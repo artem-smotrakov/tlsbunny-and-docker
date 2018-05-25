@@ -130,6 +130,7 @@ task removeOpensslDockerContainer(type: Exec) {
 
 task opensslHttpsClient(type: JavaExec) {
     classpath sourceSets.main.runtimeClasspath
+    systemProperty 'tlsbunny.port', '10101'
     main = "com.gypsyengineer.tlsbunny.tls13.test.openssl.client.HttpsClient"
 }
 
