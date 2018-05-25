@@ -125,7 +125,9 @@ public class Vector<T> implements Struct {
 
         long maxEncodingLength = (long) (Math.pow(256, lengthBytes) - 1);
         if (encodingsLength > maxEncodingLength) {
-            throw new IllegalStateException();
+            throw new IllegalStateException(
+                    String.format("encoding length is %d but max expected is %d",
+                            encodingsLength, maxEncodingLength));
         }
 
         byte[] lengthEncoding = Convertor.int2bytes(encodingsLength, lengthBytes);
