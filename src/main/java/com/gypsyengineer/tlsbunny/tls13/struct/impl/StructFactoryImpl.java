@@ -190,9 +190,9 @@ public class StructFactoryImpl implements StructFactory {
     }
 
     @Override
-    public NamedGroupList createNamedGroupList(NamedGroup group) {
+    public NamedGroupList createNamedGroupList(NamedGroup... groups) {
         return new NamedGroupListImpl(
-                Vector.wrap(NamedGroupList.LENGTH_BYTES, group));
+                Vector.wrap(NamedGroupList.LENGTH_BYTES, groups));
     }
 
     @Override

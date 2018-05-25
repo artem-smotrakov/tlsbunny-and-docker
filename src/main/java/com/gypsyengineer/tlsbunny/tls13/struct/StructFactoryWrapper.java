@@ -198,8 +198,8 @@ public class StructFactoryWrapper implements StructFactory {
     }
 
     @Override
-    public NamedGroupList createNamedGroupList(NamedGroup group) {
-        return factory.createNamedGroupList(group);
+    public NamedGroupList createNamedGroupList(NamedGroup... groups) {
+        return factory.createNamedGroupList(groups);
     }
 
     @Override
