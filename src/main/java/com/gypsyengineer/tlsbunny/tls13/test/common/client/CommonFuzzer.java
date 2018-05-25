@@ -19,8 +19,13 @@ import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Target.certificate;
 
 public class CommonFuzzer implements Runnable {
 
+    // read timeouts in millis
+    public static final long LONG_READ_TIMEOUT = 5000;
+    public static final long SHORT_READ_TIMEOUT = 500;
+
     public static final FuzzerConfig[] tls_plaintext_configs = new FuzzerConfig[] {
             new FuzzerConfig(SystemPropertiesConfig.load())
+                    .timeout(SHORT_READ_TIMEOUT)
                     .target(tls_plaintext)
                     .mode(byte_flip)
                     .minRatio(0.01)
@@ -28,6 +33,7 @@ public class CommonFuzzer implements Runnable {
                     .endTest(200)
                     .parts(1),
             new FuzzerConfig(SystemPropertiesConfig.load())
+                    .timeout(SHORT_READ_TIMEOUT)
                     .target(tls_plaintext)
                     .mode(bit_flip)
                     .minRatio(0.01)
@@ -38,6 +44,7 @@ public class CommonFuzzer implements Runnable {
 
     public static final FuzzerConfig[] ccs_configs = new FuzzerConfig[] {
             new FuzzerConfig(SystemPropertiesConfig.load())
+                    .timeout(LONG_READ_TIMEOUT)
                     .target(ccs)
                     .mode(byte_flip)
                     .minRatio(0.01)
@@ -45,6 +52,7 @@ public class CommonFuzzer implements Runnable {
                     .endTest(10)
                     .parts(5),
             new FuzzerConfig(SystemPropertiesConfig.load())
+                    .timeout(LONG_READ_TIMEOUT)
                     .target(ccs)
                     .mode(bit_flip)
                     .minRatio(0.01)
@@ -55,6 +63,7 @@ public class CommonFuzzer implements Runnable {
 
     public static final FuzzerConfig[] handshake_configs = new FuzzerConfig[] {
             new FuzzerConfig(SystemPropertiesConfig.load())
+                    .timeout(SHORT_READ_TIMEOUT)
                     .target(handshake)
                     .mode(byte_flip)
                     .minRatio(0.01)
@@ -62,6 +71,7 @@ public class CommonFuzzer implements Runnable {
                     .endTest(1000)
                     .parts(5),
             new FuzzerConfig(SystemPropertiesConfig.load())
+                    .timeout(SHORT_READ_TIMEOUT)
                     .target(handshake)
                     .mode(bit_flip)
                     .minRatio(0.01)
@@ -72,6 +82,7 @@ public class CommonFuzzer implements Runnable {
 
     public static final FuzzerConfig[] client_hello_configs = new FuzzerConfig[] {
             new FuzzerConfig(SystemPropertiesConfig.load())
+                    .timeout(LONG_READ_TIMEOUT)
                     .target(client_hello)
                     .mode(byte_flip)
                     .minRatio(0.01)
@@ -79,6 +90,7 @@ public class CommonFuzzer implements Runnable {
                     .endTest(10)
                     .parts(5),
             new FuzzerConfig(SystemPropertiesConfig.load())
+                    .timeout(LONG_READ_TIMEOUT)
                     .target(client_hello)
                     .mode(bit_flip)
                     .minRatio(0.01)
@@ -89,6 +101,7 @@ public class CommonFuzzer implements Runnable {
 
     public static final FuzzerConfig[] certificate_configs = new FuzzerConfig[] {
             new FuzzerConfig(SystemPropertiesConfig.load())
+                    .timeout(LONG_READ_TIMEOUT)
                     .target(certificate)
                     .mode(byte_flip)
                     .minRatio(0.01)
@@ -96,6 +109,7 @@ public class CommonFuzzer implements Runnable {
                     .endTest(10)
                     .parts(5),
             new FuzzerConfig(SystemPropertiesConfig.load())
+                    .timeout(LONG_READ_TIMEOUT)
                     .target(certificate)
                     .mode(bit_flip)
                     .minRatio(0.01)
@@ -106,6 +120,7 @@ public class CommonFuzzer implements Runnable {
 
     public static final FuzzerConfig[] certificate_verify_configs = new FuzzerConfig[] {
             new FuzzerConfig(SystemPropertiesConfig.load())
+                    .timeout(LONG_READ_TIMEOUT)
                     .target(certificate_verify)
                     .mode(byte_flip)
                     .minRatio(0.01)
@@ -113,6 +128,7 @@ public class CommonFuzzer implements Runnable {
                     .endTest(10)
                     .parts(5),
             new FuzzerConfig(SystemPropertiesConfig.load())
+                    .timeout(LONG_READ_TIMEOUT)
                     .target(certificate_verify)
                     .mode(bit_flip)
                     .minRatio(0.01)
@@ -123,6 +139,7 @@ public class CommonFuzzer implements Runnable {
 
     public static final FuzzerConfig[] finished_configs = new FuzzerConfig[] {
             new FuzzerConfig(SystemPropertiesConfig.load())
+                    .timeout(LONG_READ_TIMEOUT)
                     .target(finished)
                     .mode(byte_flip)
                     .minRatio(0.01)
@@ -130,6 +147,7 @@ public class CommonFuzzer implements Runnable {
                     .endTest(1000)
                     .parts(5),
             new FuzzerConfig(SystemPropertiesConfig.load())
+                    .timeout(LONG_READ_TIMEOUT)
                     .target(finished)
                     .mode(bit_flip)
                     .minRatio(0.01)

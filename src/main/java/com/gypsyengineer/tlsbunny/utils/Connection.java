@@ -12,16 +12,18 @@ import java.nio.ByteBuffer;
 public class Connection implements AutoCloseable {
 
     private static final long READ_DELAY = 100;
-    private static final long READ_TIMEOUT = 500;  // in millis
+    private static final long DEFAULT_READ_TIMEOUT = 500;  // in millis
 
     private final Socket socket;
     private final InputStream is;
     private final OutputStream os;
+    private final long readTimeout;
 
-    private Connection(Socket socket, InputStream is, OutputStream os) {
+    private Connection(Socket socket, InputStream is, OutputStream os, long readTimeout) {
         this.socket = socket;
         this.is = is;
         this.os = os;
+        this.readTimeout = readTimeout;
     }
 
     public void send(ByteBuffer buffer) throws IOException {
@@ -44,7 +46,7 @@ public class Connection implements AutoCloseable {
         while (is.available() == 0) {
             Utils.sleep(READ_DELAY);
 
-            if (System.currentTimeMillis() - start > READ_TIMEOUT) {
+            if (System.currentTimeMillis() - start > readTimeout) {
                 return new byte[0];
             }
         }
@@ -66,12 +68,19 @@ public class Connection implements AutoCloseable {
         return !socket.isClosed() && socket.isConnected();
     }
 
-    public static Connection create(String host, int port) throws IOException {
+    public static Connection create(String host, int port)
+            throws IOException {
+        return create(host, port, DEFAULT_READ_TIMEOUT);
+    }
+
+    public static Connection create(String host, int port, long readTimeout)
+            throws IOException {
+
         Socket socket = new Socket(host, port);
         InputStream is = new BufferedInputStream(socket.getInputStream());
         OutputStream os = new BufferedOutputStream(socket.getOutputStream());
 
-        return new Connection(socket, is, os);
+        return new Connection(socket, is, os, readTimeout);
     }
 
 }

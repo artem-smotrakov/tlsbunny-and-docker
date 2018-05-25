@@ -16,7 +16,6 @@ import com.gypsyengineer.tlsbunny.utils.Output;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.security.InvalidAlgorithmParameterException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +41,9 @@ public class Engine {
     private ByteBuffer buffer = NOTHING;
     private ByteBuffer applicationData = NOTHING;
     private Context context = new Context();
+
+    // timeout for reading incoming data (in millis)
+    private long timeout;
 
     // if true, always check for CCS after receiving data
     private boolean checkForCCS = false;
@@ -69,6 +71,11 @@ public class Engine {
 
     public Engine target(int port) {
         this.port = port;
+        return this;
+    }
+
+    public Engine timeout(long timeout) {
+        this.timeout = timeout;
         return this;
     }
 
@@ -150,7 +157,7 @@ public class Engine {
     public Engine connect() throws EngineException {
         context.negotiator.set(output);
         status = Status.running;
-        try (Connection connection = Connection.create(host, port)) {
+        try (Connection connection = Connection.create(host, port, timeout)) {
             buffer = NOTHING;
 
             loop:
