@@ -68,4 +68,35 @@ public interface Vector<T> extends Struct {
         return new VectorImpl<Byte>(lengthBytes, Utils.toList(bytes));
     }
 
+    static long maxEncodingLength(int lengthBytes) {
+        return (long) (Math.pow(256, lengthBytes) - 1);
+    }
+
+    static <T> List<byte[]> encodingsList(List<T> objects) throws IOException {
+        List<byte[]> encodings = new ArrayList<>();
+        for (T value : objects) {
+            byte[] encoding;
+            if (value instanceof Struct) {
+                encoding = ((Struct) value).encoding();
+            } else if (value instanceof Byte) {
+                encoding = new byte[] { (Byte) value };
+            } else {
+                throw new IllegalArgumentException();
+            }
+
+            encodings.add(encoding);
+        }
+
+        return encodings;
+    }
+
+    static int encodingsLength(List<byte[]> encodings) {
+        int length = 0;
+        for (byte[] encoding : encodings) {
+            length += encoding.length;
+        }
+
+        return length;
+    }
+
 }

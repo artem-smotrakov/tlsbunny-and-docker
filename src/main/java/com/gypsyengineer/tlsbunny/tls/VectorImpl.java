@@ -11,6 +11,7 @@ public class VectorImpl<T> implements Vector<T> {
 
     private final int lengthBytes;
     private final List<T> objects;
+    private final long maxEncodingLength;
 
     public VectorImpl(int lengthBytes) {
         this(lengthBytes, new ArrayList<>());
@@ -19,6 +20,7 @@ public class VectorImpl<T> implements Vector<T> {
     public VectorImpl(int lengthBytes, List<T> objects) {
         this.lengthBytes = lengthBytes;
         this.objects = objects;
+        this.maxEncodingLength = Vector.maxEncodingLength(lengthBytes);
     }
 
     @Override
@@ -63,26 +65,12 @@ public class VectorImpl<T> implements Vector<T> {
 
     @Override
     public byte[] bytes() throws IOException {
-        int encodingsLength = 0;
-        List<byte[]> encodings = new ArrayList<>();
-        for (T value : objects) {
-            byte[] encoding;
-            if (value instanceof Struct) {
-                encoding = ((Struct) value).encoding();
-            } else if (value instanceof Byte) {
-                encoding = new byte[] { (Byte) value };
-            } else {
-                throw new IllegalArgumentException();
-            }
+        List<byte[]> encodings = Vector.encodingsList(objects);
+        ByteBuffer buffer = ByteBuffer.allocate(Vector.encodingsLength(encodings));
 
-            encodings.add(encoding);
-            encodingsLength += encoding.length;
-        }
-
-        ByteBuffer buffer = ByteBuffer.allocate(encodingsLength);
-        encodings.forEach((encoding) -> {
+        for (byte[] encoding : encodings) {
             buffer.put(encoding);
-        });
+        }
 
         return buffer.array();
     }
@@ -113,36 +101,24 @@ public class VectorImpl<T> implements Vector<T> {
             return new byte[lengthBytes];
         }
 
-        int encodingsLength = 0;
-        List<byte[]> encodings = new ArrayList<>();
-        for (T value : objects) {
-            byte[] encoding;
-            if (value instanceof Struct) {
-                encoding = ((Struct) value).encoding();
-            } else if (value instanceof Byte) {
-                encoding = new byte[] { (Byte) value };
-            } else {
-                throw new IllegalArgumentException();
-            }
+        List<byte[]> encodings = Vector.encodingsList(objects);
+        int encodingLength = Vector.encodingsLength(encodings);
 
-            encodings.add(encoding);
-            encodingsLength += encoding.length;
-        }
-
-        long maxEncodingLength = (long) (Math.pow(256, lengthBytes) - 1);
-        if (encodingsLength > maxEncodingLength) {
+        if (encodingLength > maxEncodingLength) {
             throw new IllegalStateException(
-                    String.format("encoding length is %d but max expected is %d",
-                            encodingsLength, maxEncodingLength));
+                    String.format("encoding length is %d but max allowed is %d",
+                            encodingLength, maxEncodingLength));
         }
 
-        byte[] lengthEncoding = Convertor.int2bytes(encodingsLength, lengthBytes);
-        ByteBuffer buffer = ByteBuffer.allocate(lengthBytes + encodingsLength);
+        byte[] lengthEncoding = Convertor.int2bytes(encodingLength, lengthBytes);
+        ByteBuffer buffer = ByteBuffer.allocate(lengthBytes + encodingLength);
         buffer.put(lengthEncoding);
-        encodings.forEach((encoding) -> {
+
+        for (byte[] encoding : encodings) {
             buffer.put(encoding);
-        });
+        }
 
         return buffer.array();
     }
+
 }
