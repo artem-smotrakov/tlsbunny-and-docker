@@ -18,11 +18,11 @@ public class LegacySessionIdFuzzer implements Fuzzer<Vector<Byte>> {
     }
 
     private static final Generator[] generators = {
-        legacySessionId -> new FuzzedLegacySessionId(ZERO, legacySessionId.encoding()),
-        legacySessionId -> new FuzzedLegacySessionId(ONE,  legacySessionId.encoding()),
+        legacySessionId -> new FuzzedLegacySessionId(ZERO, legacySessionId.bytes()),
+        legacySessionId -> new FuzzedLegacySessionId(ONE,  legacySessionId.bytes()),
         legacySessionId -> new FuzzedLegacySessionId(
-                legacySessionId.encodingLength() + ONE,
-                legacySessionId.encoding())
+                legacySessionId.bytes().length + ONE,
+                legacySessionId.bytes())
     };
 
     private int state = 0;
