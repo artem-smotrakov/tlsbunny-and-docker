@@ -1,64 +1,86 @@
 package com.gypsyengineer.tlsbunny.tls13.fuzzer;
 
 import com.gypsyengineer.tlsbunny.tls.Vector;
+import com.gypsyengineer.tlsbunny.utils.Convertor;
 
-import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.List;
 
 public class MutatedVector<T> implements Vector<T> {
 
+    private final int lengthBytes;
+    private final int encodingLength;
+    private final byte[] bytes;
+
+    public MutatedVector(int lengthBytes, int encodingLength, byte[] bytes) {
+        this.lengthBytes = lengthBytes;
+        this.encodingLength = encodingLength;
+        this.bytes = bytes;
+
+        long maxEncodingLength = Vector.maxEncodingLength(lengthBytes);
+        if (encodingLength > maxEncodingLength) {
+            throw new IllegalStateException(
+                    String.format("encoding length is %d but max allowed is %d",
+                            encodingLength, maxEncodingLength));
+        }
+    }
+    
     @Override
     public int size() {
-        throw new UnsupportedOperationException("no mutated vectors for you!");
+        throw new UnsupportedOperationException("what the hell? I can't do that!");
     }
 
     @Override
     public boolean isEmpty() {
-        throw new UnsupportedOperationException("no mutated vectors for you!");
+        throw new UnsupportedOperationException("what the hell? I can't do that!");
     }
 
     @Override
     public T get(int index) {
-        throw new UnsupportedOperationException("no mutated vectors for you!");
+        throw new UnsupportedOperationException("what the hell? I can't do that!");
     }
 
     @Override
     public T first() {
-        throw new UnsupportedOperationException("no mutated vectors for you!");
+        throw new UnsupportedOperationException("what the hell? I can't do that!");
     }
 
     @Override
     public void add(T object) {
-        throw new UnsupportedOperationException("no mutated vectors for you!");
+        throw new UnsupportedOperationException("what the hell? I can't do that!");
     }
 
     @Override
     public void set(int index, T object) {
-        throw new UnsupportedOperationException("no mutated vectors for you!");
+        throw new UnsupportedOperationException("what the hell? I can't do that!");
     }
 
     @Override
     public void clear() {
-        throw new UnsupportedOperationException("no mutated vectors for you!");
+        throw new UnsupportedOperationException("what the hell? I can't do that!");
     }
 
     @Override
     public List<T> toList() {
-        throw new UnsupportedOperationException("no mutated vectors for you!");
+        throw new UnsupportedOperationException("what the hell? I can't do that!");
     }
 
     @Override
-    public byte[] bytes() throws IOException {
-        throw new UnsupportedOperationException("no mutated vectors for you!");
+    public byte[] bytes() {
+        return bytes;
     }
 
     @Override
     public int encodingLength() {
-        throw new UnsupportedOperationException("no mutated vectors for you!");
+        return encodingLength;
     }
 
     @Override
-    public byte[] encoding() throws IOException {
-        throw new UnsupportedOperationException("no mutated vectors for you!");
+    public byte[] encoding() {
+        return ByteBuffer.allocate(lengthBytes + encodingLength)
+                .put(Convertor.int2bytes(encodingLength, lengthBytes))
+                .put(bytes)
+                .array();
     }
+
 }
