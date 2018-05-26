@@ -7,10 +7,8 @@ import java.io.IOException;
 public class LegacySessionIdFuzzer implements Fuzzer<Vector<Byte>> {
 
     public static final int LENGTH_BYTES = 1;
-    public static final int ZERO = 0;
-    public static final int ONE = 1;
 
-    public static class FuzzedLegacySessionId extends MutatedVector<Byte> {
+    public static class FuzzedLegacySessionId extends FuzzedVector<Byte> {
 
         public FuzzedLegacySessionId(int encodingLength, byte[] bytes) {
             super(LENGTH_BYTES, encodingLength, bytes);
@@ -18,10 +16,10 @@ public class LegacySessionIdFuzzer implements Fuzzer<Vector<Byte>> {
     }
 
     private static final Generator[] generators = {
-        legacySessionId -> new FuzzedLegacySessionId(ZERO, legacySessionId.bytes()),
-        legacySessionId -> new FuzzedLegacySessionId(ONE,  legacySessionId.bytes()),
+        legacySessionId -> new FuzzedLegacySessionId(0, legacySessionId.bytes()),
+        legacySessionId -> new FuzzedLegacySessionId(1,  legacySessionId.bytes()),
         legacySessionId -> new FuzzedLegacySessionId(
-                legacySessionId.bytes().length + ONE,
+                legacySessionId.bytes().length + 1,
                 legacySessionId.bytes())
     };
 

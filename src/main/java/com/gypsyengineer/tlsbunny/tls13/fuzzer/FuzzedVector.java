@@ -6,13 +6,13 @@ import com.gypsyengineer.tlsbunny.utils.Convertor;
 import java.nio.ByteBuffer;
 import java.util.List;
 
-public class MutatedVector<T> implements Vector<T> {
+public class FuzzedVector<T> implements Vector<T> {
 
     private final int lengthBytes;
     private final int encodingLength;
     private final byte[] bytes;
 
-    public MutatedVector(int lengthBytes, int encodingLength, byte[] bytes) {
+    public FuzzedVector(int lengthBytes, int encodingLength, byte[] bytes) {
         this.lengthBytes = lengthBytes;
         this.encodingLength = encodingLength;
         this.bytes = bytes;
