@@ -12,7 +12,7 @@ import java.nio.ByteBuffer;
 public class Connection implements AutoCloseable {
 
     private static final long READ_DELAY = 100;
-    private static final long DEFAULT_READ_TIMEOUT = 5000;  // in millis
+    public static final long DEFAULT_READ_TIMEOUT = 5000;  // in millis
 
     private final Socket socket;
     private final InputStream is;
@@ -75,6 +75,12 @@ public class Connection implements AutoCloseable {
 
     public static Connection create(String host, int port, long readTimeout)
             throws IOException {
+
+        if (readTimeout <= 0) {
+            throw new IllegalArgumentException(String.format(
+                    "what the hell? timeout should be more than 0, but %d passed",
+                            readTimeout));
+        }
 
         Socket socket = new Socket(host, port);
         InputStream is = new BufferedInputStream(socket.getInputStream());
