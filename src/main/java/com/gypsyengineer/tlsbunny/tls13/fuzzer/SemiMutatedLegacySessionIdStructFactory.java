@@ -39,13 +39,11 @@ public class SemiMutatedLegacySessionIdStructFactory extends FuzzyStructFactory<
                 extensions);
 
         if (target == Target.client_hello) {
-            output.info("fuzz ClientHello");
-            Vector<Byte> fuzzedLegacySessionId = fuzz(hello.getLegacySessionId());
-
+            output.info("fuzz legacy session ID in ClientHello");
             hello = factory.createClientHello(
                     hello.getProtocolVersion(),
                     hello.getRandom(),
-                    fuzzedLegacySessionId,
+                    fuzz(hello.getLegacySessionId()),
                     hello.getCipherSuites(),
                     hello.getLegacyCompressionMethods(),
                     hello.getExtensions());
@@ -69,6 +67,16 @@ public class SemiMutatedLegacySessionIdStructFactory extends FuzzyStructFactory<
         return fuzzed;
     }
 
+    @Override
+    public void setOutput(Output output) {
+        this.output = output;
+    }
+
+    @Override
+    public Output getOutput() {
+        return output;
+    }
+
     void initFuzzer(String state) {
         switch (target) {
             case client_hello:
@@ -89,6 +97,7 @@ public class SemiMutatedLegacySessionIdStructFactory extends FuzzyStructFactory<
         }
 
         fuzzer.setState(state);
+        fuzzer.setOutput(output);
     }
 
 }

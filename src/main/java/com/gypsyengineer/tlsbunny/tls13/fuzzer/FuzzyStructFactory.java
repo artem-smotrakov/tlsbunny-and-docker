@@ -14,7 +14,7 @@ public abstract class FuzzyStructFactory<T> implements StructFactory, Fuzzer<T> 
 
     Target target;
     Mode mode;
-    final Output output;
+    Output output;
     final StructFactory factory;
     Fuzzer<T> fuzzer;
 

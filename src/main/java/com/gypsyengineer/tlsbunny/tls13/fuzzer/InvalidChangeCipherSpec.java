@@ -8,6 +8,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
 import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
 import com.gypsyengineer.tlsbunny.tls13.utils.TLS13Utils;
+import com.gypsyengineer.tlsbunny.utils.Output;
 
 import java.io.IOException;
 
@@ -22,6 +23,8 @@ public class InvalidChangeCipherSpec extends AbstractAction implements Fuzzer<Ch
 
     int value = MIN_VALUE;
     int end = MAX_VALUE;
+
+    Output output;
 
     @Override
     public String name() {
@@ -76,6 +79,16 @@ public class InvalidChangeCipherSpec extends AbstractAction implements Fuzzer<Ch
     @Override
     public void setEndTest(long end) {
         this.end = check(end);
+    }
+
+    @Override
+    public void setOutput(Output output) {
+        this.output = output;
+    }
+
+    @Override
+    public Output getOutput() {
+        return output;
     }
 
     @Override

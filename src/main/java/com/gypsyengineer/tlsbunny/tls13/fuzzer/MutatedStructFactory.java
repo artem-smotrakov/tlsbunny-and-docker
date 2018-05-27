@@ -213,6 +213,16 @@ public class MutatedStructFactory extends FuzzyStructFactory<byte[]> {
         return fuzzed;
     }
 
+    @Override
+    public void setOutput(Output output) {
+        this.output = output;
+    }
+
+    @Override
+    public Output getOutput() {
+        return output;
+    }
+
     void initFuzzer(String state) {
         // fuzz all content of a message by default
         int start = -1;

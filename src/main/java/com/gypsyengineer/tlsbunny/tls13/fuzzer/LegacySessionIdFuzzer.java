@@ -1,6 +1,7 @@
 package com.gypsyengineer.tlsbunny.tls13.fuzzer;
 
 import com.gypsyengineer.tlsbunny.tls.Vector;
+import com.gypsyengineer.tlsbunny.utils.Output;
 
 import java.io.IOException;
 
@@ -16,15 +17,32 @@ public class LegacySessionIdFuzzer implements Fuzzer<Vector<Byte>> {
     }
 
     private static final Generator[] generators = {
-        legacySessionId -> new FuzzedLegacySessionId(0, legacySessionId.bytes()),
-        legacySessionId -> new FuzzedLegacySessionId(1,  legacySessionId.bytes()),
-        legacySessionId -> new FuzzedLegacySessionId(
-                legacySessionId.bytes().length + 1,
-                legacySessionId.bytes())
+            (sessionId, output) -> {
+                byte[] content = sessionId.bytes();
+                output.info("set encoding length to 0, but content length is still %d",
+                        content.length);
+                return new FuzzedLegacySessionId(0, content);
+            },
+            (sessionId, output) -> {
+                byte[] content = sessionId.bytes();
+                output.info("set encoding length to 1, but content length is still %d",
+                        content.length);
+                return new FuzzedLegacySessionId(1, content);
+            },
+            (sessionId, output) -> {
+                byte[] content = sessionId.bytes();
+                int encodingLength = content.length + 1;
+                output.info("set encoding length to %d, but content length is still %d",
+                        encodingLength, content.length);
+                return new FuzzedLegacySessionId(
+                        encodingLength, content);
+            }
     };
 
     private int state = 0;
     private int end = generators.length - 1;
+
+    private Output output;
 
     @Override
     public String getState() {
@@ -44,6 +62,16 @@ public class LegacySessionIdFuzzer implements Fuzzer<Vector<Byte>> {
     @Override
     public void setEndTest(long end) {
         this.end = check(end);
+    }
+
+    @Override
+    public void setOutput(Output output) {
+        this.output = output;
+    }
+
+    @Override
+    public Output getOutput() {
+        return output;
     }
 
     @Override
@@ -67,7 +95,7 @@ public class LegacySessionIdFuzzer implements Fuzzer<Vector<Byte>> {
     @Override
     public final Vector<Byte> fuzz(Vector<Byte> legacySessionId) {
         try {
-            return generators[state].run(legacySessionId);
+            return generators[state].run(legacySessionId, output);
         } catch (IOException e) {
             // TODO: can we do better?
             throw new RuntimeException(e);
@@ -85,6 +113,6 @@ public class LegacySessionIdFuzzer implements Fuzzer<Vector<Byte>> {
     }
 
     private interface Generator {
-        Vector<Byte> run (Vector<Byte> legacySessionId) throws IOException;
+        Vector<Byte> run (Vector<Byte> sessionId, Output output) throws IOException;
     }
 }
