@@ -1,5 +1,7 @@
 package com.gypsyengineer.tlsbunny.tls13.fuzzer;
 
+import com.gypsyengineer.tlsbunny.utils.Output;
+
 import java.util.Random;
 
 public abstract class AbstractFlipFuzzer implements Fuzzer<byte[]> {
@@ -12,6 +14,8 @@ public abstract class AbstractFlipFuzzer implements Fuzzer<byte[]> {
     private final int startIndex;
     private final int endIndex;
     final Random random;
+
+    Output output;
 
     long state = 0;
     long end = Long.MAX_VALUE;
@@ -107,6 +111,16 @@ public abstract class AbstractFlipFuzzer implements Fuzzer<byte[]> {
     public final byte[] fuzz(byte[] array) {
         random.setSeed(state);
         return fuzzImpl(array);
+    }
+
+    @Override
+    public void setOutput(Output output) {
+        this.output = output;
+    }
+
+    @Override
+    public Output getOutput() {
+        return output;
     }
 
     protected abstract byte[] fuzzImpl(byte[] array);

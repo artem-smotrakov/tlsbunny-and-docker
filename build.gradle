@@ -19,6 +19,7 @@ dependencies {
 task buildGnutlsDocker(type: Exec) {
     commandLine 'docker',
             'build',
+            '--no-cache',
             '--file', 'src/main/docker/gnutls/Dockerfile',
             '--tag',  'gnutls/server/tls13',
             '.'
@@ -87,6 +88,7 @@ task runGnutlsFuzzing {
 task buildOpensslDocker(type: Exec) {
     commandLine 'docker',
             'build',
+            '--no-cache',
             '--file', 'src/main/docker/openssl/Dockerfile',
             '--tag',  'openssl/server/tls13',
             '.'
@@ -165,6 +167,7 @@ task runOpensslFuzzing {
 task buildPicotlsDocker(type: Exec) {
     commandLine 'docker',
             'build',
+            '--no-cache',
             '--file', 'src/main/docker/picotls/Dockerfile',
             '--tag',  'picotls/server/tls13',
             '.'
@@ -233,6 +236,7 @@ task runPicotlsFuzzing {
 task buildH2ODocker(type: Exec) {
     commandLine 'docker',
             'build',
+            '--no-cache',
             '--file', 'src/main/docker/h2o/Dockerfile',
             '--tag',  'h2o/server/tls13',
             '.'
@@ -302,6 +306,7 @@ task runH2OFuzzing {
 task buildNssDocker(type: Exec) {
     commandLine 'docker',
             'build',
+            '--no-cache',
             '--file', 'src/main/docker/nss/Dockerfile',
             '--tag',  'nss/server/tls13',
             '.'
@@ -375,6 +380,7 @@ task runNssFuzzing {
 task buildWolfSSLDocker(type: Exec) {
     commandLine 'docker',
             'build',
+            '--no-cache',
             '--file', 'src/main/docker/wolfssl/Dockerfile',
             '--tag',  'wolfssl/server/tls13',
             '.'

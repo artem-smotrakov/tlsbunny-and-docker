@@ -3,7 +3,6 @@ package com.gypsyengineer.tlsbunny.tls13.test.picotls.client;
 import com.gypsyengineer.tlsbunny.tls13.test.FuzzerConfig;
 import com.gypsyengineer.tlsbunny.tls13.test.common.client.CommonFuzzer;
 import com.gypsyengineer.tlsbunny.tls13.test.common.client.MultipleThreads;
-import com.gypsyengineer.tlsbunny.tls13.test.gnutls.client.HttpsClient;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
 public class HandshakeFuzzer extends CommonFuzzer {
@@ -12,7 +11,7 @@ public class HandshakeFuzzer extends CommonFuzzer {
             config -> new HandshakeFuzzer(new Output(), config);
 
     public HandshakeFuzzer(Output output, FuzzerConfig config) {
-        super(output, config, new HttpsClient());
+        super(output, config, new PicotlsClient());
     }
 
     public static void main(String[] args) throws InterruptedException {

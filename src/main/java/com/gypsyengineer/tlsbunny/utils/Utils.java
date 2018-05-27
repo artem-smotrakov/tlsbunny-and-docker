@@ -17,6 +17,15 @@ public class Utils {
     public static final byte[] EMPTY_ARRAY = new byte[0];
     public static final String PREFIX = "[tlsbunny]";
 
+    public static List<Byte> toList(byte[] bytes) {
+        List<Byte> objects = new ArrayList<>();
+        for (byte b : bytes) {
+            objects.add(b);
+        }
+
+        return objects;
+    }
+
     public static byte[][] split(byte[] data, int length) {
         List<byte[]> fragments = new ArrayList<>();
         if (data.length <= length) {

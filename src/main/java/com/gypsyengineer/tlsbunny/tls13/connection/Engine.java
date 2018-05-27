@@ -43,7 +43,7 @@ public class Engine {
     private Context context = new Context();
 
     // timeout for reading incoming data (in millis)
-    private long timeout;
+    private long timeout = Connection.DEFAULT_READ_TIMEOUT;
 
     // if true, always check for CCS after receiving data
     private boolean checkForCCS = false;

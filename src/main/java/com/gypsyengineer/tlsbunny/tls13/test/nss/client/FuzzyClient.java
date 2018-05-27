@@ -12,6 +12,7 @@ public class FuzzyClient {
                 .add(HandshakeFuzzer.factory, HandshakeFuzzer.handshake_configs)
                 .add(ClientHelloFuzzer.factory, ClientHelloFuzzer.client_hello_configs)
                 .add(FinishedFuzzer.factory, FinishedFuzzer.finished_configs)
+                .add(LegacySessionIdFuzzer.factory, LegacySessionIdFuzzer.legacy_session_id_configs)
                 .set(new NoAlertAnalyzer())
                 .submit();
     }

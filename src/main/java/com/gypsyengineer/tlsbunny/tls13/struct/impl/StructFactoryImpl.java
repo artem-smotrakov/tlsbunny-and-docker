@@ -66,7 +66,7 @@ public class StructFactoryImpl implements StructFactory {
                                          List<CompressionMethod> legacy_compression_methods,
                                          List<Extension> extensions) {
         
-        return new ClientHelloImpl(
+        return createClientHello(
                 legacy_version, 
                 random, 
                 Vector.wrap(
@@ -81,6 +81,18 @@ public class StructFactoryImpl implements StructFactory {
                 Vector.wrap(
                         ClientHelloImpl.EXTENSIONS_LENGTH_BYTES,
                         extensions));
+    }
+
+    @Override
+    public ClientHello createClientHello(ProtocolVersion legacy_version,
+                                         Random random,
+                                         Vector<Byte> legacy_session_id,
+                                         Vector<CipherSuite> cipher_suites,
+                                         Vector<CompressionMethod> legacy_compression_methods,
+                                         Vector<Extension> extensions) {
+
+        return new ClientHelloImpl(legacy_version, random, legacy_session_id,
+                cipher_suites, legacy_compression_methods, extensions);
     }
 
     @Override
@@ -154,7 +166,9 @@ public class StructFactoryImpl implements StructFactory {
     }
 
     @Override
-    public SupportedVersions.ClientHello createSupportedVersionForClientHello(ProtocolVersion version) {
+    public SupportedVersions.ClientHello createSupportedVersionForClientHello(
+            ProtocolVersion version) {
+
         return new SupportedVersionsImpl.ClientHelloImpl(
                 Vector.wrap(SupportedVersions.ClientHello.VERSIONS_LENGTH_BYTES, version));
     }
@@ -231,7 +245,7 @@ public class StructFactoryImpl implements StructFactory {
     }
 
     @Override
-    public ProtocolVersion createProtocolVestion(int minor, int major) {
+    public ProtocolVersion createProtocolVersion(int minor, int major) {
         return new ProtocolVersionImpl(minor, major);
     }
 

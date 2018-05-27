@@ -1,6 +1,7 @@
 package com.gypsyengineer.tlsbunny.tls13.struct;
 
 import com.gypsyengineer.tlsbunny.tls.Random;
+import com.gypsyengineer.tlsbunny.tls.Vector;
 import com.gypsyengineer.tlsbunny.tls13.struct.impl.StructFactoryImpl;
 import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.util.Collections;
@@ -18,9 +19,10 @@ public interface StructFactory {
     CompressionMethod createCompressionMethod(int code);
     CipherSuite createCipherSuite(int first, int second);
     HkdfLabel createHkdfLabel(int length, byte[] label, byte[] hashValue);
-    UncompressedPointRepresentation createUncompressedPointRepresentation(byte[] X, byte[] Y);
+    UncompressedPointRepresentation createUncompressedPointRepresentation(byte[] X,
+                                                                          byte[] Y);
     HandshakeType createHandshakeType(int code);
-    ProtocolVersion createProtocolVestion(int minor, int major);
+    ProtocolVersion createProtocolVersion(int minor, int major);
     ExtensionType createExtensionType(int code);
     ContentType createContentType(int code);
     SignatureScheme createSignatureScheme(int code);
@@ -29,9 +31,15 @@ public interface StructFactory {
     NamedGroup.X createXNamedGroup(int code);
     KeyShareEntry createKeyShareEntry(NamedGroup group, byte[] bytes);
     
-    TLSInnerPlaintext createTLSInnerPlaintext(ContentType type, byte[] content, byte[] zeros);
-    TLSPlaintext createTLSPlaintext(ContentType type, ProtocolVersion version, byte[] content);
-    TLSPlaintext[] createTLSPlaintexts(ContentType type, ProtocolVersion version, byte[] content);
+    TLSInnerPlaintext createTLSInnerPlaintext(ContentType type,
+                                              byte[] content,
+                                              byte[] zeros);
+    TLSPlaintext createTLSPlaintext(ContentType type,
+                                    ProtocolVersion version,
+                                    byte[] content);
+    TLSPlaintext[] createTLSPlaintexts(ContentType type,
+                                       ProtocolVersion version,
+                                       byte[] content);
 
     AlertLevel createAlertLevel(int code);
     AlertDescription createAlertDescription(int code);
@@ -41,15 +49,23 @@ public interface StructFactory {
     
     // handshake messages
     Handshake createHandshake(HandshakeType type, byte[] content);
-    Certificate createCertificate(byte[] certificate_request_context, CertificateEntry... certificate_list);
+    Certificate createCertificate(byte[] certificate_request_context,
+                                  CertificateEntry... certificate_list);
     CertificateRequest createCertificateRequest();
-    CertificateVerify createCertificateVerify(SignatureScheme algorithm, byte[] signature);
+    CertificateVerify createCertificateVerify(SignatureScheme algorithm,
+                                              byte[] signature);
     ClientHello createClientHello(ProtocolVersion legacy_version,
                                   Random random,
                                   byte[] legacy_session_id,
                                   List<CipherSuite> cipher_suites,
                                   List<CompressionMethod> legacy_compression_methods,
                                   List<Extension> extensions);
+    ClientHello createClientHello(ProtocolVersion legacy_version,
+                                  Random random,
+                                  Vector<Byte> legacy_session_id,
+                                  Vector<CipherSuite> cipher_suites,
+                                  Vector<CompressionMethod> legacy_compression_methods,
+                                  Vector<Extension> extensions);
     EncryptedExtensions createEncryptedExtensions(Extension... extensions);
     EndOfEarlyData createEndOfEarlyData();
     Finished createFinished(byte[] verify_data);

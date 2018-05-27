@@ -3,7 +3,6 @@ package com.gypsyengineer.tlsbunny.tls13.test.openssl.client;
 import com.gypsyengineer.tlsbunny.tls13.test.FuzzerConfig;
 import com.gypsyengineer.tlsbunny.tls13.test.common.client.CommonFuzzer;
 import com.gypsyengineer.tlsbunny.tls13.test.common.client.MultipleThreads;
-import com.gypsyengineer.tlsbunny.tls13.test.gnutls.client.HttpsClient;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
 public class TLSPlaintextFuzzer extends CommonFuzzer {
