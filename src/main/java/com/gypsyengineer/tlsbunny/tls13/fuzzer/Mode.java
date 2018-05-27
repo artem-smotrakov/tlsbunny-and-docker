@@ -6,6 +6,6 @@ public enum Mode {
     byte_flip,
     bit_flip,
 
-    // semi-generation-based strategies
-    semi_mutated_vector
+    // generation-based strategies
+    mutated_vector
 }

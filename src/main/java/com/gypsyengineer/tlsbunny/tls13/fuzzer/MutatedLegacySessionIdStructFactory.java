@@ -10,13 +10,13 @@ import java.util.List;
 
 import static com.gypsyengineer.tlsbunny.utils.HexDump.printHexDiff;
 
-public class SemiMutatedLegacySessionIdStructFactory extends FuzzyStructFactory<Vector<Byte>> {
+public class MutatedLegacySessionIdStructFactory extends FuzzyStructFactory<Vector<Byte>> {
 
     public static final Target DEFAULT_TARGET = Target.client_hello;
-    public static final Mode DEFAULT_MODE = Mode.semi_mutated_vector;
+    public static final Mode DEFAULT_MODE = Mode.mutated_vector;
 
-    public SemiMutatedLegacySessionIdStructFactory(StructFactory factory,
-                                                   Output output) {
+    public MutatedLegacySessionIdStructFactory(StructFactory factory,
+                                               Output output) {
         super(factory, output);
         mode(DEFAULT_MODE);
         target(DEFAULT_TARGET);
@@ -101,7 +101,7 @@ public class SemiMutatedLegacySessionIdStructFactory extends FuzzyStructFactory<
         }
 
         switch (mode) {
-            case semi_mutated_vector:
+            case mutated_vector:
                 fuzzer = new LegacySessionIdFuzzer();
                 break;
             default:
