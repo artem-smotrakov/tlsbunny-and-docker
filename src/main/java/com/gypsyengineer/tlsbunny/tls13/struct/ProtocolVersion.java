@@ -7,21 +7,21 @@ public interface ProtocolVersion extends Struct {
     int ENCODING_LENGTH = 2;
 
     ProtocolVersion SSLv3  = StructFactory.getDefault()
-            .createProtocolVestion(0x3, 0x0);
+            .createProtocolVersion(0x3, 0x0);
     ProtocolVersion TLSv10 = StructFactory.getDefault()
-            .createProtocolVestion(0x3, 0x1);
+            .createProtocolVersion(0x3, 0x1);
     ProtocolVersion TLSv11 = StructFactory.getDefault()
-            .createProtocolVestion(0x3, 0x2);
+            .createProtocolVersion(0x3, 0x2);
     ProtocolVersion TLSv12 = StructFactory.getDefault()
-            .createProtocolVestion(0x3, 0x3);
+            .createProtocolVersion(0x3, 0x3);
     ProtocolVersion TLSv13 = StructFactory.getDefault()
-            .createProtocolVestion(0x3, 0x4);
+            .createProtocolVersion(0x3, 0x4);
 
     ProtocolVersion TLSv13_draft_26 = StructFactory.getDefault()
-            .createProtocolVestion(0x7f, 0x1a);
+            .createProtocolVersion(0x7f, 0x1a);
 
     ProtocolVersion TLSv13_draft_28 = StructFactory.getDefault()
-            .createProtocolVestion(0x7f, 0x1c);
+            .createProtocolVersion(0x7f, 0x1c);
 
     int getMinor();
     int getMajor();

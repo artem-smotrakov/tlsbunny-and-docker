@@ -1,6 +1,8 @@
 package com.gypsyengineer.tlsbunny.tls13.struct;
 
 import com.gypsyengineer.tlsbunny.tls.Random;
+import com.gypsyengineer.tlsbunny.tls.Vector;
+
 import java.util.List;
 
 public class StructFactoryWrapper implements StructFactory {
@@ -39,8 +41,8 @@ public class StructFactoryWrapper implements StructFactory {
     }
 
     @Override
-    public ProtocolVersion createProtocolVestion(int minor, int major) {
-        return factory.createProtocolVestion(minor, major);
+    public ProtocolVersion createProtocolVersion(int minor, int major) {
+        return factory.createProtocolVersion(minor, major);
     }
 
     @Override
@@ -145,8 +147,23 @@ public class StructFactoryWrapper implements StructFactory {
 
     @Override
     public ClientHello createClientHello(ProtocolVersion legacy_version,
-            Random random, byte[] legacy_session_id, List<CipherSuite> cipher_suites,
-            List<CompressionMethod> legacy_compression_methods, List<Extension> extensions) {
+                                         Random random,
+                                         byte[] legacy_session_id,
+                                         List<CipherSuite> cipher_suites,
+                                         List<CompressionMethod> legacy_compression_methods,
+                                         List<Extension> extensions) {
+
+        return factory.createClientHello(legacy_version, random, legacy_session_id,
+                cipher_suites, legacy_compression_methods, extensions);
+    }
+
+    @Override
+    public ClientHello createClientHello(ProtocolVersion legacy_version,
+                                         Random random,
+                                         Vector<Byte> legacy_session_id,
+                                         Vector<CipherSuite> cipher_suites,
+                                         Vector<CompressionMethod> legacy_compression_methods,
+                                         Vector<Extension> extensions) {
 
         return factory.createClientHello(legacy_version, random, legacy_session_id,
                 cipher_suites, legacy_compression_methods, extensions);
@@ -173,10 +190,12 @@ public class StructFactoryWrapper implements StructFactory {
     }
 
     @Override
-    public ServerHello createServerHello(
-            ProtocolVersion version, Random random, byte[] legacy_session_id_echo,
-            CipherSuite cipher_suite, CompressionMethod legacy_compression_method,
-            List<Extension> extensions) {
+    public ServerHello createServerHello(ProtocolVersion version,
+                                         Random random,
+                                         byte[] legacy_session_id_echo,
+                                         CipherSuite cipher_suite,
+                                         CompressionMethod legacy_compression_method,
+                                         List<Extension> extensions) {
 
         return factory.createServerHello(version, random, legacy_session_id_echo,
                 cipher_suite, legacy_compression_method, extensions);
@@ -188,7 +207,9 @@ public class StructFactoryWrapper implements StructFactory {
     }
 
     @Override
-    public SupportedVersions.ClientHello createSupportedVersionForClientHello(ProtocolVersion version) {
+    public SupportedVersions.ClientHello createSupportedVersionForClientHello(
+            ProtocolVersion version) {
+
         return factory.createSupportedVersionForClientHello(version);
     }
 
