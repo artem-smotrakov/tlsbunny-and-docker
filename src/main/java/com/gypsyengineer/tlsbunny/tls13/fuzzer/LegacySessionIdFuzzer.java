@@ -19,23 +19,21 @@ public class LegacySessionIdFuzzer implements Fuzzer<Vector<Byte>> {
     private static final Generator[] generators = {
             (sessionId, output) -> {
                 byte[] content = sessionId.bytes();
-                output.info("set encoding length to 0, but content length is still %d",
+                output.info("set content length to 0, but actual content length is still %d",
                         content.length);
                 return new FuzzedLegacySessionId(0, content);
             },
             (sessionId, output) -> {
                 byte[] content = sessionId.bytes();
-                output.info("set encoding length to 1, but content length is still %d",
+                output.info("set content length to 1, but actual content length is still %d",
                         content.length);
                 return new FuzzedLegacySessionId(1, content);
             },
             (sessionId, output) -> {
                 byte[] content = sessionId.bytes();
-                int encodingLength = content.length + 1;
-                output.info("set encoding length to %d, but content length is still %d",
-                        encodingLength, content.length);
-                return new FuzzedLegacySessionId(
-                        encodingLength, content);
+                output.info("set content length to 255, but actual content length is still %d",
+                        content.length);
+                return new FuzzedLegacySessionId(255, content);
             }
     };
 

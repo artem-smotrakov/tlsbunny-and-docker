@@ -9,19 +9,19 @@ import java.util.List;
 public class FuzzedVector<T> implements Vector<T> {
 
     private final int lengthBytes;
-    private final int encodingLength;
-    private final byte[] bytes;
+    private final int length;
+    private final byte[] content;
 
-    public FuzzedVector(int lengthBytes, int encodingLength, byte[] bytes) {
+    public FuzzedVector(int lengthBytes, int length, byte[] content) {
         this.lengthBytes = lengthBytes;
-        this.encodingLength = encodingLength;
-        this.bytes = bytes;
+        this.length = length;
+        this.content = content;
 
         long maxEncodingLength = Vector.maxEncodingLength(lengthBytes);
-        if (encodingLength > maxEncodingLength) {
+        if (length > maxEncodingLength) {
             throw new IllegalStateException(
                     String.format("encoding length is %d but max allowed is %d",
-                            encodingLength, maxEncodingLength));
+                            length, maxEncodingLength));
         }
     }
     
@@ -67,19 +67,19 @@ public class FuzzedVector<T> implements Vector<T> {
 
     @Override
     public byte[] bytes() {
-        return bytes;
+        return content;
     }
 
     @Override
     public int encodingLength() {
-        return encodingLength;
+        return lengthBytes + content.length;
     }
 
     @Override
     public byte[] encoding() {
-        return ByteBuffer.allocate(lengthBytes + encodingLength)
-                .put(Convertor.int2bytes(encodingLength, lengthBytes))
-                .put(bytes)
+        return ByteBuffer.allocate(lengthBytes + content.length)
+                .put(Convertor.int2bytes(length, lengthBytes))
+                .put(content)
                 .array();
     }
 
