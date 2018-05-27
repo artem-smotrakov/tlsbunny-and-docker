@@ -2,7 +2,7 @@ package com.gypsyengineer.tlsbunny.tls13.test.common.client;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.EngineException;
-import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertCheck;
+import com.gypsyengineer.tlsbunny.tls13.connection.SuccessCheck;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.FuzzyStructFactory;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.MutatedStructFactory;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.SemiMutatedLegacySessionIdStructFactory;
@@ -233,7 +233,7 @@ public class CommonFuzzer implements Runnable {
     public void run() {
         try {
             output.info("run a smoke test before fuzzing");
-            client.connect(config, StructFactory.getDefault()).run(new NoAlertCheck());
+            client.connect(config, StructFactory.getDefault()).run(new SuccessCheck());
         } catch (Exception e) {
             output.achtung("smoke test failed: %s", e.getMessage());
             output.achtung("skip fuzzing");
