@@ -172,8 +172,8 @@ public class CommonFuzzer implements Runnable {
                 config.minRatio(),
                 config.maxRatio()
         );
-        fuzzer.setTarget(config.target());
-        fuzzer.setMode(config.mode());
+        fuzzer.target(config.target());
+        fuzzer.mode(config.mode());
         fuzzer.setStartTest(config.startTest());
         fuzzer.setEndTest(config.endTest());
 

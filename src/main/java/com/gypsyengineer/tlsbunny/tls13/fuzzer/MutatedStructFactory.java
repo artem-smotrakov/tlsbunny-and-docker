@@ -12,47 +12,23 @@ import java.util.List;
 
 import static com.gypsyengineer.tlsbunny.utils.HexDump.printHexDiff;
 
-public class MutatedStructFactory extends StructFactoryWrapper
-        implements Fuzzer<byte[]> {
+public class MutatedStructFactory extends FuzzyStructFactory<byte[]> {
 
     public static final Target DEFAULT_TARGET = Target.tls_plaintext;
     public static final Mode DEFAULT_MODE = Mode.byte_flip;
-    public static final String DEFAULT_START_TEST = "0";
-    public static final String STATE_DELIMITER = ":";
 
     private final double minRatio;
     private final double maxRatio;
 
-    private Target target = DEFAULT_TARGET;
-    private Mode mode = DEFAULT_MODE;
-    private Fuzzer<byte[]> fuzzer;
-
-    private final Output output;
-
     public MutatedStructFactory(StructFactory factory, Output output,
             double minRatio, double maxRatio) {
 
-        super(factory);
+        super(factory, output);
+        mode(DEFAULT_MODE);
+        target(DEFAULT_TARGET);
         this.minRatio = minRatio;
         this.maxRatio = maxRatio;
-        this.output = output;
         initFuzzer(DEFAULT_START_TEST);
-    }
-
-    public void setTarget(Target target) {
-        this.target = target;
-    }
-
-    public void setTarget(String target) {
-        setTarget(Target.valueOf(target));
-    }
-
-    public void setMode(Mode mode) {
-        this.mode = mode;
-    }
-
-    public void setMode(String mode) {
-        setMode(Mode.valueOf(mode));
     }
 
     @Override
@@ -237,75 +213,7 @@ public class MutatedStructFactory extends StructFactoryWrapper
         return fuzzed;
     }
 
-    @Override
-    public String getState() {
-        return String.join(STATE_DELIMITER,
-                target.toString(), mode.toString(), fuzzer.getState());
-    }
-
-    @Override
-    public void setStartTest(long test) {
-        setState(String.join(STATE_DELIMITER,
-                target.toString(), mode.toString(), String.valueOf(test)));
-    }
-
-    @Override
-    public void setEndTest(long test) {
-        fuzzer.setEndTest(test);
-    }
-
-    @Override
-    public long getTest() {
-        return fuzzer.getTest();
-    }
-
-    @Override
-    public void setState(String state) {
-        if (state == null) {
-            throw new IllegalArgumentException();
-        }
-
-        state = state.toLowerCase().trim();
-        if (state.isEmpty()) {
-            throw new IllegalArgumentException();
-        }
-
-        target = DEFAULT_TARGET;
-        mode = DEFAULT_MODE;
-        String subState = DEFAULT_START_TEST;
-
-        String[] parts = state.split(STATE_DELIMITER);
-        switch (parts.length) {
-            case 1:
-                target = Target.valueOf(parts[0]);
-                break;
-            case 2:
-                target = Target.valueOf(parts[0]);
-                mode = Mode.valueOf(parts[1]);
-                break;
-            case 3:
-                target = Target.valueOf(parts[0]);
-                mode = Mode.valueOf(parts[1]);
-                subState = parts[2];
-                break;
-            default:
-                throw new IllegalArgumentException();
-        }
-
-        initFuzzer(subState);
-    }
-
-    @Override
-    public boolean canFuzz() {
-        return fuzzer.canFuzz();
-    }
-
-    @Override
-    public void moveOn() {
-        fuzzer.moveOn();
-    }
-
-    private void initFuzzer(String state) {
+    void initFuzzer(String state) {
         // fuzz all content of a message by default
         int start = -1;
         int end = -1;

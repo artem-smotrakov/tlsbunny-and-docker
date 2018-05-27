@@ -39,7 +39,7 @@ public class MutatedStructFactoryTests {
             assertEqualEncodings(tlsPlaintext_1, tlsPlaintext_2);
 
             output.info("test case #2");
-            fuzzer.setTarget(Target.tls_plaintext);
+            fuzzer.target(Target.tls_plaintext);
             TLSPlaintext fuzzed_tlsPlaintext_1 = fuzzer.createTLSPlaintext(
                     ContentType.application_data, ProtocolVersion.TLSv12, CONTENT);
             TLSPlaintext fuzzed_tlsPlaintext_2 = fuzzer.createTLSPlaintext(
