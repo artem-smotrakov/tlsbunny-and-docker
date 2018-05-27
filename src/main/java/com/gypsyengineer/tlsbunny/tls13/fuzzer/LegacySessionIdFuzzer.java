@@ -17,24 +17,88 @@ public class LegacySessionIdFuzzer implements Fuzzer<Vector<Byte>> {
     }
 
     private static final Generator[] generators = {
-            (sessionId, output) -> {
-                byte[] content = sessionId.bytes();
-                output.info("set content length to 0, but actual content length is still %d",
-                        content.length);
-                return new FuzzedLegacySessionId(0, content);
-            },
-            (sessionId, output) -> {
-                byte[] content = sessionId.bytes();
-                output.info("set content length to 1, but actual content length is still %d",
-                        content.length);
-                return new FuzzedLegacySessionId(1, content);
-            },
-            (sessionId, output) -> {
-                byte[] content = sessionId.bytes();
-                output.info("set content length to 255, but actual content length is still %d",
-                        content.length);
-                return new FuzzedLegacySessionId(255, content);
-            }
+            (sessionId, output) -> new FuzzedLegacySessionId(
+                    0, sessionId.bytes()),
+            (sessionId, output) -> new FuzzedLegacySessionId(
+                    1, sessionId.bytes()),
+            (sessionId, output) -> new FuzzedLegacySessionId(
+                    255, sessionId.bytes()),
+
+            (sessionId, output) -> new FuzzedLegacySessionId(
+                    0, generateArray(1, 0x00)),
+            (sessionId, output) -> new FuzzedLegacySessionId(
+                    0, generateArray(100, 0x00)),
+            (sessionId, output) -> new FuzzedLegacySessionId(
+                    0, generateArray(255, 0x00)),
+            (sessionId, output) -> new FuzzedLegacySessionId(
+                    100, generateArray(1, 0x00)),
+            (sessionId, output) -> new FuzzedLegacySessionId(
+                    100, generateArray(100, 0x00)),
+            (sessionId, output) -> new FuzzedLegacySessionId(
+                    100, generateArray(255, 0x00)),
+            (sessionId, output) -> new FuzzedLegacySessionId(
+                    255, generateArray(1, 0x00)),
+            (sessionId, output) -> new FuzzedLegacySessionId(
+                    255, generateArray(100, 0x00)),
+            (sessionId, output) -> new FuzzedLegacySessionId(
+                    255, generateArray(255, 0x00)),
+
+            (sessionId, output) -> new FuzzedLegacySessionId(
+                    0, generateArray(1, 0x17)),
+            (sessionId, output) -> new FuzzedLegacySessionId(
+                    0, generateArray(100, 0x17)),
+            (sessionId, output) -> new FuzzedLegacySessionId(
+                    0, generateArray(255, 0x17)),
+            (sessionId, output) -> new FuzzedLegacySessionId(
+                    100, generateArray(1, 0x17)),
+            (sessionId, output) -> new FuzzedLegacySessionId(
+                    100, generateArray(100, 0x17)),
+            (sessionId, output) -> new FuzzedLegacySessionId(
+                    100, generateArray(255, 0x17)),
+            (sessionId, output) -> new FuzzedLegacySessionId(
+                    255, generateArray(1, 0x17)),
+            (sessionId, output) -> new FuzzedLegacySessionId(
+                    255, generateArray(100, 0x17)),
+            (sessionId, output) -> new FuzzedLegacySessionId(
+                    255, generateArray(255, 0x17)),
+
+            (sessionId, output) -> new FuzzedLegacySessionId(
+                    0, generateArray(1, 0xFF)),
+            (sessionId, output) -> new FuzzedLegacySessionId(
+                    0, generateArray(100, 0xFF)),
+            (sessionId, output) -> new FuzzedLegacySessionId(
+                    0, generateArray(255, 0xFF)),
+            (sessionId, output) -> new FuzzedLegacySessionId(
+                    100, generateArray(1, 0xFF)),
+            (sessionId, output) -> new FuzzedLegacySessionId(
+                    100, generateArray(100, 0xFF)),
+            (sessionId, output) -> new FuzzedLegacySessionId(
+                    100, generateArray(255, 0xFF)),
+            (sessionId, output) -> new FuzzedLegacySessionId(
+                    255, generateArray(1, 0xFF)),
+            (sessionId, output) -> new FuzzedLegacySessionId(
+                    255, generateArray(100, 0xFF)),
+            (sessionId, output) -> new FuzzedLegacySessionId(
+                    255, generateArray(255, 0xFF)),
+
+            (sessionId, output) -> new FuzzedLegacySessionId(
+                    0, generateArray(1)),
+            (sessionId, output) -> new FuzzedLegacySessionId(
+                    0, generateArray(100)),
+            (sessionId, output) -> new FuzzedLegacySessionId(
+                    0, generateArray(255)),
+            (sessionId, output) -> new FuzzedLegacySessionId(
+                    100, generateArray(1)),
+            (sessionId, output) -> new FuzzedLegacySessionId(
+                    100, generateArray(100)),
+            (sessionId, output) -> new FuzzedLegacySessionId(
+                    100, generateArray(255)),
+            (sessionId, output) -> new FuzzedLegacySessionId(
+                    255, generateArray(1)),
+            (sessionId, output) -> new FuzzedLegacySessionId(
+                    255, generateArray(100)),
+            (sessionId, output) -> new FuzzedLegacySessionId(
+                    255, generateArray(255)),
     };
 
     private int state = 0;
@@ -108,6 +172,22 @@ public class LegacySessionIdFuzzer implements Fuzzer<Vector<Byte>> {
         }
 
         return (int) state;
+    }
+
+    private static byte[] generateArray(int length) {
+        byte[] array = new byte[length];
+        for (int i = 0; i < length; i++) {
+            array[i] = (byte) (0xFF & i);
+        }
+        return array;
+    }
+
+    private static byte[] generateArray(int length, int value) {
+        byte[] array = new byte[length];
+        for (int i = 0; i < length; i++) {
+            array[i] = (byte) (0xFF & value);
+        }
+        return array;
     }
 
     private interface Generator {
