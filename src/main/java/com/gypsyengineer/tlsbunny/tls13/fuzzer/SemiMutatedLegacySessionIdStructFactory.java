@@ -8,6 +8,8 @@ import com.gypsyengineer.tlsbunny.utils.Output;
 import java.io.IOException;
 import java.util.List;
 
+import static com.gypsyengineer.tlsbunny.utils.HexDump.printHexDiff;
+
 public class SemiMutatedLegacySessionIdStructFactory extends FuzzyStructFactory<Vector<Byte>> {
 
     public static final Target DEFAULT_TARGET = Target.client_hello;
@@ -53,18 +55,29 @@ public class SemiMutatedLegacySessionIdStructFactory extends FuzzyStructFactory<
     }
 
     @Override
-    public Vector<Byte> fuzz(Vector<Byte> legacySessionId) {
-        Vector<Byte> fuzzed = fuzzer.fuzz(legacySessionId);
+    public Vector<Byte> fuzz(Vector<Byte> sessionId) {
+        Vector<Byte> fuzzedSessionId = fuzzer.fuzz(sessionId);
 
         try {
-            if (Vector.equals(fuzzed, legacySessionId)) {
+            byte[] encoding = sessionId.encoding();
+            byte[] fuzzed = fuzzedSessionId.encoding();
+            output.info("legacy session ID in %s (original): %n", target);
+            output.increaseIndent();
+            output.info("%s%n", printHexDiff(encoding, fuzzed));
+            output.decreaseIndent();
+            output.info("legacy session ID in %s (fuzzed): %n", target);
+            output.increaseIndent();
+            output.info("%s%n", printHexDiff(fuzzed, encoding));
+            output.decreaseIndent();
+
+            if (Vector.equals(fuzzedSessionId, sessionId)) {
                 output.achtung("nothing actually fuzzed");
             }
         } catch (IOException e) {
             output.achtung("what the hell?", e);
         }
 
-        return fuzzed;
+        return fuzzedSessionId;
     }
 
     @Override
