@@ -5,6 +5,7 @@ import com.gypsyengineer.tlsbunny.tls.Vector;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
+import java.io.IOException;
 import java.util.List;
 
 public class SemiMutatedLegacySessionIdStructFactory extends FuzzyStructFactory<Vector<Byte>> {
@@ -54,8 +55,18 @@ public class SemiMutatedLegacySessionIdStructFactory extends FuzzyStructFactory<
     }
 
     @Override
-    public Vector<Byte> fuzz(Vector<Byte> encoding) {
-        throw new UnsupportedOperationException("no session id fuzzing for you!");
+    public Vector<Byte> fuzz(Vector<Byte> legacySessionId) {
+        Vector<Byte> fuzzed = fuzzer.fuzz(legacySessionId);
+
+        try {
+            if (!Vector.equals(fuzzed, legacySessionId)) {
+                output.achtung("nothing actually fuzzed");
+            }
+        } catch (IOException e) {
+            output.achtung("what the hell?", e);
+        }
+
+        return fuzzed;
     }
 
     void initFuzzer(String state) {

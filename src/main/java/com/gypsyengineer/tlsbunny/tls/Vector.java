@@ -99,4 +99,20 @@ public interface Vector<T> extends Struct {
         return length;
     }
 
+    static boolean equals(Vector first, Vector second) throws IOException {
+        if (first == second) {
+            return true;
+        }
+
+        if (first == null || second == null) {
+            return false;
+        }
+
+        if (first.encodingLength() != second.encodingLength()) {
+            return false;
+        }
+
+        return Arrays.equals(first.encoding(), second.encoding());
+    }
+
 }
