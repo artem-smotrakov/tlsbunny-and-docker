@@ -75,6 +75,7 @@ The libs above are built with enabled AddressSanitizer and debug/verbose output.
 | CertificateVerify fuzzing (client auth)  |                 |                 |                 |               |                       |                 |
 | Finished fuzzing                         | 2000 tests      |                 | Ok              | Ok            | Ok                    | Ok              |
 | CCS fuzzing                              | 20   tests      |                 | Ok              | Ok            | Ok                    | Ok              |
+| Legacy session ID fuzzing                | 39   tests      |                 |                 |               |                       |                 |
 | Double ClientHello                       |                 |                 |                 |               |                       |                 |
 | Invalid CCS                              |                 |                 |                 |               |                       |                 |
 | CCS after handshake is done              |                 |                 |                 |               |                       |                 |
