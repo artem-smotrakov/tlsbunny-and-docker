@@ -59,7 +59,7 @@ public class SemiMutatedLegacySessionIdStructFactory extends FuzzyStructFactory<
         Vector<Byte> fuzzed = fuzzer.fuzz(legacySessionId);
 
         try {
-            if (!Vector.equals(fuzzed, legacySessionId)) {
+            if (Vector.equals(fuzzed, legacySessionId)) {
                 output.achtung("nothing actually fuzzed");
             }
         } catch (IOException e) {
