@@ -37,7 +37,7 @@ public class CommonFuzzer implements Runnable {
                     .minRatio(0.01)
                     .maxRatio(0.09)
                     .endTest(200)
-                    .parts(1),
+                    .parts(2),
             new FuzzerConfig(SystemPropertiesConfig.load())
                     .timeout(short_read_timeout)
                     .type(mutated_struct_factory)
@@ -46,7 +46,7 @@ public class CommonFuzzer implements Runnable {
                     .minRatio(0.01)
                     .maxRatio(0.09)
                     .endTest(200)
-                    .parts(1),
+                    .parts(2),
     };
 
     public static final FuzzerConfig[] ccs_configs = new FuzzerConfig[] {
@@ -57,8 +57,8 @@ public class CommonFuzzer implements Runnable {
                     .mode(byte_flip)
                     .minRatio(0.01)
                     .maxRatio(0.09)
-                    .endTest(10)
-                    .parts(5),
+                    .endTest(20)
+                    .parts(1),
             new FuzzerConfig(SystemPropertiesConfig.load())
                     .timeout(long_read_timeout)
                     .type(mutated_struct_factory)
@@ -66,8 +66,8 @@ public class CommonFuzzer implements Runnable {
                     .mode(bit_flip)
                     .minRatio(0.01)
                     .maxRatio(0.09)
-                    .endTest(10)
-                    .parts(5),
+                    .endTest(20)
+                    .parts(1),
     };
 
     public static final FuzzerConfig[] handshake_configs = new FuzzerConfig[] {
@@ -78,7 +78,7 @@ public class CommonFuzzer implements Runnable {
                     .mode(byte_flip)
                     .minRatio(0.01)
                     .maxRatio(0.09)
-                    .endTest(1000)
+                    .endTest(2000)
                     .parts(5),
             new FuzzerConfig(SystemPropertiesConfig.load())
                     .timeout(short_read_timeout)
@@ -87,7 +87,7 @@ public class CommonFuzzer implements Runnable {
                     .mode(bit_flip)
                     .minRatio(0.01)
                     .maxRatio(0.09)
-                    .endTest(1000)
+                    .endTest(2000)
                     .parts(5),
     };
 
@@ -99,7 +99,7 @@ public class CommonFuzzer implements Runnable {
                     .mode(byte_flip)
                     .minRatio(0.01)
                     .maxRatio(0.09)
-                    .endTest(10)
+                    .endTest(2000)
                     .parts(5),
             new FuzzerConfig(SystemPropertiesConfig.load())
                     .timeout(long_read_timeout)
@@ -108,7 +108,7 @@ public class CommonFuzzer implements Runnable {
                     .mode(bit_flip)
                     .minRatio(0.01)
                     .maxRatio(0.09)
-                    .endTest(10)
+                    .endTest(2000)
                     .parts(5),
     };
 
@@ -120,7 +120,7 @@ public class CommonFuzzer implements Runnable {
                     .mode(byte_flip)
                     .minRatio(0.01)
                     .maxRatio(0.09)
-                    .endTest(10)
+                    .endTest(2000)
                     .parts(5),
             new FuzzerConfig(SystemPropertiesConfig.load())
                     .timeout(long_read_timeout)
@@ -129,7 +129,7 @@ public class CommonFuzzer implements Runnable {
                     .mode(bit_flip)
                     .minRatio(0.01)
                     .maxRatio(0.09)
-                    .endTest(10)
+                    .endTest(2000)
                     .parts(5),
     };
 
@@ -141,7 +141,7 @@ public class CommonFuzzer implements Runnable {
                     .mode(byte_flip)
                     .minRatio(0.01)
                     .maxRatio(0.09)
-                    .endTest(10)
+                    .endTest(2000)
                     .parts(5),
             new FuzzerConfig(SystemPropertiesConfig.load())
                     .timeout(long_read_timeout)
@@ -150,7 +150,7 @@ public class CommonFuzzer implements Runnable {
                     .mode(bit_flip)
                     .minRatio(0.01)
                     .maxRatio(0.09)
-                    .endTest(10)
+                    .endTest(2000)
                     .parts(5),
     };
 
@@ -162,7 +162,7 @@ public class CommonFuzzer implements Runnable {
                     .mode(byte_flip)
                     .minRatio(0.01)
                     .maxRatio(0.09)
-                    .endTest(1000)
+                    .endTest(2000)
                     .parts(5),
             new FuzzerConfig(SystemPropertiesConfig.load())
                     .timeout(long_read_timeout)
@@ -171,7 +171,7 @@ public class CommonFuzzer implements Runnable {
                     .mode(bit_flip)
                     .minRatio(0.01)
                     .maxRatio(0.09)
-                    .endTest(1000)
+                    .endTest(2000)
                     .parts(5),
     };
 
