@@ -306,7 +306,7 @@ public class MutatedStructFactory extends StructFactoryWrapper
     }
 
     private void initFuzzer(String state) {
-         // fuzz all content of a message by default
+        // fuzz all content of a message by default
         int start = -1;
         int end = -1;
 
@@ -325,6 +325,16 @@ public class MutatedStructFactory extends StructFactoryWrapper
                 start = 0;
                 end = HandshakeType.ENCODING_LENGTH + UInt24.ENCODING_LENGTH - 1;
                 break;
+            case ccs:
+            case client_hello:
+            case certificate:
+            case certificate_verify:
+            case finished:
+                // okay, we can do that
+                break;
+            default:
+                throw new IllegalArgumentException(String.format(
+                        "what the hell? target '%s' not supported", target));
         }
 
         switch (mode) {
@@ -335,20 +345,11 @@ public class MutatedStructFactory extends StructFactoryWrapper
                 fuzzer = new BitFlipFuzzer(minRatio, maxRatio, start, end);
                 break;
             default:
-                throw new UnsupportedOperationException();
+                throw new IllegalArgumentException(String.format(
+                        "what the hell? mode '%s' not supported", mode));
         }
 
         fuzzer.setState(state);
-    }
-
-    public static String[] getAvailableTargets() {
-        Target[] values = Target.values();
-        String[] targets = new String[values.length];
-        for (int i=0; i<values.length; i++) {
-            targets[i] = values[i].name();
-        }
-
-        return targets;
     }
 
 }

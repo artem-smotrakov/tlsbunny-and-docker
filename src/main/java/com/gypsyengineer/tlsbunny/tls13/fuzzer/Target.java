@@ -9,5 +9,8 @@ public enum Target {
     client_hello,
     certificate,
     certificate_verify,
-    finished
+    finished,
+
+    // smaller targets
+    legacy_session_id
 }
