@@ -1,6 +1,7 @@
 package com.gypsyengineer.tlsbunny.tls13.test.common.client;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
+import com.gypsyengineer.tlsbunny.tls13.fuzzer.Fuzzer;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.Mode;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.Target;
 import com.gypsyengineer.tlsbunny.tls13.test.FuzzerConfig;
@@ -128,6 +129,26 @@ public class SplittedFuzzerConfig extends FuzzerConfig {
     @Override
     public Analyzer analyzer() {
         return config.analyzer();
+    }
+
+    @Override
+    public FuzzerConfig type(Fuzzer.Type type) {
+        return config.type(type);
+    }
+
+    @Override
+    public Fuzzer.Type type() {
+        return config.type();
+    }
+
+    @Override
+    public long timeout() {
+        return config.timeout();
+    }
+
+    @Override
+    public FuzzerConfig timeout(long timeout) {
+        return config.timeout(timeout);
     }
 
     @Override

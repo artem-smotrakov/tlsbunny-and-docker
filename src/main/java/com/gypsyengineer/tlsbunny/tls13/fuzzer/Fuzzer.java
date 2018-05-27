@@ -2,6 +2,11 @@ package com.gypsyengineer.tlsbunny.tls13.fuzzer;
 
 public interface Fuzzer<T> {
 
+    enum Type {
+        mutated_struct_factory,
+        semi_mutated_legacy_session_id_struct_factory
+    }
+
     long NO_LIMIT = -1;
 
     String getState();
