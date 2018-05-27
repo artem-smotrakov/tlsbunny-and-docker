@@ -30,6 +30,7 @@ public class HttpsClient implements Client {
         return Engine.init()
                 .target(config.host())
                 .target(config.port())
+                .set(factory)
 
                 // send ClientHello
                 .run(new GeneratingClientHello()
