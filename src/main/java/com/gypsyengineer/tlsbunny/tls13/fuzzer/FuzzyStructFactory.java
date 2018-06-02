@@ -31,7 +31,10 @@ public abstract class FuzzyStructFactory<T> implements StructFactory, Fuzzer<T> 
         return target(Target.valueOf(target));
     }
 
-    abstract void initFuzzer(String state);
+    public FuzzyStructFactory fuzzer(Fuzzer<T> fuzzer) {
+        this.fuzzer = fuzzer;
+        return this;
+    }
 
     // implement methods from Fuzzer
 
@@ -96,7 +99,7 @@ public abstract class FuzzyStructFactory<T> implements StructFactory, Fuzzer<T> 
                         String.format("what the hell? invalid state: %s", state));
         }
 
-        initFuzzer(subState);
+        throw new UnsupportedOperationException("it's actually not implemented, ha ha");
     }
 
     @Override

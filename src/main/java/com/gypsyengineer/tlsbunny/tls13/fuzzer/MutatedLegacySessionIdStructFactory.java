@@ -14,6 +14,14 @@ public class MutatedLegacySessionIdStructFactory extends FuzzyStructFactory<Vect
 
     public static final Target DEFAULT_TARGET = Target.client_hello;
 
+    public static MutatedLegacySessionIdStructFactory newMutatedLegacySessionIdStructFactory() {
+        return new MutatedLegacySessionIdStructFactory();
+    }
+
+    public MutatedLegacySessionIdStructFactory() {
+        this(StructFactory.getDefault(), new Output());
+    }
+
     public MutatedLegacySessionIdStructFactory(StructFactory factory,
                                                Output output) {
         super(factory, output);

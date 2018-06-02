@@ -1,8 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls13.fuzzer;
 
 import com.gypsyengineer.tlsbunny.tls.Random;
-import com.gypsyengineer.tlsbunny.tls.UInt16;
-import com.gypsyengineer.tlsbunny.tls.UInt24;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
@@ -16,17 +14,17 @@ public class MutatedStructFactory extends FuzzyStructFactory<byte[]> {
 
     public static final Target DEFAULT_TARGET = Target.tls_plaintext;
 
-    private final double minRatio;
-    private final double maxRatio;
+    public static MutatedStructFactory newMutatedStructFactory() {
+        return new MutatedStructFactory();
+    }
 
-    public MutatedStructFactory(StructFactory factory, Output output,
-            double minRatio, double maxRatio) {
+    public MutatedStructFactory() {
+        this(StructFactory.getDefault(), new Output());
+    }
 
+    public MutatedStructFactory(StructFactory factory, Output output) {
         super(factory, output);
         target(DEFAULT_TARGET);
-        this.minRatio = minRatio;
-        this.maxRatio = maxRatio;
-        initFuzzer(DEFAULT_START_TEST);
     }
 
     @Override
@@ -209,55 +207,6 @@ public class MutatedStructFactory extends FuzzyStructFactory<byte[]> {
         }
 
         return fuzzed;
-    }
-
-    void initFuzzer(String state) {
-    /*
-        // fuzz all content of a message by default
-        int start = -1;
-        int end = -1;
-
-        switch (target) {
-            case tls_plaintext:
-                // in case of TLSPlaintext we don't fuzz the content of the message
-                // but only content type, protocol version and length fields
-                start = 0;
-                end = ContentType.ENCODING_LENGTH
-                        + ProtocolVersion.ENCODING_LENGTH
-                        + UInt16.ENCODING_LENGTH - 1;
-                break;
-            case handshake:
-                // in case of Handshake message we don't fuzz the content of the message
-                // but only handshake type and length fields
-                start = 0;
-                end = HandshakeType.ENCODING_LENGTH + UInt24.ENCODING_LENGTH - 1;
-                break;
-            case ccs:
-            case client_hello:
-            case certificate:
-            case certificate_verify:
-            case finished:
-                // okay, we can do that
-                break;
-            default:
-                throw new IllegalArgumentException(String.format(
-                        "what the hell? target '%s' not supported", target));
-        }
-
-        switch (mode) {
-            case byte_flip:
-                fuzzer = new ByteFlipFuzzer(minRatio, maxRatio, start, end);
-                break;
-            case bit_flip:
-                fuzzer = new BitFlipFuzzer(minRatio, maxRatio, start, end);
-                break;
-            default:
-                throw new IllegalArgumentException(String.format(
-                        "what the hell? mode '%s' not supported", mode));
-        }
-
-        fuzzer.setState(state);
-        */
     }
 
 }

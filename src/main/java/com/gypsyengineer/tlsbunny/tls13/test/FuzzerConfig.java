@@ -1,14 +1,14 @@
 package com.gypsyengineer.tlsbunny.tls13.test;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
+import com.gypsyengineer.tlsbunny.tls13.fuzzer.FuzzyStructFactory;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.Target;
-import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 
 public class FuzzerConfig implements Config {
 
     private final Config commonConfig;
     private Analyzer analyzer;
-    private StructFactory factory;
+    private FuzzyStructFactory factory;
 
     public FuzzerConfig(Config commonConfig) {
         this.commonConfig = commonConfig;
@@ -129,12 +129,12 @@ public class FuzzerConfig implements Config {
         return analyzer;
     }
 
-    public FuzzerConfig factory(StructFactory factory) {
+    public FuzzerConfig factory(FuzzyStructFactory factory) {
         this.factory = factory;
         return this;
     }
 
-    public StructFactory factory() {
+    public FuzzyStructFactory factory() {
         return factory;
     }
 

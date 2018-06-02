@@ -7,6 +7,10 @@ import java.io.IOException;
 
 public class SimpleByteVectorFuzzer implements Fuzzer<Vector<Byte>> {
 
+    public static SimpleByteVectorFuzzer newSimpleByteVectorFuzzer() {
+        return new SimpleByteVectorFuzzer();
+    }
+
     private final Generator[] generators;
     private int state = 0;
     private int end;
