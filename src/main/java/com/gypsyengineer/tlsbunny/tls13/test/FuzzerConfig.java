@@ -1,14 +1,12 @@
 package com.gypsyengineer.tlsbunny.tls13.test;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
-import com.gypsyengineer.tlsbunny.tls13.fuzzer.Fuzzer;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.Target;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 
 public class FuzzerConfig implements Config {
 
     private final Config commonConfig;
-    private Fuzzer.Type type;
     private Analyzer analyzer;
     private StructFactory factory;
 
@@ -116,15 +114,6 @@ public class FuzzerConfig implements Config {
     public FuzzerConfig readTimeout(long timeout) {
         commonConfig.readTimeout(timeout);
         return this;
-    }
-
-    public FuzzerConfig type(Fuzzer.Type type) {
-        this.type = type;
-        return this;
-    }
-
-    public Fuzzer.Type type() {
-        return type;
     }
 
     public FuzzerConfig analyzer(Analyzer analyzer) {

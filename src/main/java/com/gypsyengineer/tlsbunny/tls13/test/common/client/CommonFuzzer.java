@@ -4,8 +4,6 @@ import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.EngineException;
 import com.gypsyengineer.tlsbunny.tls13.connection.SuccessCheck;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.FuzzyStructFactory;
-import com.gypsyengineer.tlsbunny.tls13.fuzzer.MutatedStructFactory;
-import com.gypsyengineer.tlsbunny.tls13.fuzzer.MutatedLegacySessionIdStructFactory;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.tls13.test.SystemPropertiesConfig;
 import com.gypsyengineer.tlsbunny.tls13.test.FuzzerConfig;
@@ -14,8 +12,6 @@ import com.gypsyengineer.tlsbunny.utils.Output;
 import java.io.IOException;
 import java.net.ConnectException;
 
-import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Fuzzer.Type.mutated_struct_factory;
-import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Fuzzer.Type.semi_mutated_legacy_session_id_struct_factory;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Target.*;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Target.certificate;
 
@@ -28,7 +24,7 @@ public class CommonFuzzer implements Runnable {
     public static final FuzzerConfig[] tls_plaintext_configs = new FuzzerConfig[] {
             new FuzzerConfig(SystemPropertiesConfig.load())
                     .readTimeout(short_read_timeout)
-                    .type(mutated_struct_factory)
+                    //.type(mutated_struct_factory)
                     .target(tls_plaintext)
                     //.mode(byte_flip)
                     .minRatio(0.01)
@@ -37,7 +33,7 @@ public class CommonFuzzer implements Runnable {
                     .parts(2),
             new FuzzerConfig(SystemPropertiesConfig.load())
                     .readTimeout(short_read_timeout)
-                    .type(mutated_struct_factory)
+                    //.type(mutated_struct_factory)
                     .target(tls_plaintext)
                     //.mode(bit_flip)
                     .minRatio(0.01)
@@ -49,7 +45,7 @@ public class CommonFuzzer implements Runnable {
     public static final FuzzerConfig[] ccs_configs = new FuzzerConfig[] {
             new FuzzerConfig(SystemPropertiesConfig.load())
                     .readTimeout(long_read_timeout)
-                    .type(mutated_struct_factory)
+                    //.type(mutated_struct_factory)
                     .target(ccs)
                     //.mode(byte_flip)
                     .minRatio(0.01)
@@ -58,7 +54,7 @@ public class CommonFuzzer implements Runnable {
                     .parts(1),
             new FuzzerConfig(SystemPropertiesConfig.load())
                     .readTimeout(long_read_timeout)
-                    .type(mutated_struct_factory)
+                    //.type(mutated_struct_factory)
                     .target(ccs)
                     //.mode(bit_flip)
                     .minRatio(0.01)
@@ -70,7 +66,7 @@ public class CommonFuzzer implements Runnable {
     public static final FuzzerConfig[] handshake_configs = new FuzzerConfig[] {
             new FuzzerConfig(SystemPropertiesConfig.load())
                     .readTimeout(short_read_timeout)
-                    .type(mutated_struct_factory)
+                    //.type(mutated_struct_factory)
                     .target(handshake)
                     //.mode(byte_flip)
                     .minRatio(0.01)
@@ -79,7 +75,7 @@ public class CommonFuzzer implements Runnable {
                     .parts(5),
             new FuzzerConfig(SystemPropertiesConfig.load())
                     .readTimeout(short_read_timeout)
-                    .type(mutated_struct_factory)
+                    //.type(mutated_struct_factory)
                     .target(handshake)
                     //.mode(bit_flip)
                     .minRatio(0.01)
@@ -91,7 +87,7 @@ public class CommonFuzzer implements Runnable {
     public static final FuzzerConfig[] client_hello_configs = new FuzzerConfig[] {
             new FuzzerConfig(SystemPropertiesConfig.load())
                     .readTimeout(long_read_timeout)
-                    .type(mutated_struct_factory)
+                    //.type(mutated_struct_factory)
                     .target(client_hello)
                     //.mode(byte_flip)
                     .minRatio(0.01)
@@ -100,7 +96,7 @@ public class CommonFuzzer implements Runnable {
                     .parts(5),
             new FuzzerConfig(SystemPropertiesConfig.load())
                     .readTimeout(long_read_timeout)
-                    .type(mutated_struct_factory)
+                    //.type(mutated_struct_factory)
                     .target(client_hello)
                     //.mode(bit_flip)
                     .minRatio(0.01)
@@ -112,7 +108,7 @@ public class CommonFuzzer implements Runnable {
     public static final FuzzerConfig[] certificate_configs = new FuzzerConfig[] {
             new FuzzerConfig(SystemPropertiesConfig.load())
                     .readTimeout(long_read_timeout)
-                    .type(mutated_struct_factory)
+                    //.type(mutated_struct_factory)
                     .target(certificate)
                     //.mode(byte_flip)
                     .minRatio(0.01)
@@ -121,7 +117,7 @@ public class CommonFuzzer implements Runnable {
                     .parts(5),
             new FuzzerConfig(SystemPropertiesConfig.load())
                     .readTimeout(long_read_timeout)
-                    .type(mutated_struct_factory)
+                    //.type(mutated_struct_factory)
                     .target(certificate)
                     //.mode(bit_flip)
                     .minRatio(0.01)
@@ -133,7 +129,7 @@ public class CommonFuzzer implements Runnable {
     public static final FuzzerConfig[] certificate_verify_configs = new FuzzerConfig[] {
             new FuzzerConfig(SystemPropertiesConfig.load())
                     .readTimeout(long_read_timeout)
-                    .type(mutated_struct_factory)
+                    //.type(mutated_struct_factory)
                     .target(certificate_verify)
                     //.mode(byte_flip)
                     .minRatio(0.01)
@@ -142,7 +138,7 @@ public class CommonFuzzer implements Runnable {
                     .parts(5),
             new FuzzerConfig(SystemPropertiesConfig.load())
                     .readTimeout(long_read_timeout)
-                    .type(mutated_struct_factory)
+                    //.type(mutated_struct_factory)
                     .target(certificate_verify)
                     //.mode(bit_flip)
                     .minRatio(0.01)
@@ -154,7 +150,7 @@ public class CommonFuzzer implements Runnable {
     public static final FuzzerConfig[] finished_configs = new FuzzerConfig[] {
             new FuzzerConfig(SystemPropertiesConfig.load())
                     .readTimeout(long_read_timeout)
-                    .type(mutated_struct_factory)
+                    //.type(mutated_struct_factory)
                     .target(finished)
                     //.mode(byte_flip)
                     .minRatio(0.01)
@@ -163,7 +159,7 @@ public class CommonFuzzer implements Runnable {
                     .parts(5),
             new FuzzerConfig(SystemPropertiesConfig.load())
                     .readTimeout(long_read_timeout)
-                    .type(mutated_struct_factory)
+                    //.type(mutated_struct_factory)
                     .target(finished)
                     //.mode(bit_flip)
                     .minRatio(0.01)
@@ -175,7 +171,7 @@ public class CommonFuzzer implements Runnable {
     public static final FuzzerConfig[] legacy_session_id_configs = new FuzzerConfig[] {
             new FuzzerConfig(SystemPropertiesConfig.load())
                     .readTimeout(long_read_timeout)
-                    .type(semi_mutated_legacy_session_id_struct_factory)
+                    //.type(semi_mutated_legacy_session_id_struct_factory)
                     .target(client_hello)
                     //.mode(mutated_vector)
                     .parts(1)
@@ -198,8 +194,10 @@ public class CommonFuzzer implements Runnable {
     }
 
     private FuzzyStructFactory initFuzzer(FuzzerConfig config) {
+        throw new UnsupportedOperationException("let's hope ...");
+        /*
         FuzzyStructFactory factory;
-        switch (config.type()) {
+        switch (config//.type()) {
             case mutated_struct_factory:
                  factory = new MutatedStructFactory(
                         StructFactory.getDefault(),
@@ -217,12 +215,13 @@ public class CommonFuzzer implements Runnable {
                 break;
             default:
                 throw new IllegalArgumentException(
-                        String.format("hey! unknown fuzzer type: %s", config.type()));
+                        String.format("hey! unknown fuzzer type: %s", config//.type()));
         }
 
         factory.target(config.target());
 
         return factory;
+        */
     }
 
     @Override
