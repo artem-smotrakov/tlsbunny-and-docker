@@ -80,16 +80,6 @@ public class MutatedLegacySessionIdStructFactory extends FuzzyStructFactory<Vect
         return fuzzedSessionId;
     }
 
-    @Override
-    public void setOutput(Output output) {
-        this.output = output;
-    }
-
-    @Override
-    public Output getOutput() {
-        return output;
-    }
-
     void initFuzzer(String state) {
         switch (target) {
             case client_hello:

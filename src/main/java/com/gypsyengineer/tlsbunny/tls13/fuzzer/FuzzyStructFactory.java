@@ -46,6 +46,16 @@ public abstract class FuzzyStructFactory<T> implements StructFactory, Fuzzer<T> 
     // implement methods from Fuzzer
 
     @Override
+    public void setOutput(Output output) {
+        this.output = output;
+    }
+
+    @Override
+    public Output getOutput() {
+        return output;
+    }
+
+    @Override
     public String getState() {
         return String.join(STATE_DELIMITER,
                 target.toString(), mode.toString(), fuzzer.getState());
