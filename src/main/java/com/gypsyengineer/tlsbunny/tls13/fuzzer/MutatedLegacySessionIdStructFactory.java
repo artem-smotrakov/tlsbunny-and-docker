@@ -13,12 +13,10 @@ import static com.gypsyengineer.tlsbunny.utils.HexDump.printHexDiff;
 public class MutatedLegacySessionIdStructFactory extends FuzzyStructFactory<Vector<Byte>> {
 
     public static final Target DEFAULT_TARGET = Target.client_hello;
-    public static final Mode DEFAULT_MODE = Mode.mutated_vector;
 
     public MutatedLegacySessionIdStructFactory(StructFactory factory,
                                                Output output) {
         super(factory, output);
-        mode(DEFAULT_MODE);
         target(DEFAULT_TARGET);
         initFuzzer(DEFAULT_START_TEST);
     }
@@ -81,6 +79,7 @@ public class MutatedLegacySessionIdStructFactory extends FuzzyStructFactory<Vect
     }
 
     void initFuzzer(String state) {
+        /*
         switch (target) {
             case client_hello:
                 // okay, we support it
@@ -101,6 +100,7 @@ public class MutatedLegacySessionIdStructFactory extends FuzzyStructFactory<Vect
 
         fuzzer.setState(state);
         fuzzer.setOutput(output);
+        */
     }
 
 }

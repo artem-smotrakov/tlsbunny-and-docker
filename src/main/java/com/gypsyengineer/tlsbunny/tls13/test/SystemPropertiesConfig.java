@@ -1,6 +1,5 @@
 package com.gypsyengineer.tlsbunny.tls13.test;
 
-import com.gypsyengineer.tlsbunny.tls13.fuzzer.Mode;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.Target;
 
 public class SystemPropertiesConfig implements Config {
@@ -16,7 +15,6 @@ public class SystemPropertiesConfig implements Config {
     public static final String DEFAULT_CLIENT_CERTIFICATE = "certs/client_cert.der";
     public static final String DEFAULT_CLIENT_KEY = "certs/client_key.pkcs8";
     public static final Target DEFAULT_TARGET = Target.tls_plaintext;
-    public static final Mode DEFAULT_MODE = Mode.bit_flip;
     public static final long DEFAULT_READ_TIMEOUT = 5000; // in millis
 
     String host;
@@ -28,7 +26,6 @@ public class SystemPropertiesConfig implements Config {
     long startTest;
     long endTest;
     Target target;
-    Mode mode;
     String clientCertificate;
     String clientKey;
     long readTimeout;
@@ -89,11 +86,6 @@ public class SystemPropertiesConfig implements Config {
     }
 
     @Override
-    public Mode mode() {
-        return mode;
-    }
-
-    @Override
     public double minRatio() {
         return minRatio;
     }
@@ -144,21 +136,12 @@ public class SystemPropertiesConfig implements Config {
         return this;
     }
 
-    @Override
-    public Config mode(Mode mode) {
-        this.mode = mode;
-        return this;
-    }
-
     public static SystemPropertiesConfig load() {
         SystemPropertiesConfig config = new SystemPropertiesConfig();
 
         config.target = System.getProperty("tlsbunny.target") != null
                 ? Target.valueOf(System.getProperty("tlsbunny.target"))
                 : DEFAULT_TARGET;
-        config.mode = System.getProperty("tlsbunny.mode") != null
-                ? Mode.valueOf(System.getProperty("tlsbunny.mode"))
-                : DEFAULT_MODE;
         config.host = System.getProperty("tlsbunny.host", DEFAULT_HOST).trim();
         config.port = Integer.getInteger("tlsbunny.port", DEFAULT_PORT);
         config.minRatio = getDouble("tlsbunny.min.ratio", DEFAULT_MIN_RATIO);

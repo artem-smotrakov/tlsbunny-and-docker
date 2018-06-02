@@ -16,9 +16,6 @@ import java.net.ConnectException;
 
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Fuzzer.Type.mutated_struct_factory;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Fuzzer.Type.semi_mutated_legacy_session_id_struct_factory;
-import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Mode.bit_flip;
-import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Mode.byte_flip;
-import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Mode.mutated_vector;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Target.*;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Target.certificate;
 
@@ -33,7 +30,7 @@ public class CommonFuzzer implements Runnable {
                     .readTimeout(short_read_timeout)
                     .type(mutated_struct_factory)
                     .target(tls_plaintext)
-                    .mode(byte_flip)
+                    //.mode(byte_flip)
                     .minRatio(0.01)
                     .maxRatio(0.09)
                     .endTest(200)
@@ -42,7 +39,7 @@ public class CommonFuzzer implements Runnable {
                     .readTimeout(short_read_timeout)
                     .type(mutated_struct_factory)
                     .target(tls_plaintext)
-                    .mode(bit_flip)
+                    //.mode(bit_flip)
                     .minRatio(0.01)
                     .maxRatio(0.09)
                     .endTest(200)
@@ -54,7 +51,7 @@ public class CommonFuzzer implements Runnable {
                     .readTimeout(long_read_timeout)
                     .type(mutated_struct_factory)
                     .target(ccs)
-                    .mode(byte_flip)
+                    //.mode(byte_flip)
                     .minRatio(0.01)
                     .maxRatio(0.09)
                     .endTest(20)
@@ -63,7 +60,7 @@ public class CommonFuzzer implements Runnable {
                     .readTimeout(long_read_timeout)
                     .type(mutated_struct_factory)
                     .target(ccs)
-                    .mode(bit_flip)
+                    //.mode(bit_flip)
                     .minRatio(0.01)
                     .maxRatio(0.09)
                     .endTest(20)
@@ -75,7 +72,7 @@ public class CommonFuzzer implements Runnable {
                     .readTimeout(short_read_timeout)
                     .type(mutated_struct_factory)
                     .target(handshake)
-                    .mode(byte_flip)
+                    //.mode(byte_flip)
                     .minRatio(0.01)
                     .maxRatio(0.09)
                     .endTest(2000)
@@ -84,7 +81,7 @@ public class CommonFuzzer implements Runnable {
                     .readTimeout(short_read_timeout)
                     .type(mutated_struct_factory)
                     .target(handshake)
-                    .mode(bit_flip)
+                    //.mode(bit_flip)
                     .minRatio(0.01)
                     .maxRatio(0.09)
                     .endTest(2000)
@@ -96,7 +93,7 @@ public class CommonFuzzer implements Runnable {
                     .readTimeout(long_read_timeout)
                     .type(mutated_struct_factory)
                     .target(client_hello)
-                    .mode(byte_flip)
+                    //.mode(byte_flip)
                     .minRatio(0.01)
                     .maxRatio(0.09)
                     .endTest(2000)
@@ -105,7 +102,7 @@ public class CommonFuzzer implements Runnable {
                     .readTimeout(long_read_timeout)
                     .type(mutated_struct_factory)
                     .target(client_hello)
-                    .mode(bit_flip)
+                    //.mode(bit_flip)
                     .minRatio(0.01)
                     .maxRatio(0.09)
                     .endTest(2000)
@@ -117,7 +114,7 @@ public class CommonFuzzer implements Runnable {
                     .readTimeout(long_read_timeout)
                     .type(mutated_struct_factory)
                     .target(certificate)
-                    .mode(byte_flip)
+                    //.mode(byte_flip)
                     .minRatio(0.01)
                     .maxRatio(0.09)
                     .endTest(2000)
@@ -126,7 +123,7 @@ public class CommonFuzzer implements Runnable {
                     .readTimeout(long_read_timeout)
                     .type(mutated_struct_factory)
                     .target(certificate)
-                    .mode(bit_flip)
+                    //.mode(bit_flip)
                     .minRatio(0.01)
                     .maxRatio(0.09)
                     .endTest(2000)
@@ -138,7 +135,7 @@ public class CommonFuzzer implements Runnable {
                     .readTimeout(long_read_timeout)
                     .type(mutated_struct_factory)
                     .target(certificate_verify)
-                    .mode(byte_flip)
+                    //.mode(byte_flip)
                     .minRatio(0.01)
                     .maxRatio(0.09)
                     .endTest(2000)
@@ -147,7 +144,7 @@ public class CommonFuzzer implements Runnable {
                     .readTimeout(long_read_timeout)
                     .type(mutated_struct_factory)
                     .target(certificate_verify)
-                    .mode(bit_flip)
+                    //.mode(bit_flip)
                     .minRatio(0.01)
                     .maxRatio(0.09)
                     .endTest(2000)
@@ -159,7 +156,7 @@ public class CommonFuzzer implements Runnable {
                     .readTimeout(long_read_timeout)
                     .type(mutated_struct_factory)
                     .target(finished)
-                    .mode(byte_flip)
+                    //.mode(byte_flip)
                     .minRatio(0.01)
                     .maxRatio(0.09)
                     .endTest(2000)
@@ -168,7 +165,7 @@ public class CommonFuzzer implements Runnable {
                     .readTimeout(long_read_timeout)
                     .type(mutated_struct_factory)
                     .target(finished)
-                    .mode(bit_flip)
+                    //.mode(bit_flip)
                     .minRatio(0.01)
                     .maxRatio(0.09)
                     .endTest(2000)
@@ -180,7 +177,7 @@ public class CommonFuzzer implements Runnable {
                     .readTimeout(long_read_timeout)
                     .type(semi_mutated_legacy_session_id_struct_factory)
                     .target(client_hello)
-                    .mode(mutated_vector)
+                    //.mode(mutated_vector)
                     .parts(1)
     };
 
@@ -224,7 +221,6 @@ public class CommonFuzzer implements Runnable {
         }
 
         factory.target(config.target());
-        factory.mode(config.mode());
 
         return factory;
     }

@@ -2,7 +2,6 @@ package com.gypsyengineer.tlsbunny.tls13.test;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.Fuzzer;
-import com.gypsyengineer.tlsbunny.tls13.fuzzer.Mode;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.Target;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 
@@ -30,11 +29,6 @@ public class FuzzerConfig implements Config {
     @Override
     public Target target() {
         return commonConfig.target();
-    }
-
-    @Override
-    public Mode mode() {
-        return commonConfig.mode();
     }
 
     @Override
@@ -85,12 +79,6 @@ public class FuzzerConfig implements Config {
     @Override
     public FuzzerConfig target(Target target) {
         commonConfig.target(target);
-        return this;
-    }
-
-    @Override
-    public FuzzerConfig mode(Mode mode) {
-        commonConfig.mode(mode);
         return this;
     }
 

@@ -2,7 +2,6 @@ package com.gypsyengineer.tlsbunny.tls13.test.common.client;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.Fuzzer;
-import com.gypsyengineer.tlsbunny.tls13.fuzzer.Mode;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.Target;
 import com.gypsyengineer.tlsbunny.tls13.test.FuzzerConfig;
 
@@ -34,11 +33,6 @@ public class SplittedFuzzerConfig extends FuzzerConfig {
     @Override
     public Target target() {
         return config.target();
-    }
-
-    @Override
-    public Mode mode() {
-        return config.mode();
     }
 
     @Override
@@ -84,11 +78,6 @@ public class SplittedFuzzerConfig extends FuzzerConfig {
     @Override
     public FuzzerConfig target(Target target) {
         return config.target(target);
-    }
-
-    @Override
-    public FuzzerConfig mode(Mode mode) {
-        return config.mode(mode);
     }
 
     @Override

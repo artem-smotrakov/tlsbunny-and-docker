@@ -15,7 +15,6 @@ import static com.gypsyengineer.tlsbunny.utils.HexDump.printHexDiff;
 public class MutatedStructFactory extends FuzzyStructFactory<byte[]> {
 
     public static final Target DEFAULT_TARGET = Target.tls_plaintext;
-    public static final Mode DEFAULT_MODE = Mode.byte_flip;
 
     private final double minRatio;
     private final double maxRatio;
@@ -24,7 +23,6 @@ public class MutatedStructFactory extends FuzzyStructFactory<byte[]> {
             double minRatio, double maxRatio) {
 
         super(factory, output);
-        mode(DEFAULT_MODE);
         target(DEFAULT_TARGET);
         this.minRatio = minRatio;
         this.maxRatio = maxRatio;
@@ -214,6 +212,7 @@ public class MutatedStructFactory extends FuzzyStructFactory<byte[]> {
     }
 
     void initFuzzer(String state) {
+    /*
         // fuzz all content of a message by default
         int start = -1;
         int end = -1;
@@ -258,6 +257,7 @@ public class MutatedStructFactory extends FuzzyStructFactory<byte[]> {
         }
 
         fuzzer.setState(state);
+        */
     }
 
 }

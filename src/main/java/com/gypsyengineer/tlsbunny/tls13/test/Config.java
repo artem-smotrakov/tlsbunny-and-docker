@@ -1,13 +1,11 @@
 package com.gypsyengineer.tlsbunny.tls13.test;
 
-import com.gypsyengineer.tlsbunny.tls13.fuzzer.Mode;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.Target;
 
 public interface Config {
     String host();
     int port();
     Target target();
-    Mode mode();
     double minRatio();
     double maxRatio();
     int threads();
@@ -21,7 +19,6 @@ public interface Config {
     long readTimeout();
 
     Config target(Target target);
-    Config mode(Mode mode);
     Config minRatio(double minRatio);
     Config maxRatio(double maxRatio);
     Config startTest(long test);
