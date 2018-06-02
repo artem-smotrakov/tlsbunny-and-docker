@@ -23,6 +23,7 @@ public interface Vector<T> extends Struct {
     void set(int index, T object);
     void clear();
     List<T> toList();
+    int lengthBytes();
     byte[] bytes() throws IOException;
 
     static <T> Vector<T> parse(ByteBuffer buffer, int lengthBytes,
@@ -55,7 +56,7 @@ public interface Vector<T> extends Struct {
     static <T> Vector<T> wrap(int lengthBytes, List<T> objects) {
         List<T> objectList = new ArrayList<>();
         objectList.addAll(objects);
-        return new VectorImpl<T>(lengthBytes, objectList);
+        return new VectorImpl<>(lengthBytes, objectList);
     }
 
     static <T> Vector<T> wrap(int lengthBytes, T... objects) {
@@ -65,7 +66,7 @@ public interface Vector<T> extends Struct {
     }
 
     static Vector<Byte> wrap(int lengthBytes, byte[] bytes) {
-        return new VectorImpl<Byte>(lengthBytes, Utils.toList(bytes));
+        return new VectorImpl<>(lengthBytes, Utils.toList(bytes));
     }
 
     static long maxEncodingLength(int lengthBytes) {

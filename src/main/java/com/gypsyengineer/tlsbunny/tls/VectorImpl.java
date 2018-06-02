@@ -64,6 +64,11 @@ public class VectorImpl<T> implements Vector<T> {
     }
 
     @Override
+    public int lengthBytes() {
+        return lengthBytes;
+    }
+
+    @Override
     public byte[] bytes() throws IOException {
         List<byte[]> encodings = Vector.encodingsList(objects);
         ByteBuffer buffer = ByteBuffer.allocate(Vector.encodingsLength(encodings));

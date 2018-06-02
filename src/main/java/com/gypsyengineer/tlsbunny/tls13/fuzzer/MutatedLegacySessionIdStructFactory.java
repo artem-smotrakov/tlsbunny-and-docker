@@ -92,7 +92,7 @@ public class MutatedLegacySessionIdStructFactory extends FuzzyStructFactory<Vect
 
         switch (mode) {
             case mutated_vector:
-                fuzzer = new LegacySessionIdFuzzer();
+                fuzzer = new SimpleByteVectorFuzzer();
                 break;
             default:
                 throw new IllegalArgumentException(String.format(
