@@ -4,12 +4,14 @@ import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.Fuzzer;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.Mode;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.Target;
+import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 
 public class FuzzerConfig implements Config {
 
     private final Config commonConfig;
     private Fuzzer.Type type;
     private Analyzer analyzer;
+    private StructFactory factory;
 
     public FuzzerConfig(Config commonConfig) {
         this.commonConfig = commonConfig;
@@ -150,8 +152,13 @@ public class FuzzerConfig implements Config {
         return analyzer;
     }
 
-    public Runnable create() {
-        throw new UnsupportedOperationException("what the hell? I can't create a fuzzer!");
+    public FuzzerConfig factory(StructFactory factory) {
+        this.factory = factory;
+        return this;
+    }
+
+    public StructFactory factory() {
+        return factory;
     }
 
 }

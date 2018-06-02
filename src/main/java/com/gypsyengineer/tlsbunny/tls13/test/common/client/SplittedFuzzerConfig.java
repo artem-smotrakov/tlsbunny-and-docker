@@ -142,11 +142,6 @@ public class SplittedFuzzerConfig extends FuzzerConfig {
     }
 
     @Override
-    public Runnable create() {
-        return config.create();
-    }
-
-    @Override
     public long readTimeout() {
         return config.readTimeout();
     }
