@@ -1,6 +1,7 @@
 package com.gypsyengineer.tlsbunny.tls13.test.common.client;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
+import com.gypsyengineer.tlsbunny.tls13.fuzzer.FuzzyStructFactory;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.Target;
 import com.gypsyengineer.tlsbunny.tls13.test.FuzzerConfig;
 
@@ -127,5 +128,15 @@ public class SplittedFuzzerConfig extends FuzzerConfig {
     @Override
     public FuzzerConfig readTimeout(long timeout) {
         return config.readTimeout(timeout);
+    }
+
+    @Override
+    public FuzzerConfig factory(FuzzyStructFactory factory) {
+        return config.factory(factory);
+    }
+
+    @Override
+    public FuzzyStructFactory factory() {
+        return config.factory();
     }
 }
