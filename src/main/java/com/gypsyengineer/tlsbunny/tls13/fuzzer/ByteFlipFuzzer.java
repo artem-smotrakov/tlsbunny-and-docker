@@ -2,6 +2,14 @@ package com.gypsyengineer.tlsbunny.tls13.fuzzer;
 
 public class ByteFlipFuzzer extends AbstractFlipFuzzer implements Fuzzer<byte[]> {
 
+    public static ByteFlipFuzzer newByteFlipFuzzer() {
+        return new ByteFlipFuzzer();
+    }
+
+    public ByteFlipFuzzer() {
+        super();
+    }
+
     public ByteFlipFuzzer(double minRatio, double maxRatio, int start, int end) {
         super(minRatio, maxRatio, start, end);
     }
