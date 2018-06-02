@@ -17,6 +17,9 @@ public interface Config {
     String clientCertificate();
     String clientKey();
 
+    // timeout for reading incoming data (in millis)
+    long readTimeout();
+
     Config target(Target target);
     Config mode(Mode mode);
     Config minRatio(double minRatio);
@@ -24,4 +27,5 @@ public interface Config {
     Config startTest(long test);
     Config endTest(long test);
     Config parts(int parts);
+    Config readTimeout(long timeout);
 }

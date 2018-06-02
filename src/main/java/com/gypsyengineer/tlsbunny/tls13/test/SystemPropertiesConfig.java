@@ -17,6 +17,7 @@ public class SystemPropertiesConfig implements Config {
     public static final String DEFAULT_CLIENT_KEY = "certs/client_key.pkcs8";
     public static final Target DEFAULT_TARGET = Target.tls_plaintext;
     public static final Mode DEFAULT_MODE = Mode.bit_flip;
+    public static final long DEFAULT_READ_TIMEOUT = 5000; // in millis
 
     String host;
     int port;
@@ -30,6 +31,7 @@ public class SystemPropertiesConfig implements Config {
     Mode mode;
     String clientCertificate;
     String clientKey;
+    long readTimeout;
 
     private SystemPropertiesConfig() {
 
@@ -50,6 +52,12 @@ public class SystemPropertiesConfig implements Config {
     @Override
     public Config parts(int parts) {
         this.parts = parts;
+        return this;
+    }
+
+    @Override
+    public Config readTimeout(long timeout) {
+        readTimeout = timeout;
         return this;
     }
 
@@ -126,6 +134,11 @@ public class SystemPropertiesConfig implements Config {
     }
 
     @Override
+    public long readTimeout() {
+        return readTimeout;
+    }
+
+    @Override
     public Config target(Target target) {
         this.target = target;
         return this;
@@ -158,6 +171,7 @@ public class SystemPropertiesConfig implements Config {
                 "tlsbunny.client.cert", DEFAULT_CLIENT_CERTIFICATE);
         config.clientKey = System.getProperty(
                 "tlsbunny.client.key", DEFAULT_CLIENT_KEY);
+        config.readTimeout = Long.getLong("tlsbunny.read.timeout", DEFAULT_READ_TIMEOUT);
 
         return config;
     }

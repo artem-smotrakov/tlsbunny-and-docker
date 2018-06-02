@@ -11,9 +11,6 @@ public class FuzzerConfig implements Config {
     private Fuzzer.Type type;
     private Analyzer analyzer;
 
-    // timeout for reading incoming data (in millis)
-    private long timeout;
-
     public FuzzerConfig(Config commonConfig) {
         this.commonConfig = commonConfig;
     }
@@ -79,6 +76,11 @@ public class FuzzerConfig implements Config {
     }
 
     @Override
+    public long readTimeout() {
+        return commonConfig.readTimeout();
+    }
+
+    @Override
     public FuzzerConfig target(Target target) {
         commonConfig.target(target);
         return this;
@@ -120,6 +122,12 @@ public class FuzzerConfig implements Config {
         return this;
     }
 
+    @Override
+    public FuzzerConfig readTimeout(long timeout) {
+        commonConfig.readTimeout(timeout);
+        return this;
+    }
+
     public FuzzerConfig type(Fuzzer.Type type) {
         this.type = type;
         return this;
@@ -140,15 +148,6 @@ public class FuzzerConfig implements Config {
 
     public Analyzer analyzer() {
         return analyzer;
-    }
-
-    public long timeout() {
-        return timeout;
-    }
-
-    public FuzzerConfig timeout(long timeout) {
-        this.timeout = timeout;
-        return this;
     }
 
     public Runnable create() {

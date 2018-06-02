@@ -142,17 +142,17 @@ public class SplittedFuzzerConfig extends FuzzerConfig {
     }
 
     @Override
-    public long timeout() {
-        return config.timeout();
-    }
-
-    @Override
-    public FuzzerConfig timeout(long timeout) {
-        return config.timeout(timeout);
-    }
-
-    @Override
     public Runnable create() {
         return config.create();
+    }
+
+    @Override
+    public long readTimeout() {
+        return config.readTimeout();
+    }
+
+    @Override
+    public FuzzerConfig readTimeout(long timeout) {
+        return config.readTimeout(timeout);
     }
 }
