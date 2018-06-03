@@ -54,6 +54,97 @@ public abstract class AbstractFlipFuzzer implements Fuzzer<byte[]> {
         random.setSeed(state);
     }
 
+    synchronized public AbstractFlipFuzzer minRatio(double ratio) {
+        minRatio = check(ratio);
+        return this;
+    }
+
+    synchronized public AbstractFlipFuzzer maxRatio(double ratio) {
+        maxRatio = check(ratio);
+        return this;
+    }
+
+    synchronized public AbstractFlipFuzzer startIndex(int index) {
+        if (index < 0) {
+            throw new IllegalArgumentException(
+                    "what the hell? start index is negative!");
+        }
+
+        if (endIndex >= 0 && index >= endIndex) {
+            throw new IllegalArgumentException(
+                    "what the hell? start index is greater than end index!");
+        }
+
+        startIndex = index;
+        return this;
+    }
+
+    synchronized public AbstractFlipFuzzer endIndex(int index) {
+        endIndex = index;
+        return this;
+    }
+
+    @Override
+    synchronized public String getState() {
+        return Long.toString(state);
+    }
+
+    @Override
+    synchronized public void setState(String state) {
+        long value = Long.parseLong(state);
+        if (value < 0) {
+            throw new IllegalArgumentException();
+        }
+        setStartTest(value);
+    }
+
+    @Override
+    synchronized public void setStartTest(long state) {
+        this.state = state;
+    }
+
+    @Override
+    synchronized public void setEndTest(long end) {
+        this.end = end;
+    }
+
+    @Override
+    synchronized public long getTest() {
+        return state;
+    }
+
+    @Override
+    synchronized public boolean canFuzz() {
+        return state <= end;
+    }
+
+    @Override
+    synchronized public void moveOn() {
+        if (state == Long.MAX_VALUE) {
+            throw new IllegalStateException();
+        }
+        state++;
+        random.setSeed(state);
+    }
+
+    @Override
+    synchronized public final byte[] fuzz(byte[] array) {
+        random.setSeed(state);
+        return fuzzImpl(array);
+    }
+
+    @Override
+    synchronized public void setOutput(Output output) {
+        this.output = output;
+    }
+
+    @Override
+    synchronized public Output getOutput() {
+        return output;
+    }
+
+    abstract byte[] fuzzImpl(byte[] array);
+
     int getStartIndex() {
         if (startIndex > 0) {
             return startIndex;
@@ -69,97 +160,6 @@ public abstract class AbstractFlipFuzzer implements Fuzzer<byte[]> {
 
         return array.length - 1;
     }
-
-    public AbstractFlipFuzzer minRatio(double ratio) {
-        minRatio = check(ratio);
-        return this;
-    }
-
-    public AbstractFlipFuzzer maxRatio(double ratio) {
-        maxRatio = check(ratio);
-        return this;
-    }
-
-    public AbstractFlipFuzzer startIndex(int index) {
-        if (index < 0) {
-            throw new IllegalArgumentException(
-                    "what the hell? start index is negative!");
-        }
-
-        if (endIndex >= 0 && index >= endIndex) {
-            throw new IllegalArgumentException(
-                    "what the hell? start index is greater than end index!");
-        }
-
-        startIndex = index;
-        return this;
-    }
-
-    public AbstractFlipFuzzer endIndex(int index) {
-        endIndex = index;
-        return this;
-    }
-
-    @Override
-    public String getState() {
-        return Long.toString(state);
-    }
-
-    @Override
-    public void setState(String state) {
-        long value = Long.parseLong(state);
-        if (value < 0) {
-            throw new IllegalArgumentException();
-        }
-        setStartTest(value);
-    }
-
-    @Override
-    public void setStartTest(long state) {
-        this.state = state;
-    }
-
-    @Override
-    public void setEndTest(long end) {
-        this.end = end;
-    }
-
-    @Override
-    public long getTest() {
-        return state;
-    }
-
-    @Override
-    public boolean canFuzz() {
-        return state <= end;
-    }
-
-    @Override
-    public void moveOn() {
-        if (state == Long.MAX_VALUE) {
-            throw new IllegalStateException();
-        }
-        state++;
-        random.setSeed(state);
-    }
-
-    @Override
-    public final byte[] fuzz(byte[] array) {
-        random.setSeed(state);
-        return fuzzImpl(array);
-    }
-
-    @Override
-    public void setOutput(Output output) {
-        this.output = output;
-    }
-
-    @Override
-    public Output getOutput() {
-        return output;
-    }
-
-    protected abstract byte[] fuzzImpl(byte[] array);
 
     double getRatio() {
         return minRatio + (maxRatio - minRatio) * random.nextDouble();
