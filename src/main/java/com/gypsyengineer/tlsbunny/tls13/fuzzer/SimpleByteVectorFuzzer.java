@@ -106,47 +106,47 @@ public class SimpleByteVectorFuzzer implements Fuzzer<Vector<Byte>> {
     }
     
     @Override
-    public String getState() {
+    synchronized public String getState() {
         return Integer.toString(state);
     }
 
     @Override
-    public void setState(String state) {
+    synchronized public void setState(String state) {
         setStartTest(Integer.parseInt(state));
     }
 
     @Override
-    public void setStartTest(long state) {
+    synchronized public void setStartTest(long state) {
         this.state = check(state);
     }
 
     @Override
-    public void setEndTest(long end) {
+    synchronized public void setEndTest(long end) {
         this.end = check(end);
     }
 
     @Override
-    public void setOutput(Output output) {
+    synchronized public void setOutput(Output output) {
         this.output = output;
     }
 
     @Override
-    public Output getOutput() {
+    synchronized public Output getOutput() {
         return output;
     }
 
     @Override
-    public long getTest() {
+    synchronized public long getTest() {
         return state;
     }
 
     @Override
-    public boolean canFuzz() {
+    synchronized public boolean canFuzz() {
         return state <= end;
     }
 
     @Override
-    public void moveOn() {
+    synchronized public void moveOn() {
         if (state == Long.MAX_VALUE) {
             throw new IllegalStateException();
         }
@@ -154,7 +154,7 @@ public class SimpleByteVectorFuzzer implements Fuzzer<Vector<Byte>> {
     }
 
     @Override
-    public final Vector<Byte> fuzz(Vector<Byte> legacySessionId) {
+    synchronized public final Vector<Byte> fuzz(Vector<Byte> legacySessionId) {
         try {
             return generators[state].run(legacySessionId, output);
         } catch (IOException e) {

@@ -26,11 +26,10 @@ public class MutatedLegacySessionIdStructFactory extends FuzzyStructFactory<Vect
                                                Output output) {
         super(factory, output);
         target(DEFAULT_TARGET);
-        initFuzzer(DEFAULT_START_TEST);
     }
 
     @Override
-    public ClientHello createClientHello(
+    synchronized public ClientHello createClientHello(
             ProtocolVersion legacy_version,
             Random random,
             byte[] legacy_session_id,
@@ -61,7 +60,7 @@ public class MutatedLegacySessionIdStructFactory extends FuzzyStructFactory<Vect
     }
 
     @Override
-    public Vector<Byte> fuzz(Vector<Byte> sessionId) {
+    synchronized public Vector<Byte> fuzz(Vector<Byte> sessionId) {
         Vector<Byte> fuzzedSessionId = fuzzer.fuzz(sessionId);
 
         try {
@@ -84,31 +83,6 @@ public class MutatedLegacySessionIdStructFactory extends FuzzyStructFactory<Vect
         }
 
         return fuzzedSessionId;
-    }
-
-    void initFuzzer(String state) {
-        /*
-        switch (target) {
-            case client_hello:
-                // okay, we support it
-                break;
-            default:
-                throw new IllegalArgumentException(String.format(
-                        "what the hell? target '%s' not supported", target));
-        }
-
-        switch (mode) {
-            case mutated_vector:
-                fuzzer = new SimpleByteVectorFuzzer();
-                break;
-            default:
-                throw new IllegalArgumentException(String.format(
-                        "what the hell? mode '%s' not supported", mode));
-        }
-
-        fuzzer.setState(state);
-        fuzzer.setOutput(output);
-        */
     }
 
 }
