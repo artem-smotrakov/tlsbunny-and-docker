@@ -27,7 +27,7 @@ public class BitFlipFuzzer extends AbstractFlipFuzzer {
         int start = getStartIndex();
         int end = getEndIndex(array);
         int startBit = start * 8;
-        int endBit = end * 8;
+        int endBit = (end + 1 ) * 8;
         int n = (int) Math.ceil((endBit - startBit) * ratio);
 
         // make sure that we fuzz at least one bit

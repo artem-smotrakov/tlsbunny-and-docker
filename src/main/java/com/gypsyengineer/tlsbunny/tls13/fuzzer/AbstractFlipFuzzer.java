@@ -30,22 +30,22 @@ public abstract class AbstractFlipFuzzer implements Fuzzer<byte[]> {
     public AbstractFlipFuzzer(double minRatio, double maxRatio,
             int startIndex, int endIndex) {
 
-        if (minRatio <= 0 || maxRatio > 1 || minRatio > maxRatio) {
-            throw new IllegalArgumentException();
-        }
+        check(minRatio, maxRatio);
         this.minRatio = minRatio;
         this.maxRatio = maxRatio;
 
         if (endIndex == 0) {
-            throw new IllegalArgumentException("end == 0");
+            throw new IllegalArgumentException("what the hell? end index is zero!");
         }
 
         if (startIndex == endIndex && startIndex > 0) {
-            throw new IllegalArgumentException("start == end");
+            throw new IllegalArgumentException(
+                    "what the hell? end and start indexes are the same!");
         }
 
         if (endIndex >= 0 && startIndex > endIndex) {
-            throw new IllegalArgumentException("start > end");
+            throw new IllegalArgumentException(
+                    "what the hell? start index is greater than end index!");
         }
         this.startIndex = startIndex;
         this.endIndex = endIndex;
@@ -63,33 +63,38 @@ public abstract class AbstractFlipFuzzer implements Fuzzer<byte[]> {
     }
 
     int getEndIndex(byte[] array) {
-        if (endIndex > 0) {
-            // TODO: should it run if array.length < endIndex ?
+        if (endIndex > 0 && endIndex < array.length) {
             return endIndex;
         }
 
-        return array.length;
+        return array.length - 1;
     }
 
-    // TODO: check
     public AbstractFlipFuzzer minRatio(double ratio) {
-        minRatio = ratio;
+        minRatio = check(ratio);
         return this;
     }
 
-    // TODO: check
     public AbstractFlipFuzzer maxRatio(double ratio) {
-        maxRatio = ratio;
+        maxRatio = check(ratio);
         return this;
     }
 
-    // TODO: check
     public AbstractFlipFuzzer startIndex(int index) {
+        if (index < 0) {
+            throw new IllegalArgumentException(
+                    "what the hell? start index is negative!");
+        }
+
+        if (endIndex >= 0 && index >= endIndex) {
+            throw new IllegalArgumentException(
+                    "what the hell? start index is greater than end index!");
+        }
+
         startIndex = index;
         return this;
     }
 
-    // TODO: check
     public AbstractFlipFuzzer endIndex(int index) {
         endIndex = index;
         return this;
@@ -158,6 +163,24 @@ public abstract class AbstractFlipFuzzer implements Fuzzer<byte[]> {
 
     double getRatio() {
         return minRatio + (maxRatio - minRatio) * random.nextDouble();
+    }
+
+    private static double check(double ratio) {
+        if (ratio <= 0 || ratio > 1) {
+            throw new IllegalArgumentException(
+                    String.format("what the hell? wrong ratio: %.2f", ratio));
+        }
+
+        return ratio;
+    }
+
+    private static void check(double minRatio, double maxRatio) {
+        check(minRatio);
+        check(maxRatio);
+        if (minRatio > maxRatio) {
+            throw new IllegalArgumentException(
+                    "what the hell? min ration should not be greater than max ratio!");
+        }
     }
 
 }
