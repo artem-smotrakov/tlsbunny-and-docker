@@ -66,6 +66,11 @@ public class FuzzedVector<T> implements Vector<T> {
     }
 
     @Override
+    public int lengthBytes() {
+        return lengthBytes;
+    }
+
+    @Override
     public byte[] bytes() {
         return content;
     }

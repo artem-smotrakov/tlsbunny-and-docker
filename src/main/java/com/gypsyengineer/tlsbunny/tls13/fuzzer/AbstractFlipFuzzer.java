@@ -6,19 +6,26 @@ import java.util.Random;
 
 public abstract class AbstractFlipFuzzer implements Fuzzer<byte[]> {
 
+    public static final double DEFAULT_MIN_RATIO = 0.01;
+    public static final double DEFAULT_MAX_RATIO = 0.05;
+
     static final int FROM_THE_BEGINNING = 0;
     static final int NOT_SPECIFIED = -1;
 
-    final double minRatio;
-    final double maxRatio;
-    private final int startIndex;
-    private final int endIndex;
+    double minRatio;
+    double maxRatio;
+    private int startIndex;
+    private int endIndex;
     final Random random;
 
     Output output;
 
     long state = 0;
     long end = Long.MAX_VALUE;
+
+    public AbstractFlipFuzzer() {
+        this(DEFAULT_MIN_RATIO, DEFAULT_MAX_RATIO, FROM_THE_BEGINNING, NOT_SPECIFIED);
+    }
 
     public AbstractFlipFuzzer(double minRatio, double maxRatio,
             int startIndex, int endIndex) {
@@ -62,6 +69,30 @@ public abstract class AbstractFlipFuzzer implements Fuzzer<byte[]> {
         }
 
         return array.length;
+    }
+
+    // TODO: check
+    public AbstractFlipFuzzer minRatio(double ratio) {
+        minRatio = ratio;
+        return this;
+    }
+
+    // TODO: check
+    public AbstractFlipFuzzer maxRatio(double ratio) {
+        maxRatio = ratio;
+        return this;
+    }
+
+    // TODO: check
+    public AbstractFlipFuzzer startIndex(int index) {
+        startIndex = index;
+        return this;
+    }
+
+    // TODO: check
+    public AbstractFlipFuzzer endIndex(int index) {
+        endIndex = index;
+        return this;
     }
 
     @Override

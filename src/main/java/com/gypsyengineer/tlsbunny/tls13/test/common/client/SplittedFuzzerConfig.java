@@ -1,8 +1,7 @@
 package com.gypsyengineer.tlsbunny.tls13.test.common.client;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
-import com.gypsyengineer.tlsbunny.tls13.fuzzer.Fuzzer;
-import com.gypsyengineer.tlsbunny.tls13.fuzzer.Mode;
+import com.gypsyengineer.tlsbunny.tls13.fuzzer.FuzzyStructFactory;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.Target;
 import com.gypsyengineer.tlsbunny.tls13.test.FuzzerConfig;
 
@@ -34,11 +33,6 @@ public class SplittedFuzzerConfig extends FuzzerConfig {
     @Override
     public Target target() {
         return config.target();
-    }
-
-    @Override
-    public Mode mode() {
-        return config.mode();
     }
 
     @Override
@@ -87,11 +81,6 @@ public class SplittedFuzzerConfig extends FuzzerConfig {
     }
 
     @Override
-    public FuzzerConfig mode(Mode mode) {
-        return config.mode(mode);
-    }
-
-    @Override
     public FuzzerConfig minRatio(double minRatio) {
         return config.minRatio(minRatio);
     }
@@ -132,27 +121,22 @@ public class SplittedFuzzerConfig extends FuzzerConfig {
     }
 
     @Override
-    public FuzzerConfig type(Fuzzer.Type type) {
-        return config.type(type);
+    public long readTimeout() {
+        return config.readTimeout();
     }
 
     @Override
-    public Fuzzer.Type type() {
-        return config.type();
+    public FuzzerConfig readTimeout(long timeout) {
+        return config.readTimeout(timeout);
     }
 
     @Override
-    public long timeout() {
-        return config.timeout();
+    public FuzzerConfig factory(FuzzyStructFactory factory) {
+        return config.factory(factory);
     }
 
     @Override
-    public FuzzerConfig timeout(long timeout) {
-        return config.timeout(timeout);
-    }
-
-    @Override
-    public Runnable create() {
-        return config.create();
+    public FuzzyStructFactory factory() {
+        return config.factory();
     }
 }

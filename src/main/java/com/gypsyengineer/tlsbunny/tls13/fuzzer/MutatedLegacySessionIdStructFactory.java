@@ -10,15 +10,21 @@ import java.util.List;
 
 import static com.gypsyengineer.tlsbunny.utils.HexDump.printHexDiff;
 
-public class SemiMutatedLegacySessionIdStructFactory extends FuzzyStructFactory<Vector<Byte>> {
+public class MutatedLegacySessionIdStructFactory extends FuzzyStructFactory<Vector<Byte>> {
 
     public static final Target DEFAULT_TARGET = Target.client_hello;
-    public static final Mode DEFAULT_MODE = Mode.semi_mutated_vector;
 
-    public SemiMutatedLegacySessionIdStructFactory(StructFactory factory,
-                                                   Output output) {
+    public static MutatedLegacySessionIdStructFactory newMutatedLegacySessionIdStructFactory() {
+        return new MutatedLegacySessionIdStructFactory();
+    }
+
+    public MutatedLegacySessionIdStructFactory() {
+        this(StructFactory.getDefault(), new Output());
+    }
+
+    public MutatedLegacySessionIdStructFactory(StructFactory factory,
+                                               Output output) {
         super(factory, output);
-        mode(DEFAULT_MODE);
         target(DEFAULT_TARGET);
         initFuzzer(DEFAULT_START_TEST);
     }
@@ -80,17 +86,8 @@ public class SemiMutatedLegacySessionIdStructFactory extends FuzzyStructFactory<
         return fuzzedSessionId;
     }
 
-    @Override
-    public void setOutput(Output output) {
-        this.output = output;
-    }
-
-    @Override
-    public Output getOutput() {
-        return output;
-    }
-
     void initFuzzer(String state) {
+        /*
         switch (target) {
             case client_hello:
                 // okay, we support it
@@ -101,8 +98,8 @@ public class SemiMutatedLegacySessionIdStructFactory extends FuzzyStructFactory<
         }
 
         switch (mode) {
-            case semi_mutated_vector:
-                fuzzer = new LegacySessionIdFuzzer();
+            case mutated_vector:
+                fuzzer = new SimpleByteVectorFuzzer();
                 break;
             default:
                 throw new IllegalArgumentException(String.format(
@@ -111,6 +108,7 @@ public class SemiMutatedLegacySessionIdStructFactory extends FuzzyStructFactory<
 
         fuzzer.setState(state);
         fuzzer.setOutput(output);
+        */
     }
 
 }

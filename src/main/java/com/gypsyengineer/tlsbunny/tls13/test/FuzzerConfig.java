@@ -1,18 +1,14 @@
 package com.gypsyengineer.tlsbunny.tls13.test;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
-import com.gypsyengineer.tlsbunny.tls13.fuzzer.Fuzzer;
-import com.gypsyengineer.tlsbunny.tls13.fuzzer.Mode;
+import com.gypsyengineer.tlsbunny.tls13.fuzzer.FuzzyStructFactory;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.Target;
 
 public class FuzzerConfig implements Config {
 
     private final Config commonConfig;
-    private Fuzzer.Type type;
     private Analyzer analyzer;
-
-    // timeout for reading incoming data (in millis)
-    private long timeout;
+    private FuzzyStructFactory factory;
 
     public FuzzerConfig(Config commonConfig) {
         this.commonConfig = commonConfig;
@@ -31,11 +27,6 @@ public class FuzzerConfig implements Config {
     @Override
     public Target target() {
         return commonConfig.target();
-    }
-
-    @Override
-    public Mode mode() {
-        return commonConfig.mode();
     }
 
     @Override
@@ -79,14 +70,13 @@ public class FuzzerConfig implements Config {
     }
 
     @Override
-    public FuzzerConfig target(Target target) {
-        commonConfig.target(target);
-        return this;
+    public long readTimeout() {
+        return commonConfig.readTimeout();
     }
 
     @Override
-    public FuzzerConfig mode(Mode mode) {
-        commonConfig.mode(mode);
+    public FuzzerConfig target(Target target) {
+        commonConfig.target(target);
         return this;
     }
 
@@ -120,13 +110,10 @@ public class FuzzerConfig implements Config {
         return this;
     }
 
-    public FuzzerConfig type(Fuzzer.Type type) {
-        this.type = type;
+    @Override
+    public FuzzerConfig readTimeout(long timeout) {
+        commonConfig.readTimeout(timeout);
         return this;
-    }
-
-    public Fuzzer.Type type() {
-        return type;
     }
 
     public FuzzerConfig analyzer(Analyzer analyzer) {
@@ -142,17 +129,13 @@ public class FuzzerConfig implements Config {
         return analyzer;
     }
 
-    public long timeout() {
-        return timeout;
-    }
-
-    public FuzzerConfig timeout(long timeout) {
-        this.timeout = timeout;
+    public FuzzerConfig factory(FuzzyStructFactory factory) {
+        this.factory = factory;
         return this;
     }
 
-    public Runnable create() {
-        throw new UnsupportedOperationException("what the hell? I can't create a fuzzer!");
+    public FuzzyStructFactory factory() {
+        return factory;
     }
 
 }

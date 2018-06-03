@@ -28,8 +28,10 @@ public class MutatedStructFactoryTests {
 
             StructFactory factory = StructFactory.getDefault();
 
-            MutatedStructFactory fuzzer = new MutatedStructFactory(
-                    factory, output, MIN_RATIO, MAX_RATIO);
+            FuzzyStructFactory fuzzer = new MutatedStructFactory(factory, output)
+                    .fuzzer(new ByteFlipFuzzer()
+                            .minRatio(MIN_RATIO)
+                            .maxRatio(MAX_RATIO));
 
             output.info("test case #1");
             TLSPlaintext tlsPlaintext_1 = factory.createTLSPlaintext(

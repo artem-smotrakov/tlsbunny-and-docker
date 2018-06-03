@@ -13,7 +13,6 @@ public abstract class FuzzyStructFactory<T> implements StructFactory, Fuzzer<T> 
     public static final String STATE_DELIMITER = ":";
 
     Target target;
-    Mode mode;
     Output output;
     final StructFactory factory;
     Fuzzer<T> fuzzer;
@@ -32,29 +31,33 @@ public abstract class FuzzyStructFactory<T> implements StructFactory, Fuzzer<T> 
         return target(Target.valueOf(target));
     }
 
-    public FuzzyStructFactory mode(Mode mode) {
-        this.mode = mode;
+    public FuzzyStructFactory fuzzer(Fuzzer<T> fuzzer) {
+        this.fuzzer = fuzzer;
         return this;
     }
-
-    public FuzzyStructFactory mode(String mode) {
-        return mode(Mode.valueOf(mode));
-    }
-
-    abstract void initFuzzer(String state);
 
     // implement methods from Fuzzer
 
     @Override
+    public void setOutput(Output output) {
+        this.output = output;
+    }
+
+    @Override
+    public Output getOutput() {
+        return output;
+    }
+
+    @Override
     public String getState() {
         return String.join(STATE_DELIMITER,
-                target.toString(), mode.toString(), fuzzer.getState());
+                target.toString(), fuzzer.getState());
     }
 
     @Override
     public void setStartTest(long test) {
         setState(String.join(STATE_DELIMITER,
-                target.toString(), mode.toString(), String.valueOf(test)));
+                target.toString(), String.valueOf(test)));
     }
 
     @Override
@@ -89,19 +92,14 @@ public abstract class FuzzyStructFactory<T> implements StructFactory, Fuzzer<T> 
                 break;
             case 2:
                 target = Target.valueOf(parts[0]);
-                mode = Mode.valueOf(parts[1]);
-                break;
-            case 3:
-                target = Target.valueOf(parts[0]);
-                mode = Mode.valueOf(parts[1]);
-                subState = parts[2];
+                subState = parts[1];
                 break;
             default:
                 throw new IllegalArgumentException(
                         String.format("what the hell? invalid state: %s", state));
         }
 
-        initFuzzer(subState);
+        throw new UnsupportedOperationException("it's actually not implemented, ha ha");
     }
 
     @Override
