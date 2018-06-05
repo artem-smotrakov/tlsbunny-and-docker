@@ -303,6 +303,18 @@ public abstract class FuzzyStructFactory<T> implements StructFactory, Fuzzer<T> 
     }
 
     @Override
+    public ServerHello createServerHello(ProtocolVersion version,
+                                         Random random,
+                                         Vector<Byte> legacy_session_id_echo,
+                                         CipherSuite cipher_suite,
+                                         CompressionMethod legacy_compression_method,
+                                         Vector<Extension> extensions) {
+
+        return factory.createServerHello(version, random, legacy_session_id_echo,
+                cipher_suite, legacy_compression_method, extensions);
+    }
+
+    @Override
     public KeyShare.ClientHello createKeyShareForClientHello(KeyShareEntry... entries) {
         return factory.createKeyShareForClientHello(entries);
     }

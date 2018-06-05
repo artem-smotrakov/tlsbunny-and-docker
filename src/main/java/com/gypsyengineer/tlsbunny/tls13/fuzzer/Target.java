@@ -7,6 +7,7 @@ public enum Target {
 
     // handshake messages
     client_hello,
+    server_hello,
     certificate,
     certificate_verify,
     finished,

@@ -29,13 +29,12 @@ public class LegacySessionIdFuzzer extends FuzzyStructFactory<Vector<Byte>> {
     }
 
     @Override
-    synchronized public ClientHello createClientHello(
-            ProtocolVersion legacy_version,
-            Random random,
-            byte[] legacy_session_id,
-            List<CipherSuite> cipher_suites,
-            List<CompressionMethod> legacy_compression_methods,
-            List<Extension> extensions) {
+    synchronized public ClientHello createClientHello(ProtocolVersion legacy_version,
+                                                      Random random,
+                                                      byte[] legacy_session_id,
+                                                      List<CipherSuite> cipher_suites,
+                                                      List<CompressionMethod> legacy_compression_methods,
+                                                      List<Extension> extensions) {
 
         ClientHello hello = factory.createClientHello(
                 legacy_version,
@@ -53,6 +52,36 @@ public class LegacySessionIdFuzzer extends FuzzyStructFactory<Vector<Byte>> {
                     fuzz(hello.getLegacySessionId()),
                     hello.getCipherSuites(),
                     hello.getLegacyCompressionMethods(),
+                    hello.getExtensions());
+        }
+
+        return hello;
+    }
+
+    @Override
+    synchronized public ServerHello createServerHello(ProtocolVersion version,
+                                                      Random random,
+                                                      byte[] legacy_session_id_echo,
+                                                      CipherSuite cipher_suite,
+                                                      CompressionMethod legacy_compression_method,
+                                                      List<Extension> extensions) {
+
+        ServerHello hello = factory.createServerHello(
+                version,
+                random,
+                legacy_session_id_echo,
+                cipher_suite,
+                legacy_compression_method,
+                extensions);
+
+        if (target == Target.server_hello) {
+            output.info("fuzz legacy session ID echo in ServerHello");
+            hello = factory.createServerHello(
+                    hello.getProtocolVersion(),
+                    hello.getRandom(),
+                    fuzz(hello.getLegacySessionIdEcho()),
+                    hello.getCipherSuite(),
+                    hello.getLegacyCompressionMethod(),
                     hello.getExtensions());
         }
 
