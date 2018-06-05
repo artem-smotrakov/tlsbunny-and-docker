@@ -10,20 +10,20 @@ import java.util.List;
 
 import static com.gypsyengineer.tlsbunny.utils.HexDump.printHexDiff;
 
-public class MutatedLegacySessionIdStructFactory extends FuzzyStructFactory<Vector<Byte>> {
+public class LegacySessionIdFuzzer extends FuzzyStructFactory<Vector<Byte>> {
 
     public static final Target DEFAULT_TARGET = Target.client_hello;
 
-    public static MutatedLegacySessionIdStructFactory newMutatedLegacySessionIdStructFactory() {
-        return new MutatedLegacySessionIdStructFactory();
+    public static LegacySessionIdFuzzer newMutatedLegacySessionIdStructFactory() {
+        return new LegacySessionIdFuzzer();
     }
 
-    public MutatedLegacySessionIdStructFactory() {
+    public LegacySessionIdFuzzer() {
         this(StructFactory.getDefault(), new Output());
     }
 
-    public MutatedLegacySessionIdStructFactory(StructFactory factory,
-                                               Output output) {
+    public LegacySessionIdFuzzer(StructFactory factory,
+                                 Output output) {
         super(factory, output);
         target(DEFAULT_TARGET);
     }

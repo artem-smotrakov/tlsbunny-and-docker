@@ -19,7 +19,7 @@ import java.net.ConnectException;
 
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.BitFlipFuzzer.newBitFlipFuzzer;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.ByteFlipFuzzer.newByteFlipFuzzer;
-import static com.gypsyengineer.tlsbunny.tls13.fuzzer.MutatedLegacySessionIdStructFactory.newMutatedLegacySessionIdStructFactory;
+import static com.gypsyengineer.tlsbunny.tls13.fuzzer.LegacySessionIdFuzzer.newMutatedLegacySessionIdStructFactory;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.MutatedStructFactory.newMutatedStructFactory;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.SimpleByteVectorFuzzer.newSimpleByteVectorFuzzer;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Target.*;
