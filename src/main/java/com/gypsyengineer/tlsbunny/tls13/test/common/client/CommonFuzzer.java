@@ -19,6 +19,7 @@ import java.net.ConnectException;
 
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.BitFlipFuzzer.newBitFlipFuzzer;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.ByteFlipFuzzer.newByteFlipFuzzer;
+import static com.gypsyengineer.tlsbunny.tls13.fuzzer.CipherSuitesFuzzer.newCipherSuitesFuzzer;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.LegacySessionIdFuzzer.newMutatedLegacySessionIdStructFactory;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.MutatedStructFactory.newMutatedStructFactory;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.SimpleByteVectorFuzzer.newSimpleByteVectorFuzzer;
@@ -196,6 +197,15 @@ public class CommonFuzzer implements Runnable {
     public static final FuzzerConfig[] legacy_session_id_configs = new FuzzerConfig[] {
             new FuzzerConfig(SystemPropertiesConfig.load())
                     .factory(newMutatedLegacySessionIdStructFactory()
+                            .target(client_hello)
+                            .fuzzer(newSimpleByteVectorFuzzer()))
+                    .readTimeout(long_read_timeout)
+                    .parts(1)
+    };
+
+    public static final FuzzerConfig[] cipher_suites_configs = new FuzzerConfig[] {
+            new FuzzerConfig(SystemPropertiesConfig.load())
+                    .factory(newCipherSuitesFuzzer()
                             .target(client_hello)
                             .fuzzer(newSimpleByteVectorFuzzer()))
                     .readTimeout(long_read_timeout)
