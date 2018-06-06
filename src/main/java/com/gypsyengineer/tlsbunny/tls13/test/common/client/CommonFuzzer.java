@@ -20,9 +20,9 @@ import java.net.ConnectException;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.BitFlipFuzzer.newBitFlipFuzzer;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.ByteFlipFuzzer.newByteFlipFuzzer;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.CipherSuitesFuzzer.newCipherSuitesFuzzer;
-import static com.gypsyengineer.tlsbunny.tls13.fuzzer.LegacySessionIdFuzzer.newMutatedLegacySessionIdStructFactory;
+import static com.gypsyengineer.tlsbunny.tls13.fuzzer.LegacySessionIdFuzzer.newLegacySessionIdFuzzer;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.MutatedStructFactory.newMutatedStructFactory;
-import static com.gypsyengineer.tlsbunny.tls13.fuzzer.SimpleByteVectorFuzzer.newSimpleByteVectorFuzzer;
+import static com.gypsyengineer.tlsbunny.tls13.fuzzer.SimpleVectorFuzzer.newSimpleVectorFuzzer;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Target.*;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Target.certificate;
 
@@ -196,9 +196,9 @@ public class CommonFuzzer implements Runnable {
 
     public static final FuzzerConfig[] legacy_session_id_configs = new FuzzerConfig[] {
             new FuzzerConfig(SystemPropertiesConfig.load())
-                    .factory(newMutatedLegacySessionIdStructFactory()
+                    .factory(newLegacySessionIdFuzzer()
                             .target(client_hello)
-                            .fuzzer(newSimpleByteVectorFuzzer()))
+                            .fuzzer(newSimpleVectorFuzzer()))
                     .readTimeout(long_read_timeout)
                     .parts(1)
     };
@@ -207,7 +207,7 @@ public class CommonFuzzer implements Runnable {
             new FuzzerConfig(SystemPropertiesConfig.load())
                     .factory(newCipherSuitesFuzzer()
                             .target(client_hello)
-                            .fuzzer(newSimpleByteVectorFuzzer()))
+                            .fuzzer(newSimpleVectorFuzzer()))
                     .readTimeout(long_read_timeout)
                     .parts(1)
     };

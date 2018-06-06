@@ -5,10 +5,10 @@ import com.gypsyengineer.tlsbunny.utils.Output;
 
 import java.io.IOException;
 
-public class SimpleByteVectorFuzzer implements Fuzzer<Vector<Byte>> {
+public class SimpleVectorFuzzer implements Fuzzer<Vector<Byte>> {
 
-    public static SimpleByteVectorFuzzer newSimpleByteVectorFuzzer() {
-        return new SimpleByteVectorFuzzer();
+    public static SimpleVectorFuzzer newSimpleVectorFuzzer() {
+        return new SimpleVectorFuzzer();
     }
 
     private final Generator[] generators;
@@ -16,7 +16,7 @@ public class SimpleByteVectorFuzzer implements Fuzzer<Vector<Byte>> {
     private int end;
     private Output output;
 
-    public SimpleByteVectorFuzzer() {
+    public SimpleVectorFuzzer() {
         generators = new Generator[] {
                 (vector, output) -> new FuzzedVector(
                         vector.lengthBytes(), 0, vector.bytes()),
