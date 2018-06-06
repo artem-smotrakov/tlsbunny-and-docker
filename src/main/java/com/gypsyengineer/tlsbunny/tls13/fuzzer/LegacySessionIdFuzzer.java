@@ -10,33 +10,31 @@ import java.util.List;
 
 import static com.gypsyengineer.tlsbunny.utils.HexDump.printHexDiff;
 
-public class MutatedLegacySessionIdStructFactory extends FuzzyStructFactory<Vector<Byte>> {
+public class LegacySessionIdFuzzer extends FuzzyStructFactory<Vector<Byte>> {
 
     public static final Target DEFAULT_TARGET = Target.client_hello;
 
-    public static MutatedLegacySessionIdStructFactory newMutatedLegacySessionIdStructFactory() {
-        return new MutatedLegacySessionIdStructFactory();
+    public static LegacySessionIdFuzzer newMutatedLegacySessionIdStructFactory() {
+        return new LegacySessionIdFuzzer();
     }
 
-    public MutatedLegacySessionIdStructFactory() {
+    public LegacySessionIdFuzzer() {
         this(StructFactory.getDefault(), new Output());
     }
 
-    public MutatedLegacySessionIdStructFactory(StructFactory factory,
-                                               Output output) {
+    public LegacySessionIdFuzzer(StructFactory factory,
+                                 Output output) {
         super(factory, output);
         target(DEFAULT_TARGET);
-        initFuzzer(DEFAULT_START_TEST);
     }
 
     @Override
-    public ClientHello createClientHello(
-            ProtocolVersion legacy_version,
-            Random random,
-            byte[] legacy_session_id,
-            List<CipherSuite> cipher_suites,
-            List<CompressionMethod> legacy_compression_methods,
-            List<Extension> extensions) {
+    synchronized public ClientHello createClientHello(ProtocolVersion legacy_version,
+                                                      Random random,
+                                                      byte[] legacy_session_id,
+                                                      List<CipherSuite> cipher_suites,
+                                                      List<CompressionMethod> legacy_compression_methods,
+                                                      List<Extension> extensions) {
 
         ClientHello hello = factory.createClientHello(
                 legacy_version,
@@ -61,7 +59,37 @@ public class MutatedLegacySessionIdStructFactory extends FuzzyStructFactory<Vect
     }
 
     @Override
-    public Vector<Byte> fuzz(Vector<Byte> sessionId) {
+    synchronized public ServerHello createServerHello(ProtocolVersion version,
+                                                      Random random,
+                                                      byte[] legacy_session_id_echo,
+                                                      CipherSuite cipher_suite,
+                                                      CompressionMethod legacy_compression_method,
+                                                      List<Extension> extensions) {
+
+        ServerHello hello = factory.createServerHello(
+                version,
+                random,
+                legacy_session_id_echo,
+                cipher_suite,
+                legacy_compression_method,
+                extensions);
+
+        if (target == Target.server_hello) {
+            output.info("fuzz legacy session ID echo in ServerHello");
+            hello = factory.createServerHello(
+                    hello.getProtocolVersion(),
+                    hello.getRandom(),
+                    fuzz(hello.getLegacySessionIdEcho()),
+                    hello.getCipherSuite(),
+                    hello.getLegacyCompressionMethod(),
+                    hello.getExtensions());
+        }
+
+        return hello;
+    }
+
+    @Override
+    synchronized public Vector<Byte> fuzz(Vector<Byte> sessionId) {
         Vector<Byte> fuzzedSessionId = fuzzer.fuzz(sessionId);
 
         try {
@@ -84,31 +112,6 @@ public class MutatedLegacySessionIdStructFactory extends FuzzyStructFactory<Vect
         }
 
         return fuzzedSessionId;
-    }
-
-    void initFuzzer(String state) {
-        /*
-        switch (target) {
-            case client_hello:
-                // okay, we support it
-                break;
-            default:
-                throw new IllegalArgumentException(String.format(
-                        "what the hell? target '%s' not supported", target));
-        }
-
-        switch (mode) {
-            case mutated_vector:
-                fuzzer = new SimpleByteVectorFuzzer();
-                break;
-            default:
-                throw new IllegalArgumentException(String.format(
-                        "what the hell? mode '%s' not supported", mode));
-        }
-
-        fuzzer.setState(state);
-        fuzzer.setOutput(output);
-        */
     }
 
 }

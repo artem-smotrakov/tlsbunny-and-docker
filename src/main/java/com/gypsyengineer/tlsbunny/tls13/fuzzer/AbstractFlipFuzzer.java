@@ -30,22 +30,22 @@ public abstract class AbstractFlipFuzzer implements Fuzzer<byte[]> {
     public AbstractFlipFuzzer(double minRatio, double maxRatio,
             int startIndex, int endIndex) {
 
-        if (minRatio <= 0 || maxRatio > 1 || minRatio > maxRatio) {
-            throw new IllegalArgumentException();
-        }
+        check(minRatio, maxRatio);
         this.minRatio = minRatio;
         this.maxRatio = maxRatio;
 
         if (endIndex == 0) {
-            throw new IllegalArgumentException("end == 0");
+            throw new IllegalArgumentException("what the hell? end index is zero!");
         }
 
         if (startIndex == endIndex && startIndex > 0) {
-            throw new IllegalArgumentException("start == end");
+            throw new IllegalArgumentException(
+                    "what the hell? end and start indexes are the same!");
         }
 
         if (endIndex >= 0 && startIndex > endIndex) {
-            throw new IllegalArgumentException("start > end");
+            throw new IllegalArgumentException(
+                    "what the hell? start index is greater than end index!");
         }
         this.startIndex = startIndex;
         this.endIndex = endIndex;
@@ -53,6 +53,97 @@ public abstract class AbstractFlipFuzzer implements Fuzzer<byte[]> {
         random = new Random(state);
         random.setSeed(state);
     }
+
+    synchronized public AbstractFlipFuzzer minRatio(double ratio) {
+        minRatio = check(ratio);
+        return this;
+    }
+
+    synchronized public AbstractFlipFuzzer maxRatio(double ratio) {
+        maxRatio = check(ratio);
+        return this;
+    }
+
+    synchronized public AbstractFlipFuzzer startIndex(int index) {
+        if (index < 0) {
+            throw new IllegalArgumentException(
+                    "what the hell? start index is negative!");
+        }
+
+        if (endIndex >= 0 && index >= endIndex) {
+            throw new IllegalArgumentException(
+                    "what the hell? start index is greater than end index!");
+        }
+
+        startIndex = index;
+        return this;
+    }
+
+    synchronized public AbstractFlipFuzzer endIndex(int index) {
+        endIndex = index;
+        return this;
+    }
+
+    @Override
+    synchronized public String getState() {
+        return Long.toString(state);
+    }
+
+    @Override
+    synchronized public void setState(String state) {
+        long value = Long.parseLong(state);
+        if (value < 0) {
+            throw new IllegalArgumentException();
+        }
+        setStartTest(value);
+    }
+
+    @Override
+    synchronized public void setStartTest(long state) {
+        this.state = state;
+    }
+
+    @Override
+    synchronized public void setEndTest(long end) {
+        this.end = end;
+    }
+
+    @Override
+    synchronized public long getTest() {
+        return state;
+    }
+
+    @Override
+    synchronized public boolean canFuzz() {
+        return state <= end;
+    }
+
+    @Override
+    synchronized public void moveOn() {
+        if (state == Long.MAX_VALUE) {
+            throw new IllegalStateException();
+        }
+        state++;
+        random.setSeed(state);
+    }
+
+    @Override
+    synchronized public final byte[] fuzz(byte[] array) {
+        random.setSeed(state);
+        return fuzzImpl(array);
+    }
+
+    @Override
+    synchronized public void setOutput(Output output) {
+        this.output = output;
+    }
+
+    @Override
+    synchronized public Output getOutput() {
+        return output;
+    }
+
+    abstract byte[] fuzzImpl(byte[] array);
 
     int getStartIndex() {
         if (startIndex > 0) {
@@ -63,101 +154,33 @@ public abstract class AbstractFlipFuzzer implements Fuzzer<byte[]> {
     }
 
     int getEndIndex(byte[] array) {
-        if (endIndex > 0) {
-            // TODO: should it run if array.length < endIndex ?
+        if (endIndex > 0 && endIndex < array.length) {
             return endIndex;
         }
 
-        return array.length;
+        return array.length - 1;
     }
-
-    // TODO: check
-    public AbstractFlipFuzzer minRatio(double ratio) {
-        minRatio = ratio;
-        return this;
-    }
-
-    // TODO: check
-    public AbstractFlipFuzzer maxRatio(double ratio) {
-        maxRatio = ratio;
-        return this;
-    }
-
-    // TODO: check
-    public AbstractFlipFuzzer startIndex(int index) {
-        startIndex = index;
-        return this;
-    }
-
-    // TODO: check
-    public AbstractFlipFuzzer endIndex(int index) {
-        endIndex = index;
-        return this;
-    }
-
-    @Override
-    public String getState() {
-        return Long.toString(state);
-    }
-
-    @Override
-    public void setState(String state) {
-        long value = Long.parseLong(state);
-        if (value < 0) {
-            throw new IllegalArgumentException();
-        }
-        setStartTest(value);
-    }
-
-    @Override
-    public void setStartTest(long state) {
-        this.state = state;
-    }
-
-    @Override
-    public void setEndTest(long end) {
-        this.end = end;
-    }
-
-    @Override
-    public long getTest() {
-        return state;
-    }
-
-    @Override
-    public boolean canFuzz() {
-        return state <= end;
-    }
-
-    @Override
-    public void moveOn() {
-        if (state == Long.MAX_VALUE) {
-            throw new IllegalStateException();
-        }
-        state++;
-        random.setSeed(state);
-    }
-
-    @Override
-    public final byte[] fuzz(byte[] array) {
-        random.setSeed(state);
-        return fuzzImpl(array);
-    }
-
-    @Override
-    public void setOutput(Output output) {
-        this.output = output;
-    }
-
-    @Override
-    public Output getOutput() {
-        return output;
-    }
-
-    protected abstract byte[] fuzzImpl(byte[] array);
 
     double getRatio() {
         return minRatio + (maxRatio - minRatio) * random.nextDouble();
+    }
+
+    private static double check(double ratio) {
+        if (ratio <= 0 || ratio > 1) {
+            throw new IllegalArgumentException(
+                    String.format("what the hell? wrong ratio: %.2f", ratio));
+        }
+
+        return ratio;
+    }
+
+    private static void check(double minRatio, double maxRatio) {
+        check(minRatio);
+        check(maxRatio);
+        if (minRatio > maxRatio) {
+            throw new IllegalArgumentException(
+                    "what the hell? min ration should not be greater than max ratio!");
+        }
     }
 
 }

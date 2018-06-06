@@ -15,7 +15,7 @@ public class ByteFlipFuzzer extends AbstractFlipFuzzer implements Fuzzer<byte[]>
     }
 
     @Override
-    protected byte[] fuzzImpl(byte[] array) {
+    byte[] fuzzImpl(byte[] array) {
         byte[] fuzzed = array.clone();
         double ratio = getRatio();
         int start = getStartIndex();
@@ -30,7 +30,7 @@ public class ByteFlipFuzzer extends AbstractFlipFuzzer implements Fuzzer<byte[]>
         int[] processed = new int[n];
         int i = 0;
         while (i < n) {
-            int pos = start + random.nextInt(end - start);
+            int pos = start + random.nextInt(end - start + 1);
 
             boolean found = false;
             for (int k = 0; k < n; k++) {

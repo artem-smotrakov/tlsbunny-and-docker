@@ -22,16 +22,16 @@ public abstract class FuzzyStructFactory<T> implements StructFactory, Fuzzer<T> 
         this.output = output;
     }
 
-    public FuzzyStructFactory target(Target target) {
+    synchronized public FuzzyStructFactory target(Target target) {
         this.target = target;
         return this;
     }
 
-    public FuzzyStructFactory target(String target) {
+    synchronized public FuzzyStructFactory target(String target) {
         return target(Target.valueOf(target));
     }
 
-    public FuzzyStructFactory fuzzer(Fuzzer<T> fuzzer) {
+    synchronized public FuzzyStructFactory fuzzer(Fuzzer<T> fuzzer) {
         this.fuzzer = fuzzer;
         return this;
     }
@@ -39,39 +39,39 @@ public abstract class FuzzyStructFactory<T> implements StructFactory, Fuzzer<T> 
     // implement methods from Fuzzer
 
     @Override
-    public void setOutput(Output output) {
+    synchronized public void setOutput(Output output) {
         this.output = output;
     }
 
     @Override
-    public Output getOutput() {
+    synchronized public Output getOutput() {
         return output;
     }
 
     @Override
-    public String getState() {
+    synchronized public String getState() {
         return String.join(STATE_DELIMITER,
                 target.toString(), fuzzer.getState());
     }
 
     @Override
-    public void setStartTest(long test) {
+    synchronized public void setStartTest(long test) {
         setState(String.join(STATE_DELIMITER,
                 target.toString(), String.valueOf(test)));
     }
 
     @Override
-    public void setEndTest(long test) {
+    synchronized public void setEndTest(long test) {
         fuzzer.setEndTest(test);
     }
 
     @Override
-    public long getTest() {
+    synchronized public long getTest() {
         return fuzzer.getTest();
     }
 
     @Override
-    public void setState(String state) {
+    synchronized public void setState(String state) {
         if (state == null) {
             throw new IllegalArgumentException(
                     "what the hell? state should not be null!");
@@ -103,12 +103,12 @@ public abstract class FuzzyStructFactory<T> implements StructFactory, Fuzzer<T> 
     }
 
     @Override
-    public boolean canFuzz() {
+    synchronized public boolean canFuzz() {
         return fuzzer.canFuzz();
     }
 
     @Override
-    public void moveOn() {
+    synchronized public void moveOn() {
         fuzzer.moveOn();
     }
 
@@ -297,6 +297,18 @@ public abstract class FuzzyStructFactory<T> implements StructFactory, Fuzzer<T> 
                                          CipherSuite cipher_suite,
                                          CompressionMethod legacy_compression_method,
                                          List<Extension> extensions) {
+
+        return factory.createServerHello(version, random, legacy_session_id_echo,
+                cipher_suite, legacy_compression_method, extensions);
+    }
+
+    @Override
+    public ServerHello createServerHello(ProtocolVersion version,
+                                         Random random,
+                                         Vector<Byte> legacy_session_id_echo,
+                                         CipherSuite cipher_suite,
+                                         CompressionMethod legacy_compression_method,
+                                         Vector<Extension> extensions) {
 
         return factory.createServerHello(version, random, legacy_session_id_echo,
                 cipher_suite, legacy_compression_method, extensions);

@@ -108,7 +108,7 @@ public class StructFactoryImpl implements StructFactory {
                                          CompressionMethod legacy_compression_method,
                                          List<Extension> extensions) {
 
-        return new ServerHelloImpl(
+        return createServerHello(
                 version,
                 random,
                 Vector.wrap(
@@ -120,7 +120,19 @@ public class StructFactoryImpl implements StructFactory {
                         ServerHelloImpl.EXTENSIONS_LENGTH_BYTES,
                         extensions));
     }
-    
+
+    @Override
+    public ServerHello createServerHello(ProtocolVersion version,
+                                         Random random,
+                                         Vector<Byte> legacy_session_id_echo,
+                                         CipherSuite cipher_suite,
+                                         CompressionMethod legacy_compression_method,
+                                         Vector<Extension> extensions) {
+
+        return new ServerHelloImpl(version, random, legacy_session_id_echo,
+                cipher_suite, legacy_compression_method, extensions);
+    }
+
     @Override
     public HelloRetryRequest createHelloRetryRequest() {
         throw new UnsupportedOperationException("I don't know how to do it yet!");

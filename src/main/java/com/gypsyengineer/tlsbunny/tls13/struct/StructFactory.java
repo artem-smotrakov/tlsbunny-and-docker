@@ -76,6 +76,12 @@ public interface StructFactory {
                                   CipherSuite cipher_suite,
                                   CompressionMethod legacy_compression_method,
                                   List<Extension> extensions);
+    ServerHello createServerHello(ProtocolVersion version,
+                                  Random random,
+                                  Vector<Byte> legacy_session_id_echo,
+                                  CipherSuite cipher_suite,
+                                  CompressionMethod legacy_compression_method,
+                                  Vector<Extension> extensions);
     
     // create extensions
     KeyShare.ClientHello createKeyShareForClientHello(KeyShareEntry... entries);
