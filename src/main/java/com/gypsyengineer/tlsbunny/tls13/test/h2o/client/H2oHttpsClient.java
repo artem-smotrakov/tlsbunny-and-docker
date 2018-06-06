@@ -1,7 +1,8 @@
-package com.gypsyengineer.tlsbunny.tls13.test.nss.client;
+package com.gypsyengineer.tlsbunny.tls13.test.h2o.client;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertCheck;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.IncomingChangeCipherSpec;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
@@ -12,13 +13,14 @@ import com.gypsyengineer.tlsbunny.tls13.test.common.client.Client;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
 import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.*;
 import static com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup.secp256r1;
-import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.*;
+import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv12;
+import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv13_draft_26;
 import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp256r1_sha256;
 
-public class HttpsClient implements Client {
+public class H2oHttpsClient implements Client {
 
     public static void main(String[] args) throws Exception {
-        new HttpsClient()
+        new H2oHttpsClient()
                 .connect(SystemPropertiesConfig.load(), StructFactory.getDefault())
                 .run(new NoAlertCheck());
     }
@@ -32,7 +34,7 @@ public class HttpsClient implements Client {
 
                 // send ClientHello
                 .run(new GeneratingClientHello()
-                        .supportedVersion(TLSv13_draft_28)
+                        .supportedVersion(TLSv13_draft_26)
                         .group(secp256r1)
                         .signatureScheme(ecdsa_secp256r1_sha256)
                         .keyShareEntry(context -> context.negotiator.createKeyShareEntry()))
@@ -44,7 +46,7 @@ public class HttpsClient implements Client {
                         .version(TLSv12))
                 .send(new OutgoingData())
 
-                // receive a ServerHello, EncryptedExtensions, Certificate,
+                // receive ServerHello, EncryptedExtensions, Certificate,
                 // CertificateVerify and Finished messages
                 .require(new IncomingData())
 
@@ -58,30 +60,34 @@ public class HttpsClient implements Client {
                 .run(new NegotiatingDHSecret())
                 .run(new ComputingKeysAfterServerHello())
 
-                // selfserv sends EncryptedExtensions, Certificate, CertificateVerify and Finished
-                // messages in a single TLSPlaintext
-                .run(new ProcessingHandshakeTLSCiphertext()
-                        .expect(handshake))
+                .allow(new IncomingChangeCipherSpec())
 
                 // process EncryptedExtensions
+                .run(new ProcessingHandshakeTLSCiphertext()
+                        .expect(handshake))
                 .run(new ProcessingHandshake()
                         .expect(encrypted_extensions)
                         .updateContext(Context.Element.encrypted_extensions))
                 .run(new ProcessingEncryptedExtensions())
 
                 // process Certificate
+                .run(new ProcessingHandshakeTLSCiphertext()
+                        .expect(handshake))
                 .run(new ProcessingHandshake()
                         .expect(certificate)
                         .updateContext(Context.Element.server_certificate))
                 .run(new ProcessingCertificate())
 
                 // process CertificateVerify
+                .run(new ProcessingHandshakeTLSCiphertext()
+                        .expect(handshake))
                 .run(new ProcessingHandshake()
                         .expect(certificate_verify)
                         .updateContext(Context.Element.server_certificate_verify))
                 .run(new ProcessingCertificateVerify())
 
                 // process Finished
+                .run(new ProcessingHandshakeTLSCiphertext())
                 .run(new ProcessingHandshake()
                         .expect(finished)
                         .updateContext(Context.Element.server_finished))
@@ -106,9 +112,6 @@ public class HttpsClient implements Client {
                 .require(new IncomingData())
                 .run(new ProcessingApplicationDataTLSCiphertext())
                 .run(new PrintingData())
-
-                // selfserv actually sends a "close_notify" alert
-                // but we just ignore it for now
 
                 .connect();
     }

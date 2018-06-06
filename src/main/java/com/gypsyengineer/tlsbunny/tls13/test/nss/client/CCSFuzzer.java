@@ -11,7 +11,7 @@ public class CCSFuzzer extends CommonFuzzer {
             config -> new CCSFuzzer(new Output(), config);
 
     public CCSFuzzer(Output output, FuzzerConfig config) {
-        super(output, config, new HttpsClient());
+        super(output, config, new NssHttpsClient());
     }
 
     public static void main(String[] args) throws InterruptedException {

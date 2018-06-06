@@ -11,7 +11,7 @@ public class ClientHelloFuzzer extends CommonFuzzer {
             config -> new ClientHelloFuzzer(new Output(), config);
 
     public ClientHelloFuzzer(Output output, FuzzerConfig config) {
-        super(output, config, new HttpsClient());
+        super(output, config, new OpensslHttpsClient());
     }
 
     public static void main(String[] args) throws InterruptedException {

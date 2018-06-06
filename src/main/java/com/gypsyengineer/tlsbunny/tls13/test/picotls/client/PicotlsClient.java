@@ -9,7 +9,6 @@ import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.tls13.test.SystemPropertiesConfig;
 import com.gypsyengineer.tlsbunny.tls13.test.Config;
 import com.gypsyengineer.tlsbunny.tls13.test.common.client.Client;
-import com.gypsyengineer.tlsbunny.tls13.test.openssl.client.HttpsClient;
 
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.application_data;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
@@ -22,7 +21,7 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp
 public class PicotlsClient implements Client {
 
     public static void main(String[] args) throws Exception {
-        new HttpsClient()
+        new PicotlsClient()
                 .connect(SystemPropertiesConfig.load(), StructFactory.getDefault())
                 .run(new NoAlertCheck());
     }

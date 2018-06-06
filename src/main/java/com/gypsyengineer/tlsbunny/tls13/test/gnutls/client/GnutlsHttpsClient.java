@@ -17,10 +17,10 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv12;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv13_draft_26;
 import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp256r1_sha256;
 
-public class HttpsClient implements Client {
+public class GnutlsHttpsClient implements Client {
 
     public static void main(String[] args) throws Exception {
-        new HttpsClient()
+        new GnutlsHttpsClient()
                 .connect(SystemPropertiesConfig.load(), StructFactory.getDefault())
                 .run(new NoAlertCheck());
     }

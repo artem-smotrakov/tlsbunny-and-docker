@@ -11,7 +11,7 @@ public class HandshakeFuzzer extends CommonFuzzer {
             config -> new HandshakeFuzzer(new Output(), config);
 
     public HandshakeFuzzer(Output output, FuzzerConfig config) {
-        super(output, config, new HttpsClient());
+        super(output, config, new H2oHttpsClient());
     }
 
     public static void main(String[] args) throws InterruptedException {

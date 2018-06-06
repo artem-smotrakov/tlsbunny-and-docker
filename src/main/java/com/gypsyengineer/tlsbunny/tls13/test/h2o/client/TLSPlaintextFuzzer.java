@@ -11,7 +11,7 @@ public class TLSPlaintextFuzzer extends CommonFuzzer {
             config -> new TLSPlaintextFuzzer(new Output(), config);
 
     public TLSPlaintextFuzzer(Output output, FuzzerConfig config) {
-        super(output, config, new HttpsClient());
+        super(output, config, new H2oHttpsClient());
     }
 
     public static void main(String[] args) throws InterruptedException {

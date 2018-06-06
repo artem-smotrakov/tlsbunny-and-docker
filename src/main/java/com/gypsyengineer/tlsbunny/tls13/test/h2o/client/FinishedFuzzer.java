@@ -11,7 +11,7 @@ public class FinishedFuzzer extends CommonFuzzer {
             config -> new FinishedFuzzer(new Output(), config);
 
     public FinishedFuzzer(Output output, FuzzerConfig config) {
-        super(output, config, new HttpsClient());
+        super(output, config, new H2oHttpsClient());
     }
 
     public static void main(String[] args) throws InterruptedException {
