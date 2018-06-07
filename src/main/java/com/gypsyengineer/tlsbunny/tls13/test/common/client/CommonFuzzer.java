@@ -14,7 +14,6 @@ import com.gypsyengineer.tlsbunny.tls13.test.SystemPropertiesConfig;
 import com.gypsyengineer.tlsbunny.tls13.test.FuzzerConfig;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
-import java.awt.*;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.util.ArrayList;
@@ -263,7 +262,7 @@ public class CommonFuzzer implements Runnable {
     }
 
     public static MultipleThreads.FuzzerFactory factory =
-            config -> new CommonFuzzer(new Output(), config);
+            (config, output) -> new CommonFuzzer(output, config);
 
     private static final int MAX_ATTEMPTS = 3;
     private static final int DELAY = 3000; // in millis
@@ -274,15 +273,13 @@ public class CommonFuzzer implements Runnable {
     public CommonFuzzer(Output output, FuzzerConfig config) {
         this.output = output;
         this.config = config;
-
-        config.factory().setOutput(output);
     }
 
     @Override
     public void run() {
         if (config.noFactory()) {
             throw new IllegalArgumentException(
-                    "what the hell? no fuzzy factory specified!");
+                    "what the hell? no fuzzy set specified!");
         }
         FuzzyStructFactory fuzzer = config.factory();
 
@@ -291,9 +288,15 @@ public class CommonFuzzer implements Runnable {
         }
         Client client = config.client();
 
+        fuzzer.setOutput(output);
+
         try {
             output.info("run a smoke test before fuzzing");
-            client.connect(config, StructFactory.getDefault()).run(new SuccessCheck());
+            client.set(StructFactory.getDefault())
+                    .set(config)
+                    .set(output)
+                    .connect()
+                    .run(new SuccessCheck());
         } catch (Exception e) {
             output.achtung("smoke test failed: %s", e.getMessage());
             output.achtung("skip fuzzing");
@@ -304,7 +307,6 @@ public class CommonFuzzer implements Runnable {
 
         output.info("smoke test passed, start fuzzing");
         try {
-            output.prefix(Thread.currentThread().getName());
             while (fuzzer.canFuzz()) {
                 output.info("test %d", fuzzer.getTest());
                 output.info("now fuzzer's state is '%s'", fuzzer.getState());
@@ -312,7 +314,8 @@ public class CommonFuzzer implements Runnable {
                 int attempt = 0;
                 while (true) {
                     try {
-                        Engine engine = client.connect(config, fuzzer);
+                        Engine engine = client.set(fuzzer).set(config).set(output)
+                                .connect();
 
                         if (config.hasAnalyzer()) {
                             engine.apply(config.analyzer());
