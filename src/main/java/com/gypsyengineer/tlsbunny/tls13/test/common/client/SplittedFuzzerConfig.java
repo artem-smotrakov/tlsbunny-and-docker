@@ -139,4 +139,24 @@ public class SplittedFuzzerConfig extends FuzzerConfig {
     public FuzzyStructFactory factory() {
         return config.factory();
     }
+
+    @Override
+    public boolean noFactory() {
+        return config.noFactory();
+    }
+
+    @Override
+    public boolean noClient() {
+        return config.noClient();
+    }
+
+    @Override
+    public FuzzerConfig client(Client client) {
+        return config.client(client);
+    }
+
+    @Override
+    public Client client() {
+        return config.client();
+    }
 }
