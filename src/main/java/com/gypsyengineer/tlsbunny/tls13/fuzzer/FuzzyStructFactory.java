@@ -31,6 +31,10 @@ public abstract class FuzzyStructFactory<T> implements StructFactory, Fuzzer<T> 
         return target(Target.valueOf(target));
     }
 
+    synchronized public Target target() {
+        return target;
+    }
+
     synchronized public FuzzyStructFactory fuzzer(Fuzzer<T> fuzzer) {
         this.fuzzer = fuzzer;
         return this;

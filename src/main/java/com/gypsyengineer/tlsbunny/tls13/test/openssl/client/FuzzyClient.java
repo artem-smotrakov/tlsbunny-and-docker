@@ -1,7 +1,7 @@
 package com.gypsyengineer.tlsbunny.tls13.test.openssl.client;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertAnalyzer;
-import com.gypsyengineer.tlsbunny.tls13.test.common.client.MultipleThreads;
+import com.gypsyengineer.tlsbunny.tls13.test.common.client.Runner;
 
 import static com.gypsyengineer.tlsbunny.tls13.test.common.client.CommonFuzzer.combine;
 import static com.gypsyengineer.tlsbunny.tls13.test.common.client.CommonFuzzer.factory;
@@ -10,7 +10,7 @@ import static com.gypsyengineer.tlsbunny.tls13.test.common.client.CommonFuzzer.n
 public class FuzzyClient {
 
     public static void main(String[] args) throws InterruptedException {
-        new MultipleThreads()
+        new Runner()
                 .add(factory, combine(noClientAuthConfigs(), new OpensslHttpsClient()))
                 .set(new NoAlertAnalyzer())
                 .submit();

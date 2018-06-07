@@ -2,7 +2,6 @@ package com.gypsyengineer.tlsbunny.tls13.test;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.FuzzyStructFactory;
-import com.gypsyengineer.tlsbunny.tls13.fuzzer.Target;
 import com.gypsyengineer.tlsbunny.tls13.test.common.client.Client;
 
 public class FuzzerConfig implements Config {
@@ -24,11 +23,6 @@ public class FuzzerConfig implements Config {
     @Override
     public int port() {
         return commonConfig.port();
-    }
-
-    @Override
-    public Target target() {
-        return commonConfig.target();
     }
 
     @Override
@@ -74,12 +68,6 @@ public class FuzzerConfig implements Config {
     @Override
     public long readTimeout() {
         return commonConfig.readTimeout();
-    }
-
-    @Override
-    public FuzzerConfig target(Target target) {
-        commonConfig.target(target);
-        return this;
     }
 
     @Override

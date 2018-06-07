@@ -2,6 +2,7 @@ package com.gypsyengineer.tlsbunny.tls13.test.common.client;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
 import com.gypsyengineer.tlsbunny.tls13.test.FuzzerConfig;
+import com.gypsyengineer.tlsbunny.tls13.test.SystemPropertiesConfig;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
 import java.util.ArrayList;
@@ -13,13 +14,14 @@ import java.util.concurrent.TimeUnit;
 
 import static com.gypsyengineer.tlsbunny.utils.Utils.info;
 
-public class MultipleThreads {
+public class Runner {
 
+    private final SystemPropertiesConfig systemPropertiesConfig = SystemPropertiesConfig.load();
     private final List<Holder> holders = new ArrayList<>();
     private Analyzer analyzer;
     private int index;
 
-    public MultipleThreads add(FuzzerFactory fuzzerFactory, List<FuzzerConfig> configs) {
+    public Runner add(FuzzerFactory fuzzerFactory, List<FuzzerConfig> configs) {
         for (FuzzerConfig config : configs) {
             this.holders.add(new Holder(config, fuzzerFactory));
         }
@@ -27,11 +29,11 @@ public class MultipleThreads {
         return this;
     }
 
-    public MultipleThreads add(FuzzerFactory fuzzerFactory, FuzzerConfig... configs) {
+    public Runner add(FuzzerFactory fuzzerFactory, FuzzerConfig... configs) {
         return add(fuzzerFactory, Arrays.asList(configs));
     }
 
-    public MultipleThreads set(Analyzer analyzer) {
+    public Runner set(Analyzer analyzer) {
         this.analyzer = analyzer;
         return this;
     }
@@ -45,10 +47,22 @@ public class MultipleThreads {
         }
 
         info("we are going to use %d threads", threads);
+
+        String targetFilter = systemPropertiesConfig.targetFilter();
+        if (!targetFilter.isEmpty()) {
+            info("target filter: %s", targetFilter);
+        }
+
         ExecutorService executor = Executors.newFixedThreadPool(threads);
         try {
             index = 0;
             for (Holder holder : holders) {
+                if (skip(holder.fuzzerConfig)) {
+                    info("skip config with target '%s'",
+                            holder.fuzzerConfig.factory().target());
+                    continue;
+                }
+
                 submit(executor, holder);
             }
         } finally {
@@ -66,6 +80,15 @@ public class MultipleThreads {
                 analyzer.run();
             }
         }
+    }
+
+    private boolean skip(FuzzerConfig config) {
+        String targetFilter = systemPropertiesConfig.targetFilter();
+        if (!targetFilter.isEmpty()) {
+            return !config.factory().target().toString().contains(targetFilter);
+        }
+
+        return false;
     }
 
     private void submit(ExecutorService executor, Holder holder) {
