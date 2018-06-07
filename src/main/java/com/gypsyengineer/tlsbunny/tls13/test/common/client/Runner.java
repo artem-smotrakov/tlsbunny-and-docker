@@ -2,6 +2,7 @@ package com.gypsyengineer.tlsbunny.tls13.test.common.client;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
 import com.gypsyengineer.tlsbunny.tls13.test.FuzzerConfig;
+import com.gypsyengineer.tlsbunny.tls13.test.SystemPropertiesConfig;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ import static com.gypsyengineer.tlsbunny.utils.Utils.info;
 
 public class Runner {
 
+    private final SystemPropertiesConfig systemPropertiesConfig = SystemPropertiesConfig.load();
     private final List<Holder> holders = new ArrayList<>();
     private Analyzer analyzer;
     private int index;
@@ -45,10 +47,22 @@ public class Runner {
         }
 
         info("we are going to use %d threads", threads);
+
+        String targetFilter = systemPropertiesConfig.targetFilter();
+        if (!targetFilter.isEmpty()) {
+            info("target filter: %s", targetFilter);
+        }
+
         ExecutorService executor = Executors.newFixedThreadPool(threads);
         try {
             index = 0;
             for (Holder holder : holders) {
+                if (skip(holder.fuzzerConfig)) {
+                    info("skip config with target '%s'",
+                            holder.fuzzerConfig.factory().target());
+                    continue;
+                }
+
                 submit(executor, holder);
             }
         } finally {
@@ -66,6 +80,15 @@ public class Runner {
                 analyzer.run();
             }
         }
+    }
+
+    private boolean skip(FuzzerConfig config) {
+        String targetFilter = systemPropertiesConfig.targetFilter();
+        if (!targetFilter.isEmpty()) {
+            return !config.factory().target().toString().contains(targetFilter);
+        }
+
+        return false;
     }
 
     private void submit(ExecutorService executor, Holder holder) {
