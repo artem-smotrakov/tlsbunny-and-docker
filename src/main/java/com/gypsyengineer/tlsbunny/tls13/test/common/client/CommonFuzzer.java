@@ -261,7 +261,7 @@ public class CommonFuzzer implements Runnable {
         return configs.toArray(new FuzzerConfig[configs.size()]);
     }
 
-    public static MultipleThreads.FuzzerFactory factory =
+    public static Runner.FuzzerFactory factory =
             (config, output) -> new CommonFuzzer(output, config);
 
     private static final int MAX_ATTEMPTS = 3;

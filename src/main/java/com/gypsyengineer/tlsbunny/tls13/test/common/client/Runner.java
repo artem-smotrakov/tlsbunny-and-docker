@@ -13,13 +13,13 @@ import java.util.concurrent.TimeUnit;
 
 import static com.gypsyengineer.tlsbunny.utils.Utils.info;
 
-public class MultipleThreads {
+public class Runner {
 
     private final List<Holder> holders = new ArrayList<>();
     private Analyzer analyzer;
     private int index;
 
-    public MultipleThreads add(FuzzerFactory fuzzerFactory, List<FuzzerConfig> configs) {
+    public Runner add(FuzzerFactory fuzzerFactory, List<FuzzerConfig> configs) {
         for (FuzzerConfig config : configs) {
             this.holders.add(new Holder(config, fuzzerFactory));
         }
@@ -27,11 +27,11 @@ public class MultipleThreads {
         return this;
     }
 
-    public MultipleThreads add(FuzzerFactory fuzzerFactory, FuzzerConfig... configs) {
+    public Runner add(FuzzerFactory fuzzerFactory, FuzzerConfig... configs) {
         return add(fuzzerFactory, Arrays.asList(configs));
     }
 
-    public MultipleThreads set(Analyzer analyzer) {
+    public Runner set(Analyzer analyzer) {
         this.analyzer = analyzer;
         return this;
     }
