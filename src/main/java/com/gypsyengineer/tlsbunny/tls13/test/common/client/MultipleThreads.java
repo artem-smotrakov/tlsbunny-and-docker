@@ -17,6 +17,7 @@ public class MultipleThreads {
 
     private final List<Holder> holders = new ArrayList<>();
     private Analyzer analyzer;
+    private int index;
 
     public MultipleThreads add(FuzzerFactory fuzzerFactory, List<FuzzerConfig> configs) {
         for (FuzzerConfig config : configs) {
@@ -46,6 +47,7 @@ public class MultipleThreads {
         info("we are going to use %d threads", threads);
         ExecutorService executor = Executors.newFixedThreadPool(threads);
         try {
+            index = 0;
             for (Holder holder : holders) {
                 submit(executor, holder);
             }
@@ -68,7 +70,9 @@ public class MultipleThreads {
 
     private void submit(ExecutorService executor, Holder holder) {
         for (FuzzerConfig subConfig : split(holder.fuzzerConfig)) {
-            executor.submit(holder.fuzzerFactory.create(subConfig));
+            Output output = new Output();
+            output.prefix(String.format("part-%d", index++));
+            executor.submit(holder.fuzzerFactory.create(subConfig, output));
         }
     }
 
@@ -95,7 +99,7 @@ public class MultipleThreads {
     }
 
     public interface FuzzerFactory {
-        Runnable create(FuzzerConfig config);
+        Runnable create(FuzzerConfig config, Output output);
     }
 
     private static class Holder {

@@ -1,4 +1,4 @@
-package com.gypsyengineer.tlsbunny.tls13.test.h2o.client;
+package com.gypsyengineer.tlsbunny.tls13.test.gnutls.client;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertCheck;
@@ -7,8 +7,7 @@ import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.tls13.test.SystemPropertiesConfig;
-import com.gypsyengineer.tlsbunny.tls13.test.Config;
-import com.gypsyengineer.tlsbunny.tls13.test.common.client.Client;
+import com.gypsyengineer.tlsbunny.tls13.test.common.client.AbstractClient;
 
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
 import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.*;
@@ -17,20 +16,23 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv12;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv13_draft_26;
 import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp256r1_sha256;
 
-public class HttpsClient implements Client {
+public class GnutlsHttpsClient extends AbstractClient {
 
     public static void main(String[] args) throws Exception {
-        new HttpsClient()
-                .connect(SystemPropertiesConfig.load(), StructFactory.getDefault())
+        new GnutlsHttpsClient()
+                .set(SystemPropertiesConfig.load())
+                .set(StructFactory.getDefault())
+                .connect()
                 .run(new NoAlertCheck());
     }
 
     @Override
-    public Engine connect(Config config, StructFactory factory) throws Exception {
+    public Engine connect() throws Exception {
         return Engine.init()
                 .target(config.host())
                 .target(config.port())
                 .set(factory)
+                .set(output)
 
                 // send ClientHello
                 .run(new GeneratingClientHello()
@@ -46,7 +48,7 @@ public class HttpsClient implements Client {
                         .version(TLSv12))
                 .send(new OutgoingData())
 
-                // receive ServerHello, EncryptedExtensions, Certificate,
+                // receive a ServerHello, EncryptedExtensions, Certificate,
                 // CertificateVerify and Finished messages
                 .require(new IncomingData())
 
@@ -112,6 +114,9 @@ public class HttpsClient implements Client {
                 .require(new IncomingData())
                 .run(new ProcessingApplicationDataTLSCiphertext())
                 .run(new PrintingData())
+
+                // GnuTLS server actually sends a "close_notify" alert
+                // but we just ignore it for now
 
                 .connect();
     }

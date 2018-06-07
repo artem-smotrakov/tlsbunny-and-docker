@@ -126,7 +126,7 @@ public class Utils {
         return buffer.array();
     }
 
-    // synchronized output
+    // synchronized set
 
     public static void printf(String format, Object... params) {
         synchronized (System.out) {

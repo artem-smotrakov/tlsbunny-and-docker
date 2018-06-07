@@ -5,22 +5,25 @@ import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.*;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.tls13.test.SystemPropertiesConfig;
-import com.gypsyengineer.tlsbunny.tls13.test.Config;
-import com.gypsyengineer.tlsbunny.tls13.test.common.client.Client;
+import com.gypsyengineer.tlsbunny.tls13.test.common.client.AbstractClient;
 
-public class HttpsClientAuth implements Client {
+public class HttpsClientAuth extends AbstractClient {
 
     public static void main(String[] args) throws Exception {
         new HttpsClientAuth()
-                .connect(SystemPropertiesConfig.load(), StructFactory.getDefault())
+                .set(SystemPropertiesConfig.load())
+                .set(StructFactory.getDefault())
+                .connect()
                 .run(new NoAlertCheck());
     }
 
     @Override
-    public Engine connect(Config config, StructFactory factory) throws Exception {
+    public Engine connect() throws Exception {
         return Engine.init()
                 .target(config.host())
                 .target(config.port())
+                .set(factory)
+                .set(output)
 
                 .send(new OutgoingClientHello())
                 .send(new OutgoingChangeCipherSpec())

@@ -7,9 +7,7 @@ import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.tls13.test.SystemPropertiesConfig;
-import com.gypsyengineer.tlsbunny.tls13.test.Config;
-import com.gypsyengineer.tlsbunny.tls13.test.common.client.Client;
-import com.gypsyengineer.tlsbunny.tls13.test.openssl.client.HttpsClient;
+import com.gypsyengineer.tlsbunny.tls13.test.common.client.AbstractClient;
 
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.application_data;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
@@ -19,20 +17,23 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv12;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv13_draft_26;
 import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp256r1_sha256;
 
-public class PicotlsClient implements Client {
+public class PicotlsClient extends AbstractClient {
 
     public static void main(String[] args) throws Exception {
-        new HttpsClient()
-                .connect(SystemPropertiesConfig.load(), StructFactory.getDefault())
+        new PicotlsClient()
+                .set(SystemPropertiesConfig.load())
+                .set(StructFactory.getDefault())
+                .connect()
                 .run(new NoAlertCheck());
     }
 
     @Override
-    public Engine connect(Config config, StructFactory factory) throws Exception {
+    public Engine connect() throws Exception {
         return Engine.init()
                 .target(config.host())
                 .target(config.port())
                 .set(factory)
+                .set(output)
 
                 // send ClientHello
                 .run(new GeneratingClientHello()

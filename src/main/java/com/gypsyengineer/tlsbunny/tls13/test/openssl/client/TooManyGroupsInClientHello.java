@@ -7,9 +7,8 @@ import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
-import com.gypsyengineer.tlsbunny.tls13.test.Config;
 import com.gypsyengineer.tlsbunny.tls13.test.SystemPropertiesConfig;
-import com.gypsyengineer.tlsbunny.tls13.test.common.client.Client;
+import com.gypsyengineer.tlsbunny.tls13.test.common.client.AbstractClient;
 
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
 import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.*;
@@ -18,16 +17,18 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv12;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv13_draft_26;
 import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp256r1_sha256;
 
-public class TooManyGroupsInClientHello implements Client {
+public class TooManyGroupsInClientHello extends AbstractClient {
 
     public static void main(String[] args) throws Exception {
         new TooManyGroupsInClientHello()
-                .connect(SystemPropertiesConfig.load(), StructFactory.getDefault())
+                .set(SystemPropertiesConfig.load())
+                .set(StructFactory.getDefault())
+                .connect()
                 .run(new NoAlertCheck());
     }
 
     @Override
-    public Engine connect(Config config, StructFactory factory) throws Exception {
+    public Engine connect() throws Exception {
         int n = 65535 / 2 - 48;
         NamedGroup[] tooManyGroups = new NamedGroup[n];
         for (int i = 0; i < n; i++) {
@@ -37,6 +38,8 @@ public class TooManyGroupsInClientHello implements Client {
         return Engine.init()
                 .target(config.host())
                 .target(config.port())
+                .set(factory)
+                .set(output)
 
                 // send ClientHello
                 .run(new GeneratingClientHello()

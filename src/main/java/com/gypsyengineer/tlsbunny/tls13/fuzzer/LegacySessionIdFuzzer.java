@@ -14,7 +14,7 @@ public class LegacySessionIdFuzzer extends FuzzyStructFactory<Vector<Byte>> {
 
     public static final Target DEFAULT_TARGET = Target.client_hello;
 
-    public static LegacySessionIdFuzzer newMutatedLegacySessionIdStructFactory() {
+    public static LegacySessionIdFuzzer newLegacySessionIdFuzzer() {
         return new LegacySessionIdFuzzer();
     }
 
