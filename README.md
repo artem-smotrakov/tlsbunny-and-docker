@@ -1,7 +1,7 @@
 # tlsbunny
 
 This is a framework for building negative tests and fuzzers for TLS 1.3 implementations.
-The idea is to decompose handshake process and data exchange to simple steps which are easy to configure.
+The idea is to split the handshake process and data exchange to simple steps which are easy to configure and re-use.
 The framework provides a set of basic steps which can be used in TLS 1.3 communication, for example:
 
 - generating a ClientHello message
@@ -61,6 +61,15 @@ The repository provides several Dockerfile for building and running TLS 1.3 serv
 - [NSS](src/main/docker/nss/Dockerfile): start `selfserv` on port 60101
 
 The libs above are built with enabled AddressSanitizer and debug/verbose output.
+
+## Fuzzing
+
+tlsbunny provides several fuzzers for TLS 1.3 sturctures such as TLSPlaintext, Handshake, ClientHello and Finished.
+Fuzzers based on the framework can generate fuzzed messages and feed a target application via stdin, files or network socket.
+On the one hand, such a fuzzer is not going to be as fast as LibFuzzer. On the other hand, the fuzzer can be easily re-used with multiple TLS implementations written in different languages (not only C/C++). 
+Traditionally, fuzzing is used for testing applications written in C/C++ to uncover memory corruption issues which most likely may have security implications.
+Fuzzing can also be used for testing applications written in other languages even if those languages prevent using memory directly like Java. 
+No matter which language is used, a good TLS implementation should properly handle incorrect data and react with an expected action, for example, by thowing a documented exception. An unexpected behavior in processing incorrect data may still have security implications.
 
 ## Some test results
 
