@@ -23,6 +23,8 @@ import java.util.List;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.BitFlipFuzzer.newBitFlipFuzzer;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.ByteFlipFuzzer.newByteFlipFuzzer;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.CipherSuitesFuzzer.newCipherSuitesFuzzer;
+import static com.gypsyengineer.tlsbunny.tls13.fuzzer.ExtensionVectorFuzzer.newExtensionVectorFuzzer;
+import static com.gypsyengineer.tlsbunny.tls13.fuzzer.LegacyCompressionMethodsFuzzer.newLegacyCompressionMethodsFuzzer;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.LegacySessionIdFuzzer.newLegacySessionIdFuzzer;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.MutatedStructFactory.newMutatedStructFactory;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.SimpleVectorFuzzer.newSimpleVectorFuzzer;
@@ -41,7 +43,7 @@ public class CommonFuzzer implements Runnable {
     public static final long long_read_timeout = 5000;
     public static final long short_read_timeout = 500;
 
-    public static FuzzerConfig[] tls_plaintext_configs() {
+    public static FuzzerConfig[] tlsPlaintextConfigs() {
         return new FuzzerConfig[] {
                 new FuzzerConfig(SystemPropertiesConfig.load())
                         .factory(newMutatedStructFactory()
@@ -68,7 +70,7 @@ public class CommonFuzzer implements Runnable {
         };
     }
 
-    public static FuzzerConfig[] ccs_configs() {
+    public static FuzzerConfig[] ccsConfigs() {
         return new FuzzerConfig[] {
                 new FuzzerConfig(SystemPropertiesConfig.load())
                         .factory(newMutatedStructFactory()
@@ -77,8 +79,7 @@ public class CommonFuzzer implements Runnable {
                                         .minRatio(0.01)
                                         .maxRatio(0.09)))
                         .readTimeout(long_read_timeout)
-                        .endTest(20)
-                        .parts(1),
+                        .endTest(20),
                 new FuzzerConfig(SystemPropertiesConfig.load())
                         .factory(newMutatedStructFactory()
                                 .target(ccs)
@@ -86,12 +87,11 @@ public class CommonFuzzer implements Runnable {
                                         .minRatio(0.01)
                                         .maxRatio(0.09)))
                         .readTimeout(long_read_timeout)
-                        .endTest(20)
-                        .parts(1),
+                        .endTest(20),
         };
     }
 
-    public static FuzzerConfig[] handshake_configs() {
+    public static FuzzerConfig[] handshakeConfigs() {
         return new FuzzerConfig[] {
                 new FuzzerConfig(SystemPropertiesConfig.load())
                         .factory(newMutatedStructFactory()
@@ -118,7 +118,7 @@ public class CommonFuzzer implements Runnable {
         };
     }
 
-    public static FuzzerConfig[] client_hello_configs() {
+    public static FuzzerConfig[] clientHelloConfigs() {
         return new FuzzerConfig[] {
                 new FuzzerConfig(SystemPropertiesConfig.load())
                         .factory(newMutatedStructFactory()
@@ -141,7 +141,7 @@ public class CommonFuzzer implements Runnable {
         };
     }
 
-    public static FuzzerConfig[] certificate_configs() {
+    public static FuzzerConfig[] certificateConfigs() {
         return new FuzzerConfig[] {
                 new FuzzerConfig(SystemPropertiesConfig.load())
                         .factory(newMutatedStructFactory()
@@ -164,7 +164,7 @@ public class CommonFuzzer implements Runnable {
         };
     }
 
-    public static FuzzerConfig[] certificate_verify_configs() {
+    public static FuzzerConfig[] certificateVerifyConfigs() {
         return new FuzzerConfig[] {
                 new FuzzerConfig(SystemPropertiesConfig.load())
                         .factory(newMutatedStructFactory()
@@ -187,7 +187,7 @@ public class CommonFuzzer implements Runnable {
         };
     }
 
-    public static FuzzerConfig[] finished_configs() {
+    public static FuzzerConfig[] finishedConfigs() {
         return new FuzzerConfig[] {
                 new FuzzerConfig(SystemPropertiesConfig.load())
                         .factory(newMutatedStructFactory()
@@ -210,45 +210,65 @@ public class CommonFuzzer implements Runnable {
         };
     }
 
-    public static FuzzerConfig[] legacy_session_id_configs() {
+    public static FuzzerConfig[] cipherSuitesConfigs() {
+        return new FuzzerConfig[] {
+                new FuzzerConfig(SystemPropertiesConfig.load())
+                        .factory(newCipherSuitesFuzzer()
+                                .target(client_hello)
+                                .fuzzer(newSimpleVectorFuzzer()))
+                        .readTimeout(long_read_timeout)
+        };
+    }
+
+    public static FuzzerConfig[] extensionVectorConfigs() {
+        return new FuzzerConfig[] {
+                new FuzzerConfig(SystemPropertiesConfig.load())
+                        .factory(newExtensionVectorFuzzer()
+                                .target(client_hello)
+                                .fuzzer(newSimpleVectorFuzzer()))
+                        .readTimeout(long_read_timeout)
+        };
+    }
+
+    public static FuzzerConfig[] legacySessionIdConfigs() {
         return new FuzzerConfig[] {
                 new FuzzerConfig(SystemPropertiesConfig.load())
                         .factory(newLegacySessionIdFuzzer()
                                 .target(client_hello)
                                 .fuzzer(newSimpleVectorFuzzer()))
                         .readTimeout(long_read_timeout)
-                        .parts(1)
         };
     }
 
-    public static FuzzerConfig[] cipher_suites_configs() {
+    public static FuzzerConfig[] legacyCompressionMethodsConfigs() {
         return new FuzzerConfig[] {
-            new FuzzerConfig(SystemPropertiesConfig.load())
-                    .factory(newCipherSuitesFuzzer()
-                            .target(client_hello)
-                            .fuzzer(newSimpleVectorFuzzer()))
-                    .readTimeout(long_read_timeout)
-                    .parts(1)
+                new FuzzerConfig(SystemPropertiesConfig.load())
+                        .factory(newLegacyCompressionMethodsFuzzer()
+                                .target(client_hello)
+                                .fuzzer(newSimpleVectorFuzzer()))
+                        .readTimeout(long_read_timeout)
         };
     }
 
     public static FuzzerConfig[] noClientAuthConfigs() {
         List<FuzzerConfig> configs = new ArrayList<>();
-        configs.addAll(Arrays.asList(tls_plaintext_configs()));
-        configs.addAll(Arrays.asList(ccs_configs()));
-        configs.addAll(Arrays.asList(handshake_configs()));
-        configs.addAll(Arrays.asList(client_hello_configs()));
-        configs.addAll(Arrays.asList(finished_configs()));
-        configs.addAll(Arrays.asList(legacy_session_id_configs()));
-        configs.addAll(Arrays.asList(cipher_suites_configs()));
+        configs.addAll(Arrays.asList(tlsPlaintextConfigs()));
+        configs.addAll(Arrays.asList(ccsConfigs()));
+        configs.addAll(Arrays.asList(handshakeConfigs()));
+        configs.addAll(Arrays.asList(clientHelloConfigs()));
+        configs.addAll(Arrays.asList(finishedConfigs()));
+        configs.addAll(Arrays.asList(cipherSuitesConfigs()));
+        configs.addAll(Arrays.asList(extensionVectorConfigs()));
+        configs.addAll(Arrays.asList(legacySessionIdConfigs()));
+        configs.addAll(Arrays.asList(legacyCompressionMethodsConfigs()));
 
         return configs.toArray(new FuzzerConfig[configs.size()]);
     }
 
     public static FuzzerConfig[] clientAuthConfigs() {
         List<FuzzerConfig> configs = new ArrayList<>();
-        configs.addAll(Arrays.asList(certificate_configs()));
-        configs.addAll(Arrays.asList(certificate_verify_configs()));
+        configs.addAll(Arrays.asList(certificateConfigs()));
+        configs.addAll(Arrays.asList(certificateVerifyConfigs()));
 
         return configs.toArray(new FuzzerConfig[configs.size()]);
     }

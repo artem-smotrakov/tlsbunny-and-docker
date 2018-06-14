@@ -4,7 +4,7 @@ import com.gypsyengineer.tlsbunny.tls13.fuzzer.Target;
 
 public class SystemPropertiesConfig implements Config {
 
-    public static final int DEFAULT_PARTS = 4;
+    public static final int DEFAULT_PARTS = 1;
     public static final int DEFAULT_START_TEST = 0;
     public static final int DEFAULT_END_TEST = 1000;
     public static final double DEFAULT_MIN_RATIO = 0.01;
