@@ -23,6 +23,7 @@ import java.util.List;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.BitFlipFuzzer.newBitFlipFuzzer;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.ByteFlipFuzzer.newByteFlipFuzzer;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.CipherSuitesFuzzer.newCipherSuitesFuzzer;
+import static com.gypsyengineer.tlsbunny.tls13.fuzzer.ExtensionVectorFuzzer.newExtensionVectorFuzzer;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.LegacyCompressionMethodsFuzzer.newLegacyCompressionMethodsFuzzer;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.LegacySessionIdFuzzer.newLegacySessionIdFuzzer;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.MutatedStructFactory.newMutatedStructFactory;
@@ -209,6 +210,26 @@ public class CommonFuzzer implements Runnable {
         };
     }
 
+    public static FuzzerConfig[] cipher_suites_configs() {
+        return new FuzzerConfig[] {
+                new FuzzerConfig(SystemPropertiesConfig.load())
+                        .factory(newCipherSuitesFuzzer()
+                                .target(client_hello)
+                                .fuzzer(newSimpleVectorFuzzer()))
+                        .readTimeout(long_read_timeout)
+        };
+    }
+
+    public static FuzzerConfig[] extension_vector() {
+        return new FuzzerConfig[] {
+                new FuzzerConfig(SystemPropertiesConfig.load())
+                        .factory(newExtensionVectorFuzzer()
+                                .target(client_hello)
+                                .fuzzer(newSimpleVectorFuzzer()))
+                        .readTimeout(long_read_timeout)
+        };
+    }
+
     public static FuzzerConfig[] legacy_session_id_configs() {
         return new FuzzerConfig[] {
                 new FuzzerConfig(SystemPropertiesConfig.load())
@@ -216,16 +237,6 @@ public class CommonFuzzer implements Runnable {
                                 .target(client_hello)
                                 .fuzzer(newSimpleVectorFuzzer()))
                         .readTimeout(long_read_timeout)
-        };
-    }
-
-    public static FuzzerConfig[] cipher_suites_configs() {
-        return new FuzzerConfig[] {
-            new FuzzerConfig(SystemPropertiesConfig.load())
-                    .factory(newCipherSuitesFuzzer()
-                            .target(client_hello)
-                            .fuzzer(newSimpleVectorFuzzer()))
-                    .readTimeout(long_read_timeout)
         };
     }
 
@@ -247,6 +258,7 @@ public class CommonFuzzer implements Runnable {
         configs.addAll(Arrays.asList(client_hello_configs()));
         configs.addAll(Arrays.asList(finished_configs()));
         configs.addAll(Arrays.asList(cipher_suites_configs()));
+        configs.addAll(Arrays.asList(extension_vector()));
         configs.addAll(Arrays.asList(legacy_session_id_configs()));
         configs.addAll(Arrays.asList(legacy_compression_methods()));
 
