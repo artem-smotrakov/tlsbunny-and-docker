@@ -90,6 +90,8 @@ public interface StructFactory {
     NamedGroupList createNamedGroupList(NamedGroup... groups);
     CertificateEntry.X509 createX509CertificateEntry(byte[] bytes);
     Extension createExtension(ExtensionType type, byte[] bytes);
+    Cookie createCookie(Vector<Byte> cookie);
+    Cookie createCookie(byte[] cookie);
     
     StructParser parser();
 }

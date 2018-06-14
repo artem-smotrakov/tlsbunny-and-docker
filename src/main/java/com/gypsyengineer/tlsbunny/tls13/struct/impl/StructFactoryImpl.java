@@ -193,6 +193,16 @@ public class StructFactoryImpl implements StructFactory {
     }
 
     @Override
+    public Cookie createCookie(Vector<Byte> cookie) {
+        return new CookieImpl(cookie);
+    }
+
+    @Override
+    public Cookie createCookie(byte[] cookie) {
+        return createCookie(Vector.wrap(Cookie.LENGTH_BYTES, cookie));
+    }
+
+    @Override
     public CompressionMethod createCompressionMethod(int code) {
         return new CompressionMethodImpl(code);
     }

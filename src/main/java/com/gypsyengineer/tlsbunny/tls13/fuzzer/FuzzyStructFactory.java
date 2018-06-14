@@ -156,6 +156,16 @@ public abstract class FuzzyStructFactory<T> implements StructFactory, Fuzzer<T> 
     }
 
     @Override
+    public Cookie createCookie(Vector<Byte> cookie) {
+        return factory.createCookie(cookie);
+    }
+
+    @Override
+    public Cookie createCookie(byte[] cookie) {
+        return factory.createCookie(cookie);
+    }
+
+    @Override
     public ContentType createContentType(int code) {
         return factory.createContentType(code);
     }
