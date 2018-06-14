@@ -77,8 +77,7 @@ public class CommonFuzzer implements Runnable {
                                         .minRatio(0.01)
                                         .maxRatio(0.09)))
                         .readTimeout(long_read_timeout)
-                        .endTest(20)
-                        .parts(1),
+                        .endTest(20),
                 new FuzzerConfig(SystemPropertiesConfig.load())
                         .factory(newMutatedStructFactory()
                                 .target(ccs)
@@ -86,8 +85,7 @@ public class CommonFuzzer implements Runnable {
                                         .minRatio(0.01)
                                         .maxRatio(0.09)))
                         .readTimeout(long_read_timeout)
-                        .endTest(20)
-                        .parts(1),
+                        .endTest(20),
         };
     }
 
@@ -217,7 +215,6 @@ public class CommonFuzzer implements Runnable {
                                 .target(client_hello)
                                 .fuzzer(newSimpleVectorFuzzer()))
                         .readTimeout(long_read_timeout)
-                        .parts(1)
         };
     }
 
@@ -228,7 +225,6 @@ public class CommonFuzzer implements Runnable {
                             .target(client_hello)
                             .fuzzer(newSimpleVectorFuzzer()))
                     .readTimeout(long_read_timeout)
-                    .parts(1)
         };
     }
 
