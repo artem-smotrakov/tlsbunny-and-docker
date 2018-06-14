@@ -242,10 +242,12 @@ public class Engine {
     public Engine run(Check check) {
         check.set(this);
         check.set(context);
+
         check.run();
         if (check.failed()) {
             throw new RuntimeException(String.format("%s check failed", check.name()));
         }
+        output.info(String.format("check passed: %s", check.name()));
 
         return this;
     }
