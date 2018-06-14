@@ -13,11 +13,14 @@ import java.util.List;
 
 public class GeneratingClientHello extends AbstractAction {
 
+    public static final byte[] NO_COOKIE = null;
+
     private ProtocolVersion[] versions = new ProtocolVersion[0];
     private SignatureScheme[] schemes = new SignatureScheme[0];
     private NamedGroup[] groups = new NamedGroup[0];
     private KeyShareEntryFactory[] keyShareEntryFactories = new KeyShareEntryFactory[0];
     private KeyShareFactory[] keyShareFactories = new KeyShareFactory[0];
+    private byte[] cookie = NO_COOKIE;
 
     @Override
     public String name() {
@@ -49,6 +52,11 @@ public class GeneratingClientHello extends AbstractAction {
         return this;
     }
 
+    public GeneratingClientHello cookie(byte[] cookie) {
+        this.cookie = cookie.clone();
+        return this;
+    }
+
     @Override
     public Action run() throws IOException, NegotiatorException {
         List<Extension> extensions = new ArrayList<>();
@@ -70,6 +78,10 @@ public class GeneratingClientHello extends AbstractAction {
         for (KeyShareEntryFactory factory : keyShareEntryFactories) {
             extensions.add(wrap(context.factory.createKeyShareForClientHello(
                     factory.create(context))));
+        }
+
+        if (cookie != NO_COOKIE) {
+            extensions.add(wrap(context.factory.createCookie(cookie)));
         }
 
         ClientHello hello = context.factory.createClientHello(ProtocolVersion.TLSv12,
