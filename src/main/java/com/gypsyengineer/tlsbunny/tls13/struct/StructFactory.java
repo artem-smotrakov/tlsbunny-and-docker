@@ -30,7 +30,6 @@ public interface StructFactory {
     NamedGroup.Secp createSecpNamedGroup(int code, String curve);
     NamedGroup.X createXNamedGroup(int code);
     KeyShareEntry createKeyShareEntry(NamedGroup group, byte[] bytes);
-    MaxFragmentLength createMaxFragmentLength(int code);
     
     TLSInnerPlaintext createTLSInnerPlaintext(ContentType type,
                                               byte[] content,
@@ -93,6 +92,8 @@ public interface StructFactory {
     Extension createExtension(ExtensionType type, byte[] bytes);
     Cookie createCookie(Vector<Byte> cookie);
     Cookie createCookie(byte[] cookie);
+    MaxFragmentLength createMaxFragmentLength(int code);
+    CertificateStatusType createCertificateStatusType(int code);
     
     StructParser parser();
 }

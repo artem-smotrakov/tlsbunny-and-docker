@@ -366,6 +366,11 @@ public abstract class FuzzyStructFactory<T> implements StructFactory, Fuzzer<T> 
     }
 
     @Override
+    public CertificateStatusType createCertificateStatusType(int code) {
+        return factory.createCertificateStatusType(code);
+    }
+
+    @Override
     public StructParser parser() {
         return factory.parser();
     }

@@ -314,6 +314,11 @@ public class StructFactoryImpl implements StructFactory {
     }
 
     @Override
+    public CertificateStatusType createCertificateStatusType(int code) {
+        return new CertificateStatusTypeImpl(code);
+    }
+
+    @Override
     public CertificateEntry.X509 createX509CertificateEntry(byte[] bytes) {
         return new CertificateEntryImpl.X509Impl(
                     Vector.wrap(CertificateEntry.X509.LENGTH_BYTES, bytes), 
