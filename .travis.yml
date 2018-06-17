@@ -4,3 +4,23 @@ jdk:
   - openjdk9
   - oraclejdk10
   - openjdk10
+
+env:
+  global:
+   # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
+   #   via the "travis encrypt" command using the project repo's public key
+   - secure: "D+DblnonZc956LOr/QS6l1nlpFC1g8EV2N159CmCbslaBK7/JXZvAaO6kue6dFyvZTmUzwhW1EXLNPu1MVP07vNrgDoHTjtgi09EYf1rFNZycECxt9qdrfTL/NG8FaLyUd0TWroiHiizWDeNdwflcL1g5P3J8shcoi3aPt2rAW48OIQk7/IaI3rUL92R0re3TcqE6+Jk1Bh1zS4r7gZj1+UEIiSYvXCTdyeSY8U4VhmBFwdE4o2iKGHx7zcueWoXoJirdVUdFxiY4/zhaNqzx/OUW9/whQc5NLVD/k2FxH6nGaBRwEzUNKaV18p8J8i2jg4JQYRKq5GAmeA8lQhsPyZ65JYZECXFaarXbIIMsm7aejuVm1pggj7Y8K5Q6TqiRPfVCbc9Jr8NakpRb6oRyIpkr4dt0tHnWDUPPP/un8klqdjdbq+YLyvMBO38dlxV2eSKmhMDAzHzM61YQ38ejpFehYE59k1UNvZtP2jWEvcr0ikxamIO5NRpvIeA1s79k8DMriN/6n910WHvntR7VP5bFAfsPQhWE1lYdQK4cR7gyRsx/vA7PDqz1KoB1oIQh12zSZRVwTPReWtYGfElMo3qgfaJj3oN0Qk5MtcQxiZRca0ArejKmru/13ZVwu9GFvB6ev8zXt7kpd8lvtUraUumf6fjTeRP7JU1DNjxIFY="
+
+before_install:
+  - echo -n | openssl s_client -connect https://scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-
+
+addons:
+  coverity_scan:
+    project:
+      name: "artem-smotrakov/tlsbunny"
+      description: "tlsbunny is a framework for building negative tests and fuzzers for TLS 1.3 implementations"
+    notification_email: artem.smotrakov@gmail.com
+    build_command_prepend: "./gradlew assemble"
+    build_command: "./gradlew build"
+    branch_pattern: coverity_scan
+    
