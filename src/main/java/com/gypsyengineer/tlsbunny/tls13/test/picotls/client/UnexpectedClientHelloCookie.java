@@ -19,13 +19,13 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv13_dra
 import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp256r1_sha256;
 import static com.gypsyengineer.tlsbunny.utils.Utils.zeroes;
 
-public class ClientHelloCookie extends AbstractClient {
+public class UnexpectedClientHelloCookie extends AbstractClient {
 
     public static final int ZERO_COOKIE_LENGTH = 32;
 
     public static void main(String[] args) throws Exception {
         try (Output output = new Output()) {
-            new ClientHelloCookie()
+            new UnexpectedClientHelloCookie()
                     .set(SystemPropertiesConfig.load())
                     .set(StructFactory.getDefault())
                     .set(output)
