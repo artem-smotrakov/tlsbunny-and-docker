@@ -319,6 +319,18 @@ public class StructFactoryImpl implements StructFactory {
     }
 
     @Override
+    public OCSPStatusRequest createOCSPStatusRequest(Vector<ResponderID> responder_id_list,
+                                                     Vector<Byte> extensions) {
+        return new OCSPStatusRequestImpl(responder_id_list, extensions);
+    }
+
+    @Override
+    public CertificateStatusRequest createCertificateStatusRequest(CertificateStatusType status_type,
+                                                                   OCSPStatusRequest request) {
+        return new CertificateStatusRequestImpl(status_type, request);
+    }
+
+    @Override
     public CertificateEntry.X509 createX509CertificateEntry(byte[] bytes) {
         return new CertificateEntryImpl.X509Impl(
                     Vector.wrap(CertificateEntry.X509.LENGTH_BYTES, bytes), 

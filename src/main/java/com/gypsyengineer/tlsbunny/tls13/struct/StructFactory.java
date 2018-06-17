@@ -94,6 +94,10 @@ public interface StructFactory {
     Cookie createCookie(byte[] cookie);
     MaxFragmentLength createMaxFragmentLength(int code);
     CertificateStatusType createCertificateStatusType(int code);
+    OCSPStatusRequest createOCSPStatusRequest(Vector<ResponderID> responder_id_list,
+                                              Vector<Byte> extensions);
+    CertificateStatusRequest createCertificateStatusRequest(CertificateStatusType status_type,
+                                                            OCSPStatusRequest request);
     
     StructParser parser();
 }
