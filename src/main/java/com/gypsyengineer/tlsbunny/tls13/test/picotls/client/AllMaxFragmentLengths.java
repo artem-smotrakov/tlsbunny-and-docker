@@ -70,6 +70,11 @@ public class AllMaxFragmentLengths {
 
         @Override
         public Engine connect() throws Exception {
+            if (maxFragmentLength != NO_MAX_FRAGMENT_LENGTH) {
+                output.info("set max_fragment_length to %d",
+                        maxFragmentLength.getCode());
+            }
+
             return Engine.init()
                     .target(config.host())
                     .target(config.port())
