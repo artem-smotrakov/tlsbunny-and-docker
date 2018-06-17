@@ -361,6 +361,11 @@ public abstract class FuzzyStructFactory<T> implements StructFactory, Fuzzer<T> 
     }
 
     @Override
+    public MaxFragmentLength createMaxFragmentLength(int code) {
+        return factory.createMaxFragmentLength(code);
+    }
+
+    @Override
     public StructParser parser() {
         return factory.parser();
     }

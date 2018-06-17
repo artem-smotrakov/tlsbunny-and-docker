@@ -30,6 +30,7 @@ public interface StructFactory {
     NamedGroup.Secp createSecpNamedGroup(int code, String curve);
     NamedGroup.X createXNamedGroup(int code);
     KeyShareEntry createKeyShareEntry(NamedGroup group, byte[] bytes);
+    MaxFragmentLength createMaxFragmentLength(int code);
     
     TLSInnerPlaintext createTLSInnerPlaintext(ContentType type,
                                               byte[] content,
