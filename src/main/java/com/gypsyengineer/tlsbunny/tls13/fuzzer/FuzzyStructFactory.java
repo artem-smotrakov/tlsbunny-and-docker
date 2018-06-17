@@ -156,6 +156,16 @@ public abstract class FuzzyStructFactory<T> implements StructFactory, Fuzzer<T> 
     }
 
     @Override
+    public Cookie createCookie(Vector<Byte> cookie) {
+        return factory.createCookie(cookie);
+    }
+
+    @Override
+    public Cookie createCookie(byte[] cookie) {
+        return factory.createCookie(cookie);
+    }
+
+    @Override
     public ContentType createContentType(int code) {
         return factory.createContentType(code);
     }
@@ -348,6 +358,11 @@ public abstract class FuzzyStructFactory<T> implements StructFactory, Fuzzer<T> 
     @Override
     public Extension createExtension(ExtensionType type, byte[] bytes) {
         return factory.createExtension(type, bytes);
+    }
+
+    @Override
+    public MaxFragmentLength createMaxFragmentLength(int code) {
+        return factory.createMaxFragmentLength(code);
     }
 
     @Override

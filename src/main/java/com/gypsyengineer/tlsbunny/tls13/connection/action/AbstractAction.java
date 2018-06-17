@@ -124,6 +124,15 @@ public abstract class AbstractAction implements Action {
                 ExtensionType.key_share, keyShare.encoding());
     }
 
+    protected Extension wrap(Cookie cookie) throws IOException {
+        return context.factory.createExtension(ExtensionType.cookie, cookie.encoding());
+    }
+
+    protected Extension wrap(MaxFragmentLength maxFragmentLength) throws IOException {
+        return context.factory.createExtension(
+                ExtensionType.max_fragment_length, maxFragmentLength.encoding());
+    }
+
     protected TLSInnerPlaintext decrypt(AEAD decryptor, TLSPlaintext tlsPlaintext)
             throws AEADException {
 

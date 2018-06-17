@@ -193,6 +193,16 @@ public class StructFactoryImpl implements StructFactory {
     }
 
     @Override
+    public Cookie createCookie(Vector<Byte> cookie) {
+        return new CookieImpl(cookie);
+    }
+
+    @Override
+    public Cookie createCookie(byte[] cookie) {
+        return createCookie(Vector.wrap(Cookie.LENGTH_BYTES, cookie));
+    }
+
+    @Override
     public CompressionMethod createCompressionMethod(int code) {
         return new CompressionMethodImpl(code);
     }
@@ -297,7 +307,12 @@ public class StructFactoryImpl implements StructFactory {
                 group, 
                 Vector.wrap(KeyShareEntry.KEY_EXCHANGE_LENGTH_BYTES, bytes));
     }
-    
+
+    @Override
+    public MaxFragmentLength createMaxFragmentLength(int code) {
+        return new MaxFragmentLengthImpl(code);
+    }
+
     @Override
     public CertificateEntry.X509 createX509CertificateEntry(byte[] bytes) {
         return new CertificateEntryImpl.X509Impl(

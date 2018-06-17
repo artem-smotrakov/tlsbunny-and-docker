@@ -104,6 +104,22 @@ public class Utils {
         return false;
     }
 
+    // returns true if the integer is found in the array
+    public static boolean contains(int i, int... array) {
+        if (array == null || array.length == 0) {
+            return false;
+        }
+
+        for (int element : array) {
+            if (element == i) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+
     public static int getEncodingLength(Struct... objects) {
         return Arrays.stream(objects)
                 .map(object -> object.encodingLength())
@@ -126,7 +142,7 @@ public class Utils {
         return buffer.array();
     }
 
-    // synchronized set
+    // synchronized output
 
     public static void printf(String format, Object... params) {
         synchronized (System.out) {
