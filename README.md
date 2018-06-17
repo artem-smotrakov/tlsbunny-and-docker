@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/artem-smotrakov/tlsbunny.svg?branch=master)](https://travis-ci.org/artem-smotrakov/tlsbunny)
+[![Coverity Scan Build Status](https://scan.coverity.com/projects/16025/badge.svg)](https://scan.coverity.com/projects/artem-smotrakov-tlsbunny)
 
 # tlsbunny
 
