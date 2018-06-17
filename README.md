@@ -1,4 +1,7 @@
 [![Build Status](https://travis-ci.org/artem-smotrakov/tlsbunny.svg?branch=master)](https://travis-ci.org/artem-smotrakov/tlsbunny)
+[![Coverity Scan Build Status](https://scan.coverity.com/projects/16025/badge.svg)](https://scan.coverity.com/projects/artem-smotrakov-tlsbunny)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/81991e8a88b64c8b99fe35b9159c2410)](https://www.codacy.com/app/artem-smotrakov/tlsbunny?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=artem-smotrakov/tlsbunny&amp;utm_campaign=Badge_Grade)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 # tlsbunny
 
