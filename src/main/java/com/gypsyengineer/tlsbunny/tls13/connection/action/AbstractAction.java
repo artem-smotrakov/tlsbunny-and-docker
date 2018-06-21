@@ -12,7 +12,7 @@ import java.nio.ByteBuffer;
 
 import static com.gypsyengineer.tlsbunny.utils.Utils.SEED;
 
-public abstract class AbstractAction implements Action {
+public abstract class AbstractAction<T extends AbstractAction> implements Action {
 
     protected ByteBuffer in;
     protected ByteBuffer out;
@@ -27,21 +27,21 @@ public abstract class AbstractAction implements Action {
     }
 
     @Override
-    public Action set(Output output) {
+    public T set(Output output) {
         this.output = output;
-        return this;
+        return (T) this;
     }
 
     @Override
-    public Action set(Context context) {
+    public T set(Context context) {
         this.context = context;
-        return this;
+        return (T) this;
     }
 
     @Override
-    public Action in(ByteBuffer buffer) {
+    public T in(ByteBuffer buffer) {
         this.in = buffer;
-        return this;
+        return (T) this;
     }
 
     @Override
@@ -50,9 +50,9 @@ public abstract class AbstractAction implements Action {
     }
 
     @Override
-    public Action applicationData(ByteBuffer buffer) {
+    public T applicationData(ByteBuffer buffer) {
         applicationDataIn = buffer;
-        return this;
+        return (T) this;
     }
 
     @Override

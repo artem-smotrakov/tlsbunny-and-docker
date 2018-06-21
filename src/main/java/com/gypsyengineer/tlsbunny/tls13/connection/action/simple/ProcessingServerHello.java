@@ -6,7 +6,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.*;
 
 import java.nio.ByteBuffer;
 
-public class ProcessingServerHello extends AbstractAction {
+public class ProcessingServerHello extends AbstractAction<ProcessingServerHello> {
 
     @Override
     public String name() {
@@ -14,7 +14,7 @@ public class ProcessingServerHello extends AbstractAction {
     }
 
     @Override
-    public Action run() {
+    public ProcessingServerHello run() {
         ServerHello serverHello = context.factory.parser().parseServerHello(in);
         output.info("received a ServerHello message");
 
