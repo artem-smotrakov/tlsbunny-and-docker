@@ -11,7 +11,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.*;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-public class ProcessingMessages extends AbstractAction<ProcessingMessages> {
+public class IncomingMessages extends AbstractAction<IncomingMessages> {
 
     @Override
     public String name() {
@@ -19,7 +19,7 @@ public class ProcessingMessages extends AbstractAction<ProcessingMessages> {
     }
 
     @Override
-    public ProcessingMessages run() throws AEADException, ActionFailed,
+    public IncomingMessages run() throws AEADException, ActionFailed,
             IOException, NegotiatorException {
 
         while (in.remaining() > 0) {
