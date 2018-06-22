@@ -7,7 +7,7 @@ import com.gypsyengineer.tlsbunny.utils.HexDump;
 
 import java.io.IOException;
 
-public class ProcessingNewSessionTicket extends AbstractAction {
+public class ProcessingNewSessionTicket extends AbstractAction<ProcessingNewSessionTicket> {
 
     @Override
     public String name() {

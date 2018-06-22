@@ -13,12 +13,19 @@ import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-public class ProcessingTLSCiphertext extends AbstractAction {
+public class ProcessingTLSCiphertext extends AbstractAction<ProcessingTLSCiphertext> {
 
     public static final ContentType NO_TYPE_SPECIFIED = null;
+    public static final TLSPlaintext NO_TLS_CIPHERTEXT_SPECIFIED = null;
 
     private final Phase phase;
     private ContentType expectedType = NO_TYPE_SPECIFIED;
+    private TLSPlaintext tlsCiphertext = NO_TLS_CIPHERTEXT_SPECIFIED;
+
+    public ProcessingTLSCiphertext set(TLSPlaintext tlsCiphertext) {
+        this.tlsCiphertext = tlsCiphertext;
+        return this;
+    }
 
     public ProcessingTLSCiphertext(Phase phase) {
         this.phase = phase;
@@ -37,13 +44,15 @@ public class ProcessingTLSCiphertext extends AbstractAction {
 
     @Override
     public Action run() throws IOException, ActionFailed, AEADException {
-        TLSPlaintext tlsPlaintext = context.factory.parser().parseTLSPlaintext(in);
+        if (tlsCiphertext == NO_TLS_CIPHERTEXT_SPECIFIED) {
+            tlsCiphertext = context.factory.parser().parseTLSPlaintext(in);
+        }
 
-        if (!tlsPlaintext.containsApplicationData()) {
+        if (!tlsCiphertext.containsApplicationData()) {
             throw new ActionFailed("expected a TLSCiphertext");
         }
 
-        byte[] plaintext = getDecryptor().decrypt(tlsPlaintext);
+        byte[] plaintext = getDecryptor().decrypt(tlsCiphertext);
         TLSInnerPlaintext tlsInnerPlaintext = context.factory.parser()
                 .parseTLSInnerPlaintext(plaintext);
 

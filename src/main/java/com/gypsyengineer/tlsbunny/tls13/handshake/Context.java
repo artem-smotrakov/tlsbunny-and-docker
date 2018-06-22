@@ -240,6 +240,10 @@ public class Context {
         this.serverFinished = serverFinished;
     }
 
+    public boolean hasServerFinished() {
+        return serverFinished != null;
+    }
+
     public void verifyServerFinished() {
         serverFinishedVerified = true;
     }

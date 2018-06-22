@@ -32,11 +32,6 @@ public abstract class AesGcm extends AbstractAEAD {
         return N_MIN;
     }
 
-    @Override
-    public byte[] decrypt(TLSPlaintext tlsCiphertext) throws AEADException {
-        throw new UnsupportedOperationException("what the hell? I can't decrypt!");
-    }
-
     byte[] getAdditionalData(ContentType type, ProtocolVersion version, UInt16 length)
             throws IOException {
 

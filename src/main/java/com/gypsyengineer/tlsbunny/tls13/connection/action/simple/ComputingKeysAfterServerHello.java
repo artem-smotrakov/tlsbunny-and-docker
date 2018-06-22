@@ -13,7 +13,7 @@ import static com.gypsyengineer.tlsbunny.tls13.handshake.Context.ZERO_SALT;
 import static com.gypsyengineer.tlsbunny.utils.Utils.concatenate;
 import static com.gypsyengineer.tlsbunny.utils.Utils.zeroes;
 
-public class ComputingKeysAfterServerHello extends AbstractAction {
+public class ComputingKeysAfterServerHello extends AbstractAction<ComputingKeysAfterServerHello> {
 
     @Override
     public String name() {

@@ -12,7 +12,7 @@ import java.util.Arrays;
 
 import static com.gypsyengineer.tlsbunny.tls13.handshake.Context.ZERO_HASH_VALUE;
 
-public class ProcessingFinished extends AbstractAction {
+public class ProcessingFinished extends AbstractAction<ProcessingFinished> {
 
     @Override
     public String name() {
