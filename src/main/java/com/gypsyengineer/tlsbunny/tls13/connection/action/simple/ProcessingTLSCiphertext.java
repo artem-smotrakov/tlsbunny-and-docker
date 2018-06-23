@@ -21,6 +21,7 @@ public class ProcessingTLSCiphertext extends AbstractAction<ProcessingTLSCiphert
     private final Phase phase;
     private ContentType expectedType = NO_TYPE_SPECIFIED;
     private TLSPlaintext tlsCiphertext = NO_TLS_CIPHERTEXT_SPECIFIED;
+    private TLSInnerPlaintext tlsInnerPlaintext;
 
     public ProcessingTLSCiphertext set(TLSPlaintext tlsCiphertext) {
         this.tlsCiphertext = tlsCiphertext;
@@ -42,8 +43,12 @@ public class ProcessingTLSCiphertext extends AbstractAction<ProcessingTLSCiphert
                 phase, expectedType);
     }
 
+    public TLSInnerPlaintext tlsInnerPlaintext() {
+        return tlsInnerPlaintext;
+    }
+
     @Override
-    public Action run() throws IOException, ActionFailed, AEADException {
+    public ProcessingTLSCiphertext run() throws IOException, ActionFailed, AEADException {
         if (tlsCiphertext == NO_TLS_CIPHERTEXT_SPECIFIED) {
             tlsCiphertext = context.factory.parser().parseTLSPlaintext(in);
         }
@@ -53,7 +58,7 @@ public class ProcessingTLSCiphertext extends AbstractAction<ProcessingTLSCiphert
         }
 
         byte[] plaintext = getDecryptor().decrypt(tlsCiphertext);
-        TLSInnerPlaintext tlsInnerPlaintext = context.factory.parser()
+        tlsInnerPlaintext = context.factory.parser()
                 .parseTLSInnerPlaintext(plaintext);
 
         ContentType type = tlsInnerPlaintext.getType();
