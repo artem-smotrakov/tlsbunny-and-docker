@@ -39,10 +39,16 @@ public class IncomingMessages extends AbstractAction<IncomingMessages> {
                 type = tlsInnerPlaintext.getType();
                 content = ByteBuffer.wrap(tlsInnerPlaintext.getContent());
             } else if (encryptedApplicationData()) {
-                TLSInnerPlaintext tlsInnerPlaintext = new ProcessingTLSCiphertext(Phase.application_data)
-                        .set(output).set(context).set(tlsPlaintext).run().tlsInnerPlaintext();
-                type = tlsInnerPlaintext.getType();
-                content = ByteBuffer.wrap(tlsInnerPlaintext.getContent());
+                if (canDecryptApplicationData()) {
+                    TLSInnerPlaintext tlsInnerPlaintext = new ProcessingTLSCiphertext(Phase.application_data)
+                            .set(output).set(context).set(tlsPlaintext).run().tlsInnerPlaintext();
+                    type = tlsInnerPlaintext.getType();
+                    content = ByteBuffer.wrap(tlsInnerPlaintext.getContent());
+                } else {
+                    new PreservingEncryptedApplicationData().set(output).set(context)
+                            .in(tlsPlaintext.getFragment()).run();
+                    continue;
+                }
             } else {
                 type = tlsPlaintext.getType();
                 content = ByteBuffer.wrap(tlsPlaintext.getFragment());
@@ -75,6 +81,10 @@ public class IncomingMessages extends AbstractAction<IncomingMessages> {
 
     private boolean encryptedApplicationData() {
         return context.hasServerFinished();
+    }
+
+    private boolean canDecryptApplicationData() {
+        return context.applicationDataDecryptor != null;
     }
 
     private void processHandshake(ByteBuffer buffer)
@@ -187,7 +197,7 @@ public class IncomingMessages extends AbstractAction<IncomingMessages> {
     }
 
     private void processFinished(Handshake handshake)
-            throws IOException, ActionFailed {
+            throws IOException, ActionFailed, AEADException {
 
         context.setServerFinished(handshake);
 
@@ -195,6 +205,7 @@ public class IncomingMessages extends AbstractAction<IncomingMessages> {
                 .in(handshake.getBody()).run();
 
         new ComputingKeysAfterServerFinished().set(output).set(context).run();
+        new ComputingKeysAfterClientFinished().set(output).set(context).run();
     }
 
     private void processNewSessionTicket(Handshake handshake) throws IOException {

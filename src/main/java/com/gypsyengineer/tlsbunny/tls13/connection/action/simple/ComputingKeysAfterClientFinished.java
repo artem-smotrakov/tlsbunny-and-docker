@@ -1,7 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls13.connection.action.simple;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.action.AbstractAction;
-import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AEAD;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AEADException;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
@@ -10,7 +9,7 @@ import java.io.IOException;
 
 import static com.gypsyengineer.tlsbunny.tls13.handshake.Context.ZERO_HASH_VALUE;
 
-public class ComputingKeysAfterClientFinished extends AbstractAction {
+public class ComputingKeysAfterClientFinished extends AbstractAction<ComputingKeysAfterClientFinished> {
 
     @Override
     public String name() {
@@ -18,7 +17,7 @@ public class ComputingKeysAfterClientFinished extends AbstractAction {
     }
 
     @Override
-    public Action run() throws IOException, AEADException {
+    public ComputingKeysAfterClientFinished run() throws IOException, AEADException {
         context.resumption_master_secret = context.hkdf.deriveSecret(
                 context.master_secret,
                 Context.res_master,

@@ -1,11 +1,10 @@
 package com.gypsyengineer.tlsbunny.tls13.connection.action.simple;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.action.AbstractAction;
-import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
 
 import java.nio.ByteBuffer;
 
-public class RestoringEncryptedApplicationData extends AbstractAction {
+public class RestoringEncryptedApplicationData extends AbstractAction<RestoringEncryptedApplicationData> {
 
     @Override
     public String name() {
@@ -13,11 +12,15 @@ public class RestoringEncryptedApplicationData extends AbstractAction {
     }
 
     @Override
-    public Action run() {
+    public RestoringEncryptedApplicationData run() {
+        if (applicationDataIn.remaining() == 0) {
+            return this;
+        }
+
         byte[] data = new byte[applicationDataIn.remaining()];
         applicationDataIn.get(data);
         out = ByteBuffer.wrap(data);
-        output.info("restored %d bytes of encrypted application out", data.length);
+        output.info("restored %d bytes of encrypted application data", data.length);
 
         return this;
     }
