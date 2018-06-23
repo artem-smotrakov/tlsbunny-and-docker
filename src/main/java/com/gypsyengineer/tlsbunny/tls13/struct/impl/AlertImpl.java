@@ -43,6 +43,11 @@ public class AlertImpl implements Alert {
     }
 
     @Override
+    public boolean isWarning() {
+        return AlertLevel.warning.equals(level);
+    }
+
+    @Override
     public int hashCode() {
         int hash = 7;
         hash = 79 * hash + Objects.hashCode(this.level);

@@ -6,4 +6,5 @@ public interface Alert extends Struct {
 
     AlertDescription getDescription();
     AlertLevel getLevel();
+    boolean isWarning();
 }
