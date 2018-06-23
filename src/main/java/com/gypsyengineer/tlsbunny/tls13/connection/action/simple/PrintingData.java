@@ -1,9 +1,8 @@
 package com.gypsyengineer.tlsbunny.tls13.connection.action.simple;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.action.AbstractAction;
-import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
 
-public class PrintingData extends AbstractAction {
+public class PrintingData extends AbstractAction<PrintingData> {
 
     @Override
     public String name() {
@@ -11,7 +10,7 @@ public class PrintingData extends AbstractAction {
     }
 
     @Override
-    public Action run() {
+    public PrintingData run() {
         byte[] data = new byte[in.remaining()];
         in.get(data);
         output.info("received application data:%n%s", new String(data));
