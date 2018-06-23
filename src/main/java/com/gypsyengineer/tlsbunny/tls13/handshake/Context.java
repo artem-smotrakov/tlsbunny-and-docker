@@ -200,6 +200,10 @@ public class Context {
         this.serverHello = serverHello;
     }
 
+    public boolean hasServerHello() {
+        return serverHello != null;
+    }
+
     public Handshake getEncryptedExtensions() {
         return encryptedExtensions;
     }
