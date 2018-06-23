@@ -1,7 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls13.connection;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
-import com.gypsyengineer.tlsbunny.tls13.connection.action.ActionFactory;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.ActionFailed;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.IncomingChangeCipherSpec;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AEADException;
@@ -25,7 +24,7 @@ public class Engine {
     private static final ByteBuffer NOTHING = ByteBuffer.allocate(0);
 
     private enum ActionType {
-        send, receive, allow, run
+        send, receive, receive_if, allow, run
     }
 
     public enum Status {
@@ -128,7 +127,7 @@ public class Engine {
     }
 
     public Engine send(Action action) {
-        actions.add(new ActionHolder(action, ActionType.send));
+        actions.add(new ActionHolder(() -> action, ActionType.send));
         return this;
     }
 
@@ -140,17 +139,22 @@ public class Engine {
     }
 
     public Engine receive(Action action) {
-        actions.add(new ActionHolder(action, ActionType.receive));
+        actions.add(new ActionHolder(() -> action, ActionType.receive));
+        return this;
+    }
+
+    public Engine receive(Condition condition, ActionFactory factory) {
+        actions.add(new ActionHolder(factory, ActionType.receive_if).set(condition));
         return this;
     }
 
     public Engine allow(Action action) {
-        actions.add(new ActionHolder(action, ActionType.allow));
+        actions.add(new ActionHolder(() -> action, ActionType.allow));
         return this;
     }
 
     public Engine run(Action action) {
-        actions.add(new ActionHolder(action, ActionType.run));
+        actions.add(new ActionHolder(() -> action, ActionType.run));
         return this;
     }
 
@@ -162,14 +166,15 @@ public class Engine {
 
             loop:
             for (ActionHolder holder : actions) {
-                Action action = holder.action;
-                init(action);
+                ActionFactory actionFactory = holder.factory;
 
+                Action action;
                 switch (holder.type) {
                     case send:
                         try {
+                            action = actionFactory.create();
                             output.info("send: %s", action.name());
-                            action.run();
+                            init(action).run();
                             connection.send(action.out());
                         } catch (ActionFailed | AEADException | NegotiatorException | IOException e) {
                             status = Status.could_not_send;
@@ -177,27 +182,43 @@ public class Engine {
                         }
                         break;
                     case receive:
-                        output.info("receive: %s", action.name());
                         try {
+                            action = actionFactory.create();
+                            output.info("receive: %s", action.name());
                             read(connection, action);
-                            action.run();
+                            init(action).run();
                             combineData(action);
                         } catch (ActionFailed | AEADException | NegotiatorException | IOException e) {
                             status = Status.unexpected_error;
                             return reportError(e);
                         }
                         break;
+                    case receive_if:
+                        try {
+                            action = actionFactory.create();
+                            while (holder.condition.met(context)) {
+                                output.info("receive (conditional): %s", action.name());
+                                read(connection, action);
+                                init(action).run();
+                                combineData(action);
+                            }
+                        } catch (ActionFailed | AEADException | NegotiatorException | IOException e) {
+                            status = Status.unexpected_error;
+                            return reportError(e);
+                        }
+                        break;
                     case allow:
-                        output.info("allow: %s", action.name());
-
                         // TODO: if an action decrypts out, but the action fails,
                         //       then decryption in the next action is going to fail
                         //       this may be fixed by propagating decrypted out
                         //       to the next action
+                        // TODO: deprecate `allow`
+                        action = actionFactory.create();
                         try {
                             read(connection, action);
                             buffer.mark();
-                            action.run();
+                            output.info("allow: %s", action.name());
+                            init(action).run();
                             combineData(action);
                         } catch (ActionFailed | AEADException | NegotiatorException | IOException e) {
                             output.info("error: %s", e.getMessage());
@@ -206,9 +227,10 @@ public class Engine {
                         }
                         break;
                     case run:
-                        output.info("run: %s", action.name());
                         try {
-                            action.run();
+                            action = actionFactory.create();
+                            output.info("run: %s", action.name());
+                            init(action).run();
                             combineData(action);
                         } catch (ActionFailed | AEADException | NegotiatorException | IOException e) {
                             status = Status.unexpected_error;
@@ -305,7 +327,7 @@ public class Engine {
             buffer.mark();
             try {
                 IncomingChangeCipherSpec incomingCCS = new IncomingChangeCipherSpec();
-                output.info("check for %s", incomingCCS.name());
+                output.info("met for %s", incomingCCS.name());
                 init(incomingCCS);
                 incomingCCS.run();
                 output.info("found %s", incomingCCS.name());
@@ -325,22 +347,38 @@ public class Engine {
         return engine;
     }
 
-    private void init(Action action) {
+    private Action init(Action action) {
         action.set(output);
         action.set(context);
         action.in(buffer);
         action.applicationData(applicationData);
+
+        return action;
+    }
+
+    public interface Condition {
+        boolean met(Context context);
+    }
+
+    public interface ActionFactory {
+        Action create();
     }
 
     private static class ActionHolder {
 
-        ActionHolder(Action action, ActionType type) {
-            this.action = action;
+        ActionType type;
+        ActionFactory factory;
+        Condition condition;
+
+        ActionHolder(ActionFactory factory, ActionType type) {
+            this.factory = factory;
             this.type = type;
         }
 
-        Action action;
-        ActionType type;
+        ActionHolder set(Condition condition) {
+            this.condition = condition;
+            return this;
+        }
     }
 
 }

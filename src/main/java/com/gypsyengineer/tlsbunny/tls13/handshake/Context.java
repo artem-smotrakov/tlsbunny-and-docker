@@ -105,6 +105,8 @@ public class Context {
     public AEAD applicationDataEnctyptor;
     public AEAD applicationDataDecryptor;
 
+    public List<byte[]> applicatinoData = new ArrayList<>();
+
     public void reset() {
         firstClientHello = null;
         helloRetryRequest = null;
@@ -363,5 +365,13 @@ public class Context {
 
     public Alert getAlert() {
         return alert;
+    }
+
+    public void addApplicationData(byte[] data) {
+        applicatinoData.add(data);
+    }
+
+    public boolean receivedApplicationData() {
+        return !applicatinoData.isEmpty();
     }
 }

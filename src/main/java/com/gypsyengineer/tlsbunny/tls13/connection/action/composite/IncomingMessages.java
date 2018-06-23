@@ -141,6 +141,7 @@ public class IncomingMessages extends AbstractAction<IncomingMessages> {
     }
 
     private void processApplicationData(ByteBuffer buffer) {
+        context.addApplicationData(buffer.array());
         new PrintingData().set(output).set(context).in(buffer).run();
     }
 
