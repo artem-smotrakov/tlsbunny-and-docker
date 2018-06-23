@@ -64,7 +64,7 @@ task removeGnutlsDockerContainer(type: Exec) {
 
 task gnutlsClient(type: JavaExec) {
     classpath sourceSets.main.runtimeClasspath
-    applicationDefaultJvmArgs = ["-Dtlsbunny.port=20101"]
+    applicationDefaultJvmArgs = ["-Dtlsbunny.port=50101"]
     main = "com.gypsyengineer.tlsbunny.tls13.test.gnutls.client.HttpsClient"
 }
 
