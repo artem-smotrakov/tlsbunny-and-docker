@@ -93,7 +93,6 @@ public class NssHttpsClient extends AbstractClient {
 
                 // send Finished
                 .run(new GeneratingFinished())
-                .run(new ComputingKeysAfterClientFinished())
                 .run(new WrappingIntoHandshake()
                         .type(finished)
                         .updateContext(Context.Element.client_finished))

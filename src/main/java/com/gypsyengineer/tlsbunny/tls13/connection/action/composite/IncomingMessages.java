@@ -205,7 +205,6 @@ public class IncomingMessages extends AbstractAction<IncomingMessages> {
                 .in(handshake.getBody()).run();
 
         new ComputingKeysAfterServerFinished().set(output).set(context).run();
-        new ComputingKeysAfterClientFinished().set(output).set(context).run();
     }
 
     private void processNewSessionTicket(Handshake handshake) throws IOException {
