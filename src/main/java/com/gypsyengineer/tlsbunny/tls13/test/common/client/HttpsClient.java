@@ -2,7 +2,6 @@ package com.gypsyengineer.tlsbunny.tls13.test.common.client;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertCheck;
-import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.IncomingChangeCipherSpec;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.IncomingMessages;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
@@ -54,7 +53,7 @@ public class HttpsClient extends AbstractClient {
 
                 // receive a ServerHello, EncryptedExtensions, Certificate,
                 // CertificateVerify and Finished messages
-                .require(new IncomingMessages())
+                .receive(new IncomingMessages())
 
                 // send Finished
                 .run(new GeneratingFinished())
@@ -71,11 +70,11 @@ public class HttpsClient extends AbstractClient {
                 .send(new OutgoingData())
 
                 // receive session tickets and application data
-                .require(new IncomingMessages())
+                .receive(new IncomingMessages())
 
                 /*
                 // receive first NewSessionTicket
-                .require(new IncomingData())
+                .receive(new IncomingData())
                 .run(new ProcessingApplicationDataTLSCiphertext()
                         .expect(handshake))
                 .run(new ProcessingHandshake()
@@ -83,14 +82,14 @@ public class HttpsClient extends AbstractClient {
                 .run(new ProcessingNewSessionTicket())
 
                 // receive second NewSessionTicket
-                .require(new IncomingData())
+                .receive(new IncomingData())
                 .run(new ProcessingApplicationDataTLSCiphertext()
                         .expect(handshake))
                 .run(new ProcessingHandshake().expect(new_session_ticket))
                 .run(new ProcessingNewSessionTicket())
 
                 // receive application data
-                .require(new IncomingData())
+                .receive(new IncomingData())
                 .run(new ProcessingApplicationDataTLSCiphertext())
                 .run(new PrintingData())
                 */

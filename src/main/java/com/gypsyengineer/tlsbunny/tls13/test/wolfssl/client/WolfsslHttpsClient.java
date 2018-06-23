@@ -49,7 +49,7 @@ public class WolfsslHttpsClient extends AbstractClient {
 
                 // receive a ServerHello, EncryptedExtensions, Certificate,
                 // CertificateVerify and Finished messages
-                .require(new IncomingData())
+                .receive(new IncomingData())
 
                 // process ServerHello
                 .run(new ProcessingTLSPlaintext()
@@ -108,7 +108,7 @@ public class WolfsslHttpsClient extends AbstractClient {
                 .send(new OutgoingData())
 
                 // receive application data
-                .require(new IncomingData())
+                .receive(new IncomingData())
                 .run(new ProcessingApplicationDataTLSCiphertext())
                 .run(new PrintingData())
 

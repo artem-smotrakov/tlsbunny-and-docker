@@ -59,7 +59,7 @@ public class UnexpectedClientHelloCookie extends AbstractClient {
 
                 // receive a ServerHello, EncryptedExtensions, Certificate,
                 // CertificateVerify and Finished messages
-                .require(new IncomingData())
+                .receive(new IncomingData())
 
                 // process ServerHello
                 .run(new ProcessingTLSPlaintext()

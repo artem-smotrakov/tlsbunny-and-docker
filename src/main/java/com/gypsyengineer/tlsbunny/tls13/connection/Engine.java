@@ -25,7 +25,7 @@ public class Engine {
     private static final ByteBuffer NOTHING = ByteBuffer.allocate(0);
 
     private enum ActionType {
-        send, require, allow, run
+        send, receive, allow, run
     }
 
     public enum Status {
@@ -139,8 +139,8 @@ public class Engine {
         return this;
     }
 
-    public Engine require(Action action) {
-        actions.add(new ActionHolder(action, ActionType.require));
+    public Engine receive(Action action) {
+        actions.add(new ActionHolder(action, ActionType.receive));
         return this;
     }
 
@@ -176,8 +176,8 @@ public class Engine {
                             return reportError(e);
                         }
                         break;
-                    case require:
-                        output.info("require: %s", action.name());
+                    case receive:
+                        output.info("receive: %s", action.name());
                         try {
                             read(connection, action);
                             action.run();
