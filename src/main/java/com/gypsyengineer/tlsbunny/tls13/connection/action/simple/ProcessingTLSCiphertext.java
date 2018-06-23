@@ -57,7 +57,12 @@ public class ProcessingTLSCiphertext extends AbstractAction<ProcessingTLSCiphert
             throw new ActionFailed("expected a TLSCiphertext");
         }
 
-        byte[] plaintext = getDecryptor().decrypt(tlsCiphertext);
+        AEAD decryptor = getDecryptor();
+        if (decryptor == null) {
+            throw new ActionFailed("what the hell! decryptor is not available! (null)");
+        }
+
+        byte[] plaintext = decryptor.decrypt(tlsCiphertext);
         tlsInnerPlaintext = context.factory.parser()
                 .parseTLSInnerPlaintext(plaintext);
 
