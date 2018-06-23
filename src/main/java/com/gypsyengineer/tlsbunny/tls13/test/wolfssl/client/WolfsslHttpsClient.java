@@ -86,7 +86,8 @@ public class WolfsslHttpsClient extends AbstractClient {
                 .run(new ProcessingCertificateVerify())
 
                 // process Finished
-                .run(new ProcessingHandshakeTLSCiphertext())
+                .run(new ProcessingHandshakeTLSCiphertext()
+                        .expect(handshake))
                 .run(new ProcessingHandshake()
                         .expect(finished)
                         .updateContext(Context.Element.server_finished))
