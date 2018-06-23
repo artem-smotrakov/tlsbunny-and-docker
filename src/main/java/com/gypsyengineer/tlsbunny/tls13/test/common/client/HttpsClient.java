@@ -72,28 +72,6 @@ public class HttpsClient extends AbstractClient {
                 // receive session tickets and application data
                 .receive(new IncomingMessages())
 
-                /*
-                // receive first NewSessionTicket
-                .receive(new IncomingData())
-                .run(new ProcessingApplicationDataTLSCiphertext()
-                        .expect(handshake))
-                .run(new ProcessingHandshake()
-                        .expect(new_session_ticket))
-                .run(new ProcessingNewSessionTicket())
-
-                // receive second NewSessionTicket
-                .receive(new IncomingData())
-                .run(new ProcessingApplicationDataTLSCiphertext()
-                        .expect(handshake))
-                .run(new ProcessingHandshake().expect(new_session_ticket))
-                .run(new ProcessingNewSessionTicket())
-
-                // receive application data
-                .receive(new IncomingData())
-                .run(new ProcessingApplicationDataTLSCiphertext())
-                .run(new PrintingData())
-                */
-
                 .connect();
     }
 
