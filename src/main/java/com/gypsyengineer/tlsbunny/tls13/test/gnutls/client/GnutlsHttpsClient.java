@@ -116,7 +116,8 @@ public class GnutlsHttpsClient extends AbstractClient {
 
                 // receive application data
                 .receive(new IncomingData())
-                .run(new ProcessingApplicationDataTLSCiphertext())
+                .run(new ProcessingApplicationDataTLSCiphertext()
+                        .expect(handshake))
                 .run(new PrintingData())
 
                 // GnuTLS server actually sends a "close_notify" alert

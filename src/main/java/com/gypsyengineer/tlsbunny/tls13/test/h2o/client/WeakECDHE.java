@@ -11,6 +11,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.tls13.test.SystemPropertiesConfig;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
+import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.application_data;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
 import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.*;
 import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.certificate_verify;
@@ -115,7 +116,8 @@ public class WeakECDHE {
 
                     // receive application data
                     .receive(new IncomingData())
-                    .run(new ProcessingApplicationDataTLSCiphertext())
+                    .run(new ProcessingApplicationDataTLSCiphertext()
+                            .expect(application_data))
                     .run(new PrintingData())
 
                     .connect()

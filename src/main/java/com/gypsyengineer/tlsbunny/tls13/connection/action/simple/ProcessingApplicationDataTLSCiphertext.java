@@ -7,7 +7,6 @@ public class ProcessingApplicationDataTLSCiphertext extends ProcessingTLSCiphert
 
     public ProcessingApplicationDataTLSCiphertext() {
         super(Phase.application_data);
-        expect(ContentType.application_data);
     }
     
 }
