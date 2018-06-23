@@ -366,16 +366,16 @@ public class Engine {
 
     private static class ActionHolder {
 
-        ActionType type;
-        ActionFactory factory;
-        Condition condition;
+        private ActionType type;
+        private ActionFactory factory;
+        private Condition condition;
 
         ActionHolder(ActionFactory factory, ActionType type) {
             this.factory = factory;
             this.type = type;
         }
 
-        ActionHolder set(Condition condition) {
+        private ActionHolder set(Condition condition) {
             this.condition = condition;
             return this;
         }
