@@ -51,7 +51,7 @@ public class Engine {
     private boolean stopIfAlert = true;
 
     // if true, then an exception is thrown in case of error
-    private boolean strict = false;
+    private boolean strict = true;
 
     // this is a label to mark a particular connection
     private String label = String.format("connection:%d", System.currentTimeMillis());
