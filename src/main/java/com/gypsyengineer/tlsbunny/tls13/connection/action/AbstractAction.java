@@ -44,6 +44,10 @@ public abstract class AbstractAction<T extends AbstractAction> implements Action
         return (T) this;
     }
 
+    public T in(byte[] data) {
+        return in(ByteBuffer.wrap(data));
+    }
+
     @Override
     public ByteBuffer out() {
         return out;

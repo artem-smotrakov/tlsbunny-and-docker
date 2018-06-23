@@ -152,7 +152,7 @@ public class IncomingMessages extends AbstractAction<IncomingMessages> {
             throws IOException, AEADException, NegotiatorException {
 
         new ProcessingServerHello().set(output).set(context)
-                .in(ByteBuffer.wrap(handshake.getBody())).run();
+                .in(handshake.getBody()).run();
 
         context.setServerHello(handshake);
 
@@ -166,21 +166,21 @@ public class IncomingMessages extends AbstractAction<IncomingMessages> {
 
     private void processEncryptedExtensions(Handshake handshake) {
         new ProcessingEncryptedExtensions().set(output).set(context)
-                .in(ByteBuffer.wrap(handshake.getBody())).run();
+                .in(handshake.getBody()).run();
 
         context.setEncryptedExtensions(handshake);
     }
 
     private void processCertificate(Handshake handshake) {
         new ProcessingCertificate().set(output).set(context)
-                .in(ByteBuffer.wrap(handshake.getBody())).run();
+                .in(handshake.getBody()).run();
 
         context.setServerCertificate(handshake);
     }
 
     private void processCertificateVerify(Handshake handshake) {
         new ProcessingCertificateVerify().set(output).set(context)
-                .in(ByteBuffer.wrap(handshake.getBody())).run();
+                .in(handshake.getBody()).run();
 
         context.setServerCertificateVerify(handshake);
     }
@@ -191,14 +191,14 @@ public class IncomingMessages extends AbstractAction<IncomingMessages> {
         context.setServerFinished(handshake);
 
         new ProcessingFinished().set(output).set(context)
-                .in(ByteBuffer.wrap(handshake.getBody())).run();
+                .in(handshake.getBody()).run();
 
         new ComputingKeysAfterServerFinished().set(output).set(context).run();
     }
 
     private void processNewSessionTicket(Handshake handshake) throws IOException {
         new ProcessingNewSessionTicket().set(output).set(context)
-                .in(ByteBuffer.wrap(handshake.getBody())).run();
+                .in(handshake.getBody()).run();
     }
 
 }
