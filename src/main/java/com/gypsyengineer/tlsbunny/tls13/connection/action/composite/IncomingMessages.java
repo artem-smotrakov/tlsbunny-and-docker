@@ -15,7 +15,7 @@ public class IncomingMessages extends AbstractAction<IncomingMessages> {
 
     @Override
     public String name() {
-        return "processing messages";
+        return "incoming messages";
     }
 
     @Override
@@ -26,23 +26,40 @@ public class IncomingMessages extends AbstractAction<IncomingMessages> {
             TLSPlaintext tlsPlaintext = new ProcessingTLSPlaintext()
                     .set(output).set(context).in(in).run().tlsPlaintext();
 
-            if (tlsPlaintext.containsHandshake()) {
-                processHandshake(tlsPlaintext);
-                continue;
-            }
-
             if (tlsPlaintext.containsChangeCipherSpec()) {
                 processChangeCipherSpec(tlsPlaintext);
                 continue;
             }
 
-            if (tlsPlaintext.containsAlert()) {
-                processAlert(tlsPlaintext);
+            ContentType type;
+            ByteBuffer content;
+            if (encryptedHandshakeData()) {
+                TLSInnerPlaintext tlsInnerPlaintext = new ProcessingTLSCiphertext(Phase.handshake)
+                        .set(output).set(context).set(tlsPlaintext).run().tlsInnerPlaintext();
+                type = tlsInnerPlaintext.getType();
+                content = ByteBuffer.wrap(tlsInnerPlaintext.getContent());
+            } else if (encryptedApplicationData()) {
+                TLSInnerPlaintext tlsInnerPlaintext = new ProcessingTLSCiphertext(Phase.application_data)
+                        .set(output).set(context).set(tlsPlaintext).run().tlsInnerPlaintext();
+                type = tlsInnerPlaintext.getType();
+                content = ByteBuffer.wrap(tlsInnerPlaintext.getContent());
+            } else {
+                type = tlsPlaintext.getType();
+                content = ByteBuffer.wrap(tlsPlaintext.getFragment());
+            }
+
+            if (ContentType.handshake.equals(type)) {
+                processHandshake(content);
                 continue;
             }
 
-            if (tlsPlaintext.containsApplicationData()) {
-                processApplicationData(tlsPlaintext);
+            if (ContentType.alert.equals(type)) {
+                processAlert(content);
+                continue;
+            }
+
+            if (ContentType.application_data.equals(type)) {
+                processApplicationData(content);
                 continue;
             }
 
@@ -52,13 +69,20 @@ public class IncomingMessages extends AbstractAction<IncomingMessages> {
         return this;
     }
 
-    private void processHandshake(TLSPlaintext tlsPlaintext)
+    private boolean encryptedHandshakeData() {
+        return context.hasServerHello() && !context.hasServerFinished();
+    }
+
+    private boolean encryptedApplicationData() {
+        return context.hasServerFinished();
+    }
+
+    private void processHandshake(ByteBuffer buffer)
             throws ActionFailed, NegotiatorException, IOException, AEADException {
 
-        ByteBuffer buffer = ByteBuffer.wrap(tlsPlaintext.getFragment());
         while (buffer.remaining() > 0) {
             Handshake handshake = new ProcessingHandshake()
-                    .set(output).set(context).run().handshake();
+                    .set(output).set(context).in(buffer).run().handshake();
 
             if (handshake.containsClientHello()) {
                 processClientHello(handshake);
@@ -105,25 +129,19 @@ public class IncomingMessages extends AbstractAction<IncomingMessages> {
     }
 
     private void processChangeCipherSpec(TLSPlaintext tlsPlaintext) throws ActionFailed {
-        new ProcessingChangeCipherSpec().set(output).set(context)
-                .in(ByteBuffer.wrap(tlsPlaintext.getFragment())).run();
+        processChangeCipherSpec(ByteBuffer.wrap(tlsPlaintext.getFragment()));
     }
 
-    private void processAlert(TLSPlaintext tlsPlaintext) {
-        new ProcessingAlert().set(output).set(context)
-                .in(ByteBuffer.wrap(tlsPlaintext.getFragment())).run();
+    private void processChangeCipherSpec(ByteBuffer buffer) throws ActionFailed {
+        new ProcessingChangeCipherSpec().set(output).set(context).in(buffer).run();
     }
 
-    private void processApplicationData(TLSPlaintext tlsCiphertext)
-            throws AEADException, IOException, ActionFailed {
+    private void processAlert(ByteBuffer buffer) {
+        new ProcessingAlert().set(output).set(context).in(buffer).run();
+    }
 
-        if (context.hasServerFinished()) {
-            new ProcessingTLSCiphertext(Phase.application_data)
-                    .set(output).set(context).set(tlsCiphertext).run();
-        } else {
-            new ProcessingTLSCiphertext(Phase.handshake)
-                    .set(output).set(context).set(tlsCiphertext).run();
-        }
+    private void processApplicationData(ByteBuffer buffer) {
+        new PrintingData().set(output).set(context).in(buffer).run();
     }
 
     private void processClientHello(Handshake handshake) {
@@ -170,10 +188,10 @@ public class IncomingMessages extends AbstractAction<IncomingMessages> {
     private void processFinished(Handshake handshake)
             throws IOException, ActionFailed {
 
+        context.setServerFinished(handshake);
+
         new ProcessingFinished().set(output).set(context)
                 .in(ByteBuffer.wrap(handshake.getBody())).run();
-
-        context.setServerFinished(handshake);
 
         new ComputingKeysAfterServerFinished().set(output).set(context).run();
     }
