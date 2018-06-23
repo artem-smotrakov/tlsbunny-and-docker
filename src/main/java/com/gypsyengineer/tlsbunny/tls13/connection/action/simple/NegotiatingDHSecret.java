@@ -10,7 +10,7 @@ import java.io.IOException;
 
 import static com.gypsyengineer.tlsbunny.tls13.utils.TLS13Utils.findKeyShare;
 
-public class NegotiatingDHSecret extends AbstractAction {
+public class NegotiatingDHSecret extends AbstractAction<NegotiatingDHSecret> {
 
     @Override
     public String name() {

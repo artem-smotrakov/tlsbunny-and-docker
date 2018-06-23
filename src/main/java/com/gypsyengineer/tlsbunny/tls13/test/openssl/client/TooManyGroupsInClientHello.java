@@ -57,7 +57,7 @@ public class TooManyGroupsInClientHello extends AbstractClient {
 
                 // receive a ServerHello, EncryptedExtensions, Certificate,
                 // CertificateVerify and Finished messages
-                .require(new IncomingData())
+                .receive(new IncomingData())
 
                 // process ServerHello
                 .run(new ProcessingTLSPlaintext()
@@ -118,7 +118,7 @@ public class TooManyGroupsInClientHello extends AbstractClient {
                 .send(new OutgoingData())
 
                 // receive first NewSessionTicket
-                .require(new IncomingData())
+                .receive(new IncomingData())
                 .run(new ProcessingApplicationDataTLSCiphertext()
                         .expect(handshake))
                 .run(new ProcessingHandshake()
@@ -126,14 +126,14 @@ public class TooManyGroupsInClientHello extends AbstractClient {
                 .run(new ProcessingNewSessionTicket())
 
                 // receive second NewSessionTicket
-                .require(new IncomingData())
+                .receive(new IncomingData())
                 .run(new ProcessingApplicationDataTLSCiphertext()
                         .expect(handshake))
                 .run(new ProcessingHandshake().expect(new_session_ticket))
                 .run(new ProcessingNewSessionTicket())
 
                 // receive application data
-                .require(new IncomingData())
+                .receive(new IncomingData())
                 .run(new ProcessingApplicationDataTLSCiphertext())
                 .run(new PrintingData())
 

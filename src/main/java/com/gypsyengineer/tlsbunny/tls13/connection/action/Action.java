@@ -14,6 +14,7 @@ public interface Action {
     Action set(Context context);
     Action run() throws ActionFailed, AEADException, NegotiatorException, IOException;
 
+    Action in(byte[] bytes);
     Action in(ByteBuffer buffer);
     ByteBuffer out();
 

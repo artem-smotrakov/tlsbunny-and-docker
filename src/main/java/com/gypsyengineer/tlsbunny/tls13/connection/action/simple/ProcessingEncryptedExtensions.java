@@ -2,12 +2,8 @@ package com.gypsyengineer.tlsbunny.tls13.connection.action.simple;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.action.AbstractAction;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
-import com.gypsyengineer.tlsbunny.tls13.struct.EncryptedExtensions;
-import com.gypsyengineer.tlsbunny.tls13.struct.ServerHello;
 
-import java.nio.ByteBuffer;
-
-public class ProcessingEncryptedExtensions extends AbstractAction {
+public class ProcessingEncryptedExtensions extends AbstractAction<ProcessingEncryptedExtensions> {
 
     @Override
     public String name() {
@@ -16,7 +12,7 @@ public class ProcessingEncryptedExtensions extends AbstractAction {
 
     @Override
     public Action run() {
-        EncryptedExtensions extensions = context.factory.parser().parseEncryptedExtensions(in);
+        context.factory.parser().parseEncryptedExtensions(in);
         output.info("received an EncryptedExtensions message");
 
         return this;

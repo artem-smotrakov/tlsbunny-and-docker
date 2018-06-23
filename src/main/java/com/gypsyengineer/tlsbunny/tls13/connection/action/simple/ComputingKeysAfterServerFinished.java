@@ -2,12 +2,10 @@ package com.gypsyengineer.tlsbunny.tls13.connection.action.simple;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.action.AbstractAction;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
-import com.gypsyengineer.tlsbunny.tls13.connection.action.ActionFailed;
-import com.gypsyengineer.tlsbunny.tls13.crypto.AEADException;
 
 import java.io.IOException;
 
-public class ComputingKeysAfterServerFinished extends AbstractAction {
+public class ComputingKeysAfterServerFinished extends AbstractAction<ComputingKeysAfterServerFinished> {
 
     @Override
     public String name() {
