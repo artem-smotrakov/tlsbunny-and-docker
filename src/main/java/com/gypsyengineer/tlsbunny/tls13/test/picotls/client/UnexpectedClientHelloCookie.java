@@ -98,7 +98,8 @@ public class UnexpectedClientHelloCookie extends AbstractClient {
                 .run(new ProcessingCertificateVerify())
 
                 // process Finished
-                .run(new ProcessingHandshakeTLSCiphertext())
+                .run(new ProcessingHandshakeTLSCiphertext()
+                        .expect(handshake))
                 .run(new ProcessingHandshake()
                         .expect(finished)
                         .updateContext(Context.Element.server_finished))
@@ -110,7 +111,6 @@ public class UnexpectedClientHelloCookie extends AbstractClient {
 
                 // send Finished
                 .run(new GeneratingFinished())
-                .run(new ComputingKeysAfterClientFinished())
                 .run(new WrappingIntoHandshake()
                         .type(finished)
                         .updateContext(Context.Element.client_finished))
