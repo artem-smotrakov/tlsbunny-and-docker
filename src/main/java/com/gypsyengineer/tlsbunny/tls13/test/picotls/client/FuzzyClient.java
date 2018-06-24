@@ -9,7 +9,7 @@ public class FuzzyClient {
 
     public static void main(String[] args) throws InterruptedException {
         new Runner()
-                .add(factory, combine(noClientAuthConfigs(), new PicotlsClient()))
+                .add(fuzzerFactory, combine(noClientAuthConfigs(), new PicotlsClient()))
                 .set(new NoAlertAnalyzer())
                 .submit();
     }
