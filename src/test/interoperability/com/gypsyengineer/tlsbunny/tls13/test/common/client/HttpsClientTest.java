@@ -4,6 +4,8 @@ import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertCheck;
 import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
 import org.junit.Test;
 
+import static junit.framework.TestCase.fail;
+
 // run https clients against multiple TLS 1.3 servers
 // make sure that the servers are running on the ports below
 public class HttpsClientTest {
@@ -15,43 +17,58 @@ public class HttpsClientTest {
     public static final int NSS_PORT = 60101;
 
     @Test
-    public void connectToOpenssl() throws Exception {
+    public void connectToOpenssl() {
         try (HttpsClient client = new HttpsClient()) {
             client.config().port(OPENSSL_PORT);
             client.connect().run(new NoAlertCheck());
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("unexpected exception");
         }
     }
 
     @Test
-    public void connectToH2O() throws Exception {
+    public void connectToH2O() {
         try (HttpsClient client = new HttpsClient()) {
             client.config().port(H2O_PORT);
             client.connect().run(new NoAlertCheck());
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("unexpected exception");
         }
     }
 
     @Test
-    public void connectToWolfssl() throws Exception {
+    public void connectToWolfssl() {
         try (HttpsClient client = new HttpsClient()) {
             client.config().port(WOLFSSL_PORT);
             client.connect().run(new NoAlertCheck());
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("unexpected exception");
         }
     }
 
     @Test
-    public void connectToGnutls() throws Exception {
+    public void connectToGnutls() {
         try (HttpsClient client = new HttpsClient()) {
             client.config().port(GNUTLS_PORT);
             client.connect().run(new NoAlertCheck());
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("unexpected exception");
         }
     }
 
     @Test
-    public void connectToNSS() throws Exception {
+    public void connectToNSS() {
         try (HttpsClient client = new HttpsClient()) {
             client.config().port(NSS_PORT);
             client.version(ProtocolVersion.TLSv13_draft_28).connect()
                     .run(new NoAlertCheck());
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("unexpected exception");
         }
     }
 }
