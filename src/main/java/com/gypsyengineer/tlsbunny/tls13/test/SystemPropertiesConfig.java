@@ -32,6 +32,18 @@ public class SystemPropertiesConfig implements Config {
     }
 
     @Override
+    public Config host(String host) {
+        this.host = host;
+        return this;
+    }
+
+    @Override
+    public Config port(int port) {
+        this.port = port;
+        return this;
+    }
+
+    @Override
     public Config minRatio(double minRatio) {
         this.minRatio = minRatio;
         return this;

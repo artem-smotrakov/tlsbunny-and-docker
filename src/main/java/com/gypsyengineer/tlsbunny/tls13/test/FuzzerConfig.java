@@ -71,6 +71,18 @@ public class FuzzerConfig implements Config {
     }
 
     @Override
+    public Config host(String host) {
+        commonConfig.host(host);
+        return this;
+    }
+
+    @Override
+    public Config port(int port) {
+        commonConfig.port(port);
+        return this;
+    }
+
+    @Override
     public FuzzerConfig minRatio(double minRatio) {
         commonConfig.minRatio(minRatio);
         return this;
