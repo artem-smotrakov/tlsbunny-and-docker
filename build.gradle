@@ -1,9 +1,12 @@
+plugins {
+    id 'java'
+    id 'idea'
+    id 'application'
+    id 'jacoco'
+    id 'com.github.kt3k.coveralls' version '2.6.3'
+}
+
 version '1.0-SNAPSHOT'
-
-apply plugin: 'java'
-apply plugin: 'idea'
-apply plugin: 'application'
-
 sourceCompatibility = 1.9
 mainClassName = "com.gypsyengineer.tlsbunny.Main"
 
@@ -20,6 +23,13 @@ sourceSets {
         java {
             srcDirs "src/test/java"
         }
+    }
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled = true
+        html.enabled = true
     }
 }
 
