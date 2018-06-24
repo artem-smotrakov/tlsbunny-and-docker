@@ -7,7 +7,9 @@ import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.tls13.test.SystemPropertiesConfig;
 import com.gypsyengineer.tlsbunny.tls13.test.common.client.AbstractClient;
+import com.gypsyengineer.tlsbunny.utils.Output;
 
+import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.application_data;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
 import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.*;
 import static com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup.secp256r1;
@@ -17,11 +19,14 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp
 public class NssHttpsClient extends AbstractClient {
 
     public static void main(String[] args) throws Exception {
-        new NssHttpsClient()
-                .set(SystemPropertiesConfig.load())
-                .set(StructFactory.getDefault())
-                .connect()
-                .run(new NoAlertCheck());
+        try (Output output = new Output()) {
+            new NssHttpsClient()
+                    .set(SystemPropertiesConfig.load())
+                    .set(StructFactory.getDefault())
+                    .set(output)
+                    .connect()
+                    .run(new NoAlertCheck());
+        }
     }
 
     @Override
@@ -48,7 +53,7 @@ public class NssHttpsClient extends AbstractClient {
 
                 // receive a ServerHello, EncryptedExtensions, Certificate,
                 // CertificateVerify and Finished messages
-                .require(new IncomingData())
+                .receive(new IncomingData())
 
                 // process ServerHello
                 .run(new ProcessingTLSPlaintext()
@@ -92,7 +97,6 @@ public class NssHttpsClient extends AbstractClient {
 
                 // send Finished
                 .run(new GeneratingFinished())
-                .run(new ComputingKeysAfterClientFinished())
                 .run(new WrappingIntoHandshake()
                         .type(finished)
                         .updateContext(Context.Element.client_finished))
@@ -105,8 +109,9 @@ public class NssHttpsClient extends AbstractClient {
                 .send(new OutgoingData())
 
                 // receive application data
-                .require(new IncomingData())
-                .run(new ProcessingApplicationDataTLSCiphertext())
+                .receive(new IncomingData())
+                .run(new ProcessingApplicationDataTLSCiphertext()
+                        .expect(application_data))
                 .run(new PrintingData())
 
                 // selfserv actually sends a "close_notify" alert

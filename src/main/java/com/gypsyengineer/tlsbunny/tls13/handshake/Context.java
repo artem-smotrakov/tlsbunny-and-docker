@@ -105,6 +105,8 @@ public class Context {
     public AEAD applicationDataEnctyptor;
     public AEAD applicationDataDecryptor;
 
+    public List<byte[]> applicatinoData = new ArrayList<>();
+
     public void reset() {
         firstClientHello = null;
         helloRetryRequest = null;
@@ -200,6 +202,10 @@ public class Context {
         this.serverHello = serverHello;
     }
 
+    public boolean hasServerHello() {
+        return serverHello != null;
+    }
+
     public Handshake getEncryptedExtensions() {
         return encryptedExtensions;
     }
@@ -238,6 +244,10 @@ public class Context {
 
     public void setServerFinished(Handshake serverFinished) {
         this.serverFinished = serverFinished;
+    }
+
+    public boolean hasServerFinished() {
+        return serverFinished != null;
     }
 
     public void verifyServerFinished() {
@@ -355,5 +365,13 @@ public class Context {
 
     public Alert getAlert() {
         return alert;
+    }
+
+    public void addApplicationData(byte[] data) {
+        applicatinoData.add(data);
+    }
+
+    public boolean receivedApplicationData() {
+        return !applicatinoData.isEmpty();
     }
 }

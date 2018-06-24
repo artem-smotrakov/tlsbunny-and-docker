@@ -10,6 +10,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.tls13.test.SystemPropertiesConfig;
 import com.gypsyengineer.tlsbunny.tls13.test.common.client.AbstractClient;
 
+import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.application_data;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
 import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.*;
 import static com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup.secp256r1;
@@ -57,7 +58,7 @@ public class TooManyGroupsInClientHello extends AbstractClient {
 
                 // receive a ServerHello, EncryptedExtensions, Certificate,
                 // CertificateVerify and Finished messages
-                .require(new IncomingData())
+                .receive(new IncomingData())
 
                 // process ServerHello
                 .run(new ProcessingTLSPlaintext()
@@ -96,7 +97,8 @@ public class TooManyGroupsInClientHello extends AbstractClient {
                 .run(new ProcessingCertificateVerify())
 
                 // process Finished
-                .run(new ProcessingHandshakeTLSCiphertext())
+                .run(new ProcessingHandshakeTLSCiphertext()
+                        .expect(handshake))
                 .run(new ProcessingHandshake()
                         .expect(finished)
                         .updateContext(Context.Element.server_finished))
@@ -105,7 +107,6 @@ public class TooManyGroupsInClientHello extends AbstractClient {
 
                 // send Finished
                 .run(new GeneratingFinished())
-                .run(new ComputingKeysAfterClientFinished())
                 .run(new WrappingIntoHandshake()
                         .type(finished)
                         .updateContext(Context.Element.client_finished))
@@ -118,7 +119,7 @@ public class TooManyGroupsInClientHello extends AbstractClient {
                 .send(new OutgoingData())
 
                 // receive first NewSessionTicket
-                .require(new IncomingData())
+                .receive(new IncomingData())
                 .run(new ProcessingApplicationDataTLSCiphertext()
                         .expect(handshake))
                 .run(new ProcessingHandshake()
@@ -126,15 +127,16 @@ public class TooManyGroupsInClientHello extends AbstractClient {
                 .run(new ProcessingNewSessionTicket())
 
                 // receive second NewSessionTicket
-                .require(new IncomingData())
+                .receive(new IncomingData())
                 .run(new ProcessingApplicationDataTLSCiphertext()
                         .expect(handshake))
                 .run(new ProcessingHandshake().expect(new_session_ticket))
                 .run(new ProcessingNewSessionTicket())
 
                 // receive application data
-                .require(new IncomingData())
-                .run(new ProcessingApplicationDataTLSCiphertext())
+                .receive(new IncomingData())
+                .run(new ProcessingApplicationDataTLSCiphertext()
+                        .expect(application_data))
                 .run(new PrintingData())
 
                 .connect();

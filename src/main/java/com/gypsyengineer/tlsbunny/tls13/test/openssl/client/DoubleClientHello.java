@@ -13,15 +13,15 @@ public class DoubleClientHello {
                 .target(config.host())
                 .target(config.port())
                 .send(new OutgoingClientHello())
-                .require(new IncomingServerHello())
-                .require(new IncomingChangeCipherSpec())
-                .require(new IncomingEncryptedExtensions())
-                .require(new IncomingCertificate())
-                .require(new IncomingCertificateVerify())
-                .require(new IncomingFinished())
+                .receive(new IncomingServerHello())
+                .receive(new IncomingChangeCipherSpec())
+                .receive(new IncomingEncryptedExtensions())
+                .receive(new IncomingCertificate())
+                .receive(new IncomingCertificateVerify())
+                .receive(new IncomingFinished())
                 .run(new OutgoingFinished())
                 .send(new OutgoingClientHello())
-                .require(new IncomingAlert())
+                .receive(new IncomingAlert())
                 .connect();
     }
 }

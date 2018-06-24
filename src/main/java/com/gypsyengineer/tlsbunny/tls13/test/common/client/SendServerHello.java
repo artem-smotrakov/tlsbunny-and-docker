@@ -26,7 +26,7 @@ public class SendServerHello {
                         .type(handshake)
                         .version(TLSv12))
                 .send(new OutgoingData())
-                .require(new IncomingData())
+                .receive(new IncomingData())
                 .run(new ProcessingTLSPlaintext()
                         .expect(alert))
                 .run(new ProcessingAlert())

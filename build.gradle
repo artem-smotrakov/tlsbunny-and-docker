@@ -1,9 +1,12 @@
+plugins {
+    id 'java'
+    id 'idea'
+    id 'application'
+    id 'jacoco'
+    id 'com.github.kt3k.coveralls' version '2.6.3'
+}
+
 version '1.0-SNAPSHOT'
-
-apply plugin: 'java'
-apply plugin: 'idea'
-apply plugin: 'application'
-
 sourceCompatibility = 1.9
 mainClassName = "com.gypsyengineer.tlsbunny.Main"
 
@@ -13,6 +16,44 @@ repositories {
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.+'
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs 'src/main/java'
+        }
+    }
+
+    test {
+        java {
+            srcDirs 'src/test/java'
+        }
+    }
+
+    interoperability {
+        java.srcDir file('src/test/interoperability')
+        compileClasspath += sourceSets.main.output + configurations.testRuntimeClasspath
+        runtimeClasspath += output + compileClasspath
+    }
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled = true
+        html.enabled = true
+    }
+}
+
+// test tasks
+
+// run the interoperability tests against third-party TLS implementations
+// make sure that the servers are running before running the task
+task interoperability(type: Test) {
+    description = 'Runs the interoperability tests'
+    testClassesDirs = sourceSets.interoperability.output.classesDirs
+    classpath += sourceSets.interoperability.runtimeClasspath
+    classpath += sourceSets.main.runtimeClasspath
 }
 
 // tasks for running tests for GnuTLS
@@ -64,7 +105,7 @@ task removeGnutlsDockerContainer(type: Exec) {
 
 task gnutlsClient(type: JavaExec) {
     classpath sourceSets.main.runtimeClasspath
-    applicationDefaultJvmArgs = ["-Dtlsbunny.port=20101"]
+    applicationDefaultJvmArgs = ["-Dtlsbunny.port=50101"]
     main = "com.gypsyengineer.tlsbunny.tls13.test.gnutls.client.HttpsClient"
 }
 

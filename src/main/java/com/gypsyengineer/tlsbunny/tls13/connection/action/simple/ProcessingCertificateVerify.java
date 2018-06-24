@@ -4,7 +4,7 @@ import com.gypsyengineer.tlsbunny.tls13.connection.action.AbstractAction;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
 import com.gypsyengineer.tlsbunny.tls13.struct.CertificateVerify;
 
-public class ProcessingCertificateVerify extends AbstractAction {
+public class ProcessingCertificateVerify extends AbstractAction<ProcessingCertificateVerify> {
 
     @Override
     public String name() {
@@ -13,7 +13,7 @@ public class ProcessingCertificateVerify extends AbstractAction {
 
     @Override
     public Action run() {
-        CertificateVerify certificateVerify = context.factory.parser().parseCertificateVerify(in);
+        context.factory.parser().parseCertificateVerify(in);
         output.info("received a CertificateVerify message");
 
         return this;

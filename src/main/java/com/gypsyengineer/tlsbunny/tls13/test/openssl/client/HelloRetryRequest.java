@@ -38,7 +38,7 @@ public class HelloRetryRequest {
                 .send(new OutgoingData())
 
                 // receive a HelloRetryRequest
-                .require(new IncomingData())
+                .receive(new IncomingData())
                 .run(new ProcessingTLSPlaintext()
                         .expect(handshake))
                 .run(new ProcessingHandshake()
@@ -61,7 +61,7 @@ public class HelloRetryRequest {
                 .send(new OutgoingData())
 
                 // receive a ServerHello
-                .require(new IncomingData())
+                .receive(new IncomingData())
                 .run(new ProcessingTLSPlaintext()
                         .expect(handshake))
                 .run(new ProcessingHandshake()

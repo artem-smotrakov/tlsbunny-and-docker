@@ -1,4 +1,5 @@
 language: java
+
 jdk:
   - oraclejdk9
   - openjdk9
@@ -23,4 +24,7 @@ addons:
     build_command_prepend: "./gradlew assemble"
     build_command: "./gradlew build"
     branch_pattern: coverity_scan
-    
+
+after_success:
+- ./gradlew jacocoTestReport coveralls
+

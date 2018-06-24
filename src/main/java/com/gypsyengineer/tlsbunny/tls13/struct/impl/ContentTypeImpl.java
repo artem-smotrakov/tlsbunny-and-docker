@@ -101,7 +101,8 @@ public class ContentTypeImpl implements ContentType {
 
     private static void check(int code) {
         if (code < 0 || code > 255) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException(
+                    String.format("what the hell? code is wrong: %s", code));
         }
     }
 
