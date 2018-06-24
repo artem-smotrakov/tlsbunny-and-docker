@@ -1,7 +1,5 @@
 package com.gypsyengineer.tlsbunny.tls13.test;
 
-import com.gypsyengineer.tlsbunny.tls13.fuzzer.Target;
-
 public class SystemPropertiesConfig implements Config {
 
     public static final int DEFAULT_PARTS = 1;
@@ -25,7 +23,6 @@ public class SystemPropertiesConfig implements Config {
     int parts;
     long startTest;
     long endTest;
-    Target target;
     String clientCertificate;
     String clientKey;
     long readTimeout;
@@ -158,7 +155,4 @@ public class SystemPropertiesConfig implements Config {
         return Double.parseDouble(s);
     }
 
-    public Runnable create() {
-        throw new UnsupportedOperationException();
-    }
 }
