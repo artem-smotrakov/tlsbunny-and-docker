@@ -1,15 +1,14 @@
-package com.gypsyengineer.tlsbunny.tls13.test.gnutls.client;
+package com.gypsyengineer.tlsbunny.tls13.test.common.client;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertAnalyzer;
-import com.gypsyengineer.tlsbunny.tls13.test.common.client.Runner;
 
 import static com.gypsyengineer.tlsbunny.tls13.test.common.client.CommonFuzzer.*;
 
-public class FuzzyClient {
+public class FuzzyHttpsClient {
 
     public static void main(String[] args) throws InterruptedException {
         new Runner()
-                .add(factory, combine(noClientAuthConfigs(), new GnutlsHttpsClient()))
+                .add(fuzzerFactory, combine(noClientAuthConfigs(), new HttpsClient()))
                 .set(new NoAlertAnalyzer())
                 .submit();
     }

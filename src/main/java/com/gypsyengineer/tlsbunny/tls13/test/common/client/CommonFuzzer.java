@@ -281,7 +281,7 @@ public class CommonFuzzer implements Runnable {
         return configs.toArray(new FuzzerConfig[configs.size()]);
     }
 
-    public static Runner.FuzzerFactory factory =
+    public static Runner.FuzzerFactory fuzzerFactory =
             (config, output) -> new CommonFuzzer(output, config);
 
     private static final int MAX_ATTEMPTS = 3;
