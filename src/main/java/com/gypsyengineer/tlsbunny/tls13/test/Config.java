@@ -15,6 +15,8 @@ public interface Config {
     // timeout for reading incoming data (in millis)
     long readTimeout();
 
+    Config host(String host);
+    Config port(int port);
     Config minRatio(double minRatio);
     Config maxRatio(double maxRatio);
     Config startTest(long test);

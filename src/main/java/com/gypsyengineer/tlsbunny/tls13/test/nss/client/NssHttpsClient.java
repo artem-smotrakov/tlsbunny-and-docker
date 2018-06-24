@@ -7,6 +7,7 @@ import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.tls13.test.SystemPropertiesConfig;
 import com.gypsyengineer.tlsbunny.tls13.test.common.client.AbstractClient;
+import com.gypsyengineer.tlsbunny.utils.Output;
 
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.application_data;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
@@ -18,11 +19,14 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp
 public class NssHttpsClient extends AbstractClient {
 
     public static void main(String[] args) throws Exception {
-        new NssHttpsClient()
-                .set(SystemPropertiesConfig.load())
-                .set(StructFactory.getDefault())
-                .connect()
-                .run(new NoAlertCheck());
+        try (Output output = new Output()) {
+            new NssHttpsClient()
+                    .set(SystemPropertiesConfig.load())
+                    .set(StructFactory.getDefault())
+                    .set(output)
+                    .connect()
+                    .run(new NoAlertCheck());
+        }
     }
 
     @Override
