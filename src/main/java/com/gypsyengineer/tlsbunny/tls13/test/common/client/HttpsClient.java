@@ -5,6 +5,7 @@ import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.IncomingMessages;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
+import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.tls13.test.SystemPropertiesConfig;
 import com.gypsyengineer.tlsbunny.utils.Output;
@@ -18,6 +19,8 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp
 
 public class HttpsClient extends AbstractClient {
 
+    private ProtocolVersion protocolVersion = TLSv13_draft_26;
+
     public static void main(String[] args) throws Exception {
         try (Output output = new Output()) {
             new HttpsClient()
@@ -27,6 +30,11 @@ public class HttpsClient extends AbstractClient {
                     .connect()
                     .run(new NoAlertCheck());
         }
+    }
+
+    public HttpsClient version(ProtocolVersion protocolVersion) {
+        this.protocolVersion = protocolVersion;
+        return this;
     }
 
     @Override
@@ -39,7 +47,7 @@ public class HttpsClient extends AbstractClient {
 
                 // send ClientHello
                 .run(new GeneratingClientHello()
-                        .supportedVersion(TLSv13_draft_26)
+                        .supportedVersion(protocolVersion)
                         .group(secp256r1)
                         .signatureScheme(ecdsa_secp256r1_sha256)
                         .keyShareEntry(context -> context.negotiator.createKeyShareEntry()))
