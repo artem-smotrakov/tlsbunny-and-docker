@@ -15,6 +15,14 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.+'
 }
 
+sourceSets {
+    test {
+        java {
+            srcDirs "src/test/java"
+        }
+    }
+}
+
 // tasks for running tests for GnuTLS
 
 task buildGnutlsDocker(type: Exec) {

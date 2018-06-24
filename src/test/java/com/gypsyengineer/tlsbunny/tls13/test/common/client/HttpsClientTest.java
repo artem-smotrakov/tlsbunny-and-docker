@@ -4,6 +4,8 @@ import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertCheck;
 import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
 import org.junit.Test;
 
+// run https clients against multiple TLS 1.3 servers
+// make sure that the servers are running on the ports below
 public class HttpsClientTest {
 
     public static final int OPENSSL_PORT = 10101;
