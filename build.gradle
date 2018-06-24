@@ -19,10 +19,22 @@ dependencies {
 }
 
 sourceSets {
+    main {
+        java {
+            srcDirs 'src/main/java'
+        }
+    }
+
     test {
         java {
-            srcDirs "src/test/java"
+            srcDirs 'src/test/java'
         }
+    }
+
+    interoperability {
+        java.srcDir file('src/test/interoperability')
+        compileClasspath += sourceSets.main.output + configurations.testRuntimeClasspath
+        runtimeClasspath += output + compileClasspath
     }
 }
 
@@ -31,6 +43,17 @@ jacocoTestReport {
         xml.enabled = true
         html.enabled = true
     }
+}
+
+// test tasks
+
+// run the interoperability tests against third-party TLS implementations
+// make sure that the servers are running before running the task
+task interoperability(type: Test) {
+    description = 'Runs the interoperability tests'
+    testClassesDirs = sourceSets.interoperability.output.classesDirs
+    classpath += sourceSets.interoperability.runtimeClasspath
+    classpath += sourceSets.main.runtimeClasspath
 }
 
 // tasks for running tests for GnuTLS
