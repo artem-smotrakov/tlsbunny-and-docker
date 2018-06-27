@@ -24,7 +24,10 @@ public class Engine {
     private static final ByteBuffer NOTHING = ByteBuffer.allocate(0);
 
     private enum ActionType {
-        send, receive, receive_if, allow, run
+        run,
+        send, send_while,
+        receive, receive_while,
+        allow
     }
 
     public enum Status {
@@ -127,7 +130,10 @@ public class Engine {
     }
 
     public Engine send(Action action) {
-        actions.add(new ActionHolder(() -> action, ActionType.send));
+        actions.add(new ActionHolder()
+                .engine(this)
+                .factory(() -> action)
+                .type(ActionType.send));
         return this;
     }
 
@@ -139,22 +145,37 @@ public class Engine {
     }
 
     public Engine receive(Action action) {
-        actions.add(new ActionHolder(() -> action, ActionType.receive));
+        actions.add(new ActionHolder()
+                .engine(this)
+                .factory(() -> action)
+                .type(ActionType.receive));
         return this;
     }
 
-    public Engine receive(Condition condition, ActionFactory factory) {
-        actions.add(new ActionHolder(factory, ActionType.receive_if).set(condition));
-        return this;
+    public ActionHolder receive(ActionFactory factory) {
+        return new ActionHolder().engine(this).factory(factory);
     }
 
     public Engine allow(Action action) {
-        actions.add(new ActionHolder(() -> action, ActionType.allow));
+        actions.add(new ActionHolder()
+                .engine(this)
+                .factory(() -> action)
+                .type(ActionType.allow));
         return this;
     }
 
+    public ActionHolder loop(Condition condition) {
+        return new ActionHolder()
+                .engine(this)
+                .type(ActionType.receive_while)
+                .condition(condition);
+    }
+
     public Engine run(Action action) {
-        actions.add(new ActionHolder(() -> action, ActionType.run));
+        actions.add(new ActionHolder()
+                .engine(this)
+                .factory(() -> action)
+                .type(ActionType.run));
         return this;
     }
 
@@ -193,7 +214,7 @@ public class Engine {
                             return reportError(e);
                         }
                         break;
-                    case receive_if:
+                    case receive_while:
                         try {
                             action = actionFactory.create();
                             while (holder.condition.met(context)) {
@@ -364,18 +385,35 @@ public class Engine {
         Action create();
     }
 
-    private static class ActionHolder {
+    public static class ActionHolder {
 
+        private Engine engine;
         private ActionType type;
         private ActionFactory factory;
         private Condition condition;
 
-        ActionHolder(ActionFactory factory, ActionType type) {
-            this.factory = factory;
-            this.type = type;
+        public Engine receive(ActionFactory factory) {
+            factory(factory);
+            engine.actions.add(this);
+            return engine;
         }
 
-        private ActionHolder set(Condition condition) {
+        ActionHolder engine(Engine engine) {
+            this.engine = engine;
+            return this;
+        }
+
+        ActionHolder factory(ActionFactory factory) {
+            this.factory = factory;
+            return this;
+        }
+
+        ActionHolder type(ActionType type) {
+            this.type = type;
+            return this;
+        }
+
+        ActionHolder condition(Condition condition) {
             this.condition = condition;
             return this;
         }

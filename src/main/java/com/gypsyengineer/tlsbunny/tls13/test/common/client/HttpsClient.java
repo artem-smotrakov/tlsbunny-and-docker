@@ -78,9 +78,8 @@ public class HttpsClient extends AbstractClient {
                 .send(new OutgoingData())
 
                 // receive session tickets and application data
-                .receive(
-                        context -> !context.receivedApplicationData(),
-                        () -> new IncomingMessages())
+                .loop(context -> !context.receivedApplicationData())
+                    .receive(() -> new IncomingMessages())
 
                 .connect();
     }
