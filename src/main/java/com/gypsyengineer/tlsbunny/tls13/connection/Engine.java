@@ -293,13 +293,13 @@ public class Engine {
         return this;
     }
 
-    public Engine run(Check check) {
+    public Engine run(Check check) throws ActionFailed {
         check.set(this);
         check.set(context);
 
         check.run();
         if (check.failed()) {
-            throw new RuntimeException(String.format("%s check failed", check.name()));
+            throw new ActionFailed(String.format("%s check failed", check.name()));
         }
         output.info(String.format("check passed: %s", check.name()));
 
@@ -410,22 +410,22 @@ public class Engine {
             return engine;
         }
 
-        ActionHolder engine(Engine engine) {
+        private ActionHolder engine(Engine engine) {
             this.engine = engine;
             return this;
         }
 
-        ActionHolder factory(ActionFactory factory) {
+        private ActionHolder factory(ActionFactory factory) {
             this.factory = factory;
             return this;
         }
 
-        ActionHolder type(ActionType type) {
+        private ActionHolder type(ActionType type) {
             this.type = type;
             return this;
         }
 
-        ActionHolder condition(Condition condition) {
+        private ActionHolder condition(Condition condition) {
             this.condition = condition;
             return this;
         }
