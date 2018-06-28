@@ -24,7 +24,10 @@ public class Engine {
     private static final ByteBuffer NOTHING = ByteBuffer.allocate(0);
 
     private enum ActionType {
-        send, receive, receive_if, allow, run
+        run,
+        send, send_while,
+        receive, receive_while,
+        allow
     }
 
     public enum Status {
@@ -40,6 +43,8 @@ public class Engine {
     private ByteBuffer buffer = NOTHING;
     private ByteBuffer applicationData = NOTHING;
     private Context context = new Context();
+
+    private Throwable exception;
 
     // timeout for reading incoming data (in millis)
     private long timeout = Connection.DEFAULT_READ_TIMEOUT;
@@ -78,8 +83,17 @@ public class Engine {
         return this;
     }
 
+    public Throwable exception() {
+        return exception;
+    }
+
+    public Engine nice() {
+        strict = false;
+        return this;
+    }
+
     public Engine strict() {
-        this.strict = true;
+        strict = true;
         return this;
     }
 
@@ -127,7 +141,10 @@ public class Engine {
     }
 
     public Engine send(Action action) {
-        actions.add(new ActionHolder(() -> action, ActionType.send));
+        actions.add(new ActionHolder()
+                .engine(this)
+                .factory(() -> action)
+                .type(ActionType.send));
         return this;
     }
 
@@ -139,22 +156,37 @@ public class Engine {
     }
 
     public Engine receive(Action action) {
-        actions.add(new ActionHolder(() -> action, ActionType.receive));
+        actions.add(new ActionHolder()
+                .engine(this)
+                .factory(() -> action)
+                .type(ActionType.receive));
         return this;
     }
 
-    public Engine receive(Condition condition, ActionFactory factory) {
-        actions.add(new ActionHolder(factory, ActionType.receive_if).set(condition));
-        return this;
+    public ActionHolder receive(ActionFactory factory) {
+        return new ActionHolder().engine(this).factory(factory);
     }
 
     public Engine allow(Action action) {
-        actions.add(new ActionHolder(() -> action, ActionType.allow));
+        actions.add(new ActionHolder()
+                .engine(this)
+                .factory(() -> action)
+                .type(ActionType.allow));
         return this;
     }
 
+    public ActionHolder loop(Condition condition) {
+        return new ActionHolder()
+                .engine(this)
+                .type(ActionType.receive_while)
+                .condition(condition);
+    }
+
     public Engine run(Action action) {
-        actions.add(new ActionHolder(() -> action, ActionType.run));
+        actions.add(new ActionHolder()
+                .engine(this)
+                .factory(() -> action)
+                .type(ActionType.run));
         return this;
     }
 
@@ -193,7 +225,7 @@ public class Engine {
                             return reportError(e);
                         }
                         break;
-                    case receive_if:
+                    case receive_while:
                         try {
                             action = actionFactory.create();
                             while (holder.condition.met(context)) {
@@ -261,13 +293,13 @@ public class Engine {
         return this;
     }
 
-    public Engine run(Check check) {
+    public Engine run(Check check) throws ActionFailed {
         check.set(this);
         check.set(context);
 
         check.run();
         if (check.failed()) {
-            throw new RuntimeException(String.format("%s check failed", check.name()));
+            throw new ActionFailed(String.format("%s check failed", check.name()));
         }
         output.info(String.format("check passed: %s", check.name()));
 
@@ -285,6 +317,7 @@ public class Engine {
     }
 
     private Engine reportError(Throwable e) throws EngineException {
+        exception = e;
         if (strict) {
             throw new EngineException("unexpected exception", e);
         }
@@ -364,18 +397,35 @@ public class Engine {
         Action create();
     }
 
-    private static class ActionHolder {
+    public static class ActionHolder {
 
+        private Engine engine;
         private ActionType type;
         private ActionFactory factory;
         private Condition condition;
 
-        ActionHolder(ActionFactory factory, ActionType type) {
-            this.factory = factory;
-            this.type = type;
+        public Engine receive(ActionFactory factory) {
+            factory(factory);
+            engine.actions.add(this);
+            return engine;
         }
 
-        private ActionHolder set(Condition condition) {
+        private ActionHolder engine(Engine engine) {
+            this.engine = engine;
+            return this;
+        }
+
+        private ActionHolder factory(ActionFactory factory) {
+            this.factory = factory;
+            return this;
+        }
+
+        private ActionHolder type(ActionType type) {
+            this.type = type;
+            return this;
+        }
+
+        private ActionHolder condition(Condition condition) {
             this.condition = condition;
             return this;
         }

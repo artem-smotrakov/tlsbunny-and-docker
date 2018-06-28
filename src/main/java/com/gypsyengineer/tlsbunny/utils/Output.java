@@ -57,6 +57,12 @@ public class Output implements AutoCloseable {
                 prefix, ANSI_RED, String.format(format, values), ANSI_RESET);
     }
 
+    synchronized public void info(String message, Throwable e) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        e.printStackTrace(new PrintStream(baos, true));
+        info(String.format("%s%n%s", message, new String(baos.toByteArray())));
+    }
+
     synchronized public void achtung(String message, Throwable e) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         e.printStackTrace(new PrintStream(baos, true));

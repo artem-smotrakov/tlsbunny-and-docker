@@ -1,49 +1,80 @@
 package com.gypsyengineer.tlsbunny.tls13.test.common.client;
 
+import com.gypsyengineer.tlsbunny.tls13.connection.AlertCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
+import com.gypsyengineer.tlsbunny.tls13.connection.EngineException;
 import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.IncomingMessages;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
+import com.gypsyengineer.tlsbunny.tls13.handshake.NegotiatorException;
+import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
 import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
+import com.gypsyengineer.tlsbunny.tls13.test.Config;
 import com.gypsyengineer.tlsbunny.tls13.test.SystemPropertiesConfig;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
-import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
-import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.*;
+import java.security.NoSuchAlgorithmException;
+
+import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.*;
+import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.client_hello;
+import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.finished;
 import static com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup.secp256r1;
-import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv12;
-import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv13_draft_26;
+import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.*;
 import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp256r1_sha256;
 
-public class HttpsClient extends AbstractClient {
+public class EmptyTLSPlaintext {
 
-    private ProtocolVersion protocolVersion = TLSv13_draft_26;
+    private static final Config config = SystemPropertiesConfig.load();
+    private static final StructFactory factory = StructFactory.getDefault();
+    private static final ProtocolVersion protocolVersion = TLSv13_draft_26;
+    private static final Output output = new Output();
 
     public static void main(String[] args) throws Exception {
-        try (Output output = new Output()) {
-            new HttpsClient()
-                    .set(SystemPropertiesConfig.load())
-                    .set(StructFactory.getDefault())
-                    .set(output)
-                    .connect()
-                    .run(new NoAlertCheck());
+        try (output) {
+            /**
+             * The TLS 1.3 spec says the following:
+             *
+             *    A change_cipher_spec record received before the first ClientHello message
+             *    or after the peer's Finished message MUST be treated as an unexpected record type
+             *
+             *  https://tools.ietf.org/html/draft-ietf-tls-tls13-28#section-5
+             */
+            startWithEmptyTLSPlaintext(change_cipher_spec).run(new AlertCheck());
+
+            /**
+             * The TLS 1.3 spec says the following:
+             *
+             *      Implementations MUST NOT send zero-length fragments of Handshake
+             *      types, even if those fragments contain padding.
+             *
+             *  https://tools.ietf.org/html/draft-ietf-tls-tls13-28#section-5.1
+             *
+             *  Should it expect an alert them
+             *  after sending an empty TLSPlaintext message of handshake type?
+             */
+            startWithEmptyTLSPlaintext(handshake).run(new NoAlertCheck());
+
+            startWithEmptyTLSPlaintext(application_data).run(new AlertCheck());
+            startWithEmptyTLSPlaintext(alert).run(new AlertCheck());
         }
     }
 
-    public HttpsClient version(ProtocolVersion protocolVersion) {
-        this.protocolVersion = protocolVersion;
-        return this;
-    }
+    private static Engine startWithEmptyTLSPlaintext(ContentType type)
+            throws NegotiatorException, NoSuchAlgorithmException, EngineException {
 
-    @Override
-    public Engine connect() throws Exception {
+        output.info("test: start handshake with an empty TLSPlaintext (%s)", type);
+
         return Engine.init()
                 .target(config.host())
                 .target(config.port())
                 .set(factory)
                 .set(output)
+
+                .send(new GeneratingEmptyTLSPlaintext()
+                        .type(type)
+                        .version(TLSv12))
 
                 // send ClientHello
                 .run(new GeneratingClientHello()
