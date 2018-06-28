@@ -44,6 +44,8 @@ public class Engine {
     private ByteBuffer applicationData = NOTHING;
     private Context context = new Context();
 
+    private Throwable exception;
+
     // timeout for reading incoming data (in millis)
     private long timeout = Connection.DEFAULT_READ_TIMEOUT;
 
@@ -81,8 +83,17 @@ public class Engine {
         return this;
     }
 
+    public Throwable exception() {
+        return exception;
+    }
+
+    public Engine nice() {
+        strict = false;
+        return this;
+    }
+
     public Engine strict() {
-        this.strict = true;
+        strict = true;
         return this;
     }
 
@@ -306,6 +317,7 @@ public class Engine {
     }
 
     private Engine reportError(Throwable e) throws EngineException {
+        exception = e;
         if (strict) {
             throw new EngineException("unexpected exception", e);
         }
