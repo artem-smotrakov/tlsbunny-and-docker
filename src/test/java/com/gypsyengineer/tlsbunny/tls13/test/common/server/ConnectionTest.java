@@ -6,6 +6,8 @@ import org.junit.Test;
 
 import java.io.IOException;
 
+import static org.junit.Assert.assertArrayEquals;
+
 public class ConnectionTest {
 
     private static final long delay = 1000; // in millis
@@ -26,6 +28,8 @@ public class ConnectionTest {
             connection.send(message);
             byte[] data = connection.read();
             output.info("[client] received: " + new String(data));
+
+            assertArrayEquals(message, data);
         }
     }
 
