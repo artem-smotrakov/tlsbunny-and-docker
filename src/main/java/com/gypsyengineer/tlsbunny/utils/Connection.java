@@ -14,13 +14,11 @@ public class Connection implements AutoCloseable {
     private static final long READ_DELAY = 100;
     public static final long DEFAULT_READ_TIMEOUT = 5000;  // in millis
 
-    private final Socket socket;
     private final InputStream is;
     private final OutputStream os;
     private final long readTimeout;
 
-    private Connection(Socket socket, InputStream is, OutputStream os, long readTimeout) {
-        this.socket = socket;
+    private Connection(InputStream is, OutputStream os, long readTimeout) {
         this.is = is;
         this.os = os;
         this.readTimeout = readTimeout;
@@ -59,13 +57,8 @@ public class Connection implements AutoCloseable {
 
     @Override
     public void close() throws IOException {
-        if (!socket.isClosed()) {
-            socket.close();
-        }
-    }
-
-    public boolean isAlive() {
-        return !socket.isClosed() && socket.isConnected();
+        is.close();
+        os.close();
     }
 
     public static Connection create(String host, int port)
@@ -82,11 +75,20 @@ public class Connection implements AutoCloseable {
                             readTimeout));
         }
 
-        Socket socket = new Socket(host, port);
-        InputStream is = new BufferedInputStream(socket.getInputStream());
-        OutputStream os = new BufferedOutputStream(socket.getOutputStream());
+        return create(new Socket(host, port), readTimeout);
+    }
 
-        return new Connection(socket, is, os, readTimeout);
+    public static Connection create(Socket socket) throws IOException {
+        return create(socket, DEFAULT_READ_TIMEOUT);
+    }
+
+    public static Connection create(Socket socket, long readTimeout)
+            throws IOException {
+
+        return new Connection(
+                new BufferedInputStream(socket.getInputStream()),
+                new BufferedOutputStream(socket.getOutputStream()),
+                readTimeout);
     }
 
 }
