@@ -193,7 +193,7 @@ public class Engine {
     public Engine connect() throws EngineException {
         context.negotiator.set(output);
         status = Status.running;
-        try (Connection connection = Connection.connect(host, port, timeout)) {
+        try (Connection connection = Connection.create(host, port, timeout)) {
             buffer = NOTHING;
 
             loop:

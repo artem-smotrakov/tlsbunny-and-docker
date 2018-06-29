@@ -61,12 +61,12 @@ public class Connection implements AutoCloseable {
         os.close();
     }
 
-    public static Connection connect(String host, int port)
+    public static Connection create(String host, int port)
             throws IOException {
-        return connect(host, port, DEFAULT_READ_TIMEOUT);
+        return create(host, port, DEFAULT_READ_TIMEOUT);
     }
 
-    public static Connection connect(String host, int port, long readTimeout)
+    public static Connection create(String host, int port, long readTimeout)
             throws IOException {
 
         if (readTimeout <= 0) {
@@ -75,7 +75,12 @@ public class Connection implements AutoCloseable {
                             readTimeout));
         }
 
-        Socket socket = new Socket(host, port);
+        return create(new Socket(host, port), readTimeout);
+    }
+
+    public static Connection create(Socket socket, long readTimeout)
+            throws IOException {
+
         return new Connection(
                 new BufferedInputStream(socket.getInputStream()),
                 new BufferedOutputStream(socket.getOutputStream()),
