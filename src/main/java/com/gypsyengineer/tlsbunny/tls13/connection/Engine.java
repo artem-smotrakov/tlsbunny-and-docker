@@ -22,6 +22,9 @@ import java.util.List;
 public class Engine {
 
     private static final ByteBuffer NOTHING = ByteBuffer.allocate(0);
+    private static final Connection NO_CONNECTION = null;
+    private static final String NO_HOST = null;
+    private static final int NO_PORT = -1;
 
     private enum ActionType {
         run,
@@ -36,6 +39,7 @@ public class Engine {
 
     private final List<ActionHolder> actions = new ArrayList<>();
 
+    private Connection connection = NO_CONNECTION;
     private Output output = new Output();
     private String host = "localhost";
     private int port = 443;
@@ -112,6 +116,11 @@ public class Engine {
             throw new IllegalArgumentException();
         }
         this.label = label;
+        return this;
+    }
+
+    public Engine set(Connection connection) {
+        this.connection = connection;
         return this;
     }
 
@@ -193,7 +202,8 @@ public class Engine {
     public Engine connect() throws EngineException {
         context.negotiator.set(output);
         status = Status.running;
-        try (Connection connection = Connection.create(host, port, timeout)) {
+
+        try (Connection connection = initConnection()) {
             buffer = NOTHING;
 
             loop:
@@ -387,6 +397,19 @@ public class Engine {
         action.applicationData(applicationData);
 
         return action;
+    }
+
+    private Connection initConnection() throws IOException {
+        if (connection != NO_CONNECTION) {
+            return connection;
+        }
+
+        if (host != NO_HOST && port != NO_PORT) {
+            return Connection.create(host, port, timeout);
+        }
+
+        throw new IllegalArgumentException(
+                "what the hell? connection can't be initialized!");
     }
 
     public interface Condition {

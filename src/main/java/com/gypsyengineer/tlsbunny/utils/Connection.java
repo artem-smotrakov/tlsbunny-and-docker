@@ -78,6 +78,10 @@ public class Connection implements AutoCloseable {
         return create(new Socket(host, port), readTimeout);
     }
 
+    public static Connection create(Socket socket) throws IOException {
+        return create(socket, DEFAULT_READ_TIMEOUT);
+    }
+
     public static Connection create(Socket socket, long readTimeout)
             throws IOException {
 
