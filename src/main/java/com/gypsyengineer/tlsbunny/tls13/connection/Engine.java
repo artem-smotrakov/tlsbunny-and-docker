@@ -400,11 +400,11 @@ public class Engine {
     }
 
     private Connection initConnection() throws IOException {
-        if (connection != NO_CONNECTION) {
+        if (!connection.equals(NO_CONNECTION)) {
             return connection;
         }
 
-        if (host != NO_HOST && port != NO_PORT) {
+        if (!host.equals(NO_HOST) && port != NO_PORT) {
             return Connection.create(host, port, timeout);
         }
 
