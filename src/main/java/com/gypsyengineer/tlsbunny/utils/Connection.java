@@ -14,13 +14,11 @@ public class Connection implements AutoCloseable {
     private static final long READ_DELAY = 100;
     public static final long DEFAULT_READ_TIMEOUT = 5000;  // in millis
 
-    private final Socket socket;
     private final InputStream is;
     private final OutputStream os;
     private final long readTimeout;
 
-    private Connection(Socket socket, InputStream is, OutputStream os, long readTimeout) {
-        this.socket = socket;
+    private Connection(InputStream is, OutputStream os, long readTimeout) {
         this.is = is;
         this.os = os;
         this.readTimeout = readTimeout;
@@ -59,21 +57,16 @@ public class Connection implements AutoCloseable {
 
     @Override
     public void close() throws IOException {
-        if (!socket.isClosed()) {
-            socket.close();
-        }
+        is.close();
+        os.close();
     }
 
-    public boolean isAlive() {
-        return !socket.isClosed() && socket.isConnected();
-    }
-
-    public static Connection create(String host, int port)
+    public static Connection connect(String host, int port)
             throws IOException {
-        return create(host, port, DEFAULT_READ_TIMEOUT);
+        return connect(host, port, DEFAULT_READ_TIMEOUT);
     }
 
-    public static Connection create(String host, int port, long readTimeout)
+    public static Connection connect(String host, int port, long readTimeout)
             throws IOException {
 
         if (readTimeout <= 0) {
@@ -83,10 +76,10 @@ public class Connection implements AutoCloseable {
         }
 
         Socket socket = new Socket(host, port);
-        InputStream is = new BufferedInputStream(socket.getInputStream());
-        OutputStream os = new BufferedOutputStream(socket.getOutputStream());
-
-        return new Connection(socket, is, os, readTimeout);
+        return new Connection(
+                new BufferedInputStream(socket.getInputStream()),
+                new BufferedOutputStream(socket.getOutputStream()),
+                readTimeout);
     }
 
 }
