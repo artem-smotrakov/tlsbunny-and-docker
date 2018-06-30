@@ -2,6 +2,7 @@ package com.gypsyengineer.tlsbunny.tls13.test.common.server;
 
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.tls13.test.Config;
+import com.gypsyengineer.tlsbunny.tls13.test.SystemPropertiesConfig;
 import com.gypsyengineer.tlsbunny.utils.Connection;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
@@ -12,9 +13,9 @@ public abstract class SimpleServer implements Server {
 
     private static final int FREE_PORT = 0;
 
-    protected Config config;
-    protected StructFactory factory;
-    protected Output output;
+    protected Config config = SystemPropertiesConfig.load();
+    protected StructFactory factory = StructFactory.getDefault();
+    protected Output output = new Output();
 
     private final ServerSocket serverSocket;
 
@@ -55,8 +56,10 @@ public abstract class SimpleServer implements Server {
 
     @Override
     public void run() {
+        output.info("server started on port %d", port());
         while (true) {
             try (Connection connection = Connection.create(serverSocket.accept())) {
+                output.info("handle incoming connection");
                 handle(connection);
             } catch (Exception e) {
                 output.achtung("exception: ", e);
@@ -71,6 +74,10 @@ public abstract class SimpleServer implements Server {
     public void close() throws IOException {
         if (!serverSocket.isClosed()) {
             serverSocket.close();
+        }
+
+        if (output != null) {
+            output.flush();
         }
     }
 
