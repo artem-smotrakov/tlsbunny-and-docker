@@ -39,6 +39,7 @@ public class HttpsClient extends AbstractClient {
 
     @Override
     public Engine connect() throws Exception {
+        output.info("connect to %s:%d", config.host(), config.port());
         return Engine.init()
                 .target(config.host())
                 .target(config.port())
