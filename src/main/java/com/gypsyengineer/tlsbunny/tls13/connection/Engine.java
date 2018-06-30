@@ -22,9 +22,6 @@ import java.util.List;
 public class Engine {
 
     private static final ByteBuffer NOTHING = ByteBuffer.allocate(0);
-    private static final Connection NO_CONNECTION = null;
-    private static final String NO_HOST = null;
-    private static final int NO_PORT = -1;
 
     private enum ActionType {
         run,
@@ -39,7 +36,7 @@ public class Engine {
 
     private final List<ActionHolder> actions = new ArrayList<>();
 
-    private Connection connection = NO_CONNECTION;
+    private Connection connection;
     private Output output = new Output();
     private String host = "localhost";
     private int port = 443;
@@ -400,11 +397,11 @@ public class Engine {
     }
 
     private Connection initConnection() throws IOException {
-        if (!connection.equals(NO_CONNECTION)) {
+        if (connection != null) {
             return connection;
         }
 
-        if (!host.equals(NO_HOST) && port != NO_PORT) {
+        if (host != null && port > 0) {
             return Connection.create(host, port, timeout);
         }
 
