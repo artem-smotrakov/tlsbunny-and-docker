@@ -49,7 +49,13 @@ public class WrappingIntoTLSCiphertext extends AbstractAction {
                 encryptor = context.applicationDataEnctyptor;
                 break;
             default:
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException(
+                        String.format("what the hell? unknown phase: %s", phase));
+        }
+
+        if (encryptor == null) {
+            throw new IllegalStateException(
+                    "what the hell? encryptor is not initialized (null)");
         }
 
         TLSInnerPlaintext tlsInnerPlaintext = context.factory.createTLSInnerPlaintext(
