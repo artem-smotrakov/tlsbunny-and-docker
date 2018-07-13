@@ -19,6 +19,11 @@ import java.security.NoSuchAlgorithmException;
 
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
 import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.client_hello;
+import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.server_hello;
+import static com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup.secp256r1;
+import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv12;
+import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv13_draft_26;
+import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp256r1_sha256;
 import static org.junit.Assert.assertArrayEquals;
 
 public class HandshakeTest {
@@ -79,6 +84,20 @@ public class HandshakeTest {
                             .expect(client_hello)
                             .updateContext(Context.Element.first_client_hello))
                     .run(new ProcessingClientHello())
+
+                    // send ServerHello
+                    .run(new GeneratingServerHello()
+                            .supportedVersion(TLSv13_draft_26)
+                            .group(secp256r1)
+                            .signatureScheme(ecdsa_secp256r1_sha256)
+                            .keyShareEntry(context -> context.negotiator.createKeyShareEntry()))
+                    .run(new WrappingIntoHandshake()
+                            .type(server_hello)
+                            .updateContext(Context.Element.server_hello))
+                    .run(new WrappingIntoTLSPlaintexts()
+                            .type(handshake)
+                            .version(TLSv12))
+                    .send(new OutgoingData())
 
                     .connect();
         }
