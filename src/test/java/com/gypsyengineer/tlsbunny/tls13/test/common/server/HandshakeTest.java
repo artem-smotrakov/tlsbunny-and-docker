@@ -99,6 +99,8 @@ public class HandshakeTest {
                             .version(TLSv12))
                     .send(new OutgoingData())
 
+                    .run(new ComputingKeysAfterServerHello())
+
                     .connect();
         }
     }

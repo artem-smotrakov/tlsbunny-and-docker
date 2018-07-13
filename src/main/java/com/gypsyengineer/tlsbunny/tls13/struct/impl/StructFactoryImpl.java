@@ -220,6 +220,11 @@ public class StructFactoryImpl implements StructFactory {
     }
 
     @Override
+    public KeyShare.ServerHello createKeyShareForServerHello(KeyShareEntry entry) {
+        return new KeyShareImpl.ServerHelloImpl(entry);
+    }
+
+    @Override
     public SignatureSchemeList createSignatureSchemeList(SignatureScheme scheme) {
         return new SignatureSchemeListImpl(
                 Vector.wrap(SignatureSchemeList.LENGTH_BYTES, scheme));

@@ -68,7 +68,7 @@ public class GeneratingServerHello extends AbstractAction {
         }
 
         for (KeyShareEntryFactory factory : keyShareEntryFactories) {
-            extensions.add(wrap(context.factory.createKeyShareForClientHello(
+            extensions.add(wrap(context.factory.createKeyShareForServerHello(
                     factory.create(context))));
         }
 
