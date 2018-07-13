@@ -175,7 +175,7 @@ public class StructParserImpl implements StructParser {
         return new EncryptedExtensionsImpl(
                 Vector.parse(
                     buffer,
-                    EncryptedExtensions.EXTENSIONS_LENGTH_BYTES,
+                    EncryptedExtensions.LENGTH_BYTES,
                     buf -> parseExtension(buf)));
     }
 

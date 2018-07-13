@@ -19,6 +19,7 @@ import java.security.NoSuchAlgorithmException;
 
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
 import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.client_hello;
+import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.encrypted_extensions;
 import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.server_hello;
 import static com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup.secp256r1;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv12;
@@ -100,6 +101,16 @@ public class HandshakeTest {
                     .send(new OutgoingData())
 
                     .run(new ComputingKeysAfterServerHello())
+
+                    // send EncryptedExtensions
+                    .run(new GeneratingEncryptedExtensions())
+                    .run(new WrappingIntoHandshake()
+                            .type(encrypted_extensions)
+                            .updateContext(Context.Element.encrypted_extensions))
+                    .run(new WrappingIntoTLSPlaintexts()
+                            .type(handshake)
+                            .version(TLSv12))
+                    .send(new OutgoingData())
 
                     .connect();
         }
