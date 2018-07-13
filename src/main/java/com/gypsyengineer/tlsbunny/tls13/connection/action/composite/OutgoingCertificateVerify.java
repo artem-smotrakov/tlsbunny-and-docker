@@ -20,7 +20,8 @@ import java.security.spec.PKCS8EncodedKeySpec;
 
 import static com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext.NO_PADDING;
 
-public class OutgoingCertificateVerify extends AbstractAction {
+// TODO: looks like this class can be used only on client side
+public class OutgoingCertificateVerify extends AbstractAction<OutgoingCertificateVerify> {
 
     private static final byte[] CERTIFICATE_VERIFY_PREFIX = new byte[64];
     static {
@@ -34,7 +35,7 @@ public class OutgoingCertificateVerify extends AbstractAction {
 
     private byte[] key_data;
 
-    public Action key(String path) throws IOException {
+    public OutgoingCertificateVerify key(String path) throws IOException {
         if (path == null || path.trim().isEmpty()) {
             throw  new IllegalArgumentException("no certificate key specified");
         }
@@ -50,7 +51,7 @@ public class OutgoingCertificateVerify extends AbstractAction {
     }
 
     @Override
-    public Action run() throws IOException, AEADException, ActionFailed {
+    public OutgoingCertificateVerify run() throws IOException, AEADException, ActionFailed {
         CertificateVerify certificateVerify = createCertificateVerify();
         Handshake handshake = toHandshake(certificateVerify);
 
@@ -64,12 +65,11 @@ public class OutgoingCertificateVerify extends AbstractAction {
     }
 
     private CertificateVerify createCertificateVerify() throws IOException, ActionFailed {
-
         try {
             byte[] content = Utils.concatenate(
                     CERTIFICATE_VERIFY_PREFIX,
                     CERTIFICATE_VERIFY_CONTEXT_STRING,
-                    new byte[]{0},
+                    new byte[] {0},
                     TranscriptHash.compute(context.suite.hash(), context.allMessages()));
 
             Signature signature = Signature.getInstance("SHA256withECDSA");

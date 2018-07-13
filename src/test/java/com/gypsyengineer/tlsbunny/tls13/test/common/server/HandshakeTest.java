@@ -32,11 +32,13 @@ public class HandshakeTest {
             "like most of life's problems, this one can be solved with bending"
                     .getBytes();
     private static final String serverCertificatePath = "certs/server_cert.der";
+    private static final String serverKeyPath = "certs/server_key.pkcs8";
 
     @Test
     public void basic() throws Exception {
         Config serverConfig = SystemPropertiesConfig.load();
         serverConfig.serverCertificate(serverCertificatePath);
+        serverConfig.serverKey(serverKeyPath);
 
         try (ServerImpl server = new ServerImpl(serverConfig);
              Output serverOutput = new Output();
@@ -122,6 +124,16 @@ public class HandshakeTest {
                     .run(new WrappingIntoHandshake()
                             .type(certificate)
                             .updateContext(Context.Element.server_certificate))
+                    .run(new WrappingHandshakeDataIntoTLSCiphertext())
+                    .send(new OutgoingData())
+
+                    // send CertificateVerify
+                    .run(new GeneratingCertificateVerify()
+                            .server()
+                            .key(config.serverKey()))
+                    .run(new WrappingIntoHandshake()
+                            .type(certificate_verify)
+                            .updateContext(Context.Element.server_certificate_verify))
                     .run(new WrappingHandshakeDataIntoTLSCiphertext())
                     .send(new OutgoingData())
 
