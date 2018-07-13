@@ -25,6 +25,8 @@ public class SystemPropertiesConfig implements Config {
     long endTest;
     String clientCertificate;
     String clientKey;
+    String serverCertificate;
+    String serverKey;
     long readTimeout;
 
     private SystemPropertiesConfig() {
@@ -64,6 +66,30 @@ public class SystemPropertiesConfig implements Config {
     @Override
     public Config readTimeout(long timeout) {
         readTimeout = timeout;
+        return this;
+    }
+
+    @Override
+    public Config clientCertificate(String path) {
+        clientCertificate = path;
+        return this;
+    }
+
+    @Override
+    public Config clientKey(String path) {
+        clientKey = path;
+        return this;
+    }
+
+    @Override
+    public Config serverCertificate(String path) {
+        serverCertificate = path;
+        return this;
+    }
+
+    @Override
+    public Config serverKey(String path) {
+        serverKey = path;
         return this;
     }
 
@@ -127,6 +153,16 @@ public class SystemPropertiesConfig implements Config {
     @Override
     public String clientKey() {
         return clientKey;
+    }
+
+    @Override
+    public String serverCertificate() {
+        return serverCertificate;
+    }
+
+    @Override
+    public String serverKey() {
+        return serverKey;
     }
 
     @Override

@@ -11,6 +11,8 @@ public interface Config {
     long endTest();
     String clientCertificate();
     String clientKey();
+    String serverCertificate();
+    String serverKey();
 
     // timeout for reading incoming data (in millis)
     long readTimeout();
@@ -23,4 +25,8 @@ public interface Config {
     Config endTest(long test);
     Config parts(int parts);
     Config readTimeout(long timeout);
+    Config clientCertificate(String path);
+    Config clientKey(String path);
+    Config serverCertificate(String path);
+    Config serverKey(String path);
 }

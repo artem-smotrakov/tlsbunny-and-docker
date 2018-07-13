@@ -18,9 +18,7 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
-import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.client_hello;
-import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.encrypted_extensions;
-import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.server_hello;
+import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.*;
 import static com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup.secp256r1;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv12;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv13_draft_26;
@@ -33,10 +31,14 @@ public class HandshakeTest {
     private static final byte[] message =
             "like most of life's problems, this one can be solved with bending"
                     .getBytes();
+    private static final String serverCertificatePath = "certs/server_cert.der";
 
     @Test
     public void basic() throws Exception {
-        try (ServerImpl server = new ServerImpl();
+        Config serverConfig = SystemPropertiesConfig.load();
+        serverConfig.serverCertificate(serverCertificatePath);
+
+        try (ServerImpl server = new ServerImpl(serverConfig);
              Output serverOutput = new Output();
              Output clientOutput = new Output()) {
 
@@ -48,11 +50,11 @@ public class HandshakeTest {
             new Thread(server).start();
             Thread.sleep(delay);
 
-            Config config = SystemPropertiesConfig.load();
-            config.port(server.port());
+            Config clientConfig = SystemPropertiesConfig.load();
+            clientConfig.port(server.port());
 
             new HttpsClient()
-                    .set(config)
+                    .set(clientConfig)
                     .set(StructFactory.getDefault())
                     .set(clientOutput)
                     .connect()
@@ -62,13 +64,17 @@ public class HandshakeTest {
 
     private static class ServerImpl extends SimpleServer {
 
-        public ServerImpl() throws IOException {
+        private final Config config;
+
+        public ServerImpl(Config config) throws IOException {
             super();
+            this.config = config;
         }
 
         @Override
         protected void handle(Connection connection)
-                throws NegotiatorException, NoSuchAlgorithmException, EngineException {
+                throws NegotiatorException, NoSuchAlgorithmException,
+                EngineException, IOException {
 
             output.info("accepted");
             Engine.init()
@@ -107,9 +113,16 @@ public class HandshakeTest {
                     .run(new WrappingIntoHandshake()
                             .type(encrypted_extensions)
                             .updateContext(Context.Element.encrypted_extensions))
-                    .run(new WrappingIntoTLSPlaintexts()
-                            .type(handshake)
-                            .version(TLSv12))
+                    .run(new WrappingHandshakeDataIntoTLSCiphertext())
+                    .send(new OutgoingData())
+
+                    // send Certificate
+                    .run(new GeneratingCertificate()
+                            .certificate(config.serverCertificate()))
+                    .run(new WrappingIntoHandshake()
+                            .type(certificate)
+                            .updateContext(Context.Element.server_certificate))
+                    .run(new WrappingHandshakeDataIntoTLSCiphertext())
                     .send(new OutgoingData())
 
                     .connect();
