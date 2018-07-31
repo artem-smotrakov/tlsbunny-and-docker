@@ -1,7 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls13.connection.action.simple;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.action.AbstractAction;
-import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AEAD;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AEADException;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
@@ -10,15 +9,16 @@ import java.io.IOException;
 
 import static com.gypsyengineer.tlsbunny.tls13.handshake.Context.ZERO_HASH_VALUE;
 
-public class ComputingKeysAfterServerFinished extends AbstractAction<ComputingKeysAfterServerFinished> {
+public class ComputingApplicationTrafficKeys
+        extends AbstractAction<ComputingApplicationTrafficKeys> {
 
     @Override
     public String name() {
-        return "computing keys after receiving server's Finished";
+        return "computing application traffic keys";
     }
 
     @Override
-    public Action run() throws IOException, AEADException {
+    public ComputingApplicationTrafficKeys run() throws IOException, AEADException {
         context.client_application_traffic_secret_0 = context.hkdf.deriveSecret(
                 context.master_secret,
                 context.c_ap_traffic,

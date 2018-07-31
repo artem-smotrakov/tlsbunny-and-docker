@@ -73,7 +73,7 @@ public class SimpleReliability {
                         .updateContext(Context.Element.server_hello))
                 .run(new ProcessingServerHello())
                 .run(new NegotiatingDHSecret())
-                .run(new ComputingKeysAfterServerHello())
+                .run(new ComputingHandshakeTrafficKeys())
 
                 .allow(new IncomingChangeCipherSpec())
 
@@ -108,7 +108,7 @@ public class SimpleReliability {
                         .expect(finished)
                         .updateContext(Context.Element.server_finished))
                 .run(new ProcessingFinished())
-                .run(new ComputingKeysAfterServerFinished())
+                .run(new ComputingApplicationTrafficKeys())
 
                 // send Finished
                 .run(new GeneratingFinished())

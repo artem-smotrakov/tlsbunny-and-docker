@@ -168,7 +168,7 @@ public class IncomingMessages extends AbstractAction<IncomingMessages> {
         context.setServerHello(handshake);
 
         new NegotiatingDHSecret().set(output).set(context).run();
-        new ComputingKeysAfterServerHello().set(output).set(context).run();
+        new ComputingHandshakeTrafficKeys().set(output).set(context).run();
     }
 
     private void processHelloRetryRequest(Handshake handshake) {
@@ -204,7 +204,7 @@ public class IncomingMessages extends AbstractAction<IncomingMessages> {
         new ProcessingFinished().set(output).set(context)
                 .in(handshake.getBody()).run();
 
-        new ComputingKeysAfterServerFinished().set(output).set(context).run();
+        new ComputingApplicationTrafficKeys().set(output).set(context).run();
     }
 
     private void processNewSessionTicket(Handshake handshake) throws IOException {

@@ -63,7 +63,7 @@ public class NssHttpsClient extends AbstractClient {
                         .updateContext(Context.Element.server_hello))
                 .run(new ProcessingServerHello())
                 .run(new NegotiatingDHSecret())
-                .run(new ComputingKeysAfterServerHello())
+                .run(new ComputingHandshakeTrafficKeys())
 
                 // selfserv sends EncryptedExtensions, Certificate, CertificateVerify and Finished
                 // messages in a single TLSPlaintext
@@ -93,7 +93,7 @@ public class NssHttpsClient extends AbstractClient {
                         .expect(finished)
                         .updateContext(Context.Element.server_finished))
                 .run(new ProcessingFinished())
-                .run(new ComputingKeysAfterServerFinished())
+                .run(new ComputingApplicationTrafficKeys())
 
                 // send Finished
                 .run(new GeneratingFinished())

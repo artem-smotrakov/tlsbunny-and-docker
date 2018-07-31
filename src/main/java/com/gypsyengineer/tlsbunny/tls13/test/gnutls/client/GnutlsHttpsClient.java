@@ -65,7 +65,7 @@ public class GnutlsHttpsClient extends AbstractClient {
                         .updateContext(Context.Element.server_hello))
                 .run(new ProcessingServerHello())
                 .run(new NegotiatingDHSecret())
-                .run(new ComputingKeysAfterServerHello())
+                .run(new ComputingHandshakeTrafficKeys())
 
                 .allow(new IncomingChangeCipherSpec())
 
@@ -100,7 +100,7 @@ public class GnutlsHttpsClient extends AbstractClient {
                         .expect(finished)
                         .updateContext(Context.Element.server_finished))
                 .run(new ProcessingFinished())
-                .run(new ComputingKeysAfterServerFinished())
+                .run(new ComputingApplicationTrafficKeys())
 
                 // send Finished
                 .run(new GeneratingFinished())

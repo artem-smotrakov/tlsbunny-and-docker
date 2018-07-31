@@ -59,7 +59,7 @@ public class WolfsslHttpsClient extends AbstractClient {
                         .updateContext(Context.Element.server_hello))
                 .run(new ProcessingServerHello())
                 .run(new NegotiatingDHSecret())
-                .run(new ComputingKeysAfterServerHello())
+                .run(new ComputingHandshakeTrafficKeys())
 
                 // process EncryptedExtensions
                 .run(new ProcessingHandshakeTLSCiphertext()
@@ -92,7 +92,7 @@ public class WolfsslHttpsClient extends AbstractClient {
                         .expect(finished)
                         .updateContext(Context.Element.server_finished))
                 .run(new ProcessingFinished())
-                .run(new ComputingKeysAfterServerFinished())
+                .run(new ComputingApplicationTrafficKeys())
 
                 // send Finished
                 .run(new GeneratingFinished())

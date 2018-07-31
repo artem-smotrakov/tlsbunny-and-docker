@@ -108,7 +108,7 @@ public class HandshakeTest {
                             .version(TLSv12))
                     .send(new OutgoingData())
 
-                    .run(new ComputingKeysAfterServerHello())
+                    .run(new ComputingHandshakeTrafficKeys())
 
                     // send EncryptedExtensions
                     .run(new GeneratingEncryptedExtensions())
