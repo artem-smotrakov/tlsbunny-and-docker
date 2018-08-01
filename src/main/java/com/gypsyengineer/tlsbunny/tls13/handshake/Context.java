@@ -102,10 +102,10 @@ public class Context {
     // TODO: these fields should not be public
     public AEAD handshakeEncryptor;
     public AEAD handshakeDecryptor;
-    public AEAD applicationDataEnctyptor;
+    public AEAD applicationDataEncryptor;
     public AEAD applicationDataDecryptor;
 
-    public List<byte[]> applicatinoData = new ArrayList<>();
+    public List<byte[]> applicationData = new ArrayList<>();
 
     public void reset() {
         firstClientHello = null;
@@ -153,7 +153,7 @@ public class Context {
         handshakeEncryptor = null;
         handshakeDecryptor = null;
         applicationDataDecryptor = null;
-        applicationDataEnctyptor = null;
+        applicationDataEncryptor = null;
 
         scheme = null;
         group = null;
@@ -368,10 +368,10 @@ public class Context {
     }
 
     public void addApplicationData(byte[] data) {
-        applicatinoData.add(data);
+        applicationData.add(data);
     }
 
     public boolean receivedApplicationData() {
-        return !applicatinoData.isEmpty();
+        return !applicationData.isEmpty();
     }
 }

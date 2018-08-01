@@ -78,7 +78,7 @@ public class ComputingApplicationTrafficKeys
                 ZERO_HASH_VALUE,
                 context.suite.ivLength());
 
-        context.applicationDataEnctyptor = AEAD.createEncryptor(
+        context.applicationDataEncryptor = AEAD.createEncryptor(
                 context.suite.cipher(),
                 encryptorKey(),
                 encryptorIv());

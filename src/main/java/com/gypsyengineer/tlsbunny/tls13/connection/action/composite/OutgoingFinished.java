@@ -63,7 +63,7 @@ public class OutgoingFinished extends AbstractAction {
 
         out = TLS13Utils.store(encrypt(handshake));
 
-        context.applicationDataEnctyptor = AEAD.createEncryptor(
+        context.applicationDataEncryptor = AEAD.createEncryptor(
                 context.suite.cipher(),
                 context.client_application_write_key,
                 context.client_application_write_iv);

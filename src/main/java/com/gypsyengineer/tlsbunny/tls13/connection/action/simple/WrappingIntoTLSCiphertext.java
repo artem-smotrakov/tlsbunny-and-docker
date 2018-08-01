@@ -46,7 +46,7 @@ public class WrappingIntoTLSCiphertext extends AbstractAction {
                 encryptor = context.handshakeEncryptor;
                 break;
             case application_data:
-                encryptor = context.applicationDataEnctyptor;
+                encryptor = context.applicationDataEncryptor;
                 break;
             default:
                 throw new IllegalArgumentException(
