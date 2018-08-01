@@ -106,7 +106,6 @@ public class HandshakeTest {
                     .run(new WrappingIntoTLSPlaintexts()
                             .type(handshake)
                             .version(TLSv12))
-                    .send(new OutgoingData())
 
                     .run(new ComputingHandshakeTrafficKeys()
                             .server())
@@ -117,7 +116,6 @@ public class HandshakeTest {
                             .type(encrypted_extensions)
                             .updateContext(Context.Element.encrypted_extensions))
                     .run(new WrappingHandshakeDataIntoTLSCiphertext())
-                    .send(new OutgoingData())
 
                     // send Certificate
                     .run(new GeneratingCertificate()
@@ -126,7 +124,6 @@ public class HandshakeTest {
                             .type(certificate)
                             .updateContext(Context.Element.server_certificate))
                     .run(new WrappingHandshakeDataIntoTLSCiphertext())
-                    .send(new OutgoingData())
 
                     // send CertificateVerify
                     .run(new GeneratingCertificateVerify()
@@ -136,10 +133,15 @@ public class HandshakeTest {
                             .type(certificate_verify)
                             .updateContext(Context.Element.server_certificate_verify))
                     .run(new WrappingHandshakeDataIntoTLSCiphertext())
-                    .send(new OutgoingData())
 
                     .run(new ComputingApplicationTrafficKeys()
                             .server())
+
+                    // produce Finished before sending data
+
+                    .send(new OutgoingData())
+
+
 
                     .connect();
         }
