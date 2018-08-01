@@ -3,6 +3,7 @@ package com.gypsyengineer.tlsbunny.tls13.connection.action.composite;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.AbstractAction;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.ActionFailed;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Phase;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.Side;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AEADException;
 import com.gypsyengineer.tlsbunny.tls13.handshake.NegotiatorException;
@@ -13,9 +14,34 @@ import java.nio.ByteBuffer;
 
 public class IncomingMessages extends AbstractAction<IncomingMessages> {
 
+    private Side side;
+
+    public IncomingMessages() {
+
+    }
+
+    public IncomingMessages(Side side) {
+        this.side = side;
+    }
+
     @Override
     public String name() {
-        return "incoming messages";
+        return String.format("incoming messages (%s)", side);
+    }
+
+    public IncomingMessages side(Side side) {
+        this.side = side;
+        return this;
+    }
+
+    public IncomingMessages server() {
+        side = Side.server;
+        return this;
+    }
+
+    public IncomingMessages client() {
+        side = Side.client;
+        return this;
     }
 
     @Override
@@ -168,7 +194,7 @@ public class IncomingMessages extends AbstractAction<IncomingMessages> {
         context.setServerHello(handshake);
 
         new NegotiatingDHSecret().set(output).set(context).run();
-        new ComputingHandshakeTrafficKeys().set(output).set(context).run();
+        new ComputingHandshakeTrafficKeys().set(output).set(context).side(side).run();
     }
 
     private void processHelloRetryRequest(Handshake handshake) {
@@ -204,7 +230,7 @@ public class IncomingMessages extends AbstractAction<IncomingMessages> {
         new ProcessingFinished().set(output).set(context)
                 .in(handshake.getBody()).run();
 
-        new ComputingApplicationTrafficKeys().set(output).set(context).run();
+        new ComputingApplicationTrafficKeys().set(output).set(context).side(side).run();
     }
 
     private void processNewSessionTicket(Handshake handshake) throws IOException {

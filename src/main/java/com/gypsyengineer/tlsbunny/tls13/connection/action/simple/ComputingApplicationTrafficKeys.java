@@ -1,6 +1,7 @@
 package com.gypsyengineer.tlsbunny.tls13.connection.action.simple;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.action.AbstractAction;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.Side;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AEAD;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AEADException;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
@@ -12,13 +13,34 @@ import static com.gypsyengineer.tlsbunny.tls13.handshake.Context.ZERO_HASH_VALUE
 public class ComputingApplicationTrafficKeys
         extends AbstractAction<ComputingApplicationTrafficKeys> {
 
+    private Side side;
+
     @Override
     public String name() {
-        return "computing application traffic keys";
+        return String.format("computing application traffic keys (%s)", side);
+    }
+
+    public ComputingApplicationTrafficKeys side(Side side) {
+        this.side = side;
+        return this;
+    }
+
+    public ComputingApplicationTrafficKeys server() {
+        side = Side.server;
+        return this;
+    }
+
+    public ComputingApplicationTrafficKeys client() {
+        side = Side.client;
+        return this;
     }
 
     @Override
     public ComputingApplicationTrafficKeys run() throws IOException, AEADException {
+        if (side == null) {
+            throw new IllegalStateException("what the hell? side not specified! (null)");
+        }
+
         context.client_application_traffic_secret_0 = context.hkdf.deriveSecret(
                 context.master_secret,
                 context.c_ap_traffic,
@@ -58,14 +80,38 @@ public class ComputingApplicationTrafficKeys
 
         context.applicationDataEnctyptor = AEAD.createEncryptor(
                 context.suite.cipher(),
-                context.client_application_write_key,
-                context.client_application_write_iv);
+                encryptorKey(),
+                encryptorIv());
         context.applicationDataDecryptor = AEAD.createDecryptor(
                 context.suite.cipher(),
-                context.server_application_write_key,
-                context.server_application_write_iv);
+                decryptorKey(),
+                decryptorIv());
 
         return this;
+    }
+
+    private byte[] encryptorKey() {
+        return side == Side.client
+                ? context.client_application_write_key
+                : context.server_application_write_key;
+    }
+
+    private byte[] encryptorIv() {
+        return side == Side.client
+                ? context.client_application_write_iv
+                : context.server_application_write_iv;
+    }
+
+    private byte[] decryptorKey() {
+        return side == Side.client
+                ? context.server_application_write_key
+                : context.client_application_write_key;
+    }
+
+    private byte[] decryptorIv() {
+        return side == Side.client
+                ? context.server_application_write_iv
+                : context.client_application_write_iv;
     }
 
 }

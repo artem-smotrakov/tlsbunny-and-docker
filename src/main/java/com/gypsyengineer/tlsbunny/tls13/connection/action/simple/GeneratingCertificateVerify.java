@@ -2,6 +2,7 @@ package com.gypsyengineer.tlsbunny.tls13.connection.action.simple;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.action.AbstractAction;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.ActionFailed;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.Side;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AEADException;
 import com.gypsyengineer.tlsbunny.tls13.crypto.TranscriptHash;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
@@ -16,8 +17,6 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 
 public class GeneratingCertificateVerify extends AbstractAction<GeneratingCertificateVerify> {
-
-    enum Side { client, server }
 
     private static final byte[] CERTIFICATE_VERIFY_PREFIX = new byte[64];
     static {
@@ -34,7 +33,7 @@ public class GeneratingCertificateVerify extends AbstractAction<GeneratingCertif
     private static final byte[] SERVER_CERTIFICATE_VERIFY_CONTEXT_STRING =
             "TLS 1.3, server CertificateVerify".getBytes();
 
-    private Side side = Side.client;
+    private Side side;
     private byte[] key_data;
 
     public GeneratingCertificateVerify server() {
@@ -92,6 +91,10 @@ public class GeneratingCertificateVerify extends AbstractAction<GeneratingCertif
     }
 
     private byte[] contextString() {
+        if (side == null) {
+            throw new IllegalStateException("what the hell? side not specified! (null)");
+        }
+
         switch (side) {
             case client:
                 return CLIENT_CERTIFICATE_VERIFY_CONTEXT_STRING;

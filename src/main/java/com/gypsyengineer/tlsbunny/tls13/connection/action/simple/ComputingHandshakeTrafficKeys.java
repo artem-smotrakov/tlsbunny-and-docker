@@ -1,6 +1,7 @@
 package com.gypsyengineer.tlsbunny.tls13.connection.action.simple;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.action.AbstractAction;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.Side;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AEAD;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AEADException;
 import com.gypsyengineer.tlsbunny.tls13.struct.Handshake;
@@ -15,13 +16,34 @@ import static com.gypsyengineer.tlsbunny.utils.Utils.zeroes;
 public class ComputingHandshakeTrafficKeys
         extends AbstractAction<ComputingHandshakeTrafficKeys> {
 
+    private Side side;
+
     @Override
     public String name() {
-        return "computing handshake traffic keys";
+        return String.format("computing handshake traffic keys (%s)", side);
+    }
+
+    public ComputingHandshakeTrafficKeys side(Side side) {
+        this.side = side;
+        return this;
+    }
+
+    public ComputingHandshakeTrafficKeys server() {
+        side = Side.server;
+        return this;
+    }
+
+    public ComputingHandshakeTrafficKeys client() {
+        side = Side.client;
+        return this;
     }
 
     @Override
     public ComputingHandshakeTrafficKeys run() throws IOException, AEADException {
+        if (side == null) {
+            throw new IllegalStateException("what the hell? side not specified! (null)");
+        }
+
         byte[] psk = zeroes(context.hkdf.getHashLength());
         Handshake clientHello = context.getFirstClientHello();
         Handshake serverHello = context.getServerHello();
@@ -76,22 +98,53 @@ public class ComputingHandshakeTrafficKeys
                 context.iv,
                 ZERO_HASH_VALUE,
                 context.suite.ivLength());
+
         context.finished_key = context.hkdf.expandLabel(
-                context.client_handshake_traffic_secret,
+                finishedBaseKey(),
                 context.finished,
                 ZERO_HASH_VALUE,
                 context.hkdf.getHashLength());
 
         context.handshakeEncryptor = AEAD.createEncryptor(
                 context.suite.cipher(),
-                context.client_handshake_write_key,
-                context.client_handshake_write_iv);
+                encryptorKey(),
+                encryptorIv());
         context.handshakeDecryptor = AEAD.createDecryptor(
                 context.suite.cipher(),
-                context.server_handshake_write_key,
-                context.server_handshake_write_iv);
+                decryptorKey(),
+                decryptorIv());
 
         return this;
+    }
+
+    private byte[] finishedBaseKey() {
+        return side == Side.client
+                ? context.client_handshake_traffic_secret
+                : context.server_handshake_traffic_secret;
+    }
+
+    private byte[] encryptorKey() {
+        return side == Side.client
+                ? context.client_handshake_write_key
+                : context.server_handshake_write_key;
+    }
+
+    private byte[] encryptorIv() {
+        return side == Side.client
+                ? context.client_handshake_write_iv
+                : context.server_handshake_write_iv;
+    }
+
+    private byte[] decryptorKey() {
+        return side == Side.client
+                ? context.server_handshake_write_key
+                : context.client_handshake_write_key;
+    }
+
+    private byte[] decryptorIv() {
+        return side == Side.client
+                ? context.server_handshake_write_iv
+                : context.client_handshake_write_iv;
     }
 
 }

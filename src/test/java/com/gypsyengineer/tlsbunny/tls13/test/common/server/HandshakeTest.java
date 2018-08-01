@@ -108,7 +108,8 @@ public class HandshakeTest {
                             .version(TLSv12))
                     .send(new OutgoingData())
 
-                    .run(new ComputingHandshakeTrafficKeys())
+                    .run(new ComputingHandshakeTrafficKeys()
+                            .server())
 
                     // send EncryptedExtensions
                     .run(new GeneratingEncryptedExtensions())
@@ -136,6 +137,9 @@ public class HandshakeTest {
                             .updateContext(Context.Element.server_certificate_verify))
                     .run(new WrappingHandshakeDataIntoTLSCiphertext())
                     .send(new OutgoingData())
+
+                    .run(new ComputingApplicationTrafficKeys()
+                            .server())
 
                     .connect();
         }

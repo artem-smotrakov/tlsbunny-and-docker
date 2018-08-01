@@ -108,7 +108,8 @@ public class AllMaxFragmentLengths {
                             .updateContext(Context.Element.server_hello))
                     .run(new ProcessingServerHello())
                     .run(new NegotiatingDHSecret())
-                    .run(new ComputingHandshakeTrafficKeys())
+                    .run(new ComputingHandshakeTrafficKeys()
+                            .client())
 
                     .allow(new IncomingChangeCipherSpec())
 
@@ -143,7 +144,8 @@ public class AllMaxFragmentLengths {
                             .expect(finished)
                             .updateContext(Context.Element.server_finished))
                     .run(new ProcessingFinished())
-                    .run(new ComputingApplicationTrafficKeys())
+                    .run(new ComputingApplicationTrafficKeys()
+                            .client())
 
                     // store application data which we can't decrypt yet
                     .run(new PreservingEncryptedApplicationData())

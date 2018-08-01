@@ -4,6 +4,7 @@ import com.gypsyengineer.tlsbunny.tls13.connection.AlertCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.EngineException;
 import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertCheck;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.Side;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.IncomingMessages;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
@@ -92,7 +93,7 @@ public class EmptyTLSPlaintext {
 
                 // receive a ServerHello, EncryptedExtensions, Certificate,
                 // CertificateVerify and Finished messages
-                .receive(new IncomingMessages())
+                .receive(new IncomingMessages(Side.client))
 
                 // send Finished
                 .run(new GeneratingFinished())
@@ -110,7 +111,7 @@ public class EmptyTLSPlaintext {
 
                 // receive session tickets and application data
                 .loop(context -> !context.receivedApplicationData())
-                    .receive(() -> new IncomingMessages())
+                    .receive(() -> new IncomingMessages(Side.client))
 
                 .connect();
     }
