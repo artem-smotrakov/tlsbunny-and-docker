@@ -27,7 +27,8 @@ public class Engine {
         run,
         send, send_while,
         receive, receive_while,
-        allow
+        allow,
+        store, restore
     }
 
     public enum Status {
@@ -61,6 +62,8 @@ public class Engine {
 
     // this is a label to mark a particular connection
     private String label = String.format("connection:%d", System.currentTimeMillis());
+
+    private final List<byte[]> storedData = new ArrayList<>();
 
     private Engine() {
         context.group = NamedGroup.secp256r1;
@@ -146,6 +149,22 @@ public class Engine {
         return this;
     }
 
+    public Engine store() {
+        actions.add(new ActionHolder()
+                .engine(this)
+                .factory(() -> new EmptyAction())
+                .type(ActionType.store));
+        return this;
+    }
+
+    public Engine restore() {
+        actions.add(new ActionHolder()
+                .engine(this)
+                .factory(() -> new EmptyAction())
+                .type(ActionType.restore));
+        return this;
+    }
+
     public Engine send(Action action) {
         actions.add(new ActionHolder()
                 .engine(this)
@@ -199,6 +218,8 @@ public class Engine {
     public Engine connect() throws EngineException {
         context.negotiator.set(output);
         status = Status.running;
+        int n;
+        byte[] data;
 
         try (Connection connection = initConnection()) {
             buffer = NOTHING;
@@ -277,6 +298,12 @@ public class Engine {
                         }
 
                         break;
+                    case store:
+                        storeImpl();
+                        break;
+                    case restore:
+                        restoreImpl();
+                        break;
                     default:
                         throw new IllegalStateException(
                                 String.format("unknown action type: %s", holder.type));
@@ -333,14 +360,44 @@ public class Engine {
         return this;
     }
 
+    private void storeImpl() {
+        byte[] data = new byte[buffer.remaining()];
+        buffer.get(data);
+        storedData.add(data);
+        buffer = NOTHING;
+        output.info("stored %d bytes", data.length);
+    }
+
+    private void restoreImpl() {
+        buffer.flip();
+        byte[] data = new byte[buffer.remaining()];
+        buffer.get(data);
+
+        int n = data.length;
+        for (byte[] bytes : storedData) {
+            n += bytes.length;
+        }
+
+        buffer = ByteBuffer.allocate(n);
+
+        for (byte[] bytes : storedData) {
+            buffer.put(bytes);
+        }
+
+        buffer.put(data);
+        buffer.flip();
+
+        output.info("restored %d bytes", n);
+    }
+
     private void combineData(Action action) {
         ByteBuffer out = action.out();
         if (out != null && out.remaining() > 0) {
             ByteBuffer combined = ByteBuffer.allocate(buffer.remaining() + out.remaining());
-            combined.put(action.out());
+            combined.put(out);
             combined.put(buffer);
             buffer = combined;
-            buffer.position(0);
+            buffer.flip();
         }
 
         ByteBuffer data = action.applicationData();
@@ -448,6 +505,55 @@ public class Engine {
         private ActionHolder condition(Condition condition) {
             this.condition = condition;
             return this;
+        }
+    }
+
+    // this is an action that does nothing
+    private static class EmptyAction implements Action {
+
+        @Override
+        public String name() {
+            return "I am a fake action, you're probably not supposed to call this method!";
+        }
+
+        @Override
+        public Action set(Output output) {
+            return this;
+        }
+
+        @Override
+        public Action set(Context context) {
+            return this;
+        }
+
+        @Override
+        public Action run() {
+            return this;
+        }
+
+        @Override
+        public Action in(byte[] bytes) {
+            return this;
+        }
+
+        @Override
+        public Action in(ByteBuffer buffer) {
+            throw new UnsupportedOperationException("what the hell? I can't do that!");
+        }
+
+        @Override
+        public ByteBuffer out() {
+            throw new UnsupportedOperationException("what the hell? I can't do that!");
+        }
+
+        @Override
+        public Action applicationData(ByteBuffer buffer) {
+            return this;
+        }
+
+        @Override
+        public ByteBuffer applicationData() {
+            throw new UnsupportedOperationException("what the hell? I can't do that!");
         }
     }
 

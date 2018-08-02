@@ -17,6 +17,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 
+import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.application_data;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
 import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.*;
 import static com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup.secp256r1;
@@ -106,6 +107,7 @@ public class HandshakeTest {
                     .run(new WrappingIntoTLSPlaintexts()
                             .type(handshake)
                             .version(TLSv12))
+                    .store()
 
                     .run(new ComputingHandshakeTrafficKeys()
                             .server())
@@ -116,6 +118,7 @@ public class HandshakeTest {
                             .type(encrypted_extensions)
                             .updateContext(Context.Element.encrypted_extensions))
                     .run(new WrappingHandshakeDataIntoTLSCiphertext())
+                    .store()
 
                     // send Certificate
                     .run(new GeneratingCertificate()
@@ -124,6 +127,7 @@ public class HandshakeTest {
                             .type(certificate)
                             .updateContext(Context.Element.server_certificate))
                     .run(new WrappingHandshakeDataIntoTLSCiphertext())
+                    .store()
 
                     // send CertificateVerify
                     .run(new GeneratingCertificateVerify()
@@ -133,17 +137,50 @@ public class HandshakeTest {
                             .type(certificate_verify)
                             .updateContext(Context.Element.server_certificate_verify))
                     .run(new WrappingHandshakeDataIntoTLSCiphertext())
+                    .store()
+
+                    .run(new GeneratingFinished())
+                    .run(new WrappingIntoHandshake()
+                            .type(finished)
+                            .updateContext(Context.Element.server_finished))
+                    .run(new WrappingHandshakeDataIntoTLSCiphertext())
+                    .store()
+
+                    .restore()
+                    .send(new OutgoingData())
 
                     .run(new ComputingApplicationTrafficKeys()
                             .server())
 
-                    // produce Finished before sending data
+                    // receive application data
+                    .receive(new IncomingData())
+                    .run(new ProcessingApplicationDataTLSCiphertext()
+                            .expect(application_data))
+                    .run(new PrintingData())
 
+                    // send application data
+                    .run(new PreparingHttpResponse())
+                    .run(new WrappingApplicationDataIntoTLSCiphertext())
                     .send(new OutgoingData())
-
-
 
                     .connect();
         }
+    }
+
+    private static class PreparingHttpResponse extends PreparingApplicationData {
+
+        private static final byte[] HTML_PAGE =
+                "<html>Like most of life's problems, this one can be solved with bending!<html>"
+                        .getBytes();
+
+        public PreparingHttpResponse() {
+            super(HTML_PAGE);
+        }
+
+        @Override
+        public String name() {
+            return "generating HTTP response";
+        }
+
     }
 }
