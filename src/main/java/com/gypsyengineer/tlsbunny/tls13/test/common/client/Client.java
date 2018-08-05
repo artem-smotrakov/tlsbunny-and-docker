@@ -5,7 +5,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.tls13.test.Config;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
-public interface Client {
+public interface Client extends AutoCloseable {
     Client set(Config config);
     Client set(StructFactory factory);
     Client set(Output output);

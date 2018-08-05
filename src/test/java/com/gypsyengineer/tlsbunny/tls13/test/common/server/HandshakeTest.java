@@ -9,6 +9,7 @@ import com.gypsyengineer.tlsbunny.tls13.handshake.NegotiatorException;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.tls13.test.Config;
 import com.gypsyengineer.tlsbunny.tls13.test.SystemPropertiesConfig;
+import com.gypsyengineer.tlsbunny.tls13.test.common.client.Client;
 import com.gypsyengineer.tlsbunny.tls13.test.common.client.HttpsClient;
 import com.gypsyengineer.tlsbunny.utils.Connection;
 import com.gypsyengineer.tlsbunny.utils.Output;
@@ -41,27 +42,45 @@ public class HandshakeTest {
         serverConfig.serverCertificate(serverCertificatePath);
         serverConfig.serverKey(serverKeyPath);
 
-        try (ServerImpl server = new ServerImpl(serverConfig);
-             Output serverOutput = new Output();
-             Output clientOutput = new Output()) {
+        boolean success = false;
 
-            serverOutput.prefix("server");
-            clientOutput.prefix("client");
+        Client client = new HttpsClient()
+                .set(StructFactory.getDefault());
 
-            server.set(serverOutput);
+        ServerImpl server = new ServerImpl(serverConfig);
 
+        Output serverOutput = new Output();
+        Output clientOutput = new Output();
+        serverOutput.prefix("server");
+        clientOutput.prefix("client");
+
+        server.set(serverOutput);
+
+        try (server; clientOutput; serverOutput) {
             new Thread(server).start();
             Thread.sleep(delay);
 
             Config clientConfig = SystemPropertiesConfig.load();
             clientConfig.port(server.port());
 
-            new HttpsClient()
-                    .set(clientConfig)
-                    .set(StructFactory.getDefault())
-                    .set(clientOutput)
-                    .connect()
-                    .run(new NoAlertCheck());
+            client.set(clientConfig).set(clientOutput);
+
+            try (client) {
+                client.connect().run(new NoAlertCheck());
+                success = true;
+            } catch (Exception e) {
+                clientOutput.achtung(
+                        "client failed with an unexpected exception", e);
+            }
+        }
+
+        success &= checkContexts(
+                client.engine().context(),
+                server.engine().context(),
+                clientOutput);
+
+        if (!success) {
+            throw new Exception("Test failed!");
         }
     }
 
@@ -75,15 +94,13 @@ public class HandshakeTest {
         }
 
         @Override
-        protected void handle(Connection connection)
+        protected Engine createEngine()
                 throws NegotiatorException, NoSuchAlgorithmException,
                 EngineException, IOException {
 
-            output.info("accepted");
-            Engine.init()
+            return Engine.init()
                     .set(factory)
                     .set(output)
-                    .set(connection)
 
                     .receive(new IncomingData())
 
@@ -161,10 +178,15 @@ public class HandshakeTest {
                     // send application data
                     .run(new PreparingHttpResponse())
                     .run(new WrappingApplicationDataIntoTLSCiphertext())
-                    .send(new OutgoingData())
-
-                    .connect();
+                    .send(new OutgoingData());
         }
+    }
+
+    private static boolean checkContexts(
+            Context clientContext, Context serverContext, Output output) {
+
+        output.info("check client and server contexts");
+        return true;
     }
 
     private static class PreparingHttpResponse extends PreparingApplicationData {

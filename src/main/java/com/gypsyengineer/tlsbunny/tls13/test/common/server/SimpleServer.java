@@ -1,5 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls13.test.common.server;
 
+import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.tls13.test.Config;
 import com.gypsyengineer.tlsbunny.tls13.test.SystemPropertiesConfig;
@@ -16,6 +17,7 @@ public abstract class SimpleServer implements Server {
     protected Config config = SystemPropertiesConfig.load();
     protected StructFactory factory = StructFactory.getDefault();
     protected Output output = new Output();
+    protected Engine engine;
 
     private final ServerSocket serverSocket;
 
@@ -29,6 +31,11 @@ public abstract class SimpleServer implements Server {
 
     private SimpleServer(ServerSocket ssocket) {
         this.serverSocket = ssocket;
+    }
+
+    @Override
+    public Engine engine() {
+        return engine;
     }
 
     @Override
@@ -59,8 +66,10 @@ public abstract class SimpleServer implements Server {
         output.info("server started on port %d", port());
         while (true) {
             try (Connection connection = Connection.create(serverSocket.accept())) {
-                output.info("handle incoming connection");
-                handle(connection);
+                output.info("accepted");
+                engine = createEngine();
+                engine.set(connection);
+                engine.connect();
             } catch (Exception e) {
                 output.achtung("exception: ", e);
                 break;
@@ -68,7 +77,7 @@ public abstract class SimpleServer implements Server {
         }
     }
 
-    protected abstract void handle(Connection connection) throws Exception;
+    protected abstract Engine createEngine() throws Exception;
 
     @Override
     public void close() throws IOException {

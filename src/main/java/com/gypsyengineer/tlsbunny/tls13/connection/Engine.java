@@ -72,6 +72,10 @@ public class Engine {
         context.factory = StructFactory.getDefault();
     }
 
+    public Context context() {
+        return context;
+    }
+
     public Engine target(String host) {
         this.host = host;
         return this;
