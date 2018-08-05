@@ -39,8 +39,7 @@ public class HttpsClient extends AbstractClient {
     }
 
     @Override
-    public Engine connect() throws Exception {
-        output.info("connect to %s:%d", config.host(), config.port());
+    protected Engine createEngine() throws Exception {
         return Engine.init()
                 .target(config.host())
                 .target(config.port())
@@ -80,9 +79,7 @@ public class HttpsClient extends AbstractClient {
 
                 // receive session tickets and application data
                 .loop(context -> !context.receivedApplicationData())
-                    .receive(() -> new IncomingMessages(Side.client))
-
-                .connect();
+                    .receive(() -> new IncomingMessages(Side.client));
     }
 
 }

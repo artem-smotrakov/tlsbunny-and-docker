@@ -30,7 +30,7 @@ public class NssHttpsClient extends AbstractClient {
     }
 
     @Override
-    public Engine connect() throws Exception {
+    protected Engine createEngine() throws Exception {
         return Engine.init()
                 .target(config.host())
                 .target(config.port())
@@ -114,12 +114,10 @@ public class NssHttpsClient extends AbstractClient {
                 .receive(new IncomingData())
                 .run(new ProcessingApplicationDataTLSCiphertext()
                         .expect(application_data))
-                .run(new PrintingData())
+                .run(new PrintingData());
 
                 // selfserv actually sends a "close_notify" alert
                 // but we just ignore it for now
-
-                .connect();
     }
 
 }

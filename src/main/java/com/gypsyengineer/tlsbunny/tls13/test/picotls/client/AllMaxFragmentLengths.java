@@ -69,7 +69,7 @@ public class AllMaxFragmentLengths {
         }
 
         @Override
-        public Engine connect() throws Exception {
+        protected Engine createEngine() throws Exception {
             if (maxFragmentLength != NO_MAX_FRAGMENT_LENGTH) {
                 output.info("set max_fragment_length to %d",
                         maxFragmentLength.getCode());
@@ -164,9 +164,7 @@ public class AllMaxFragmentLengths {
                     // decrypt the application data
                     .run(new ProcessingApplicationDataTLSCiphertext()
                             .expect(application_data))
-                    .run(new PrintingData())
-
-                    .connect();
+                    .run(new PrintingData());
         }
     }
 

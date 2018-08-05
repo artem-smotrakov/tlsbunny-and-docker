@@ -29,7 +29,7 @@ public class TooManyGroupsInClientHello extends AbstractClient {
     }
 
     @Override
-    public Engine connect() throws Exception {
+    protected Engine createEngine() throws Exception {
         int n = 65535 / 2 - 48;
         NamedGroup[] tooManyGroups = new NamedGroup[n];
         for (int i = 0; i < n; i++) {
@@ -139,9 +139,7 @@ public class TooManyGroupsInClientHello extends AbstractClient {
                 .receive(new IncomingData())
                 .run(new ProcessingApplicationDataTLSCiphertext()
                         .expect(application_data))
-                .run(new PrintingData())
-
-                .connect();
+                .run(new PrintingData());
     }
 
 }

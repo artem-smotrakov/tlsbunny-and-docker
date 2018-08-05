@@ -10,4 +10,5 @@ public interface Client {
     Client set(StructFactory factory);
     Client set(Output output);
     Engine connect() throws Exception;
+    Engine engine();
 }
