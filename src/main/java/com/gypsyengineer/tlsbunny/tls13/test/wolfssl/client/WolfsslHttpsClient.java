@@ -26,7 +26,7 @@ public class WolfsslHttpsClient extends AbstractClient {
     }
 
     @Override
-    public Engine connect() throws Exception {
+    protected Engine createEngine() throws Exception {
         return Engine.init()
                 .target(config.host())
                 .target(config.port())
@@ -58,8 +58,9 @@ public class WolfsslHttpsClient extends AbstractClient {
                         .expect(server_hello)
                         .updateContext(Context.Element.server_hello))
                 .run(new ProcessingServerHello())
-                .run(new NegotiatingDHSecret())
-                .run(new ComputingKeysAfterServerHello())
+                .run(new NegotiatingClientDHSecret())
+                .run(new ComputingHandshakeTrafficKeys()
+                        .client())
 
                 // process EncryptedExtensions
                 .run(new ProcessingHandshakeTLSCiphertext()
@@ -92,7 +93,8 @@ public class WolfsslHttpsClient extends AbstractClient {
                         .expect(finished)
                         .updateContext(Context.Element.server_finished))
                 .run(new ProcessingFinished())
-                .run(new ComputingKeysAfterServerFinished())
+                .run(new ComputingApplicationTrafficKeys()
+                        .client())
 
                 // send Finished
                 .run(new GeneratingFinished())
@@ -110,12 +112,10 @@ public class WolfsslHttpsClient extends AbstractClient {
                 // receive application data
                 .receive(new IncomingData())
                 .run(new ProcessingApplicationDataTLSCiphertext())
-                .run(new PrintingData())
+                .run(new PrintingData());
 
                 // wolfssl server actually sends a "close_notify" alert
                 // but we just ignore it for now
-
-                .connect();
     }
 
 }

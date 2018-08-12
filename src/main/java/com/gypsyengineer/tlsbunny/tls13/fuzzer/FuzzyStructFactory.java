@@ -334,6 +334,11 @@ public abstract class FuzzyStructFactory<T> implements StructFactory, Fuzzer<T> 
     }
 
     @Override
+    public KeyShare.ServerHello createKeyShareForServerHello(KeyShareEntry entry) {
+        return factory.createKeyShareForServerHello(entry);
+    }
+
+    @Override
     public SupportedVersions.ClientHello createSupportedVersionForClientHello(
             ProtocolVersion version) {
 

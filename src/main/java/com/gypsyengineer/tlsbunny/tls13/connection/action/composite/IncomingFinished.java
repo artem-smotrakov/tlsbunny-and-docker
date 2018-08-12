@@ -9,7 +9,6 @@ import com.gypsyengineer.tlsbunny.tls13.struct.Finished;
 import com.gypsyengineer.tlsbunny.tls13.struct.Handshake;
 
 import java.io.IOException;
-import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
@@ -31,7 +30,7 @@ public class IncomingFinished extends AbstractAction {
 
         try {
             processFinished(handshake);
-        } catch (NoSuchAlgorithmException | InvalidKeyException e) {
+        } catch (NoSuchAlgorithmException e) {
             throw new ActionFailed(e);
         }
 
@@ -39,7 +38,7 @@ public class IncomingFinished extends AbstractAction {
     }
 
     private void processFinished(Handshake handshake)
-            throws NoSuchAlgorithmException, IOException, InvalidKeyException {
+            throws NoSuchAlgorithmException, IOException {
 
         Finished message = context.factory.parser().parseFinished(
                 handshake.getBody(),

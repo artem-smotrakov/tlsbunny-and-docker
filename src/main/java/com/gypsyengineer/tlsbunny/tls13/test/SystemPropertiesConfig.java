@@ -15,17 +15,19 @@ public class SystemPropertiesConfig implements Config {
     public static final long DEFAULT_READ_TIMEOUT = 5000; // in millis
     public static final String EMPTY_STRING = "";
 
-    String host;
-    int port;
-    double minRatio;
-    double maxRatio;
-    int threads;
-    int parts;
-    long startTest;
-    long endTest;
-    String clientCertificate;
-    String clientKey;
-    long readTimeout;
+    private String host;
+    private int port;
+    private double minRatio;
+    private double maxRatio;
+    private int threads;
+    private int parts;
+    private long startTest;
+    private long endTest;
+    private String clientCertificate;
+    private String clientKey;
+    private String serverCertificate;
+    private String serverKey;
+    private long readTimeout;
 
     private SystemPropertiesConfig() {
 
@@ -64,6 +66,30 @@ public class SystemPropertiesConfig implements Config {
     @Override
     public Config readTimeout(long timeout) {
         readTimeout = timeout;
+        return this;
+    }
+
+    @Override
+    public Config clientCertificate(String path) {
+        clientCertificate = path;
+        return this;
+    }
+
+    @Override
+    public Config clientKey(String path) {
+        clientKey = path;
+        return this;
+    }
+
+    @Override
+    public Config serverCertificate(String path) {
+        serverCertificate = path;
+        return this;
+    }
+
+    @Override
+    public Config serverKey(String path) {
+        serverKey = path;
         return this;
     }
 
@@ -127,6 +153,16 @@ public class SystemPropertiesConfig implements Config {
     @Override
     public String clientKey() {
         return clientKey;
+    }
+
+    @Override
+    public String serverCertificate() {
+        return serverCertificate;
+    }
+
+    @Override
+    public String serverKey() {
+        return serverKey;
     }
 
     @Override

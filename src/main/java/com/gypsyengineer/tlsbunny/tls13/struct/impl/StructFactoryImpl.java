@@ -140,7 +140,8 @@ public class StructFactoryImpl implements StructFactory {
     
     @Override
     public EncryptedExtensions createEncryptedExtensions(Extension... extensions) {
-        throw new UnsupportedOperationException("I don't know how to do it yet!");
+        return new EncryptedExtensionsImpl(
+                Vector.wrap(EncryptedExtensions.LENGTH_BYTES, extensions));
     }
     
     @Override
@@ -217,6 +218,11 @@ public class StructFactoryImpl implements StructFactory {
         }
 
         return new KeyShareImpl.ClientHelloImpl();
+    }
+
+    @Override
+    public KeyShare.ServerHello createKeyShareForServerHello(KeyShareEntry entry) {
+        return new KeyShareImpl.ServerHelloImpl(entry);
     }
 
     @Override

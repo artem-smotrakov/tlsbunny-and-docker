@@ -1,5 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls13.test.common.client;
 
+import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.tls13.test.Config;
 import com.gypsyengineer.tlsbunny.tls13.test.SystemPropertiesConfig;
@@ -10,6 +11,7 @@ public abstract class AbstractClient implements Client, AutoCloseable {
     protected Config config = SystemPropertiesConfig.load();
     protected StructFactory factory = StructFactory.getDefault();
     protected Output output = new Output();
+    protected Engine engine;
 
     public Config config() {
         return config;
@@ -39,4 +41,23 @@ public abstract class AbstractClient implements Client, AutoCloseable {
             output.flush();
         }
     }
+
+    @Override
+    public Engine engine() {
+        if (engine == null) {
+            throw new IllegalStateException(
+                    "what the hell? engine not initialized! (null)");
+        }
+
+        return engine;
+    }
+
+    @Override
+    public final Engine connect() throws Exception {
+        output.info("connect to %s:%d", config.host(), config.port());
+        engine = createEngine();
+        return engine.connect();
+    }
+
+    protected abstract Engine createEngine() throws Exception;
 }

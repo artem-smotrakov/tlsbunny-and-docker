@@ -34,6 +34,15 @@ public class TLS13Utils {
         return null;
     }
 
+    public static KeyShare.ClientHello findKeyShare(StructFactory factory, ClientHello hello)
+            throws IOException {
+
+        return factory.parser()
+                .parseKeyShareFromClientHello(
+                        hello.findExtension(ExtensionType.key_share)
+                                .getExtensionData().bytes());
+    }
+
     public static KeyShare.ServerHello findKeyShare(StructFactory factory, ServerHello hello)
             throws IOException {
 

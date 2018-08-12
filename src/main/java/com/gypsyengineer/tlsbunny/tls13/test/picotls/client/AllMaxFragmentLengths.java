@@ -69,7 +69,7 @@ public class AllMaxFragmentLengths {
         }
 
         @Override
-        public Engine connect() throws Exception {
+        protected Engine createEngine() throws Exception {
             if (maxFragmentLength != NO_MAX_FRAGMENT_LENGTH) {
                 output.info("set max_fragment_length to %d",
                         maxFragmentLength.getCode());
@@ -107,8 +107,9 @@ public class AllMaxFragmentLengths {
                             .expect(server_hello)
                             .updateContext(Context.Element.server_hello))
                     .run(new ProcessingServerHello())
-                    .run(new NegotiatingDHSecret())
-                    .run(new ComputingKeysAfterServerHello())
+                    .run(new NegotiatingClientDHSecret())
+                    .run(new ComputingHandshakeTrafficKeys()
+                            .client())
 
                     .allow(new IncomingChangeCipherSpec())
 
@@ -143,7 +144,8 @@ public class AllMaxFragmentLengths {
                             .expect(finished)
                             .updateContext(Context.Element.server_finished))
                     .run(new ProcessingFinished())
-                    .run(new ComputingKeysAfterServerFinished())
+                    .run(new ComputingApplicationTrafficKeys()
+                            .client())
 
                     // store application data which we can't decrypt yet
                     .run(new PreservingEncryptedApplicationData())
@@ -162,9 +164,7 @@ public class AllMaxFragmentLengths {
                     // decrypt the application data
                     .run(new ProcessingApplicationDataTLSCiphertext()
                             .expect(application_data))
-                    .run(new PrintingData())
-
-                    .connect();
+                    .run(new PrintingData());
         }
     }
 

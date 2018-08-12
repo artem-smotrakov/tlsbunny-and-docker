@@ -61,6 +61,7 @@ public class Context {
     private Handshake clientCertificateVerify;
     private Handshake clientFinished;
 
+    private boolean clientFinishedVerified = false;
     private boolean serverFinishedVerified = false;
 
     public StructFactory factory;
@@ -102,10 +103,10 @@ public class Context {
     // TODO: these fields should not be public
     public AEAD handshakeEncryptor;
     public AEAD handshakeDecryptor;
-    public AEAD applicationDataEnctyptor;
+    public AEAD applicationDataEncryptor;
     public AEAD applicationDataDecryptor;
 
-    public List<byte[]> applicatinoData = new ArrayList<>();
+    public List<byte[]> applicationData = new ArrayList<>();
 
     public void reset() {
         firstClientHello = null;
@@ -122,6 +123,7 @@ public class Context {
         clientCertificateVerify = null;
         clientFinished = null;
 
+        clientFinishedVerified = false;
         serverFinishedVerified = false;
 
         dh_shared_secret = null;
@@ -153,7 +155,7 @@ public class Context {
         handshakeEncryptor = null;
         handshakeDecryptor = null;
         applicationDataDecryptor = null;
-        applicationDataEnctyptor = null;
+        applicationDataEncryptor = null;
 
         scheme = null;
         group = null;
@@ -250,6 +252,10 @@ public class Context {
         return serverFinished != null;
     }
 
+    public void verifyClientFinished() {
+        clientFinishedVerified = true;
+    }
+
     public void verifyServerFinished() {
         serverFinishedVerified = true;
     }
@@ -342,7 +348,7 @@ public class Context {
                 endOfEarlyData,
                 clientCertificate,
                 clientCertificateVerify,
-                clientFinished
+                clientFinishedVerified ? clientFinished : null,
         };
 
         List<Handshake> list = new ArrayList<>();
@@ -368,10 +374,10 @@ public class Context {
     }
 
     public void addApplicationData(byte[] data) {
-        applicatinoData.add(data);
+        applicationData.add(data);
     }
 
     public boolean receivedApplicationData() {
-        return !applicatinoData.isEmpty();
+        return !applicationData.isEmpty();
     }
 }

@@ -30,6 +30,10 @@ public abstract class KeyShareImpl implements KeyShare {
             return client_shares.encoding();
         }
 
+        @Override
+        public Vector<KeyShareEntry> getClientShares() {
+            return client_shares;
+        }
     }
     
     public static class ServerHelloImpl extends KeyShareImpl implements ServerHello {

@@ -35,14 +35,30 @@ public class HKDF {
 
     // HKDF-Extract(salt, IKM) -> PRK
     public byte[] extract(byte[] salt, byte[] IKM) {
+        if (salt == null) {
+            throw new IllegalArgumentException("salt is null");
+        }
+
+        if (IKM == null) {
+            throw new IllegalArgumentException("IKM is null");
+        }
+
         return hmac(salt, IKM);
     }
 
     // HKDF-Expand(PRK, info, L) -> OKM
     public byte[] expand(byte[] PRK, byte[] info, int L) {
+        if (PRK == null) {
+            throw new IllegalArgumentException("PRK is null");
+        }
+
+        if (info == null) {
+            throw new IllegalArgumentException("info is null");
+        }
+
         int maxLen = 255 * hashLen;
         if (L > maxLen) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("L > maxLen");
         }
 
         int N = (int) Math.ceil((double) L / hashLen);
@@ -86,6 +102,14 @@ public class HKDF {
 
     // HMAC-Hash() function
     public byte[] hmac(byte[] key, byte[] input) {
+        if (key == null) {
+            throw new IllegalArgumentException("key is null");
+        }
+
+        if (input == null) {
+            throw new IllegalArgumentException("input is null");
+        }
+
         mac.reset();
 
         try {

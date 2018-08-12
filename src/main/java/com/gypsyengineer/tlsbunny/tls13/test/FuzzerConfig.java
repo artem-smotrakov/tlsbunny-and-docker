@@ -66,6 +66,16 @@ public class FuzzerConfig implements Config {
     }
 
     @Override
+    public String serverCertificate() {
+        return commonConfig.serverCertificate();
+    }
+
+    @Override
+    public String serverKey() {
+        return commonConfig.serverKey();
+    }
+
+    @Override
     public long readTimeout() {
         return commonConfig.readTimeout();
     }
@@ -115,6 +125,30 @@ public class FuzzerConfig implements Config {
     @Override
     public FuzzerConfig readTimeout(long timeout) {
         commonConfig.readTimeout(timeout);
+        return this;
+    }
+
+    @Override
+    public Config clientCertificate(String path) {
+        commonConfig.clientCertificate(path);
+        return this;
+    }
+
+    @Override
+    public Config clientKey(String path) {
+        commonConfig.clientKey(path);
+        return this;
+    }
+
+    @Override
+    public Config serverCertificate(String path) {
+        commonConfig.serverCertificate(path);
+        return this;
+    }
+
+    @Override
+    public Config serverKey(String path) {
+        commonConfig.serverKey(path);
         return this;
     }
 

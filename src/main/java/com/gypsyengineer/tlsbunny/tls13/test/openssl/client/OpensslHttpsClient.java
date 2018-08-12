@@ -31,7 +31,7 @@ public class OpensslHttpsClient extends AbstractClient {
     }
 
     @Override
-    public Engine connect() throws Exception {
+    protected Engine createEngine() throws Exception {
         return Engine.init()
                 .target(config.host())
                 .target(config.port())
@@ -63,8 +63,9 @@ public class OpensslHttpsClient extends AbstractClient {
                         .expect(server_hello)
                         .updateContext(Context.Element.server_hello))
                 .run(new ProcessingServerHello())
-                .run(new NegotiatingDHSecret())
-                .run(new ComputingKeysAfterServerHello())
+                .run(new NegotiatingClientDHSecret())
+                .run(new ComputingHandshakeTrafficKeys()
+                        .client())
 
                 .allow(new IncomingChangeCipherSpec())
 
@@ -99,7 +100,8 @@ public class OpensslHttpsClient extends AbstractClient {
                         .expect(finished)
                         .updateContext(Context.Element.server_finished))
                 .run(new ProcessingFinished())
-                .run(new ComputingKeysAfterServerFinished())
+                .run(new ComputingApplicationTrafficKeys()
+                        .client())
 
                 // send Finished
                 .run(new GeneratingFinished())
@@ -133,9 +135,7 @@ public class OpensslHttpsClient extends AbstractClient {
                 .receive(new IncomingData())
                 .run(new ProcessingApplicationDataTLSCiphertext()
                         .expect(application_data))
-                .run(new PrintingData())
-
-                .connect();
+                .run(new PrintingData());
     }
 
 }

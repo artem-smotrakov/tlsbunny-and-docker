@@ -22,15 +22,13 @@ import java.util.List;
 public class Engine {
 
     private static final ByteBuffer NOTHING = ByteBuffer.allocate(0);
-    private static final Connection NO_CONNECTION = null;
-    private static final String NO_HOST = null;
-    private static final int NO_PORT = -1;
 
     private enum ActionType {
         run,
         send, send_while,
         receive, receive_while,
-        allow
+        allow,
+        store, restore
     }
 
     public enum Status {
@@ -39,7 +37,7 @@ public class Engine {
 
     private final List<ActionHolder> actions = new ArrayList<>();
 
-    private Connection connection = NO_CONNECTION;
+    private Connection connection;
     private Output output = new Output();
     private String host = "localhost";
     private int port = 443;
@@ -65,11 +63,17 @@ public class Engine {
     // this is a label to mark a particular connection
     private String label = String.format("connection:%d", System.currentTimeMillis());
 
+    private final List<byte[]> storedData = new ArrayList<>();
+
     private Engine() {
         context.group = NamedGroup.secp256r1;
         context.scheme = SignatureScheme.ecdsa_secp256r1_sha256;
         context.suite = CipherSuite.TLS_AES_128_GCM_SHA256;
         context.factory = StructFactory.getDefault();
+    }
+
+    public Context context() {
+        return context;
     }
 
     public Engine target(String host) {
@@ -146,6 +150,22 @@ public class Engine {
 
     public Engine set(Negotiator negotiator) {
         this.context.negotiator = negotiator;
+        return this;
+    }
+
+    public Engine store() {
+        actions.add(new ActionHolder()
+                .engine(this)
+                .factory(() -> new EmptyAction())
+                .type(ActionType.store));
+        return this;
+    }
+
+    public Engine restore() {
+        actions.add(new ActionHolder()
+                .engine(this)
+                .factory(() -> new EmptyAction())
+                .type(ActionType.restore));
         return this;
     }
 
@@ -280,6 +300,12 @@ public class Engine {
                         }
 
                         break;
+                    case store:
+                        storeImpl();
+                        break;
+                    case restore:
+                        restoreImpl();
+                        break;
                     default:
                         throw new IllegalStateException(
                                 String.format("unknown action type: %s", holder.type));
@@ -336,14 +362,44 @@ public class Engine {
         return this;
     }
 
+    private void storeImpl() {
+        byte[] data = new byte[buffer.remaining()];
+        buffer.get(data);
+        storedData.add(data);
+        buffer = NOTHING;
+        output.info("stored %d bytes", data.length);
+    }
+
+    private void restoreImpl() {
+        buffer.flip();
+        byte[] data = new byte[buffer.remaining()];
+        buffer.get(data);
+
+        int n = data.length;
+        for (byte[] bytes : storedData) {
+            n += bytes.length;
+        }
+
+        buffer = ByteBuffer.allocate(n);
+
+        for (byte[] bytes : storedData) {
+            buffer.put(bytes);
+        }
+
+        buffer.put(data);
+        buffer.flip();
+
+        output.info("restored %d bytes", n);
+    }
+
     private void combineData(Action action) {
         ByteBuffer out = action.out();
         if (out != null && out.remaining() > 0) {
             ByteBuffer combined = ByteBuffer.allocate(buffer.remaining() + out.remaining());
-            combined.put(action.out());
+            combined.put(out);
             combined.put(buffer);
             buffer = combined;
-            buffer.position(0);
+            buffer.flip();
         }
 
         ByteBuffer data = action.applicationData();
@@ -400,11 +456,11 @@ public class Engine {
     }
 
     private Connection initConnection() throws IOException {
-        if (!connection.equals(NO_CONNECTION)) {
+        if (connection != null) {
             return connection;
         }
 
-        if (!host.equals(NO_HOST) && port != NO_PORT) {
+        if (host != null && port > 0) {
             return Connection.create(host, port, timeout);
         }
 
@@ -451,6 +507,55 @@ public class Engine {
         private ActionHolder condition(Condition condition) {
             this.condition = condition;
             return this;
+        }
+    }
+
+    // this is an action that does nothing
+    private static class EmptyAction implements Action {
+
+        @Override
+        public String name() {
+            return "I am a fake action, you're probably not supposed to call this method!";
+        }
+
+        @Override
+        public Action set(Output output) {
+            return this;
+        }
+
+        @Override
+        public Action set(Context context) {
+            return this;
+        }
+
+        @Override
+        public Action run() {
+            return this;
+        }
+
+        @Override
+        public Action in(byte[] bytes) {
+            return this;
+        }
+
+        @Override
+        public Action in(ByteBuffer buffer) {
+            throw new UnsupportedOperationException("what the hell? I can't do that!");
+        }
+
+        @Override
+        public ByteBuffer out() {
+            throw new UnsupportedOperationException("what the hell? I can't do that!");
+        }
+
+        @Override
+        public Action applicationData(ByteBuffer buffer) {
+            return this;
+        }
+
+        @Override
+        public ByteBuffer applicationData() {
+            throw new UnsupportedOperationException("what the hell? I can't do that!");
         }
     }
 
