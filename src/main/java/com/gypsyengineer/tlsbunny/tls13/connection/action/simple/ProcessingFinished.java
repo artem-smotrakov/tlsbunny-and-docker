@@ -48,13 +48,15 @@ public class ProcessingFinished extends AbstractAction<ProcessingFinished> {
     @Override
     public Action run() throws IOException, ActionFailed {
         if (side == null) {
-            throw new IllegalStateException("what the hell? side not specified! (null)");
+            throw new IllegalStateException(
+                    "what the hell? side not specified! (null)");
         }
 
-        Finished finished = context.factory.parser().parseFinished(in, context.suite.hashLength());
+        Finished finished = context.factory.parser().parseFinished(
+                in, context.suite.hashLength());
 
         byte[] verify_key = context.hkdf.expandLabel(
-                context.server_handshake_traffic_secret,
+                getBaseKey(),
                 context.finished,
                 ZERO_HASH_VALUE,
                 context.hkdf.getHashLength());
@@ -88,6 +90,18 @@ public class ProcessingFinished extends AbstractAction<ProcessingFinished> {
         output.info("verified Finished message");
 
         return this;
+    }
+
+    private byte[] getBaseKey() {
+        switch (side) {
+            case client:
+                return context.server_handshake_traffic_secret;
+            case server:
+                return context.client_handshake_traffic_secret;
+            default:
+                throw new IllegalArgumentException(
+                        "what the hell? unknown side: " + side);
+        }
     }
 
 }
