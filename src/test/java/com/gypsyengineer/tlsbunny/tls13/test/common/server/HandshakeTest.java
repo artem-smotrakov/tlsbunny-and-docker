@@ -3,6 +3,7 @@ package com.gypsyengineer.tlsbunny.tls13.test.common.server;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertAnalyzer;
 import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertCheck;
+import com.gypsyengineer.tlsbunny.tls13.connection.SuccessCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Phase;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Side;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
@@ -69,6 +70,7 @@ public class HandshakeTest {
             try (client) {
                 client.connect()
                         .run(new NoAlertCheck())
+                        .run(new SuccessCheck())
                         .apply(new NoAlertAnalyzer());
                 success = true;
             } catch (Exception e) {
@@ -117,6 +119,7 @@ public class HandshakeTest {
             try (client) {
                 client.connect()
                         .run(new NoAlertCheck())
+                        .run(new SuccessCheck())
                         .apply(new NoAlertAnalyzer());
                 success = true;
             } catch (Exception e) {
