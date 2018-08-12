@@ -61,6 +61,7 @@ public class Context {
     private Handshake clientCertificateVerify;
     private Handshake clientFinished;
 
+    private boolean clientFinishedVerified = false;
     private boolean serverFinishedVerified = false;
 
     public StructFactory factory;
@@ -122,6 +123,7 @@ public class Context {
         clientCertificateVerify = null;
         clientFinished = null;
 
+        clientFinishedVerified = false;
         serverFinishedVerified = false;
 
         dh_shared_secret = null;
@@ -250,6 +252,10 @@ public class Context {
         return serverFinished != null;
     }
 
+    public void verifyClientFinished() {
+        clientFinishedVerified = true;
+    }
+
     public void verifyServerFinished() {
         serverFinishedVerified = true;
     }
@@ -342,7 +348,7 @@ public class Context {
                 endOfEarlyData,
                 clientCertificate,
                 clientCertificateVerify,
-                clientFinished
+                clientFinishedVerified ? clientFinished : null,
         };
 
         List<Handshake> list = new ArrayList<>();

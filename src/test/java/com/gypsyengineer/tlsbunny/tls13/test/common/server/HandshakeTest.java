@@ -2,6 +2,8 @@ package com.gypsyengineer.tlsbunny.tls13.test.common.server;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertCheck;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.Phase;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.Side;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.handshake.NegotiatorException;
@@ -155,7 +157,7 @@ public class HandshakeTest {
                     .run(new WrappingHandshakeDataIntoTLSCiphertext())
                     .store()
 
-                    .run(new GeneratingFinished())
+                    .run(new GeneratingFinished(Side.server))
                     .run(new WrappingIntoHandshake()
                             .type(finished)
                             .updateContext(Context.Element.server_finished))
@@ -164,6 +166,14 @@ public class HandshakeTest {
 
                     .restore()
                     .send(new OutgoingData())
+
+                    .receive(new IncomingData())
+
+                    .run(new ProcessingHandshakeTLSCiphertext()
+                            .expect(handshake))
+                    .run(new ProcessingHandshake()
+                            .expect(finished))
+                    .run(new ProcessingFinished(Side.server))
 
                     .run(new ComputingApplicationTrafficKeys()
                             .server())
