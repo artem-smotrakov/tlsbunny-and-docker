@@ -27,7 +27,6 @@ public class Engine {
         run,
         send, send_while,
         receive, receive_while,
-        allow,
         store, restore
     }
 
@@ -196,14 +195,6 @@ public class Engine {
         return new ActionHolder().engine(this).factory(factory);
     }
 
-    public Engine allow(Action action) {
-        actions.add(new ActionHolder()
-                .engine(this)
-                .factory(() -> action)
-                .type(ActionType.allow));
-        return this;
-    }
-
     public ActionHolder loop(Condition condition) {
         return new ActionHolder()
                 .engine(this)
@@ -267,25 +258,6 @@ public class Engine {
                         } catch (ActionFailed | AEADException | NegotiatorException | IOException e) {
                             status = Status.unexpected_error;
                             return reportError(e);
-                        }
-                        break;
-                    case allow:
-                        // TODO: if an action decrypts out, but the action fails,
-                        //       then decryption in the next action is going to fail
-                        //       this may be fixed by propagating decrypted out
-                        //       to the next action
-                        // TODO: deprecate `allow`
-                        action = actionFactory.create();
-                        try {
-                            read(connection, action);
-                            buffer.mark();
-                            output.info("allow: %s", action.name());
-                            init(action).run();
-                            combineData(action);
-                        } catch (ActionFailed | AEADException | NegotiatorException | IOException e) {
-                            output.info("error: %s", e.getMessage());
-                            output.info("skip %s", action.name());
-                            buffer.reset(); // restore out
                         }
                         break;
                     case run:

@@ -2,7 +2,6 @@ package com.gypsyengineer.tlsbunny.tls13.test.h2o.client;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertCheck;
-import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.IncomingChangeCipherSpec;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.handshake.ECDHENegotiator;
@@ -74,8 +73,6 @@ public class SimpleReliability {
                 .run(new ProcessingServerHello())
                 .run(new NegotiatingClientDHSecret())
                 .run(new ComputingHandshakeTrafficKeys().client())
-
-                .allow(new IncomingChangeCipherSpec())
 
                 // process EncryptedExtensions
                 .run(new ProcessingHandshakeTLSCiphertext()

@@ -21,7 +21,6 @@ public class CCSAfterHandshake {
                 .receive(new IncomingCertificateVerify())
                 .receive(new IncomingFinished())
                 .send(new OutgoingFinished())
-                .allow(new IncomingNewSessionTicket())
                 .send(new OutgoingChangeCipherSpec())
                 .receive(new IncomingAlert())
                 .connect()

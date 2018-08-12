@@ -63,8 +63,6 @@ public class H2oHttpsClient extends AbstractClient {
                 .run(new NegotiatingClientDHSecret())
                 .run(new ComputingHandshakeTrafficKeys().client())
 
-                .allow(new IncomingChangeCipherSpec())
-
                 // process EncryptedExtensions
                 .run(new ProcessingHandshakeTLSCiphertext()
                         .expect(handshake))

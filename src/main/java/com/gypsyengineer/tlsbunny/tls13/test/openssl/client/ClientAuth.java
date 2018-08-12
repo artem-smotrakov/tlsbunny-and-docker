@@ -27,7 +27,6 @@ public class ClientAuth {
                 .send(new OutgoingCertificateVerify()
                         .key(config.clientKey()))
                 .send(new OutgoingFinished())
-                .allow(new IncomingNewSessionTicket())
                 .send(new OutgoingHttpGetRequest())
                 .receive(new IncomingApplicationData())
                 .connect()

@@ -67,8 +67,6 @@ public class WeakECDHE {
                     .run(new ComputingHandshakeTrafficKeys()
                             .client())
 
-                    .allow(new IncomingChangeCipherSpec())
-
                     // process EncryptedExtensions
                     .run(new ProcessingHandshakeTLSCiphertext()
                             .expect(handshake))

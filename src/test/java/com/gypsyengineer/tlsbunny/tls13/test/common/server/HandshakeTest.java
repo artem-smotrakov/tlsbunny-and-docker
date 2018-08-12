@@ -32,9 +32,6 @@ import static org.junit.Assert.assertTrue;
 public class HandshakeTest {
 
     private static final long delay = 1000; // in millis
-    private static final byte[] message =
-            "like most of life's problems, this one can be solved with bending"
-                    .getBytes();
     private static final String serverCertificatePath = "certs/server_cert.der";
     private static final String serverKeyPath = "certs/server_key.pkcs8";
 

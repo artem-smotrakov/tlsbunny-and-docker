@@ -2,7 +2,6 @@ package com.gypsyengineer.tlsbunny.tls13.test.picotls.client;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.FailureCheck;
-import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.IncomingChangeCipherSpec;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
@@ -71,8 +70,6 @@ public class UnexpectedClientHelloCookie extends AbstractClient {
                 .run(new NegotiatingClientDHSecret())
                 .run(new ComputingHandshakeTrafficKeys()
                         .client())
-
-                .allow(new IncomingChangeCipherSpec())
 
                 // process EncryptedExtensions
                 .run(new ProcessingHandshakeTLSCiphertext()

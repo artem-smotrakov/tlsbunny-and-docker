@@ -32,7 +32,6 @@ public class InvalidCCS {
                     .receive(new IncomingCertificateVerify())
                     .receive(new IncomingFinished())
                     .send(new OutgoingFinished())
-                    .allow(new IncomingNewSessionTicket())
                     .send(new OutgoingHttpGetRequest())
                     .receive(new IncomingApplicationData())
                     .connect()
