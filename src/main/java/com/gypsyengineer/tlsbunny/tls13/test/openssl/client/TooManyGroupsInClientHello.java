@@ -67,7 +67,7 @@ public class TooManyGroupsInClientHello extends AbstractClient {
                         .expect(server_hello)
                         .updateContext(Context.Element.server_hello))
                 .run(new ProcessingServerHello())
-                .run(new NegotiatingDHSecret())
+                .run(new NegotiatingClientDHSecret())
                 .run(new ComputingHandshakeTrafficKeys()
                         .client())
 

@@ -193,7 +193,7 @@ public class IncomingMessages extends AbstractAction<IncomingMessages> {
 
         context.setServerHello(handshake);
 
-        new NegotiatingDHSecret().set(output).set(context).run();
+        new NegotiatingClientDHSecret().set(output).set(context).run();
         new ComputingHandshakeTrafficKeys().set(output).set(context).side(side).run();
     }
 

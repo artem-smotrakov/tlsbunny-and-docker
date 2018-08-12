@@ -1,7 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls13.test.common.server;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
-import com.gypsyengineer.tlsbunny.tls13.connection.EngineException;
 import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
@@ -11,7 +10,6 @@ import com.gypsyengineer.tlsbunny.tls13.test.Config;
 import com.gypsyengineer.tlsbunny.tls13.test.SystemPropertiesConfig;
 import com.gypsyengineer.tlsbunny.tls13.test.common.client.Client;
 import com.gypsyengineer.tlsbunny.tls13.test.common.client.HttpsClient;
-import com.gypsyengineer.tlsbunny.utils.Connection;
 import com.gypsyengineer.tlsbunny.utils.Output;
 import org.junit.Test;
 
@@ -26,6 +24,8 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv12;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv13_draft_26;
 import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp256r1_sha256;
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class HandshakeTest {
 
@@ -79,9 +79,7 @@ public class HandshakeTest {
                 server.engine().context(),
                 clientOutput);
 
-        if (!success) {
-            throw new Exception("Test failed!");
-        }
+        assertTrue("something went wrong!", success);
     }
 
     private static class ServerImpl extends SimpleServer {
@@ -95,8 +93,7 @@ public class HandshakeTest {
 
         @Override
         protected Engine createEngine()
-                throws NegotiatorException, NoSuchAlgorithmException,
-                EngineException, IOException {
+                throws NegotiatorException, NoSuchAlgorithmException, IOException {
 
             return Engine.init()
                     .set(factory)
@@ -125,6 +122,8 @@ public class HandshakeTest {
                             .type(handshake)
                             .version(TLSv12))
                     .store()
+
+                    .run(new NegotiatingServerDHSecret())
 
                     .run(new ComputingHandshakeTrafficKeys()
                             .server())
@@ -186,6 +185,97 @@ public class HandshakeTest {
             Context clientContext, Context serverContext, Output output) {
 
         output.info("check client and server contexts");
+        assertNotNull("client context should not be null", clientContext);
+        assertNotNull("server context should not be null", serverContext);
+
+        assertArrayEquals("contexts: dh_shared_secret are not equal",
+                clientContext.dh_shared_secret,
+                serverContext.dh_shared_secret);
+
+        assertArrayEquals("contexts: early_secret are not equal",
+                clientContext.early_secret,
+                serverContext.early_secret);
+
+        assertArrayEquals("contexts: binder_key are not equal",
+                clientContext.binder_key,
+                serverContext.binder_key);
+
+        assertArrayEquals("contexts: client_early_traffic_secret are not equal",
+                clientContext.client_early_traffic_secret,
+                serverContext.client_early_traffic_secret);
+
+        assertArrayEquals("contexts: early_exporter_master_secret are not equal",
+                clientContext.early_exporter_master_secret,
+                serverContext.early_exporter_master_secret);
+
+        assertArrayEquals("contexts: handshake_secret_salt are not equal",
+                clientContext.handshake_secret_salt,
+                serverContext.handshake_secret_salt);
+
+        assertArrayEquals("contexts: handshake_secret are not equal",
+                clientContext.handshake_secret,
+                serverContext.handshake_secret);
+
+        assertArrayEquals("contexts: client_handshake_traffic_secret are not equal",
+                clientContext.client_handshake_traffic_secret,
+                serverContext.client_handshake_traffic_secret);
+
+        assertArrayEquals("contexts: server_handshake_traffic_secret are not equal",
+                clientContext.server_handshake_traffic_secret,
+                serverContext.server_handshake_traffic_secret);
+
+        assertArrayEquals("contexts: master_secret are not equal",
+                clientContext.master_secret,
+                serverContext.master_secret);
+
+        assertArrayEquals("contexts: client_application_traffic_secret_0 are not equal",
+                clientContext.client_application_traffic_secret_0,
+                serverContext.client_application_traffic_secret_0);
+
+        assertArrayEquals("contexts: server_application_traffic_secret_0 are not equal",
+                clientContext.server_application_traffic_secret_0,
+                serverContext.server_application_traffic_secret_0);
+
+        assertArrayEquals("contexts: exporter_master_secret are not equal",
+                clientContext.exporter_master_secret,
+                serverContext.exporter_master_secret);
+
+        assertArrayEquals("contexts: resumption_master_secret are not equal",
+                clientContext.resumption_master_secret,
+                serverContext.resumption_master_secret);
+
+        assertArrayEquals("contexts: client_handshake_write_key are not equal",
+                clientContext.client_handshake_write_key,
+                serverContext.client_handshake_write_key);
+
+        assertArrayEquals("contexts: client_handshake_write_iv are not equal",
+                clientContext.client_handshake_write_iv,
+                serverContext.client_handshake_write_iv);
+
+        assertArrayEquals("contexts: server_handshake_write_key are not equal",
+                clientContext.server_handshake_write_key,
+                serverContext.server_handshake_write_key);
+
+        assertArrayEquals("contexts: server_handshake_write_iv are not equal",
+                clientContext.server_handshake_write_iv,
+                serverContext.server_handshake_write_iv);
+
+        assertArrayEquals("contexts: client_application_write_key are not equal",
+                clientContext.client_application_write_key,
+                serverContext.client_application_write_key);
+
+        assertArrayEquals("contexts: client_application_write_iv are not equal",
+                clientContext.client_application_write_iv,
+                serverContext.client_application_write_iv);
+
+        assertArrayEquals("contexts: server_application_write_key are not equal",
+                clientContext.server_application_write_key,
+                serverContext.server_application_write_key);
+
+        assertArrayEquals("contexts: server_application_write_iv are not equal",
+                clientContext.server_application_write_iv,
+                serverContext.server_application_write_iv);
+
         return true;
     }
 
