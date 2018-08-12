@@ -15,19 +15,19 @@ public class SystemPropertiesConfig implements Config {
     public static final long DEFAULT_READ_TIMEOUT = 5000; // in millis
     public static final String EMPTY_STRING = "";
 
-    String host;
-    int port;
-    double minRatio;
-    double maxRatio;
-    int threads;
-    int parts;
-    long startTest;
-    long endTest;
-    String clientCertificate;
-    String clientKey;
-    String serverCertificate;
-    String serverKey;
-    long readTimeout;
+    private String host;
+    private int port;
+    private double minRatio;
+    private double maxRatio;
+    private int threads;
+    private int parts;
+    private long startTest;
+    private long endTest;
+    private String clientCertificate;
+    private String clientKey;
+    private String serverCertificate;
+    private String serverKey;
+    private long readTimeout;
 
     private SystemPropertiesConfig() {
 

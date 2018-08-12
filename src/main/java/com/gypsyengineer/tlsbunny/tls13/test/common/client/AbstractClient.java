@@ -1,13 +1,10 @@
 package com.gypsyengineer.tlsbunny.tls13.test.common.client;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
-import com.gypsyengineer.tlsbunny.tls13.handshake.NegotiatorException;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.tls13.test.Config;
 import com.gypsyengineer.tlsbunny.tls13.test.SystemPropertiesConfig;
 import com.gypsyengineer.tlsbunny.utils.Output;
-
-import java.security.NoSuchAlgorithmException;
 
 public abstract class AbstractClient implements Client, AutoCloseable {
 

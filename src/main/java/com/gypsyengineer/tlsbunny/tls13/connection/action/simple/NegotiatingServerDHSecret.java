@@ -33,7 +33,7 @@ public class NegotiatingServerDHSecret extends AbstractAction<NegotiatingServerD
         if (!context.group.equals(keyShareEntry.getNamedGroup())) {
             output.info("expected group: %s", context.group);
             output.info("received group: %s", keyShareEntry.getNamedGroup());
-            throw new RuntimeException("unexpected group");
+            throw new NegotiatorException("unexpected group");
         }
 
         context.negotiator.processKeyShareEntry(keyShareEntry);

@@ -222,8 +222,6 @@ public class Engine {
     public Engine connect() throws EngineException {
         context.negotiator.set(output);
         status = Status.running;
-        int n;
-        byte[] data;
 
         try (Connection connection = initConnection()) {
             buffer = NOTHING;
