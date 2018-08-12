@@ -11,7 +11,7 @@ public class OutgoingChangeCipherSpec extends AbstractAction {
 
     @Override
     public String name() {
-        return "ChangeCipherSpec";
+        return "generating ChangeCipherSpec";
     }
 
     @Override

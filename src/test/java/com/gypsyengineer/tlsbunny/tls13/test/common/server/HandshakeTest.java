@@ -1,9 +1,9 @@
 package com.gypsyengineer.tlsbunny.tls13.test.common.server;
 
-import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
-import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertCheck;
+import com.gypsyengineer.tlsbunny.tls13.connection.*;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Phase;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Side;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.OutgoingChangeCipherSpec;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.handshake.NegotiatorException;
@@ -12,6 +12,7 @@ import com.gypsyengineer.tlsbunny.tls13.test.Config;
 import com.gypsyengineer.tlsbunny.tls13.test.SystemPropertiesConfig;
 import com.gypsyengineer.tlsbunny.tls13.test.common.client.Client;
 import com.gypsyengineer.tlsbunny.tls13.test.common.client.HttpsClient;
+import com.gypsyengineer.tlsbunny.tls13.test.openssl.client.AnotherHttpsClient;
 import com.gypsyengineer.tlsbunny.utils.Output;
 import org.junit.Test;
 
@@ -32,14 +33,11 @@ import static org.junit.Assert.assertTrue;
 public class HandshakeTest {
 
     private static final long delay = 1000; // in millis
-    private static final byte[] message =
-            "like most of life's problems, this one can be solved with bending"
-                    .getBytes();
     private static final String serverCertificatePath = "certs/server_cert.der";
     private static final String serverKeyPath = "certs/server_key.pkcs8";
 
     @Test
-    public void basic() throws Exception {
+    public void httpsClient() throws Exception {
         Config serverConfig = SystemPropertiesConfig.load();
         serverConfig.serverCertificate(serverCertificatePath);
         serverConfig.serverKey(serverKeyPath);
@@ -68,7 +66,61 @@ public class HandshakeTest {
             client.set(clientConfig).set(clientOutput);
 
             try (client) {
-                client.connect().run(new NoAlertCheck());
+                client.connect()
+                        .run(new NoAlertCheck())
+                        .run(new SuccessCheck())
+                        .run(new NoExceptionCheck())
+                        .apply(new NoAlertAnalyzer());
+                success = true;
+            } catch (Exception e) {
+                clientOutput.achtung(
+                        "client failed with an unexpected exception", e);
+            }
+        }
+
+        success &= checkContexts(
+                client.engine().context(),
+                server.engine().context(),
+                clientOutput);
+
+        assertTrue("something went wrong!", success);
+    }
+
+    @Test
+    public void anotherHttpsClient() throws Exception {
+        Config serverConfig = SystemPropertiesConfig.load();
+        serverConfig.serverCertificate(serverCertificatePath);
+        serverConfig.serverKey(serverKeyPath);
+
+        boolean success = false;
+
+        Client client = new AnotherHttpsClient()
+                .set(StructFactory.getDefault());
+
+        ServerImpl server = new ServerImpl(serverConfig);
+
+        Output serverOutput = new Output();
+        Output clientOutput = new Output();
+        serverOutput.prefix("server");
+        clientOutput.prefix("client");
+
+        server.set(serverOutput);
+
+        try (server; clientOutput; serverOutput) {
+            new Thread(server).start();
+            Thread.sleep(delay);
+
+            Config clientConfig = SystemPropertiesConfig.load();
+            clientConfig.port(server.port());
+
+            client.set(clientConfig).set(clientOutput);
+
+            try (client) {
+                client.connect()
+                        .run(new NoAlertCheck())
+                        .run(new SuccessCheck())
+                        .run(new NoExceptionCheck())
+                        .apply(new NoAlertAnalyzer());
                 success = true;
             } catch (Exception e) {
                 clientOutput.achtung(
@@ -123,6 +175,9 @@ public class HandshakeTest {
                     .run(new WrappingIntoTLSPlaintexts()
                             .type(handshake)
                             .version(TLSv12))
+                    .store()
+
+                    .run(new OutgoingChangeCipherSpec())
                     .store()
 
                     .run(new NegotiatingServerDHSecret())

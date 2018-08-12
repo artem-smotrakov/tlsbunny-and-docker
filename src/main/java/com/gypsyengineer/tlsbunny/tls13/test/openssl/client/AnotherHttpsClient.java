@@ -2,16 +2,32 @@ package com.gypsyengineer.tlsbunny.tls13.test.openssl.client;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.*;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.*;
+import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.tls13.test.SystemPropertiesConfig;
+import com.gypsyengineer.tlsbunny.tls13.test.common.client.AbstractClient;
+import com.gypsyengineer.tlsbunny.utils.Output;
 
-public class AnotherHttpsClient {
+public class AnotherHttpsClient extends AbstractClient {
 
     public static void main(String[] args) throws Exception {
-        SystemPropertiesConfig config = SystemPropertiesConfig.load();
+        try (Output output = new Output()) {
+            new AnotherHttpsClient()
+                    .set(SystemPropertiesConfig.load())
+                    .set(StructFactory.getDefault())
+                    .set(output)
+                    .connect()
+                    .run(new NoAlertCheck());
+        }
+    }
 
-        Engine.init()
+    @Override
+    protected Engine createEngine() throws Exception {
+        return Engine.init()
                 .target(config.host())
                 .target(config.port())
+                .set(factory)
+                .set(output)
+
                 .send(new OutgoingClientHello())
                 .send(new OutgoingChangeCipherSpec())
                 .receive(new IncomingServerHello())
@@ -21,11 +37,8 @@ public class AnotherHttpsClient {
                 .receive(new IncomingCertificateVerify())
                 .receive(new IncomingFinished())
                 .send(new OutgoingFinished())
-                .allow(new IncomingNewSessionTicket())
                 .send(new OutgoingHttpGetRequest())
-                .receive(new IncomingApplicationData())
-                .connect()
-                .run(new NoAlertCheck());
+                .receive(new IncomingApplicationData());
     }
 
 }
