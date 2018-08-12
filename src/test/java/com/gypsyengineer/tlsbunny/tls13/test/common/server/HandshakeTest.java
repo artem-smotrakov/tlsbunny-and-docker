@@ -3,6 +3,7 @@ package com.gypsyengineer.tlsbunny.tls13.test.common.server;
 import com.gypsyengineer.tlsbunny.tls13.connection.*;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Phase;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Side;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.OutgoingChangeCipherSpec;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.handshake.NegotiatorException;
@@ -174,6 +175,9 @@ public class HandshakeTest {
                     .run(new WrappingIntoTLSPlaintexts()
                             .type(handshake)
                             .version(TLSv12))
+                    .store()
+
+                    .run(new OutgoingChangeCipherSpec())
                     .store()
 
                     .run(new NegotiatingServerDHSecret())

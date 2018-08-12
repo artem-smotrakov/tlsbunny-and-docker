@@ -31,6 +31,7 @@ public class AnotherHttpsClient extends AbstractClient {
                 .send(new OutgoingClientHello())
                 .send(new OutgoingChangeCipherSpec())
                 .receive(new IncomingServerHello())
+                .receive(new IncomingChangeCipherSpec())
                 .receive(new IncomingEncryptedExtensions())
                 .receive(new IncomingCertificate())
                 .receive(new IncomingCertificateVerify())
