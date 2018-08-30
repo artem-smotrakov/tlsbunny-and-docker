@@ -7,7 +7,7 @@ public abstract class AbstractCheck implements Check {
     Engine engine;
     Context context;
 
-    boolean failed = true;
+    protected boolean failed = true;
 
     @Override
     public Check set(Engine engine) {
