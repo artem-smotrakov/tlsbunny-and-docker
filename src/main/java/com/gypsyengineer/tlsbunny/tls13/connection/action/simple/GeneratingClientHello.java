@@ -50,7 +50,9 @@ public class GeneratingClientHello extends AbstractAction {
         return this;
     }
 
-    public GeneratingClientHello keyShareEntry(KeyShareEntryFactory... keyShareEntryFactories) {
+    public GeneratingClientHello keyShareEntry(
+            KeyShareEntryFactory... keyShareEntryFactories) {
+
         this.keyShareEntryFactories = keyShareEntryFactories;
         return this;
     }
@@ -111,7 +113,7 @@ public class GeneratingClientHello extends AbstractAction {
                 createRandom(),
                 StructFactory.EMPTY_SESSION_ID,
                 List.of(CipherSuite.TLS_AES_128_GCM_SHA256),
-                List.of(context.factory.createCompressionMethod(0)),
+                List.of(CompressionMethod.zero),
                 extensions);
 
         out = ByteBuffer.wrap(hello.encoding());

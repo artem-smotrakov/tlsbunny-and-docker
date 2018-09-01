@@ -37,8 +37,9 @@ public abstract class SimpleServer implements Server {
         this.serverSocket = ssocket;
     }
 
-    public void maxConnections(int n) {
+    public SimpleServer maxConnections(int n) {
         maxConnections = n;
+        return this;
     }
 
     @Override
@@ -47,19 +48,19 @@ public abstract class SimpleServer implements Server {
     }
 
     @Override
-    public Server set(Config config) {
+    public SimpleServer set(Config config) {
         this.config = config;
         return this;
     }
 
     @Override
-    public Server set(StructFactory factory) {
+    public SimpleServer set(StructFactory factory) {
         this.factory = factory;
         return this;
     }
 
     @Override
-    public Server set(Output output) {
+    public SimpleServer set(Output output) {
         this.output = output;
         return this;
     }

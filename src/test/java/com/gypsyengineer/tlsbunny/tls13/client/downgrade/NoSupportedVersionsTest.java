@@ -1,14 +1,11 @@
 package com.gypsyengineer.tlsbunny.tls13.client.downgrade;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.*;
-import com.gypsyengineer.tlsbunny.tls13.connection.action.Side;
-import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.OutgoingChangeCipherSpec;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.handshake.NegotiatorException;
 import com.gypsyengineer.tlsbunny.tls13.server.common.SimpleServer;
-import com.gypsyengineer.tlsbunny.tls13.struct.Alert;
-import com.gypsyengineer.tlsbunny.utils.Config;
+import com.gypsyengineer.tlsbunny.tls13.struct.*;
 import com.gypsyengineer.tlsbunny.utils.Output;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 import org.junit.Test;
@@ -30,25 +27,22 @@ public class NoSupportedVersionsTest {
 
     @Test
     public void httpsClient() throws Exception {
-        Output serverOutput = new Output();
-        Output clientOutput = new Output();
-        serverOutput.prefix("server");
-        clientOutput.prefix("client");
+        Output serverOutput = new Output("server");
+        Output clientOutput = new Output("client");
 
-        ServerImpl server = new ServerImpl();
-        server.set(SystemPropertiesConfig.load());
-        server.set(serverOutput);
-        server.maxConnections(1);
+        SimpleServer server = new ServerImpl()
+                .set(SystemPropertiesConfig.load())
+                .set(serverOutput)
+                .maxConnections(1);
 
         try (server; clientOutput; serverOutput) {
-            Thread thread = new Thread(server);
-            thread.start();
+            new Thread(server).start();
             Thread.sleep(delay);
 
-            Config clientConfig = SystemPropertiesConfig.load();
-            clientConfig.port(server.port());
+            NoSupportedVersions.run(
+                    clientOutput,
+                    SystemPropertiesConfig.load().port(server.port()));
 
-            NoSupportedVersions.run(clientOutput, clientConfig);
             server.await();
             server.engine().run(new AlertCheck());
 
@@ -56,6 +50,20 @@ public class NoSupportedVersionsTest {
             Alert alert = serverContext.getAlert();
             assertTrue(alert.isFatal());
             assertFalse(alert.isWarning());
+            assertEquals(AlertLevel.fatal, alert.getLevel());
+            assertNotEquals(AlertLevel.warning, alert.getLevel());
+            assertEquals(AlertDescription.close_notify, alert.getDescription());
+            assertNotEquals(AlertDescription.unexpected_message, alert.getDescription());
+
+            StructParser parser = StructFactory.getDefault().parser();
+            ClientHello clientHello = parser.parseClientHello(
+                    serverContext.getFirstClientHello().getBody());
+            assertEquals(ProtocolVersion.TLSv12, clientHello.getProtocolVersion());
+            assertEquals(1, clientHello.getCipherSuites().size());
+            assertEquals(CipherSuite.TLS_AES_128_GCM_SHA256, clientHello.getCipherSuites().first());
+            assertEquals(1, clientHello.getLegacyCompressionMethods().size());
+            assertEquals(CompressionMethod.zero, clientHello.getLegacyCompressionMethods().first());
+            assertNull(clientHello.findExtension(ExtensionType.supported_versions));
         }
     }
 
