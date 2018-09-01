@@ -74,6 +74,7 @@ public class NoSupportedVersionsTest {
             assertEquals(ProtocolVersion.TLSv12, serverHello.getProtocolVersion());
             assertEquals(CipherSuite.TLS_AES_128_GCM_SHA256, serverHello.getCipherSuite());
             assertEquals(CompressionMethod.zero, serverHello.getLegacyCompressionMethod());
+            assertEquals(clientHello.getLegacySessionId(), serverHello.getLegacySessionIdEcho());
 
             Extension ext = serverHello.findExtension(ExtensionType.supported_versions);
             assertNotNull(ext);
