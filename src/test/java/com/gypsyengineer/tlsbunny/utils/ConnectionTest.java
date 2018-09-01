@@ -1,7 +1,5 @@
-package com.gypsyengineer.tlsbunny.tls13.test.common.server;
+package com.gypsyengineer.tlsbunny.utils;
 
-import com.gypsyengineer.tlsbunny.utils.Connection;
-import com.gypsyengineer.tlsbunny.utils.Output;
 import org.junit.Test;
 
 import java.io.IOException;
