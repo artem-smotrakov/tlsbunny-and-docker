@@ -1,18 +1,18 @@
 package com.gypsyengineer.tlsbunny.tls13.test.common.server;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.*;
-import com.gypsyengineer.tlsbunny.tls13.connection.action.Phase;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Side;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.OutgoingChangeCipherSpec;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.handshake.NegotiatorException;
+import com.gypsyengineer.tlsbunny.tls13.server.common.SimpleServer;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
-import com.gypsyengineer.tlsbunny.tls13.test.Config;
-import com.gypsyengineer.tlsbunny.tls13.test.SystemPropertiesConfig;
-import com.gypsyengineer.tlsbunny.tls13.test.common.client.Client;
-import com.gypsyengineer.tlsbunny.tls13.test.common.client.HttpsClient;
-import com.gypsyengineer.tlsbunny.tls13.test.openssl.client.AnotherHttpsClient;
+import com.gypsyengineer.tlsbunny.utils.Config;
+import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
+import com.gypsyengineer.tlsbunny.tls13.client.common.Client;
+import com.gypsyengineer.tlsbunny.tls13.client.common.HttpsClient;
+import com.gypsyengineer.tlsbunny.tls13.client.openssl.AnotherHttpsClient;
 import com.gypsyengineer.tlsbunny.utils.Output;
 import org.junit.Test;
 

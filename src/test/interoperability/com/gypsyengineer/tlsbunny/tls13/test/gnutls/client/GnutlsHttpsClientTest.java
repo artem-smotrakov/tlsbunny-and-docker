@@ -1,5 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls13.test.gnutls.client;
 
+import com.gypsyengineer.tlsbunny.tls13.client.gnutls.GnutlsHttpsClient;
 import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertCheck;
 import org.junit.Test;
 
