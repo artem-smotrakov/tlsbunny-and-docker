@@ -346,6 +346,13 @@ public abstract class FuzzyStructFactory<T> implements StructFactory, Fuzzer<T> 
     }
 
     @Override
+    public SupportedVersions.ServerHello createSupportedVersionForServerHello(
+            ProtocolVersion version) {
+
+        return factory.createSupportedVersionForServerHello(version);
+    }
+
+    @Override
     public SignatureSchemeList createSignatureSchemeList(SignatureScheme scheme) {
         return factory.createSignatureSchemeList(scheme);
     }

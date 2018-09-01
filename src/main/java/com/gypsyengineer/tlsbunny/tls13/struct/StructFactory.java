@@ -87,6 +87,7 @@ public interface StructFactory {
     KeyShare.ClientHello createKeyShareForClientHello(KeyShareEntry... entries);
     KeyShare.ServerHello createKeyShareForServerHello(KeyShareEntry entry);
     SupportedVersions.ClientHello createSupportedVersionForClientHello(ProtocolVersion version);
+    SupportedVersions.ServerHello createSupportedVersionForServerHello(ProtocolVersion version);
     SignatureSchemeList createSignatureSchemeList(SignatureScheme scheme);
     NamedGroupList createNamedGroupList(NamedGroup... groups);
     CertificateEntry.X509 createX509CertificateEntry(byte[] bytes);

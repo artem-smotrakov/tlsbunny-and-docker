@@ -39,13 +39,14 @@ public class NoSupportedVersionsTest {
             new Thread(server).start();
             Thread.sleep(delay);
 
-            NoSupportedVersions.run(
+            NoSupportedVersions client = NoSupportedVersions.run(
                     clientOutput,
                     SystemPropertiesConfig.load().port(server.port()));
 
             server.await();
             server.engine().run(new AlertCheck());
 
+            Context clientContext = client.engine().context();
             Context serverContext = server.engine().context();
             Alert alert = serverContext.getAlert();
             assertTrue(alert.isFatal());
@@ -56,14 +57,30 @@ public class NoSupportedVersionsTest {
             assertNotEquals(AlertDescription.unexpected_message, alert.getDescription());
 
             StructParser parser = StructFactory.getDefault().parser();
+
             ClientHello clientHello = parser.parseClientHello(
                     serverContext.getFirstClientHello().getBody());
+            assertNotNull(clientHello);
             assertEquals(ProtocolVersion.TLSv12, clientHello.getProtocolVersion());
             assertEquals(1, clientHello.getCipherSuites().size());
             assertEquals(CipherSuite.TLS_AES_128_GCM_SHA256, clientHello.getCipherSuites().first());
             assertEquals(1, clientHello.getLegacyCompressionMethods().size());
             assertEquals(CompressionMethod.zero, clientHello.getLegacyCompressionMethods().first());
             assertNull(clientHello.findExtension(ExtensionType.supported_versions));
+
+            ServerHello serverHello = parser.parseServerHello(
+                    clientContext.getServerHello().getBody());
+            assertNotNull(serverHello);
+            assertEquals(ProtocolVersion.TLSv12, serverHello.getProtocolVersion());
+            assertEquals(CipherSuite.TLS_AES_128_GCM_SHA256, serverHello.getCipherSuite());
+            assertEquals(CompressionMethod.zero, serverHello.getLegacyCompressionMethod());
+
+            Extension ext = serverHello.findExtension(ExtensionType.supported_versions);
+            assertNotNull(ext);
+            assertEquals(ExtensionType.supported_versions, ext.getExtensionType());
+            SupportedVersions.ServerHello supportedVersions =
+                    parser.parseSupportedVersionsServerHello(ext.getExtensionData().bytes());
+            assertEquals(ProtocolVersion.TLSv12, supportedVersions.getSelectedVersion());
         }
     }
 

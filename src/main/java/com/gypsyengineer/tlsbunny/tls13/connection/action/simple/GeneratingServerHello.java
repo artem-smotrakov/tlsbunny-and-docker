@@ -73,7 +73,7 @@ public class GeneratingServerHello extends AbstractAction {
         List<Extension> extensions = new ArrayList<>();
 
         for (ProtocolVersion version : versions) {
-            extensions.add(wrap(context.factory.createSupportedVersionForClientHello(version)));
+            extensions.add(wrap(context.factory.createSupportedVersionForServerHello(version)));
         }
 
         for (SignatureScheme scheme : schemes) {

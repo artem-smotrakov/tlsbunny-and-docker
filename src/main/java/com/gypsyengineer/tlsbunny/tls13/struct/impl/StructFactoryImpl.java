@@ -185,6 +185,13 @@ public class StructFactoryImpl implements StructFactory {
         return new SupportedVersionsImpl.ClientHelloImpl(
                 Vector.wrap(SupportedVersions.ClientHello.VERSIONS_LENGTH_BYTES, version));
     }
+
+    @Override
+    public SupportedVersions.ServerHello createSupportedVersionForServerHello(
+            ProtocolVersion version) {
+
+        return new SupportedVersionsImpl.ServerHelloImpl(version);
+    }
     
     @Override
     public Extension createExtension(ExtensionType type, byte[] bytes) {

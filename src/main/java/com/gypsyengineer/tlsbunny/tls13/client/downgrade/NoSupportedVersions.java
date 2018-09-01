@@ -28,14 +28,14 @@ public class NoSupportedVersions extends AbstractClient {
         }
     }
 
-    public static void run(Output output, Config config) throws Exception {
-        new NoSupportedVersions()
+    public static NoSupportedVersions run(Output output, Config config) throws Exception {
+        NoSupportedVersions client = (NoSupportedVersions) new NoSupportedVersions()
                 .set(config)
                 .set(StructFactory.getDefault())
-                .set(output)
-                .connect()
-                .run(new DowngradeMessageCheck().ifTLSv12());
+                .set(output);
 
+        client.connect().run(new DowngradeMessageCheck().ifTLSv12());
+        return client;
     }
 
     @Override
