@@ -1,5 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls13.connection.action.simple;
 
+import com.gypsyengineer.tlsbunny.tls.Random;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.AbstractAction;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
@@ -13,15 +14,33 @@ import java.util.List;
 
 public class GeneratingServerHello extends AbstractAction {
 
+    private static final byte[] downgrade_tls12_message = new byte[] {
+            0x44, 0x4F, 0x57, 0x4E, 0x47, 0x52, 0x44, 0x01
+    };
+    private static final byte[] downgrade_tls11_and_below_message = new byte[] {
+            0x44, 0x4F, 0x57, 0x4E, 0x47, 0x52, 0x44, 0x00
+    };
+
     private ProtocolVersion[] versions = new ProtocolVersion[0];
     private SignatureScheme[] schemes = new SignatureScheme[0];
     private NamedGroup[] groups = new NamedGroup[0];
     private KeyShareEntryFactory[] keyShareEntryFactories = new KeyShareEntryFactory[0];
     private KeyShareFactory[] keyShareFactories = new KeyShareFactory[0];
+    private byte[] downgradeMessage = null;
 
     @Override
     public String name() {
         return "generating ServerHello";
+    }
+
+    public GeneratingServerHello downgradeTLSv12() {
+        downgradeMessage = downgrade_tls12_message;
+        return this;
+    }
+
+    public GeneratingServerHello downgradeBelowTLSv12() {
+        downgradeMessage = downgrade_tls11_and_below_message;
+        return this;
     }
 
     public GeneratingServerHello supportedVersion(ProtocolVersion... versions) {
@@ -72,9 +91,14 @@ public class GeneratingServerHello extends AbstractAction {
                     factory.create(context))));
         }
 
+        Random random = createRandom();
+        if (downgradeMessage != null) {
+            random.setLastBytes(downgradeMessage);
+        }
+
         ServerHello hello = context.factory.createServerHello(
                 ProtocolVersion.TLSv12,
-                createRandom(),
+                random,
                 StructFactory.EMPTY_SESSION_ID,
                 CipherSuite.TLS_AES_128_GCM_SHA256,
                 context.factory.createCompressionMethod(0),

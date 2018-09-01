@@ -4,8 +4,8 @@ import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 
 public abstract class AbstractCheck implements Check {
 
-    Engine engine;
-    Context context;
+    protected Engine engine;
+    protected Context context;
 
     protected boolean failed = true;
 

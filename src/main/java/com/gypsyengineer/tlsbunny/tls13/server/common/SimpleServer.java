@@ -13,6 +13,7 @@ import java.net.ServerSocket;
 public abstract class SimpleServer implements Server {
 
     private static final int FREE_PORT = 0;
+    private static final int delay = 500; // in millis
 
     protected Config config = SystemPropertiesConfig.load();
     protected StructFactory factory = StructFactory.getDefault();
@@ -20,6 +21,9 @@ public abstract class SimpleServer implements Server {
     protected Engine engine;
 
     private final ServerSocket serverSocket;
+    private boolean running = false;
+    private int maxConnections = -1;
+    private int connections = 0;
 
     public SimpleServer() throws IOException {
         this(FREE_PORT);
@@ -31,6 +35,10 @@ public abstract class SimpleServer implements Server {
 
     private SimpleServer(ServerSocket ssocket) {
         this.serverSocket = ssocket;
+    }
+
+    public void maxConnections(int n) {
+        maxConnections = n;
     }
 
     @Override
@@ -64,20 +72,36 @@ public abstract class SimpleServer implements Server {
     @Override
     public void run() {
         output.info("server started on port %d", port());
-        while (true) {
+
+        running = true;
+        while (shouldRun()) {
             try (Connection connection = Connection.create(serverSocket.accept())) {
                 output.info("accepted");
                 engine = createEngine();
                 engine.set(connection);
                 engine.connect();
+                output.info("done");
             } catch (Exception e) {
                 output.achtung("exception: ", e);
                 break;
             }
         }
+
+        running = false;
+        output.info("server stopped");
     }
 
     protected abstract Engine createEngine() throws Exception;
+
+    public void await() {
+        while (running) {
+            try {
+                Thread.sleep(delay);
+            } catch (InterruptedException e) {
+                output.achtung("exception occurred while waiting", e);
+            }
+        }
+    }
 
     @Override
     public void close() throws IOException {
@@ -88,6 +112,19 @@ public abstract class SimpleServer implements Server {
         if (output != null) {
             output.flush();
         }
+    }
+
+    private boolean shouldRun() {
+        connections++;
+        if (maxConnections < 0) {
+            return true;
+        }
+
+        if (connections > maxConnections) {
+            return false;
+        }
+
+        return true;
     }
 
 }
