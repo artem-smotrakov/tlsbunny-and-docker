@@ -1,14 +1,12 @@
-package com.gypsyengineer.tlsbunny.tls13.handshake;
+package com.gypsyengineer.tlsbunny.tls13.client.downgrade;
 
-import com.gypsyengineer.tlsbunny.tls13.client.common.Client;
-import com.gypsyengineer.tlsbunny.tls13.client.common.HttpsClient;
-import com.gypsyengineer.tlsbunny.tls13.client.openssl.AnotherHttpsClient;
 import com.gypsyengineer.tlsbunny.tls13.connection.*;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Side;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.OutgoingChangeCipherSpec;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
+import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
+import com.gypsyengineer.tlsbunny.tls13.handshake.NegotiatorException;
 import com.gypsyengineer.tlsbunny.tls13.server.common.SimpleServer;
-import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.Output;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
@@ -26,7 +24,7 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv13_dra
 import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp256r1_sha256;
 import static org.junit.Assert.*;
 
-public class Basic {
+public class NoSupportedVersionsTest {
 
     private static final long delay = 1000; // in millis
     private static final String serverCertificatePath = "certs/server_cert.der";
@@ -38,11 +36,6 @@ public class Basic {
         serverConfig.serverCertificate(serverCertificatePath);
         serverConfig.serverKey(serverKeyPath);
 
-        boolean success = false;
-
-        Client client = new HttpsClient()
-                .set(StructFactory.getDefault());
-
         ServerImpl server = new ServerImpl(serverConfig);
 
         Output serverOutput = new Output();
@@ -59,77 +52,8 @@ public class Basic {
             Config clientConfig = SystemPropertiesConfig.load();
             clientConfig.port(server.port());
 
-            client.set(clientConfig).set(clientOutput);
-
-            try (client) {
-                client.connect()
-                        .run(new NoAlertCheck())
-                        .run(new SuccessCheck())
-                        .run(new NoExceptionCheck())
-                        .apply(new NoAlertAnalyzer());
-                success = true;
-            } catch (Exception e) {
-                clientOutput.achtung(
-                        "client failed with an unexpected exception", e);
-            }
+            NoSupportedVersions.run(clientOutput, clientConfig);
         }
-
-        success &= checkContexts(
-                client.engine().context(),
-                server.engine().context(),
-                clientOutput);
-
-        assertTrue("something went wrong!", success);
-    }
-
-    @Test
-    public void anotherHttpsClient() throws Exception {
-        Config serverConfig = SystemPropertiesConfig.load();
-        serverConfig.serverCertificate(serverCertificatePath);
-        serverConfig.serverKey(serverKeyPath);
-
-        boolean success = false;
-
-        Client client = new AnotherHttpsClient()
-                .set(StructFactory.getDefault());
-
-        ServerImpl server = new ServerImpl(serverConfig);
-
-        Output serverOutput = new Output();
-        Output clientOutput = new Output();
-        serverOutput.prefix("server");
-        clientOutput.prefix("client");
-
-        server.set(serverOutput);
-
-        try (server; clientOutput; serverOutput) {
-            new Thread(server).start();
-            Thread.sleep(delay);
-
-            Config clientConfig = SystemPropertiesConfig.load();
-            clientConfig.port(server.port());
-
-            client.set(clientConfig).set(clientOutput);
-
-            try (client) {
-                client.connect()
-                        .run(new NoAlertCheck())
-                        .run(new SuccessCheck())
-                        .run(new NoExceptionCheck())
-                        .apply(new NoAlertAnalyzer());
-                success = true;
-            } catch (Exception e) {
-                clientOutput.achtung(
-                        "client failed with an unexpected exception", e);
-            }
-        }
-
-        success &= checkContexts(
-                client.engine().context(),
-                server.engine().context(),
-                clientOutput);
-
-        assertTrue("something went wrong!", success);
     }
 
     private static class ServerImpl extends SimpleServer {

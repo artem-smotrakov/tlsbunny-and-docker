@@ -1,16 +1,17 @@
-package com.gypsyengineer.tlsbunny.tls13.test.common.client.downgrade;
+package com.gypsyengineer.tlsbunny.tls13.client.downgrade;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.AbstractCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.Check;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
-import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
+import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 import com.gypsyengineer.tlsbunny.tls13.client.common.AbstractClient;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
+import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.alert;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
 import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.client_hello;
 import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.server_hello;
@@ -22,13 +23,18 @@ public class NoSupportedVersions extends AbstractClient {
 
     public static void main(String[] args) throws Exception {
         try (Output output = new Output()) {
-            new NoSupportedVersions()
-                    .set(SystemPropertiesConfig.load())
-                    .set(StructFactory.getDefault())
-                    .set(output)
-                    .connect()
-                    .run(new NoAlertCheck());
+            run(output, SystemPropertiesConfig.load());
         }
+    }
+
+    public static void run(Output output, Config config) throws Exception {
+        new NoSupportedVersions()
+                .set(config)
+                .set(StructFactory.getDefault())
+                .set(output)
+                .connect()
+                .run(new DowngradeMessageCheck());
+
     }
 
     @Override
@@ -67,13 +73,13 @@ public class NoSupportedVersions extends AbstractClient {
 
                 // send an alert
                 .run(new GeneratingAlert())
-                .run(new WrappingIntoTLSPlaintexts())
-                .send(new OutgoingData())
-
-                .run(new DowngradeMessageCheck());
+                .run(new WrappingIntoTLSPlaintexts()
+                        .type(alert)
+                        .version(TLSv12))
+                .send(new OutgoingData());
     }
 
-    private static class DowngradeMessageCheck extends AbstractCheck {
+    public static class DowngradeMessageCheck extends AbstractCheck {
 
         @Override
         public Check run() {
