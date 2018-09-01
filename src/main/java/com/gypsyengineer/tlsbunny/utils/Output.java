@@ -17,6 +17,14 @@ public class Output implements AutoCloseable {
     private int index = 0;
     private String indent = "";
 
+    public Output() {
+
+    }
+
+    public Output(String prefix) {
+        this.prefix = prefix;
+    }
+
     synchronized public void increaseIndent() {
         int indentLength = indent.length() + INDENT_STEP;
         indent = new String(new char[indentLength]).replace('\0', ' ');

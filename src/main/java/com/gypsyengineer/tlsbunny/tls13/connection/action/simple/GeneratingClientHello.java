@@ -16,6 +16,7 @@ public class GeneratingClientHello extends AbstractAction {
     public static final byte[] NO_COOKIE = null;
     public static final MaxFragmentLength NO_MAX_FRAGMENT_LENGTH = null;
 
+    private ProtocolVersion legacyVersion = ProtocolVersion.TLSv12;
     private ProtocolVersion[] versions = new ProtocolVersion[0];
     private SignatureScheme[] schemes = new SignatureScheme[0];
     private NamedGroup[] groups = new NamedGroup[0];
@@ -27,6 +28,11 @@ public class GeneratingClientHello extends AbstractAction {
     @Override
     public String name() {
         return "generating ClientHello";
+    }
+
+    public GeneratingClientHello legacyVersion(ProtocolVersion legacyVersion) {
+        this.legacyVersion = legacyVersion;
+        return this;
     }
 
     public GeneratingClientHello supportedVersion(ProtocolVersion... versions) {
@@ -44,7 +50,9 @@ public class GeneratingClientHello extends AbstractAction {
         return this;
     }
 
-    public GeneratingClientHello keyShareEntry(KeyShareEntryFactory... keyShareEntryFactories) {
+    public GeneratingClientHello keyShareEntry(
+            KeyShareEntryFactory... keyShareEntryFactories) {
+
         this.keyShareEntryFactories = keyShareEntryFactories;
         return this;
     }
@@ -100,11 +108,12 @@ public class GeneratingClientHello extends AbstractAction {
             extensions.add(wrap(maxFragmentLength));
         }
 
-        ClientHello hello = context.factory.createClientHello(ProtocolVersion.TLSv12,
+        ClientHello hello = context.factory.createClientHello(
+                legacyVersion,
                 createRandom(),
                 StructFactory.EMPTY_SESSION_ID,
                 List.of(CipherSuite.TLS_AES_128_GCM_SHA256),
-                List.of(context.factory.createCompressionMethod(0)),
+                List.of(CompressionMethod.zero),
                 extensions);
 
         out = ByteBuffer.wrap(hello.encoding());

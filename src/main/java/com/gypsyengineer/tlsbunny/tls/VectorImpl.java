@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class VectorImpl<T> implements Vector<T> {
 
@@ -126,4 +127,24 @@ public class VectorImpl<T> implements Vector<T> {
         return buffer.array();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        VectorImpl<?> vector = (VectorImpl<?>) o;
+        return lengthBytes == vector.lengthBytes &&
+                maxEncodingLength == vector.maxEncodingLength &&
+                Objects.equals(objects, vector.objects);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(lengthBytes, objects, maxEncodingLength);
+    }
 }

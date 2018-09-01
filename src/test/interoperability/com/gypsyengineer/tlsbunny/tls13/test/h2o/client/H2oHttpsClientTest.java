@@ -1,5 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls13.test.h2o.client;
 
+import com.gypsyengineer.tlsbunny.tls13.client.h2o.H2oHttpsClient;
 import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertCheck;
 import org.junit.Test;
 

@@ -1,5 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls13.test.wolfssl.client;
 
+import com.gypsyengineer.tlsbunny.tls13.client.wolfssl.WolfsslHttpsClient;
 import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertCheck;
 import org.junit.Test;
 

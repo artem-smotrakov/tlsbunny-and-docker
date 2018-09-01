@@ -2,6 +2,8 @@ package com.gypsyengineer.tlsbunny.tls13.struct.impl;
 
 import com.gypsyengineer.tlsbunny.tls13.struct.CompressionMethod;
 
+import java.util.Objects;
+
 public class CompressionMethodImpl implements CompressionMethod {
 
     private final int code;
@@ -32,4 +34,22 @@ public class CompressionMethodImpl implements CompressionMethod {
         }
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        CompressionMethodImpl that = (CompressionMethodImpl) o;
+        return code == that.code;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(code);
+    }
 }

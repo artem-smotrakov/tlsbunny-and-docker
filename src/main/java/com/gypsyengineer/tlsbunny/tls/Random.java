@@ -43,6 +43,22 @@ public class Random implements Struct {
         return ByteBuffer.allocate(LENGTH).put(bytes).array();
     }
 
+    public void setLastBytes(byte[] lastBytes) {
+        if (lastBytes == null) {
+            throw new IllegalArgumentException("what the hell? bytes is null!");
+        }
+
+        if (lastBytes.length > bytes.length) {
+            throw new IllegalArgumentException("what the hell? it's too long!");
+        }
+
+        int i = 0;
+        int j = bytes.length - lastBytes.length;
+        while (i < lastBytes.length) {
+            bytes[j++] = lastBytes[i++];
+        }
+    }
+
     public static Random parse(ByteBuffer buffer) {
         byte[] bytes = new byte[LENGTH];
         buffer.get(bytes);
