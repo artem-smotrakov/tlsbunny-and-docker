@@ -121,11 +121,7 @@ public abstract class SimpleServer implements Server {
             return true;
         }
 
-        if (connections > maxConnections) {
-            return false;
-        }
-
-        return true;
+        return connections <= maxConnections;
     }
 
 }

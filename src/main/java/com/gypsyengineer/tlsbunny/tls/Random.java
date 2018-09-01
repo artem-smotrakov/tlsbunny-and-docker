@@ -52,8 +52,10 @@ public class Random implements Struct {
             throw new IllegalArgumentException("what the hell? it's too long!");
         }
 
-        for (int i = 0, j = bytes.length - lastBytes.length; i < lastBytes.length; i++, j++) {
-            bytes[j] = lastBytes[i];
+        int i = 0;
+        int j = bytes.length - lastBytes.length;
+        while (i < lastBytes.length) {
+            bytes[j++] = lastBytes[i++];
         }
     }
 
