@@ -35,7 +35,7 @@ public abstract class AbstractFlipFuzzer implements Fuzzer<byte[]> {
         this.maxRatio = maxRatio;
 
         if (endIndex == 0) {
-            throw new IllegalArgumentException("what the hell? end index is zero!");
+            throw new IllegalArgumentException("what the hell? end index is None!");
         }
 
         if (startIndex == endIndex && startIndex > 0) {

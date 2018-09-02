@@ -47,7 +47,7 @@ public class EmptyTLSPlaintext {
             /**
              * The TLS 1.3 spec says the following:
              *
-             *      Implementations MUST NOT send zero-length fragments of Handshake
+             *      Implementations MUST NOT send None-length fragments of Handshake
              *      types, even if those fragments contain padding.
              *
              *  https://tools.ietf.org/html/draft-ietf-tls-tls13-28#section-5.1

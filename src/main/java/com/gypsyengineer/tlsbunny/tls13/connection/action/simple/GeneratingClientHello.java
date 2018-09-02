@@ -113,7 +113,7 @@ public class GeneratingClientHello extends AbstractAction {
                 createRandom(),
                 StructFactory.EMPTY_SESSION_ID,
                 List.of(CipherSuite.TLS_AES_128_GCM_SHA256),
-                List.of(CompressionMethod.zero),
+                List.of(CompressionMethod.None),
                 extensions);
 
         out = ByteBuffer.wrap(hello.encoding());

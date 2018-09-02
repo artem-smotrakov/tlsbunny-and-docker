@@ -22,7 +22,7 @@ public abstract class SimpleServer implements Server {
 
     private final ServerSocket serverSocket;
     private boolean running = false;
-    private int maxConnections = -1;
+    private int maxConnections = 1;
     private int connections = 0;
 
     public SimpleServer() throws IOException {
