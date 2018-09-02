@@ -1,4 +1,4 @@
-package com.gypsyengineer.tlsbunny.tls13.client.downgrade;
+package com.gypsyengineer.tlsbunny.tls13.client.common.downgrade;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.AbstractCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.Check;

@@ -1,5 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls13.client.downgrade;
 
+import com.gypsyengineer.tlsbunny.tls13.client.common.downgrade.NoSupportedVersions;
 import com.gypsyengineer.tlsbunny.tls13.connection.*;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
