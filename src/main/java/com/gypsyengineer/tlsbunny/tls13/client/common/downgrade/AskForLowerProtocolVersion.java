@@ -17,29 +17,42 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.client_hello
 import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.server_hello;
 import static com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup.secp256r1;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv12;
+import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv13;
 import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp256r1_sha256;
 
-public class AskForTLSv12 extends AbstractClient {
+public class AskForLowerProtocolVersion extends AbstractClient {
 
     private ProtocolVersion version = TLSv12;
 
     public static void main(String[] args) throws Exception {
         try (Output output = new Output()) {
-            run(output, SystemPropertiesConfig.load());
+            run(output, SystemPropertiesConfig.load(), TLSv12);
         }
     }
 
-    public static AskForTLSv12 run(Output output, Config config) throws Exception {
-        AskForTLSv12 client = (AskForTLSv12) new AskForTLSv12()
-                .set(config)
-                .set(StructFactory.getDefault())
-                .set(output);
+    public static AskForLowerProtocolVersion run(
+            Output output, Config config, ProtocolVersion version) throws Exception {
 
-        client.connect().run(new DowngradeMessageCheck().ifTLSv12());
+        AskForLowerProtocolVersion client =
+                (AskForLowerProtocolVersion) new AskForLowerProtocolVersion()
+                        .set(version)
+                        .set(config)
+                        .set(output)
+                        .set(StructFactory.getDefault());
+
+        Engine engine = client.connect();
+        if (TLSv13.equals(version)) {
+            // TODO: add DowngradeMessageCheck.ifNoDowngrade()
+        } else if (TLSv12.equals(version)) {
+            engine.run(new DowngradeMessageCheck().ifTLSv12());
+        } else {
+            engine.run(new DowngradeMessageCheck().ifBelowTLSv12());
+        }
+
         return client;
     }
 
-    public AskForTLSv12 set(ProtocolVersion version) {
+    public AskForLowerProtocolVersion set(ProtocolVersion version) {
         this.version = version;
         return this;
     }

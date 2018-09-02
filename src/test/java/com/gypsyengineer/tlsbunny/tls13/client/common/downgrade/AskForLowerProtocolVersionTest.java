@@ -23,7 +23,7 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv12;
 import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp256r1_sha256;
 import static org.junit.Assert.*;
 
-public class AskForTLSv12Test {
+public class AskForLowerProtocolVersionTest {
 
     private static final long delay = 1000; // in millis
 
@@ -41,9 +41,10 @@ public class AskForTLSv12Test {
             new Thread(server).start();
             Thread.sleep(delay);
 
-            AskForTLSv12 client = AskForTLSv12.run(
+            AskForLowerProtocolVersion client = AskForLowerProtocolVersion.run(
                     clientOutput,
-                    SystemPropertiesConfig.load().port(server.port()));
+                    SystemPropertiesConfig.load().port(server.port()),
+                    TLSv12);
 
             server.await();
             server.engine().run(new AlertCheck());
