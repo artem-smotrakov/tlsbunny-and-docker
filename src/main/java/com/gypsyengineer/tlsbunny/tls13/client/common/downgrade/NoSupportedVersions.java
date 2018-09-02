@@ -1,12 +1,9 @@
 package com.gypsyengineer.tlsbunny.tls13.client.common.downgrade;
 
-import com.gypsyengineer.tlsbunny.tls13.connection.AbstractCheck;
-import com.gypsyengineer.tlsbunny.tls13.connection.Check;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.DowngradeMessageCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
-import com.gypsyengineer.tlsbunny.tls13.struct.ServerHello;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
@@ -51,9 +48,9 @@ public class NoSupportedVersions extends AbstractClient {
                 // instead, just set legacy_protocol to TLSv12
                 .run(new GeneratingClientHello()
                         .legacyVersion(TLSv12)
-                        .group(secp256r1)
-                        .signatureScheme(ecdsa_secp256r1_sha256)
-                        .keyShareEntry(context -> context.negotiator.createKeyShareEntry()))
+                        .groups(secp256r1)
+                        .signatureSchemes(ecdsa_secp256r1_sha256)
+                        .keyShareEntries(context -> context.negotiator.createKeyShareEntry()))
                 .run(new WrappingIntoHandshake()
                         .type(client_hello)
                         .updateContext(Context.Element.first_client_hello))

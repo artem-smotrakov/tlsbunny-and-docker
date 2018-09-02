@@ -70,7 +70,7 @@ public class TLS13Utils {
                 return 66;
         }
 
-        throw new IllegalArgumentException(String.format("unknown group: %s", group));
+        throw new IllegalArgumentException(String.format("unknown groups: %s", group));
     }
 
 }

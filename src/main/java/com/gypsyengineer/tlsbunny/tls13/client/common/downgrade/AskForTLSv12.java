@@ -1,13 +1,11 @@
 package com.gypsyengineer.tlsbunny.tls13.client.common.downgrade;
 
 import com.gypsyengineer.tlsbunny.tls13.client.common.AbstractClient;
-import com.gypsyengineer.tlsbunny.tls13.connection.AbstractCheck;
-import com.gypsyengineer.tlsbunny.tls13.connection.Check;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.DowngradeMessageCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
-import com.gypsyengineer.tlsbunny.tls13.struct.ServerHello;
+import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.Output;
@@ -22,6 +20,8 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv12;
 import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp256r1_sha256;
 
 public class AskForTLSv12 extends AbstractClient {
+
+    private ProtocolVersion version = TLSv12;
 
     public static void main(String[] args) throws Exception {
         try (Output output = new Output()) {
@@ -39,6 +39,11 @@ public class AskForTLSv12 extends AbstractClient {
         return client;
     }
 
+    public AskForTLSv12 set(ProtocolVersion version) {
+        this.version = version;
+        return this;
+    }
+
     @Override
     protected Engine createEngine() throws Exception {
         return Engine.init()
@@ -51,10 +56,10 @@ public class AskForTLSv12 extends AbstractClient {
                 // which contains TLSv12
                 .run(new GeneratingClientHello()
                         .legacyVersion(TLSv12)
-                        .group(secp256r1)
-                        .supportedVersion(TLSv12)
-                        .signatureScheme(ecdsa_secp256r1_sha256)
-                        .keyShareEntry(context -> context.negotiator.createKeyShareEntry()))
+                        .groups(secp256r1)
+                        .supportedVersions(version)
+                        .signatureSchemes(ecdsa_secp256r1_sha256)
+                        .keyShareEntries(context -> context.negotiator.createKeyShareEntry()))
                 .run(new WrappingIntoHandshake()
                         .type(client_hello)
                         .updateContext(Context.Element.first_client_hello))

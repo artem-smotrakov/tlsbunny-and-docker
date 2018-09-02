@@ -35,29 +35,29 @@ public class GeneratingClientHello extends AbstractAction {
         return this;
     }
 
-    public GeneratingClientHello supportedVersion(ProtocolVersion... versions) {
+    public GeneratingClientHello supportedVersions(ProtocolVersion... versions) {
         this.versions = versions;
         return this;
     }
 
-    public GeneratingClientHello signatureScheme(SignatureScheme... schemes) {
+    public GeneratingClientHello signatureSchemes(SignatureScheme... schemes) {
         this.schemes = schemes;
         return this;
     }
 
-    public GeneratingClientHello group(NamedGroup... groups) {
+    public GeneratingClientHello groups(NamedGroup... groups) {
         this.groups = groups;
         return this;
     }
 
-    public GeneratingClientHello keyShareEntry(
+    public GeneratingClientHello keyShareEntries(
             KeyShareEntryFactory... keyShareEntryFactories) {
 
         this.keyShareEntryFactories = keyShareEntryFactories;
         return this;
     }
 
-    public GeneratingClientHello keyShare(KeyShareFactory... keyShareFactories) {
+    public GeneratingClientHello keyShares(KeyShareFactory... keyShareFactories) {
         this.keyShareFactories = keyShareFactories;
         return this;
     }

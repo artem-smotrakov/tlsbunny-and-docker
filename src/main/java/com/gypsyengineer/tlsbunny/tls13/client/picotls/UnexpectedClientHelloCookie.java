@@ -43,10 +43,10 @@ public class UnexpectedClientHelloCookie extends AbstractClient {
 
                 // send ClientHello
                 .run(new GeneratingClientHello()
-                        .supportedVersion(TLSv13_draft_26)
-                        .group(secp256r1)
-                        .signatureScheme(ecdsa_secp256r1_sha256)
-                        .keyShareEntry(context -> context.negotiator.createKeyShareEntry())
+                        .supportedVersions(TLSv13_draft_26)
+                        .groups(secp256r1)
+                        .signatureSchemes(ecdsa_secp256r1_sha256)
+                        .keyShareEntries(context -> context.negotiator.createKeyShareEntry())
                         .cookie(zeroes(ZERO_COOKIE_LENGTH)))
                 .run(new WrappingIntoHandshake()
                         .type(client_hello)
