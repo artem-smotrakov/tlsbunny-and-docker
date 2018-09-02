@@ -45,10 +45,8 @@ public class BasicTest {
 
         ServerImpl server = new ServerImpl(serverConfig);
 
-        Output serverOutput = new Output();
-        Output clientOutput = new Output();
-        serverOutput.prefix("server");
-        clientOutput.prefix("client");
+        Output serverOutput = new Output("server");
+        Output clientOutput = new Output("client");
 
         server.set(serverOutput);
 

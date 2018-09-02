@@ -48,9 +48,9 @@ public class SimpleEchoServer implements Runnable, AutoCloseable {
     }
 
     @Override
-    public void close() {
+    public void close() throws IOException {
         if (sslServerSocket != null && !sslServerSocket.isClosed()) {
-            close();
+            sslServerSocket.close();
         }
 
         if (output != null) {
