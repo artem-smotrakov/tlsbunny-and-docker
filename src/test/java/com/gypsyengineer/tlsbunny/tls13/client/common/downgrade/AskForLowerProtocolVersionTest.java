@@ -91,7 +91,7 @@ public class AskForLowerProtocolVersionTest {
         ClientHello clientHello = parser.parseClientHello(
                 serverContext.getFirstClientHello().getBody());
         assertNotNull(clientHello);
-        assertEquals(ProtocolVersion.TLSv12, clientHello.getProtocolVersion());
+        assertEquals(TLSv12, clientHello.getProtocolVersion());
         assertEquals(1, clientHello.getCipherSuites().size());
         assertEquals(CipherSuite.TLS_AES_128_GCM_SHA256, clientHello.getCipherSuites().first());
         assertEquals(1, clientHello.getLegacyCompressionMethods().size());
@@ -108,7 +108,7 @@ public class AskForLowerProtocolVersionTest {
         ServerHello serverHello = parser.parseServerHello(
                 clientContext.getServerHello().getBody());
         assertNotNull(serverHello);
-        assertEquals(ProtocolVersion.TLSv12, serverHello.getProtocolVersion());
+        assertEquals(TLSv12, serverHello.getProtocolVersion());
         assertEquals(CipherSuite.TLS_AES_128_GCM_SHA256, serverHello.getCipherSuite());
         assertEquals(CompressionMethod.None, serverHello.getLegacyCompressionMethod());
         assertEquals(clientHello.getLegacySessionId(), serverHello.getLegacySessionIdEcho());
