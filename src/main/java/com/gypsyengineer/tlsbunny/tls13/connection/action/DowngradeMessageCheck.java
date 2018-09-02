@@ -54,7 +54,7 @@ public class DowngradeMessageCheck extends AbstractCheck {
 
     @Override
     public String name() {
-        return "downgrade message received in ServerHello.random";
+        return "downgrade message in ServerHello.random";
     }
 
     private static boolean lastBytesEquals(byte[] bytes, byte[] message) {

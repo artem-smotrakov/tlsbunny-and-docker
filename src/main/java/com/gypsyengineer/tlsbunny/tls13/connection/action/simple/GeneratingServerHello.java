@@ -34,10 +34,6 @@ public class GeneratingServerHello extends AbstractAction {
     }
 
     public GeneratingServerHello downgradeProtection(ProtocolVersion version) {
-        if (ProtocolVersion.TLSv13.equals(version)) {
-            throw  new IllegalArgumentException(
-                    "downgrade protection doesn't make sense if TLSv13 selected");
-        }
         downgradeVersion = version;
         return this;
     }
@@ -96,7 +92,9 @@ public class GeneratingServerHello extends AbstractAction {
 
         Random random = createRandom();
         if (downgradeVersion != null) {
-            if (ProtocolVersion.TLSv12.equals(downgradeVersion)) {
+            if (ProtocolVersion.TLSv13.equals(downgradeVersion)) {
+                output.info("downgrade protection doesn't make sense if TLSv13 selected");
+            } else if (ProtocolVersion.TLSv12.equals(downgradeVersion)) {
                 random.setLastBytes(downgrade_tls12_message);
             } else {
                 random.setLastBytes((downgrade_tls11_and_below_message));

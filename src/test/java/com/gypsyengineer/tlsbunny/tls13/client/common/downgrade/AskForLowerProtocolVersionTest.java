@@ -19,9 +19,7 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
 import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.client_hello;
 import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.server_hello;
 import static com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup.secp256r1;
-import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv10;
-import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv11;
-import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv12;
+import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.*;
 import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp256r1_sha256;
 import static org.junit.Assert.*;
 
@@ -30,9 +28,22 @@ public class AskForLowerProtocolVersionTest {
     private static final long delay = 1000; // in millis
 
     @Test
-    public void httpsClient() throws Exception {
+    public void tls13() throws Exception {
+        test(TLSv13);
+    }
+
+    @Test
+    public void tls12() throws Exception {
         test(TLSv12);
+    }
+
+    @Test
+    public void tls11() throws Exception {
         test(TLSv11);
+    }
+
+    @Test
+    public void tls10() throws Exception {
         test(TLSv10);
     }
 
