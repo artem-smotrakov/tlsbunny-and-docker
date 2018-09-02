@@ -49,7 +49,7 @@ public class NamedGroupImpl implements NamedGroup {
 
     @Override
     public String toString() {
-        return String.format("named group { code: %s }", code);
+        return String.format("named groups { code: %s }", code);
     }
 
     static class SecpImpl extends NamedGroupImpl implements Secp {
@@ -68,7 +68,7 @@ public class NamedGroupImpl implements NamedGroup {
 
         @Override
         public String toString() {
-            return String.format("named group, ecdhe { code: %d, curve: %s }", code, curve);
+            return String.format("named groups, ecdhe { code: %d, curve: %s }", code, curve);
         }
 
     }
@@ -81,7 +81,7 @@ public class NamedGroupImpl implements NamedGroup {
 
         @Override
         public String toString() {
-            return String.format("named group, x { code: %s }", code);
+            return String.format("named groups, x { code: %s }", code);
         }
 
     }
@@ -94,7 +94,7 @@ public class NamedGroupImpl implements NamedGroup {
 
         @Override
         public String toString() {
-            return String.format("named group, ffdhe { code: %d }", code);
+            return String.format("named groups, ffdhe { code: %d }", code);
         }
 
     }

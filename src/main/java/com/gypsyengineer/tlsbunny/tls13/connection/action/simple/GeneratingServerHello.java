@@ -26,24 +26,23 @@ public class GeneratingServerHello extends AbstractAction {
     private NamedGroup[] groups = new NamedGroup[0];
     private KeyShareEntryFactory[] keyShareEntryFactories = new KeyShareEntryFactory[0];
     private KeyShareFactory[] keyShareFactories = new KeyShareFactory[0];
-    private byte[] downgradeMessage = null;
+    private ProtocolVersion downgradeVersion = null;
 
     @Override
     public String name() {
         return "generating ServerHello";
     }
 
-    public GeneratingServerHello downgradeTLSv12() {
-        downgradeMessage = downgrade_tls12_message;
-        return this;
-    }
-
-    public GeneratingServerHello downgradeBelowTLSv12() {
-        downgradeMessage = downgrade_tls11_and_below_message;
+    public GeneratingServerHello downgradeProtection(ProtocolVersion version) {
+        downgradeVersion = version;
         return this;
     }
 
     public GeneratingServerHello supportedVersion(ProtocolVersion... versions) {
+        if (versions == null) {
+            throw new IllegalArgumentException(
+                    "what the hell? no supported versions specified! (null)");
+        }
         this.versions = versions;
         return this;
     }
@@ -92,8 +91,14 @@ public class GeneratingServerHello extends AbstractAction {
         }
 
         Random random = createRandom();
-        if (downgradeMessage != null) {
-            random.setLastBytes(downgradeMessage);
+        if (downgradeVersion != null) {
+            if (ProtocolVersion.TLSv13.equals(downgradeVersion)) {
+                output.info("downgrade protection doesn't make sense if TLSv13 selected");
+            } else if (ProtocolVersion.TLSv12.equals(downgradeVersion)) {
+                random.setLastBytes(downgrade_tls12_message);
+            } else {
+                random.setLastBytes((downgrade_tls11_and_below_message));
+            }
         }
 
         ServerHello hello = context.factory.createServerHello(
@@ -101,7 +106,7 @@ public class GeneratingServerHello extends AbstractAction {
                 random,
                 StructFactory.EMPTY_SESSION_ID,
                 CipherSuite.TLS_AES_128_GCM_SHA256,
-                context.factory.createCompressionMethod(0),
+                CompressionMethod.None,
                 extensions);
 
         out = ByteBuffer.wrap(hello.encoding());

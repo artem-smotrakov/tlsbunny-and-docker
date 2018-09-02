@@ -89,9 +89,9 @@ public class WeakECDHENegotiator extends AbstractNegotiator {
     @Override
     public void processKeyShareEntry(KeyShareEntry entry) throws NegotiatorException {
         if (!group.equals(entry.getNamedGroup())) {
-            output.achtung("expected group: %s", group);
-            output.achtung("received group: %s", entry.getNamedGroup());
-            throw new NegotiatorException("unexpected group");
+            output.achtung("expected groups: %s", group);
+            output.achtung("received groups: %s", entry.getNamedGroup());
+            throw new NegotiatorException("unexpected groups");
         }
 
         try {

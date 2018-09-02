@@ -1,13 +1,11 @@
 package com.gypsyengineer.tlsbunny.tls13.client.common.downgrade;
 
 import com.gypsyengineer.tlsbunny.tls13.client.common.AbstractClient;
-import com.gypsyengineer.tlsbunny.tls13.connection.AbstractCheck;
-import com.gypsyengineer.tlsbunny.tls13.connection.Check;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.DowngradeMessageCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
-import com.gypsyengineer.tlsbunny.tls13.struct.ServerHello;
+import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.Output;
@@ -18,25 +16,48 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
 import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.client_hello;
 import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.server_hello;
 import static com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup.secp256r1;
-import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv12;
+import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.*;
 import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp256r1_sha256;
 
-public class AskForTLSv12 extends AbstractClient {
+public class AskForLowerProtocolVersion extends AbstractClient {
+
+    private ProtocolVersion version = TLSv12;
 
     public static void main(String[] args) throws Exception {
         try (Output output = new Output()) {
-            run(output, SystemPropertiesConfig.load());
+            Config config = SystemPropertiesConfig.load();
+            run(output, config, TLSv13);
+            run(output, config, TLSv12);
+            run(output, config, TLSv11);
+            run(output, config, TLSv10);
         }
     }
 
-    public static AskForTLSv12 run(Output output, Config config) throws Exception {
-        AskForTLSv12 client = (AskForTLSv12) new AskForTLSv12()
-                .set(config)
-                .set(StructFactory.getDefault())
-                .set(output);
+    public static AskForLowerProtocolVersion run(
+            Output output, Config config, ProtocolVersion version) throws Exception {
 
-        client.connect().run(new DowngradeMessageCheck().ifTLSv12());
+        AskForLowerProtocolVersion client =
+                (AskForLowerProtocolVersion) new AskForLowerProtocolVersion()
+                        .set(version)
+                        .set(config)
+                        .set(output)
+                        .set(StructFactory.getDefault());
+
+        Engine engine = client.connect();
+        if (TLSv13.equals(version)) {
+            engine.run(new DowngradeMessageCheck().ifNoDowngrade());
+        } else if (TLSv12.equals(version)) {
+            engine.run(new DowngradeMessageCheck().ifTLSv12());
+        } else {
+            engine.run(new DowngradeMessageCheck().ifBelowTLSv12());
+        }
+
         return client;
+    }
+
+    public AskForLowerProtocolVersion set(ProtocolVersion version) {
+        this.version = version;
+        return this;
     }
 
     @Override
@@ -51,10 +72,10 @@ public class AskForTLSv12 extends AbstractClient {
                 // which contains TLSv12
                 .run(new GeneratingClientHello()
                         .legacyVersion(TLSv12)
-                        .group(secp256r1)
-                        .supportedVersion(TLSv12)
-                        .signatureScheme(ecdsa_secp256r1_sha256)
-                        .keyShareEntry(context -> context.negotiator.createKeyShareEntry()))
+                        .groups(secp256r1)
+                        .supportedVersions(version)
+                        .signatureSchemes(ecdsa_secp256r1_sha256)
+                        .keyShareEntries(context -> context.negotiator.createKeyShareEntry()))
                 .run(new WrappingIntoHandshake()
                         .type(client_hello)
                         .updateContext(Context.Element.first_client_hello))

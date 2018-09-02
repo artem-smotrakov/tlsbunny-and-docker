@@ -29,9 +29,9 @@ public class NegotiatingClientDHSecret extends AbstractAction<NegotiatingClientD
         KeyShareEntry keyShareEntry = keyShare.getServerShare();
 
         if (!context.group.equals(keyShareEntry.getNamedGroup())) {
-            output.info("expected group: %s", context.group);
-            output.info("received group: %s", keyShareEntry.getNamedGroup());
-            throw new NegotiatorException("unexpected group");
+            output.info("expected groups: %s", context.group);
+            output.info("received groups: %s", keyShareEntry.getNamedGroup());
+            throw new NegotiatorException("unexpected groups");
         }
         context.negotiator.processKeyShareEntry(keyShareEntry);
         context.dh_shared_secret = context.negotiator.generateSecret();

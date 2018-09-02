@@ -65,7 +65,7 @@ public class NoSupportedVersionsTest {
             assertEquals(1, clientHello.getCipherSuites().size());
             assertEquals(CipherSuite.TLS_AES_128_GCM_SHA256, clientHello.getCipherSuites().first());
             assertEquals(1, clientHello.getLegacyCompressionMethods().size());
-            assertEquals(CompressionMethod.zero, clientHello.getLegacyCompressionMethods().first());
+            assertEquals(CompressionMethod.None, clientHello.getLegacyCompressionMethods().first());
             assertNull(clientHello.findExtension(ExtensionType.supported_versions));
 
             ServerHello serverHello = parser.parseServerHello(
@@ -73,7 +73,7 @@ public class NoSupportedVersionsTest {
             assertNotNull(serverHello);
             assertEquals(ProtocolVersion.TLSv12, serverHello.getProtocolVersion());
             assertEquals(CipherSuite.TLS_AES_128_GCM_SHA256, serverHello.getCipherSuite());
-            assertEquals(CompressionMethod.zero, serverHello.getLegacyCompressionMethod());
+            assertEquals(CompressionMethod.None, serverHello.getLegacyCompressionMethod());
             assertEquals(clientHello.getLegacySessionId(), serverHello.getLegacySessionIdEcho());
 
             Extension ext = serverHello.findExtension(ExtensionType.supported_versions);
@@ -112,7 +112,7 @@ public class NoSupportedVersionsTest {
                     // send ServerHello
                     .run(new GeneratingServerHello()
                             .supportedVersion(TLSv12)
-                            .downgradeTLSv12()
+                            .downgradeProtection(TLSv12)
                             .group(secp256r1)
                             .signatureScheme(ecdsa_secp256r1_sha256)
                             .keyShareEntry(context -> context.negotiator.createKeyShareEntry()))

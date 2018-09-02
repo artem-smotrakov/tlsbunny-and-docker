@@ -47,7 +47,7 @@ public class EmptyTLSPlaintext {
             /**
              * The TLS 1.3 spec says the following:
              *
-             *      Implementations MUST NOT send zero-length fragments of Handshake
+             *      Implementations MUST NOT send None-length fragments of Handshake
              *      types, even if those fragments contain padding.
              *
              *  https://tools.ietf.org/html/draft-ietf-tls-tls13-28#section-5.1
@@ -79,10 +79,10 @@ public class EmptyTLSPlaintext {
 
                 // send ClientHello
                 .run(new GeneratingClientHello()
-                        .supportedVersion(protocolVersion)
-                        .group(secp256r1)
-                        .signatureScheme(ecdsa_secp256r1_sha256)
-                        .keyShareEntry(context -> context.negotiator.createKeyShareEntry()))
+                        .supportedVersions(protocolVersion)
+                        .groups(secp256r1)
+                        .signatureSchemes(ecdsa_secp256r1_sha256)
+                        .keyShareEntries(context -> context.negotiator.createKeyShareEntry()))
                 .run(new WrappingIntoHandshake()
                         .type(client_hello)
                         .updateContext(Context.Element.first_client_hello))
