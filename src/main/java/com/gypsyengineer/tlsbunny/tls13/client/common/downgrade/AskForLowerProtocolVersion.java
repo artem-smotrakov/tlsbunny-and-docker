@@ -16,8 +16,7 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
 import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.client_hello;
 import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.server_hello;
 import static com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup.secp256r1;
-import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv12;
-import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv13;
+import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.*;
 import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp256r1_sha256;
 
 public class AskForLowerProtocolVersion extends AbstractClient {
@@ -26,7 +25,11 @@ public class AskForLowerProtocolVersion extends AbstractClient {
 
     public static void main(String[] args) throws Exception {
         try (Output output = new Output()) {
-            run(output, SystemPropertiesConfig.load(), TLSv12);
+            Config config = SystemPropertiesConfig.load();
+            run(output, config, TLSv13);
+            run(output, config, TLSv12);
+            run(output, config, TLSv11);
+            run(output, config, TLSv10);
         }
     }
 
@@ -42,7 +45,7 @@ public class AskForLowerProtocolVersion extends AbstractClient {
 
         Engine engine = client.connect();
         if (TLSv13.equals(version)) {
-            // TODO: add DowngradeMessageCheck.ifNoDowngrade()
+            engine.run(new DowngradeMessageCheck().ifNoDowngrade());
         } else if (TLSv12.equals(version)) {
             engine.run(new DowngradeMessageCheck().ifTLSv12());
         } else {
