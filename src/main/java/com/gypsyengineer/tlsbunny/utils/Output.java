@@ -22,7 +22,7 @@ public class Output implements AutoCloseable {
     }
 
     public Output(String prefix) {
-        this.prefix = prefix;
+        prefix(prefix);
     }
 
     synchronized public void increaseIndent() {
