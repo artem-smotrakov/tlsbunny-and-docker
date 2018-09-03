@@ -18,7 +18,8 @@ import org.junit.Test;
 public class BasicTest extends BaseTest {
 
     /**
-     * The test is excluded because it fails with the following exception on JSSE side:
+     * The test is excluded because it fails with the following exception on JSSE side.
+     * See https://bugs.openjdk.java.net/browse/JDK-8210334 for details.
      *
      * javax.net.ssl.SSLHandshakeException: pre_shared_key key extension is offered without a psk_key_exchange_modes extension
      * 	at java.base/sun.security.ssl.Alert.createSSLException(Alert.java:128)
