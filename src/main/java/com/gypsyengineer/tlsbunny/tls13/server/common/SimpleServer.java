@@ -21,6 +21,8 @@ public abstract class SimpleServer implements Server {
     protected Engine engine;
 
     private final ServerSocket serverSocket;
+
+    // TODO: add synchronization
     private boolean running = false;
     private int maxConnections = 1;
     private int connections = 0;
