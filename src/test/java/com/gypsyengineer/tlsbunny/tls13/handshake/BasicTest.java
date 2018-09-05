@@ -32,18 +32,12 @@ public class BasicTest {
 
     @Test
     public void httpsClient() throws Exception {
-        Client client = new HttpsClient()
-                .set(StructFactory.getDefault());
-
-        test(client);
+        test(new HttpsClient());
     }
 
     @Test
     public void anotherHttpsClient() throws Exception {
-        Client client = new AnotherHttpsClient()
-                .set(StructFactory.getDefault());
-
-        test(client);
+        test(new AnotherHttpsClient());
     }
 
     private static void test(Client client) throws Exception {
