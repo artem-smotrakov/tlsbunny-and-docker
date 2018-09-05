@@ -4,13 +4,13 @@ import com.gypsyengineer.tlsbunny.tls13.connection.*;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.handshake.NegotiatorException;
-import com.gypsyengineer.tlsbunny.tls13.server.common.SimpleServer;
+import com.gypsyengineer.tlsbunny.tls13.server.common.SingleThreadServer;
+import com.gypsyengineer.tlsbunny.tls13.server.common.OneConnectionReceived;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
 import com.gypsyengineer.tlsbunny.utils.Output;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.alert;
@@ -23,31 +23,28 @@ import static org.junit.Assert.*;
 
 public class NoSupportedVersionsTest {
 
-    private static final long delay = 1000; // in millis
-
     @Test
     public void httpsClient() throws Exception {
         Output serverOutput = new Output("server");
         Output clientOutput = new Output("client");
 
-        SimpleServer server = new ServerImpl()
-                .set(SystemPropertiesConfig.load())
+        SingleThreadServer server = new SingleThreadServer()
+                .set(new EngineFactoryImpl().set(serverOutput))
                 .set(serverOutput)
-                .maxConnections(1);
+                .stopWhen(new OneConnectionReceived());
 
         try (server; clientOutput; serverOutput) {
-            new Thread(server).start();
-            Thread.sleep(delay);
+            server.start();
 
             NoSupportedVersions client = NoSupportedVersions.run(
                     clientOutput,
                     SystemPropertiesConfig.load().port(server.port()));
 
             server.await();
-            server.engine().run(new AlertCheck());
+            server.recentEngine().run(new AlertCheck());
 
             Context clientContext = client.engine().context();
-            Context serverContext = server.engine().context();
+            Context serverContext = server.recentEngine().context();
             Alert alert = serverContext.getAlert();
             assertTrue(alert.isFatal());
             assertFalse(alert.isWarning());
@@ -85,18 +82,12 @@ public class NoSupportedVersionsTest {
         }
     }
 
-    private static class ServerImpl extends SimpleServer {
-
-        public ServerImpl() throws IOException {
-            super();
-        }
+    private static class EngineFactoryImpl extends BaseEngineFactory {
 
         @Override
-        protected Engine createEngine()
-                throws NegotiatorException, NoSuchAlgorithmException {
-
+        public Engine create() throws NegotiatorException, NoSuchAlgorithmException {
             return Engine.init()
-                    .set(factory)
+                    .set(structFactory)
                     .set(output)
 
                     .receive(new IncomingData())

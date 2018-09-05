@@ -46,7 +46,7 @@ public abstract class AbstractClient implements Client, AutoCloseable {
     public Engine engine() {
         if (engine == null) {
             throw new IllegalStateException(
-                    "what the hell? engine not initialized! (null)");
+                    "what the hell? recentEngine not initialized! (null)");
         }
 
         return engine;

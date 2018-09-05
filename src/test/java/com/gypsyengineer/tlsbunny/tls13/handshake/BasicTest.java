@@ -7,7 +7,8 @@ import com.gypsyengineer.tlsbunny.tls13.connection.*;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Side;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.OutgoingChangeCipherSpec;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
-import com.gypsyengineer.tlsbunny.tls13.server.common.SimpleServer;
+import com.gypsyengineer.tlsbunny.tls13.server.common.SingleThreadServer;
+import com.gypsyengineer.tlsbunny.tls13.server.common.OneConnectionReceived;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.Output;
@@ -26,6 +27,7 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv13_dra
 import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp256r1_sha256;
 import static org.junit.Assert.*;
 
+// TODO: remove duplicate code
 public class BasicTest {
 
     private static final long delay = 1000; // in millis
@@ -34,6 +36,9 @@ public class BasicTest {
 
     @Test
     public void httpsClient() throws Exception {
+        Output serverOutput = new Output("server");
+        Output clientOutput = new Output("client");
+
         Config serverConfig = SystemPropertiesConfig.load();
         serverConfig.serverCertificate(serverCertificatePath);
         serverConfig.serverKey(serverKeyPath);
@@ -43,12 +48,12 @@ public class BasicTest {
         Client client = new HttpsClient()
                 .set(StructFactory.getDefault());
 
-        ServerImpl server = new ServerImpl(serverConfig);
-
-        Output serverOutput = new Output();
-        Output clientOutput = new Output();
-        serverOutput.prefix("server");
-        clientOutput.prefix("client");
+        SingleThreadServer server = new SingleThreadServer()
+                .set(new EngineFactoryImpl()
+                        .set(serverConfig)
+                        .set(serverOutput))
+                .set(serverConfig)
+                .stopWhen(new OneConnectionReceived());
 
         server.set(serverOutput);
 
@@ -76,7 +81,7 @@ public class BasicTest {
 
         success &= checkContexts(
                 client.engine().context(),
-                server.engine().context(),
+                server.recentEngine().context(),
                 clientOutput);
 
         assertTrue("something went wrong!", success);
@@ -84,6 +89,9 @@ public class BasicTest {
 
     @Test
     public void anotherHttpsClient() throws Exception {
+        Output serverOutput = new Output("server");
+        Output clientOutput = new Output("client");
+
         Config serverConfig = SystemPropertiesConfig.load();
         serverConfig.serverCertificate(serverCertificatePath);
         serverConfig.serverKey(serverKeyPath);
@@ -93,14 +101,12 @@ public class BasicTest {
         Client client = new AnotherHttpsClient()
                 .set(StructFactory.getDefault());
 
-        ServerImpl server = new ServerImpl(serverConfig);
-
-        Output serverOutput = new Output();
-        Output clientOutput = new Output();
-        serverOutput.prefix("server");
-        clientOutput.prefix("client");
-
-        server.set(serverOutput);
+        SingleThreadServer server = new SingleThreadServer()
+                .set(new EngineFactoryImpl()
+                        .set(serverConfig)
+                        .set(serverOutput))
+                .set(serverConfig)
+                .stopWhen(new OneConnectionReceived());
 
         try (server; clientOutput; serverOutput) {
             new Thread(server).start();
@@ -126,27 +132,27 @@ public class BasicTest {
 
         success &= checkContexts(
                 client.engine().context(),
-                server.engine().context(),
+                server.recentEngine().context(),
                 clientOutput);
 
         assertTrue("something went wrong!", success);
     }
 
-    private static class ServerImpl extends SimpleServer {
+    private static class EngineFactoryImpl extends BaseEngineFactory {
 
-        private final Config config;
+        private Config config;
 
-        public ServerImpl(Config config) throws IOException {
-            super();
+        public EngineFactoryImpl set(Config config) {
             this.config = config;
+            return this;
         }
 
         @Override
-        protected Engine createEngine()
+        public Engine create()
                 throws NegotiatorException, NoSuchAlgorithmException, IOException {
 
             return Engine.init()
-                    .set(factory)
+                    .set(structFactory)
                     .set(output)
 
                     .receive(new IncomingData())
