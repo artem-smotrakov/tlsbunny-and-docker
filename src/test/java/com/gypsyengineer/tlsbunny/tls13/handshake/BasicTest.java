@@ -15,9 +15,6 @@ import com.gypsyengineer.tlsbunny.utils.Output;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 import org.junit.Test;
 
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
-
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.application_data;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
 import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.*;
@@ -148,9 +145,7 @@ public class BasicTest {
         }
 
         @Override
-        public Engine create()
-                throws NegotiatorException, NoSuchAlgorithmException, IOException {
-
+        protected Engine createImpl() throws Exception {
             return Engine.init()
                     .set(structFactory)
                     .set(output)

@@ -3,15 +3,12 @@ package com.gypsyengineer.tlsbunny.tls13.client.common.downgrade;
 import com.gypsyengineer.tlsbunny.tls13.connection.*;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
-import com.gypsyengineer.tlsbunny.tls13.handshake.NegotiatorException;
 import com.gypsyengineer.tlsbunny.tls13.server.common.SingleThreadServer;
 import com.gypsyengineer.tlsbunny.tls13.server.common.OneConnectionReceived;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
 import com.gypsyengineer.tlsbunny.utils.Output;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 import org.junit.Test;
-
-import java.security.NoSuchAlgorithmException;
 
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.alert;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
@@ -85,7 +82,7 @@ public class NoSupportedVersionsTest {
     private static class EngineFactoryImpl extends BaseEngineFactory {
 
         @Override
-        public Engine create() throws NegotiatorException, NoSuchAlgorithmException {
+        protected Engine createImpl() throws Exception {
             return Engine.init()
                     .set(structFactory)
                     .set(output)

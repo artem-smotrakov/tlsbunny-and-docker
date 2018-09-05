@@ -19,4 +19,15 @@ public abstract class BaseEngineFactory implements EngineFactory {
         return this;
     }
 
+    @Override
+    public final Engine create() throws EngineException {
+        try {
+            return createImpl();
+        } catch (Exception e) {
+            throw new EngineException("could not create an engine", e);
+        }
+    }
+
+    protected abstract Engine createImpl() throws Exception;
+
 }
