@@ -9,7 +9,6 @@ import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.OutgoingChan
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.server.common.SingleThreadServer;
 import com.gypsyengineer.tlsbunny.tls13.server.common.OneConnectionReceived;
-import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.Output;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
@@ -55,9 +54,8 @@ public class BasicTest {
                         .set(serverConfig)
                         .set(serverOutput))
                 .set(serverConfig)
+                .set(serverOutput)
                 .stopWhen(new OneConnectionReceived());
-
-        server.set(serverOutput);
 
         try (server; clientOutput; serverOutput) {
             new Thread(server).start();
@@ -293,22 +291,5 @@ public class BasicTest {
                     .run(new WrappingApplicationDataIntoTLSCiphertext())
                     .send(new OutgoingData());
         }
-    }
-
-    private static class PreparingHttpResponse extends PreparingApplicationData {
-
-        private static final byte[] HTML_PAGE =
-                "<html>Like most of life's problems, this one can be solved with bending!<html>"
-                        .getBytes();
-
-        public PreparingHttpResponse() {
-            super(HTML_PAGE);
-        }
-
-        @Override
-        public String name() {
-            return "generating HTTP response";
-        }
-
     }
 }

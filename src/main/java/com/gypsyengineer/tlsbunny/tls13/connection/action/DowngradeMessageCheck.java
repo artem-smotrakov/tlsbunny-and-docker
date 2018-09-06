@@ -2,6 +2,7 @@ package com.gypsyengineer.tlsbunny.tls13.connection.action;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.AbstractCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.Check;
+import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
 import com.gypsyengineer.tlsbunny.tls13.struct.ServerHello;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 
@@ -16,6 +17,22 @@ public class DowngradeMessageCheck extends AbstractCheck {
     };
 
     private byte[] downgrade_message = null;
+
+    public DowngradeMessageCheck set(ProtocolVersion version) {
+        if (version == null) {
+            throw new IllegalArgumentException("what the hell? version is null!");
+        }
+
+        if (ProtocolVersion.TLSv13.equals(version)) {
+            ifNoDowngrade();
+        } else if (ProtocolVersion.TLSv12.equals(version)) {
+            ifTLSv12();
+        } else {
+            ifBelowTLSv12();
+        }
+
+        return this;
+    }
 
     public DowngradeMessageCheck ifTLSv12() {
         downgrade_message = downgrade_tls12_message;

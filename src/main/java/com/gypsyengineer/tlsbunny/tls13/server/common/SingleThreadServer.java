@@ -1,5 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls13.server.common;
 
+import com.gypsyengineer.tlsbunny.tls13.connection.Check;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.EngineFactory;
 import com.gypsyengineer.tlsbunny.utils.Config;
@@ -22,6 +23,9 @@ public class SingleThreadServer implements Server {
     private EngineFactory factory;
     private StopCondition stopCondition = new NonStop();
     private Output output = new Output("server");
+    private Check check;
+
+    private boolean failed = false;
 
     // TODO: add synchronization
     private Engine recentEngine;
@@ -65,9 +69,20 @@ public class SingleThreadServer implements Server {
     }
 
     @Override
+    public SingleThreadServer set(Check check) {
+        this.check = check;
+        return this;
+    }
+
+    @Override
     public SingleThreadServer stopWhen(StopCondition condition) {
         stopCondition = condition;
         return this;
+    }
+
+    @Override
+    public boolean failed() {
+        return failed;
     }
 
     @Override
@@ -96,6 +111,13 @@ public class SingleThreadServer implements Server {
                 recentEngine.set(output);
                 recentEngine.set(connection);
                 recentEngine.connect(); // TODO: rename connect -> run
+                if (check != null) {
+                    output.info("run check: %s", check.name());
+                    check.set(recentEngine);
+                    check.set(recentEngine.context());
+                    check.run();
+                    failed &= check.failed();
+                }
                 output.info("done");
             } catch (Exception e) {
                 output.achtung("exception: ", e);
