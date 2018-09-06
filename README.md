@@ -47,7 +47,7 @@ Engine.init()
 
 ## Supported features
 
-- [TLS 1.3 draft 26](https://tools.ietf.org/html/draft-ietf-tls-tls13-26) 
+- [TLS 1.3 protocol defined in RFC 8446](https://tools.ietf.org/html/rfc8446) 
 - Handshake as a client
 - Client authentication
 - Key exchange with ECDHE using secp256r1 curve
