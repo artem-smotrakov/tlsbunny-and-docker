@@ -181,8 +181,20 @@ public class IncomingMessages extends AbstractAction<IncomingMessages> {
         new PrintingData().set(output).set(context).in(buffer).run();
     }
 
-    private void processClientHello(Handshake handshake) {
-        throw new UnsupportedOperationException("no message processing for you!");
+    private void processClientHello(Handshake handshake) throws ActionFailed {
+        new ProcessingClientHello().set(output).set(context)
+                .in(handshake.getBody()).run();
+
+        if (context.hasFirstClientHello() && context.hasSecondClientHello()) {
+            throw new ActionFailed(
+                    "what the hell? we have already received two client hellos!");
+        }
+
+        if (!context.hasFirstClientHello()) {
+            context.setFirstClientHello(handshake);
+        } else {
+            context.setSecondClientHello(handshake);
+        }
     }
 
     private void processServerHello(Handshake handshake)
