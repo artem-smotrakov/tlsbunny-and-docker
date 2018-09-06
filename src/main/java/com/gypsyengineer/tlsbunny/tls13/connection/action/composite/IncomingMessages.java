@@ -16,10 +16,6 @@ public class IncomingMessages extends AbstractAction<IncomingMessages> {
 
     private Side side;
 
-    public IncomingMessages() {
-
-    }
-
     public IncomingMessages(Side side) {
         this.side = side;
     }
@@ -57,14 +53,19 @@ public class IncomingMessages extends AbstractAction<IncomingMessages> {
                 continue;
             }
 
+            if (tlsPlaintext.containsAlert()) {
+                processAlert(tlsPlaintext);
+                continue;
+            }
+
             ContentType type;
             ByteBuffer content;
-            if (encryptedHandshakeData()) {
+            if (expectEncryptedHandshakeData()) {
                 TLSInnerPlaintext tlsInnerPlaintext = new ProcessingTLSCiphertext(Phase.handshake)
                         .set(output).set(context).set(tlsPlaintext).run().tlsInnerPlaintext();
                 type = tlsInnerPlaintext.getType();
                 content = ByteBuffer.wrap(tlsInnerPlaintext.getContent());
-            } else if (encryptedApplicationData()) {
+            } else if (expectEncryptedApplicationData()) {
                 if (canDecryptApplicationData()) {
                     TLSInnerPlaintext tlsInnerPlaintext = new ProcessingTLSCiphertext(Phase.application_data)
                             .set(output).set(context).set(tlsPlaintext).run().tlsInnerPlaintext();
@@ -101,11 +102,11 @@ public class IncomingMessages extends AbstractAction<IncomingMessages> {
         return this;
     }
 
-    private boolean encryptedHandshakeData() {
+    private boolean expectEncryptedHandshakeData() {
         return context.hasServerHello() && !context.hasServerFinished();
     }
 
-    private boolean encryptedApplicationData() {
+    private boolean expectEncryptedApplicationData() {
         return context.hasServerFinished();
     }
 
@@ -170,6 +171,10 @@ public class IncomingMessages extends AbstractAction<IncomingMessages> {
 
     private void processChangeCipherSpec(ByteBuffer buffer) throws ActionFailed {
         new ProcessingChangeCipherSpec().set(output).set(context).in(buffer).run();
+    }
+
+    private void processAlert(TLSPlaintext tlsPlaintext) {
+        processAlert(ByteBuffer.wrap(tlsPlaintext.getFragment()));
     }
 
     private void processAlert(ByteBuffer buffer) {
