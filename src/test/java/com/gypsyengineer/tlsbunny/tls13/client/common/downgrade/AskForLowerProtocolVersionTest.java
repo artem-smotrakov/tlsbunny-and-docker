@@ -1,18 +1,18 @@
 package com.gypsyengineer.tlsbunny.tls13.client.common.downgrade;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.AlertCheck;
+import com.gypsyengineer.tlsbunny.tls13.connection.BaseEngineFactory;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
-import com.gypsyengineer.tlsbunny.tls13.handshake.NegotiatorException;
-import com.gypsyengineer.tlsbunny.tls13.server.common.SimpleServer;
+import com.gypsyengineer.tlsbunny.tls13.server.common.SingleThreadServer;
+import com.gypsyengineer.tlsbunny.tls13.server.common.OneConnectionReceived;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
 import com.gypsyengineer.tlsbunny.utils.Output;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.alert;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
@@ -48,15 +48,18 @@ public class AskForLowerProtocolVersionTest {
     }
 
     private static void test(ProtocolVersion version) throws Exception {
-        try (ServerImpl server = new ServerImpl();
-             Output clientOutput = new Output("client");
-             Output serverOutput = new Output("server")) {
+        Output clientOutput = new Output("client");
+        Output serverOutput = new Output("server");
 
+        SingleThreadServer server = new SingleThreadServer()
+                .set(new EngineFactoryImpl()
+                        .downgradeVersion(version)
+                        .set(serverOutput))
+                .set(serverOutput)
+                .stopWhen(new OneConnectionReceived());
+
+        try (server; serverOutput; clientOutput) {
             clientOutput.info("test downgrade for %s", version);
-
-            server.set(SystemPropertiesConfig.load());
-            server.set(serverOutput);
-            server.downgradeVersion(version);
 
             new Thread(server).start();
             Thread.sleep(delay);
@@ -67,17 +70,17 @@ public class AskForLowerProtocolVersionTest {
                     version);
 
             server.await();
-            server.engine().run(new AlertCheck());
+            server.recentEngine().run(new AlertCheck());
 
             runChecks(client, server, version);
         }
     }
 
-    private static void runChecks(AskForLowerProtocolVersion client, SimpleServer server,
+    private static void runChecks(AskForLowerProtocolVersion client, SingleThreadServer server,
                                   ProtocolVersion expectedVersion) throws IOException {
 
         Context clientContext = client.engine().context();
-        Context serverContext = server.engine().context();
+        Context serverContext = server.recentEngine().context();
         Alert alert = serverContext.getAlert();
         assertTrue(alert.isFatal());
         assertFalse(alert.isWarning());
@@ -121,26 +124,20 @@ public class AskForLowerProtocolVersionTest {
         assertEquals(expectedVersion, serverHelloSupportedVersions.getSelectedVersion());
     }
 
-    private static class ServerImpl extends SimpleServer {
+    private static class EngineFactoryImpl extends BaseEngineFactory {
 
         // TODO: add synchronization
         private ProtocolVersion downgradeVersion = null;
 
-        public ServerImpl() throws IOException {
-            super();
-        }
-
-        public ServerImpl downgradeVersion(ProtocolVersion version) {
+        public EngineFactoryImpl downgradeVersion(ProtocolVersion version) {
             downgradeVersion = version;
             return this;
         }
 
         @Override
-        protected Engine createEngine()
-                throws NegotiatorException, NoSuchAlgorithmException {
-
+        protected Engine createImpl() throws Exception {
             return Engine.init()
-                    .set(factory)
+                    .set(structFactory)
                     .set(output)
 
                     .receive(new IncomingData())
