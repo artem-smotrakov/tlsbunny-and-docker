@@ -9,10 +9,18 @@ import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSocket;
 import java.io.*;
 
-public class SimpleEchoServer implements Runnable, AutoCloseable {
+public class SimpleHttpsServer implements Runnable, AutoCloseable {
 
-    private static final int FREE_PORT = 0;
+    private static final int free = 0;
     private static final int delay = 500; // in millis
+    private static final String message =
+            "<html>Like most of life's problems, this one can be solved with bending.</html>";
+    private static final byte[] response = String.format(
+            "HTTP/1.1 200 OK\n" +
+            "Server: JSSE\n" +
+            "Content-Length: %d\n" +
+            "Content-Type: text/html\n" +
+            "Connection: Closed\n\n%s", message.length(), message).getBytes();
 
     protected Config config = SystemPropertiesConfig.load();
     protected Output output = new Output();
@@ -24,16 +32,16 @@ public class SimpleEchoServer implements Runnable, AutoCloseable {
 
     private final SSLServerSocket sslServerSocket;
 
-    private SimpleEchoServer(SSLServerSocket sslServerSocket) {
+    private SimpleHttpsServer(SSLServerSocket sslServerSocket) {
         this.sslServerSocket = sslServerSocket;
     }
 
-    public SimpleEchoServer set(Config config) {
+    public SimpleHttpsServer set(Config config) {
         this.config = config;
         return this;
     }
 
-    public SimpleEchoServer set(Output output) {
+    public SimpleHttpsServer set(Output output) {
         this.output = output;
         return this;
     }
@@ -42,7 +50,7 @@ public class SimpleEchoServer implements Runnable, AutoCloseable {
         return sslServerSocket.getLocalPort();
     }
 
-    public SimpleEchoServer maxConnections(int n) {
+    public SimpleHttpsServer maxConnections(int n) {
         maxConnections = n;
         return this;
     }
@@ -71,7 +79,7 @@ public class SimpleEchoServer implements Runnable, AutoCloseable {
                 byte[] data = new byte[2048];
                 int len = is.read(data);
                 output.info("received %d bytes: %s", len, new String(data, 0, len));
-                os.write(data, 0, len);
+                os.write(response);
                 os.flush();
                 output.info("done");
             } catch (Exception e) {
@@ -103,15 +111,15 @@ public class SimpleEchoServer implements Runnable, AutoCloseable {
         return connections <= maxConnections;
     }
 
-    public static SimpleEchoServer create() throws IOException {
-        return create(FREE_PORT);
+    public static SimpleHttpsServer create() throws IOException {
+        return create(free);
     }
 
-    public static SimpleEchoServer create(int port) throws IOException {
+    public static SimpleHttpsServer create(int port) throws IOException {
         SSLServerSocket socket = (SSLServerSocket)
                 SSLServerSocketFactory.getDefault().createServerSocket(port);
         socket.setEnabledProtocols(new String[] { "TLSv1.3" } );
         socket.setEnabledCipherSuites(new String[] { "TLS_AES_128_GCM_SHA256" } );
-        return new SimpleEchoServer(socket);
+        return new SimpleHttpsServer(socket);
     }
 }
