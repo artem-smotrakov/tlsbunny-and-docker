@@ -13,10 +13,10 @@ import com.gypsyengineer.tlsbunny.utils.Output;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 import org.junit.Test;
 
-public class BasicTest extends BaseTest {
+public class HandshakeTest extends BaseTest {
 
     @Test
-    public void httpsClient() throws Exception {
+    public void basid() throws Exception {
         if (!supportsTls13()) {
             System.err.println("Warning: TLS 1.3 is not supported by JSSE, skip the test");
             return;
@@ -56,7 +56,7 @@ public class BasicTest extends BaseTest {
 
     // standalone interface
     public static void main(String[] args) throws Exception {
-        BasicTest test = new BasicTest();
-        test.httpsClient();
+        HandshakeTest test = new HandshakeTest();
+        test.basid();
     }
 }
