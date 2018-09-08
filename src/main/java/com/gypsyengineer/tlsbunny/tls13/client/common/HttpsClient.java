@@ -62,7 +62,8 @@ public class HttpsClient extends AbstractClient {
 
                 // receive a ServerHello, EncryptedExtensions, Certificate,
                 // CertificateVerify and Finished messages
-                .receive(new IncomingMessages(Side.client))
+                .loop(context -> !context.hasServerFinished())
+                    .receive(() -> new IncomingMessages(Side.client))
 
                 // send Finished
                 .run(new GeneratingFinished())
