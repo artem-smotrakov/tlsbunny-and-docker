@@ -4,7 +4,7 @@ jdk:
   - openjdk9
   - openjdk10
   - openjdk11
-  - openjdk12
+  - openjdk-ea
 
 after_success:
 - ./gradlew jacocoTestReport coveralls
