@@ -2,6 +2,11 @@ package com.gypsyengineer.tlsbunny;
 
 import org.junit.Test;
 
+import javax.net.ssl.SSLContext;
+
+import java.security.NoSuchAlgorithmException;
+import java.util.List;
+
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -29,6 +34,15 @@ public class BaseTest {
 
         if (debug != null && !debug.isEmpty()) {
             System.setProperty("javax.net.debug", debug);
+        }
+    }
+
+    public static boolean supportsTls13() {
+        try {
+            return List.of(SSLContext.getDefault().getSupportedSSLParameters().getProtocols())
+                    .contains("TLSv1.3");
+        } catch (NoSuchAlgorithmException e) {
+            return false;
         }
     }
 

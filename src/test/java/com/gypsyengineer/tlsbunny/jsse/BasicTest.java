@@ -17,6 +17,11 @@ public class BasicTest extends BaseTest {
 
     @Test
     public void httpsClient() throws Exception {
+        if (!supportsTls13()) {
+            System.err.println("Warning: TLS 1.3 is not supported by JSSE, skip the test");
+            return;
+        }
+
         Config serverConfig = SystemPropertiesConfig.load();
         serverConfig.serverCertificate(serverCertificatePath);
         serverConfig.serverKey(serverKeyPath);
