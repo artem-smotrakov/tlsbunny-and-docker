@@ -240,6 +240,10 @@ public class Context {
         this.serverCertificateVerify = serverCertificateVerify;
     }
 
+    public boolean receivedServerCertificateVerify() {
+        return serverCertificateVerify != null;
+    }
+
     public Handshake getServerFinished() {
         return serverFinished;
     }
@@ -248,6 +252,7 @@ public class Context {
         this.serverFinished = serverFinished;
     }
 
+    // TODO: use receivedXXX() pattern instead of hasXXX()
     public boolean hasServerFinished() {
         return serverFinished != null;
     }
@@ -380,4 +385,5 @@ public class Context {
     public boolean receivedApplicationData() {
         return !applicationData.isEmpty();
     }
+
 }
