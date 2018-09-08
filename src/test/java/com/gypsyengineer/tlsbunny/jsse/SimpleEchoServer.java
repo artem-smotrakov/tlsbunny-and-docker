@@ -70,8 +70,9 @@ public class SimpleEchoServer implements Runnable, AutoCloseable {
                 OutputStream os = new BufferedOutputStream(socket.getOutputStream());
                 byte[] data = new byte[2048];
                 int len = is.read(data);
-                output.info("received %d bytes: %s", len, new String(data));
+                output.info("received %d bytes: %s", len, new String(data, 0, len));
                 os.write(data, 0, len);
+                os.flush();
                 output.info("done");
             } catch (Exception e) {
                 output.achtung("exception: ", e);
