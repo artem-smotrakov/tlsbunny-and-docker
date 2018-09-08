@@ -9,5 +9,8 @@ jdk:
   - openjdk11
   - openjdk-ea
 
+script:
+  - ./gradlew check --info
+
 after_success:
 - ./gradlew jacocoTestReport coveralls
