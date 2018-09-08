@@ -1,5 +1,8 @@
 language: java
 
+before_install:
+  - ./gradlew wrapper --gradle-version=4.10 --distribution-type=bin
+
 jdk:
   - openjdk9
   - openjdk10
