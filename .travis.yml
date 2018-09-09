@@ -10,7 +10,7 @@ jdk:
   - openjdk-ea
 
 script:
-  - ./gradlew check --debug
+  - ./gradlew test --debug
 
 after_success:
 - ./gradlew jacocoTestReport coveralls
