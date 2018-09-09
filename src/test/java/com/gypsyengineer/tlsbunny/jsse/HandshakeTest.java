@@ -51,7 +51,7 @@ public class HandshakeTest extends BaseTest {
                     .apply(new NoAlertAnalyzer());
 
             server.stop();
-            server.await();
+            //server.await();
         }
     }
 
