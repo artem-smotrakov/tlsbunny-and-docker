@@ -16,7 +16,7 @@ import org.junit.Test;
 public class HandshakeTest extends BaseTest {
 
     @Test
-    public void basid() throws Exception {
+    public void basic() throws Exception {
         if (!supportsTls13()) {
             System.err.println("Warning: TLS 1.3 is not supported by JSSE, skip the test");
             return;
@@ -57,6 +57,6 @@ public class HandshakeTest extends BaseTest {
     // standalone interface
     public static void main(String[] args) throws Exception {
         HandshakeTest test = new HandshakeTest();
-        test.basid();
+        test.basic();
     }
 }
