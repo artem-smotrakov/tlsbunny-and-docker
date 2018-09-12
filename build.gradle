@@ -20,7 +20,7 @@ dependencies {
 }
 
 sourceSets {
-    core {
+    main {
         java {
             srcDirs 'src/main/core'
         }
@@ -30,7 +30,7 @@ sourceSets {
         java {
             srcDirs 'src/test/core'
         }
-        compileClasspath += sourceSets.core.output + configurations.testRuntimeClasspath
+        compileClasspath += sourceSets.main.output + configurations.testRuntimeClasspath
         runtimeClasspath += output + compileClasspath
     }
 
@@ -38,7 +38,7 @@ sourceSets {
         java {
             srcDir 'src/test/impl'
         }
-        compileClasspath += sourceSets.core.output + configurations.testRuntimeClasspath
+        compileClasspath += sourceSets.main.output + configurations.testRuntimeClasspath
         runtimeClasspath += output + compileClasspath
     }
 }
@@ -58,7 +58,7 @@ task run_test_impl(type: Test) {
     description = 'Run tests against third-party TLS implementations'
     testClassesDirs = sourceSets.test_impl.output.classesDirs
     classpath += sourceSets.test_impl.runtimeClasspath
-    classpath += sourceSets.core.runtimeClasspath
+    classpath += sourceSets.main.runtimeClasspath
 }
 
 // tasks for running tests for GnuTLS
@@ -109,13 +109,13 @@ task removeGnutlsDockerContainer(type: Exec) {
 }
 
 task gnutlsClient(type: JavaExec) {
-    classpath sourceSets.core.runtimeClasspath
+    classpath sourceSets.main.runtimeClasspath
     applicationDefaultJvmArgs = ["-Dtlsbunny.port=50101"]
     main = "com.gypsyengineer.tlsbunny.tls13.test.gnutls.client.HttpsClient"
 }
 
 task gnutlsFuzzyClient(type: JavaExec) {
-    classpath sourceSets.core.runtimeClasspath
+    classpath sourceSets.main.runtimeClasspath
     systemProperty 'tlsbunny.port', '50101'
     systemProperty 'tlsbunny.threads', '1'
     main = "com.gypsyengineer.tlsbunny.tls13.test.gnutls.client.FuzzyClient"
@@ -178,25 +178,25 @@ task removeOpensslDockerContainer(type: Exec) {
 }
 
 task opensslHttpsClient(type: JavaExec) {
-    classpath sourceSets.core.runtimeClasspath
+    classpath sourceSets.main.runtimeClasspath
     systemProperty 'tlsbunny.port', '10101'
     main = "com.gypsyengineer.tlsbunny.tls13.test.openssl.client.HttpsClient"
 }
 
 task opensslFuzzyClient(type: JavaExec) {
-    classpath sourceSets.core.runtimeClasspath
+    classpath sourceSets.main.runtimeClasspath
     systemProperty 'tlsbunny.port', '10101'
     systemProperty 'tlsbunny.threads', '1'
     main = "com.gypsyengineer.tlsbunny.tls13.test.openssl.client.FuzzyClient"
 }
 
 task opensslClientAuth(type: JavaExec) {
-    classpath sourceSets.core.runtimeClasspath
+    classpath sourceSets.main.runtimeClasspath
     main = "com.gypsyengineer.tlsbunny.tls13.test.openssl.client.ClientAuth"
 }
 
 task opensslFuzzyClientAuth(type: JavaExec) {
-    classpath sourceSets.core.runtimeClasspath
+    classpath sourceSets.main.runtimeClasspath
     main = "com.gypsyengineer.tlsbunny.tls13.test.openssl.client.FuzzyClientAuth"
 }
 
@@ -257,13 +257,13 @@ task removePicotlsDockerContainer(type: Exec) {
 }
 
 task picotlsClient(type: JavaExec) {
-    classpath sourceSets.core.runtimeClasspath
+    classpath sourceSets.main.runtimeClasspath
     applicationDefaultJvmArgs = ["-Dtlsbunny.port=20101"]
     main = "com.gypsyengineer.tlsbunny.tls13.test.picotls.client.PicotlsClient"
 }
 
 task picotlsFuzzyClient(type: JavaExec) {
-    classpath sourceSets.core.runtimeClasspath
+    classpath sourceSets.main.runtimeClasspath
     systemProperty 'tlsbunny.port', '20101'
     systemProperty 'tlsbunny.threads', '1'
     main = "com.gypsyengineer.tlsbunny.tls13.test.picotls.client.FuzzyClient"
@@ -326,13 +326,13 @@ task removeH2ODockerContainer(type: Exec) {
 }
 
 task h2oClient(type: JavaExec) {
-    classpath sourceSets.core.runtimeClasspath
+    classpath sourceSets.main.runtimeClasspath
     applicationDefaultJvmArgs = ["-Dtlsbunny.port=30101"]
     main = "com.gypsyengineer.tlsbunny.tls13.test.h2o.client.HttpsClient"
 }
 
 task h2oFuzzyClient(type: JavaExec) {
-    classpath sourceSets.core.runtimeClasspath
+    classpath sourceSets.main.runtimeClasspath
     systemProperty 'tlsbunny.port', '30101'
     systemProperty 'tlsbunny.threads', '3'
     main = "com.gypsyengineer.tlsbunny.tls13.test.h2o.client.FuzzyClient"
@@ -400,13 +400,13 @@ task removeNssDockerContainer(type: Exec) {
 }
 
 task nssClient(type: JavaExec) {
-    classpath sourceSets.core.runtimeClasspath
+    classpath sourceSets.main.runtimeClasspath
     applicationDefaultJvmArgs = ["-Dtlsbunny.port=60101"]
     main = "com.gypsyengineer.tlsbunny.tls13.test.nss.client.HttpsClient"
 }
 
 task nssFuzzyClient(type: JavaExec) {
-    classpath sourceSets.core.runtimeClasspath
+    classpath sourceSets.main.runtimeClasspath
     systemProperty 'tlsbunny.port', '60101'
     systemProperty 'tlsbunny.threads', '1'
     main = "com.gypsyengineer.tlsbunny.tls13.test.nss.client.FuzzyClient"
@@ -474,13 +474,13 @@ task removeWolfSSLDockerContainer(type: Exec) {
 }
 
 task wolfsslClient(type: JavaExec) {
-    classpath sourceSets.core.runtimeClasspath
+    classpath sourceSets.main.runtimeClasspath
     applicationDefaultJvmArgs = ["-Dtlsbunny.port=60101"]
     main = "com.gypsyengineer.tlsbunny.tls13.test.wolfssl.client.HttpsClient"
 }
 
 task wolfsslFuzzyClient(type: JavaExec) {
-    classpath sourceSets.core.runtimeClasspath
+    classpath sourceSets.main.runtimeClasspath
     systemProperty 'tlsbunny.port', '40101'
     systemProperty 'tlsbunny.threads', '1'
     main = "com.gypsyengineer.tlsbunny.tls13.test.wolfssl.client.FuzzyClient"
