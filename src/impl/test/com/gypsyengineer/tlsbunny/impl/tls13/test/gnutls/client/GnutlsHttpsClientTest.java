@@ -1,4 +1,4 @@
-package com.gypsyengineer.tlsbunny.tls13.test.gnutls.client;
+package com.gypsyengineer.tlsbunny.impl.tls13.test.gnutls.client;
 
 import com.gypsyengineer.tlsbunny.tls13.client.gnutls.GnutlsHttpsClient;
 import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertCheck;

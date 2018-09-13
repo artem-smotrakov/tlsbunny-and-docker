@@ -1,4 +1,4 @@
-package com.gypsyengineer.tlsbunny.tls13.test.h2o.client;
+package com.gypsyengineer.tlsbunny.impl.tls13.test.h2o.client;
 
 import com.gypsyengineer.tlsbunny.tls13.client.h2o.H2oHttpsClient;
 import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertCheck;

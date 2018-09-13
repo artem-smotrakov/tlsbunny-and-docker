@@ -1,4 +1,4 @@
-package com.gypsyengineer.tlsbunny.tls13.test.wolfssl.client;
+package com.gypsyengineer.tlsbunny.impl.tls13.test.wolfssl.client;
 
 import com.gypsyengineer.tlsbunny.tls13.client.wolfssl.WolfsslHttpsClient;
 import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertCheck;
