@@ -2,7 +2,7 @@ package com.gypsyengineer.tlsbunny.tls13.utils;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.FuzzyStructFactory;
-import com.gypsyengineer.tlsbunny.tls13.client.common.Client;
+import com.gypsyengineer.tlsbunny.tls13.client.Client;
 import com.gypsyengineer.tlsbunny.utils.Config;
 
 public class FuzzerConfig implements Config {
