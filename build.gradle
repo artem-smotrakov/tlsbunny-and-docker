@@ -36,7 +36,7 @@ sourceSets {
 
     test_impl {
         java {
-            srcDir 'src/test/impl'
+            srcDir 'src/impl/test'
         }
         compileClasspath += sourceSets.main.output + configurations.testRuntimeClasspath
         runtimeClasspath += output + compileClasspath
