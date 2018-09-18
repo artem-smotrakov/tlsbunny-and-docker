@@ -67,7 +67,7 @@ public class BasicTest {
             client.set(clientConfig).set(clientOutput);
 
             try (client) {
-                client.connect()
+                client.connect().engine()
                         .run(new NoAlertCheck())
                         .run(new SuccessCheck())
                         .run(new NoExceptionCheck())

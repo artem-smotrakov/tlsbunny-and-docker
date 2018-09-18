@@ -14,7 +14,7 @@ public class GnutlsHttpsClientTest {
     public void connectToGnutls() {
         try (GnutlsHttpsClient client = new GnutlsHttpsClient()) {
             client.config().port(GNUTLS_PORT);
-            client.connect().run(new NoAlertCheck());
+            client.connect().engine().run(new NoAlertCheck());
         } catch (Exception e) {
             e.printStackTrace();
             fail("unexpected exception");

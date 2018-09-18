@@ -7,10 +7,9 @@ import com.gypsyengineer.tlsbunny.utils.Output;
 
 public interface Client extends AutoCloseable {
     Config config();
-
     Client set(Config config);
     Client set(StructFactory factory);
     Client set(Output output);
-    Engine connect() throws Exception;
+    Client connect() throws Exception;
     Engine engine();
 }

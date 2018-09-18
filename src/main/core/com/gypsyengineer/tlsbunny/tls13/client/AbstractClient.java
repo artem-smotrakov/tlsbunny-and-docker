@@ -54,10 +54,10 @@ public abstract class AbstractClient implements Client, AutoCloseable {
     }
 
     @Override
-    public final Engine connect() throws Exception {
+    public final Client connect() throws Exception {
         output.info("connect to %s:%d", config.host(), config.port());
         engine = createEngine();
-        return engine.connect();
+        return this;
     }
 
     protected abstract Engine createEngine() throws Exception;

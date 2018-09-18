@@ -14,7 +14,7 @@ public class H2oHttpsClientTest {
     public void connectToH2O() {
         try (H2oHttpsClient client = new H2oHttpsClient()) {
             client.config().port(H2O_PORT);
-            client.connect().run(new NoAlertCheck());
+            client.connect().engine().run(new NoAlertCheck());
         } catch (Exception e) {
             e.printStackTrace();
             fail("unexpected exception");

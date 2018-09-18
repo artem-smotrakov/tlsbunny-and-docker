@@ -26,6 +26,7 @@ public class GnutlsHttpsClient extends AbstractClient {
                     .set(StructFactory.getDefault())
                     .set(output)
                     .connect()
+                    .engine()
                     .run(new NoAlertCheck());
         }
     }

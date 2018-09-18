@@ -14,7 +14,7 @@ public class OpensslHttpsClientTest {
     public void connectToOpenssl() {
         try (OpensslHttpsClient client = new OpensslHttpsClient()) {
             client.config().port(OPENSSL_PORT);
-            client.connect().run(new NoAlertCheck());
+            client.connect().engine().run(new NoAlertCheck());
         } catch (Exception e) {
             e.printStackTrace();
             fail("unexpected exception");

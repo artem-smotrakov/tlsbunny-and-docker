@@ -316,6 +316,7 @@ public class CommonFuzzer implements Runnable {
                     .set(config)
                     .set(output)
                     .connect()
+                    .engine()
                     .run(new SuccessCheck());
         } catch (Exception e) {
             output.achtung("smoke test failed: %s", e.getMessage());
@@ -335,7 +336,7 @@ public class CommonFuzzer implements Runnable {
                 while (true) {
                     try {
                         Engine engine = client.set(fuzzer).set(config).set(output)
-                                .connect();
+                                .connect().engine();
 
                         if (config.hasAnalyzer()) {
                             engine.apply(config.analyzer());

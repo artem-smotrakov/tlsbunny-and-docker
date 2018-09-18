@@ -14,7 +14,7 @@ public class NssHttpsClientTest {
     public void connectToNss() {
         try (NssHttpsClient client = new NssHttpsClient()) {
             client.config().port(NSS_PORT);
-            client.connect().run(new NoAlertCheck());
+            client.connect().engine().run(new NoAlertCheck());
         } catch (Exception e) {
             e.printStackTrace();
             fail("unexpected exception");

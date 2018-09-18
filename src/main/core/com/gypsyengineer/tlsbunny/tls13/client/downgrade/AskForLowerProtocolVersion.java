@@ -43,7 +43,7 @@ public class AskForLowerProtocolVersion extends AbstractClient {
                         .set(output)
                         .set(StructFactory.getDefault());
 
-        Engine engine = client.connect();
+        Engine engine = client.connect().engine();
         if (TLSv13.equals(version)) {
             engine.run(new DowngradeMessageCheck().ifNoDowngrade());
         } else if (TLSv12.equals(version)) {

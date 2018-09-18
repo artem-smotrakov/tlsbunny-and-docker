@@ -23,6 +23,7 @@ public class TooManyGroupsInClientHello extends AbstractClient {
                 .set(SystemPropertiesConfig.load())
                 .set(StructFactory.getDefault())
                 .connect()
+                .engine()
                 .run(new NoAlertCheck());
     }
 

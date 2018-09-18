@@ -29,6 +29,7 @@ public class HttpsClient extends AbstractClient {
                     .set(StructFactory.getDefault())
                     .set(output)
                     .connect()
+                    .engine()
                     .run(new NoAlertCheck());
         }
     }

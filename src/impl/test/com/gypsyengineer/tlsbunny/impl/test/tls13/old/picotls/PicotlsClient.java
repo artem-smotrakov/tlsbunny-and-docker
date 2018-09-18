@@ -23,6 +23,7 @@ public class PicotlsClient extends AbstractClient {
                 .set(SystemPropertiesConfig.load())
                 .set(StructFactory.getDefault())
                 .connect()
+                .engine()
                 .run(new NoAlertCheck());
     }
 

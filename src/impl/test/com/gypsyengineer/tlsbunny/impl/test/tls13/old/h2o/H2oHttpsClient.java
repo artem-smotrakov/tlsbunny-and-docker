@@ -23,6 +23,7 @@ public class H2oHttpsClient extends AbstractClient {
                 .set(SystemPropertiesConfig.load())
                 .set(StructFactory.getDefault())
                 .connect()
+                .engine()
                 .run(new NoAlertCheck());
     }
 

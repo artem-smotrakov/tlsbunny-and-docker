@@ -14,7 +14,7 @@ public class WolfsslHttpsClientTest {
     public void connectToWolfssl() {
         try (WolfsslHttpsClient client = new WolfsslHttpsClient()) {
             client.config().port(WOLFSSL_PORT);
-            client.connect().run(new NoAlertCheck());
+            client.connect().engine().run(new NoAlertCheck());
         } catch (Exception e) {
             e.printStackTrace();
             fail("unexpected exception");

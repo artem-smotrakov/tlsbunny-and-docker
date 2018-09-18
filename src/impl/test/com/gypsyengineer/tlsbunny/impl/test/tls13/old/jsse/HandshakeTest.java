@@ -43,7 +43,7 @@ public class HandshakeTest extends BaseTest {
             Config clientConfig = SystemPropertiesConfig.load().port(server.port());
             client.set(clientConfig).set(clientOutput);
 
-            client.connect()
+            client.connect().engine()
                     .run(new NoAlertCheck())
                     .run(new SuccessCheck())
                     .run(new NoExceptionCheck())

@@ -32,7 +32,7 @@ public class NoSupportedVersions extends AbstractClient {
                 .set(StructFactory.getDefault())
                 .set(output);
 
-        client.connect().run(new DowngradeMessageCheck().ifTLSv12());
+        client.connect().engine().run(new DowngradeMessageCheck().ifTLSv12());
         return client;
     }
 

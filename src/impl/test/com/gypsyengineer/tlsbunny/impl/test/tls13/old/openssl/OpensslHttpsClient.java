@@ -25,6 +25,7 @@ public class OpensslHttpsClient extends AbstractClient {
                     .set(StructFactory.getDefault())
                     .set(output)
                     .connect()
+                    .engine()
                     .run(new NoAlertCheck());
         }
     }

@@ -16,7 +16,7 @@ public class PicotlsClientTest {
     public void connectToPicotls() {
         try (PicotlsClient client = new PicotlsClient()) {
             client.config().port(PICOTLS_PORT);
-            client.connect().run(new NoAlertCheck());
+            client.connect().engine().run(new NoAlertCheck());
         } catch (Exception e) {
             e.printStackTrace();
             fail("unexpected exception");

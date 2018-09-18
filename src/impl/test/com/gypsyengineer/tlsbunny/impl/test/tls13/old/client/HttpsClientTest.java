@@ -21,7 +21,7 @@ public class HttpsClientTest {
     public void connectToOpenssl() {
         try (HttpsClient client = new HttpsClient()) {
             client.config().port(OPENSSL_PORT);
-            client.connect().run(new NoAlertCheck());
+            client.connect().engine().run(new NoAlertCheck());
         } catch (Exception e) {
             e.printStackTrace();
             fail("unexpected exception");
@@ -32,7 +32,7 @@ public class HttpsClientTest {
     public void connectToH2O() {
         try (HttpsClient client = new HttpsClient()) {
             client.config().port(H2O_PORT);
-            client.connect().run(new NoAlertCheck());
+            client.connect().engine().run(new NoAlertCheck());
         } catch (Exception e) {
             e.printStackTrace();
             fail("unexpected exception");
@@ -43,7 +43,7 @@ public class HttpsClientTest {
     public void connectToWolfssl() {
         try (HttpsClient client = new HttpsClient()) {
             client.config().port(WOLFSSL_PORT);
-            client.connect().run(new NoAlertCheck());
+            client.connect().engine().run(new NoAlertCheck());
         } catch (Exception e) {
             e.printStackTrace();
             fail("unexpected exception");
@@ -54,7 +54,7 @@ public class HttpsClientTest {
     public void connectToGnutls() {
         try (HttpsClient client = new HttpsClient()) {
             client.config().port(GNUTLS_PORT);
-            client.connect().run(new NoAlertCheck());
+            client.connect().engine().run(new NoAlertCheck());
         } catch (Exception e) {
             e.printStackTrace();
             fail("unexpected exception");
@@ -66,7 +66,7 @@ public class HttpsClientTest {
         try (HttpsClient client = new HttpsClient()) {
             client.config().port(NSS_PORT);
             client.version(ProtocolVersion.TLSv13_draft_28).connect()
-                    .run(new NoAlertCheck());
+                    .engine().run(new NoAlertCheck());
         } catch (Exception e) {
             e.printStackTrace();
             fail("unexpected exception");
