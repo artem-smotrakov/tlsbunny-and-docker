@@ -1,14 +1,14 @@
 package com.gypsyengineer.tlsbunny.tls13.handshake;
 
-import com.gypsyengineer.tlsbunny.tls13.client.common.Client;
-import com.gypsyengineer.tlsbunny.tls13.client.common.HttpsClient;
-import com.gypsyengineer.tlsbunny.tls13.client.openssl.AnotherHttpsClient;
+import com.gypsyengineer.tlsbunny.tls13.client.AnotherHttpsClient;
+import com.gypsyengineer.tlsbunny.tls13.client.Client;
+import com.gypsyengineer.tlsbunny.tls13.client.HttpsClient;
 import com.gypsyengineer.tlsbunny.tls13.connection.*;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Side;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.OutgoingChangeCipherSpec;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
-import com.gypsyengineer.tlsbunny.tls13.server.common.SingleThreadServer;
-import com.gypsyengineer.tlsbunny.tls13.server.common.OneConnectionReceived;
+import com.gypsyengineer.tlsbunny.tls13.server.SingleThreadServer;
+import com.gypsyengineer.tlsbunny.tls13.server.OneConnectionReceived;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.Output;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
@@ -61,21 +61,16 @@ public class BasicTest {
             new Thread(server).start();
             Thread.sleep(delay);
 
-            Config clientConfig = SystemPropertiesConfig.load();
-            clientConfig.port(server.port());
-
+            Config clientConfig = SystemPropertiesConfig.load().port(server.port());
             client.set(clientConfig).set(clientOutput);
 
             try (client) {
-                client.connect()
+                client.connect().engine()
                         .run(new NoAlertCheck())
                         .run(new SuccessCheck())
                         .run(new NoExceptionCheck())
                         .apply(new NoAlertAnalyzer());
                 success = true;
-            } catch (Exception e) {
-                clientOutput.achtung(
-                        "client failed with an unexpected exception", e);
             }
         }
 
