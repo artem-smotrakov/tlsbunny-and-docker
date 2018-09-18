@@ -57,6 +57,7 @@ public abstract class AbstractClient implements Client, AutoCloseable {
     public final Client connect() throws Exception {
         output.info("connect to %s:%d", config.host(), config.port());
         engine = createEngine();
+        engine.connect();
         return this;
     }
 
