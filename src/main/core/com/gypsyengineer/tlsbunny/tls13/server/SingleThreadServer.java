@@ -13,9 +13,8 @@ import java.net.ServerSocket;
 
 public class SingleThreadServer implements Server {
 
-    private static final int FREE_PORT = 0;
+    private static final int free_port = 0;
     private static final int start_delay = 1000; // in millis
-    private static final int wait_delay = 500; // in millis
 
     private final ServerSocket serverSocket;
 
@@ -34,7 +33,7 @@ public class SingleThreadServer implements Server {
     private boolean running = false;
 
     public SingleThreadServer() throws IOException {
-        this(FREE_PORT);
+        this(free_port);
     }
 
     public SingleThreadServer(int port) throws IOException {
@@ -130,6 +129,10 @@ public class SingleThreadServer implements Server {
     }
 
     @Override
+    public boolean running() {
+        return running;
+    }
+
     public Thread start() {
         Thread thread = new Thread(this);
         thread.start();
@@ -144,14 +147,8 @@ public class SingleThreadServer implements Server {
     }
 
     @Override
-    public void await() {
-        while (running) {
-            try {
-                Thread.sleep(wait_delay);
-            } catch (InterruptedException e) {
-                output.achtung("exception occurred while waiting", e);
-            }
-        }
+    public SingleThreadServer stop() {
+        throw new UnsupportedOperationException("no stops for you!");
     }
 
     @Override

@@ -22,6 +22,11 @@ public interface Server extends Runnable, AutoCloseable {
     Thread start();
 
     /**
+     * Stops the server.
+     */
+    Server stop();
+
+    /**
      * @return the port number on which the server is running
      */
     int port();
@@ -32,9 +37,9 @@ public interface Server extends Runnable, AutoCloseable {
     Engine recentEngine();
 
     /**
-     * Wait until the server stops.
+     * @return true if the server is running, false otherwise
      */
-    void await();
+    boolean running();
 
     /**
      * @return false if the check failed at least once, true otherwise
