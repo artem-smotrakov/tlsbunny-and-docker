@@ -61,9 +61,7 @@ public class BasicTest {
             new Thread(server).start();
             Thread.sleep(delay);
 
-            Config clientConfig = SystemPropertiesConfig.load();
-            clientConfig.port(server.port());
-
+            Config clientConfig = SystemPropertiesConfig.load().port(server.port());
             client.set(clientConfig).set(clientOutput);
 
             try (client) {
@@ -73,9 +71,6 @@ public class BasicTest {
                         .run(new NoExceptionCheck())
                         .apply(new NoAlertAnalyzer());
                 success = true;
-            } catch (Exception e) {
-                clientOutput.achtung(
-                        "client failed with an unexpected exception", e);
             }
         }
 
