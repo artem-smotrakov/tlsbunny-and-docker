@@ -1,4 +1,4 @@
-package com.gypsyengineer.tlsbunny.impl.test.tls13.old;
+package com.gypsyengineer.tlsbunny.impl.test.tls13.old.jsse;
 
 import org.junit.Test;
 
@@ -37,6 +37,7 @@ public class BaseTest {
         }
     }
 
+    // TODO: we don't need to it each time the method is called - just cache the result
     public static boolean supportsTls13() {
         try {
             return List.of(SSLContext.getDefault().getSupportedSSLParameters().getProtocols())
