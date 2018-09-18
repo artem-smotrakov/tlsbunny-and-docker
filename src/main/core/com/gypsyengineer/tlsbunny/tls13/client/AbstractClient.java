@@ -13,6 +13,7 @@ public abstract class AbstractClient implements Client, AutoCloseable {
     protected Output output = new Output();
     protected Engine engine;
 
+    @Override
     public Config config() {
         return config;
     }
