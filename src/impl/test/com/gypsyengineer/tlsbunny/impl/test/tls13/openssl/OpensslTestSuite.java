@@ -12,7 +12,7 @@ public class OpensslTestSuite {
     private static OpensslServer server;
 
     @BeforeClass
-    public static void setup() throws Exception {
+    public static void setUp() throws Exception {
         server = new OpensslServer();
         server.start();
         Utils.waitServerStart(server);
@@ -27,7 +27,7 @@ public class OpensslTestSuite {
     }
 
     @AfterClass
-    public static void shutdown() throws Exception {
+    public static void tearDown() throws Exception {
         server.close();
         Utils.waitServerStop(server);
     }
