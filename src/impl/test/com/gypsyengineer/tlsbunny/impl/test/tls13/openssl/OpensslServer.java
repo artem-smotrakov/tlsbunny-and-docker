@@ -15,10 +15,10 @@ import java.io.IOException;
 //       would it be better to create a separate interface for external servers?
 public class OpensslServer implements Server, AutoCloseable {
 
-    private static final int free_port = 0;
+    public static final int port = 10101;
 
     private static final String server_start_template =
-            "docker run -p %d:%d --name %s -d openssl/server/tls13";
+            "docker run -p %d:%d --name %s openssl/server/tls13";
 
     private static final String server_stop_template =
             "docker container kill %s";
@@ -29,10 +29,10 @@ public class OpensslServer implements Server, AutoCloseable {
     private static final String check_container_running_template =
             "docker container port %s";
 
+    // TODO: add synchronization
     private String containerName;
-    private int port = free_port;
     private boolean failed = false;
-    private Output output;
+    private final Output output = new Output("openssl_server");
 
     @Override
     public OpensslServer set(Config config) {
@@ -41,7 +41,6 @@ public class OpensslServer implements Server, AutoCloseable {
 
     @Override
     public OpensslServer set(Output output) {
-        this.output = output;
         return this;
     }
 
@@ -61,20 +60,39 @@ public class OpensslServer implements Server, AutoCloseable {
     }
 
     @Override
+    public Engine recentEngine() {
+        throw new UnsupportedOperationException("no engines for you!");
+    }
+
+    @Override
+    public int port() {
+        return port;
+    }
+
+    @Override
+    public boolean failed() {
+        return failed;
+    }
+
+    @Override
     public Thread start() {
         if (containerName != null) {
             throw new IllegalStateException(
                     "what the hell? the server has already been started!");
         }
 
+        Thread thread = new Thread(this);
+        thread.start();
+
+        return thread;
+    }
+
+    @Override
+    public void run() {
         containerName = generateContainerName();
 
         try {
-            if (port == free_port) {
-                port = Utils.getFreePort();
-            }
-
-            int code = Utils.exec(server_start_template, port, port, containerName).waitFor();
+            int code = Utils.waitProcessFinish(output, server_start_template, port, port, containerName);
             if (code != 0) {
                 output.achtung("could not start the server (exit code %d)", code);
                 failed = true;
@@ -83,8 +101,6 @@ public class OpensslServer implements Server, AutoCloseable {
             output.achtung("unexpected exception occurred", e);
             failed = true;
         }
-
-        return null;
     }
 
     @Override
@@ -95,7 +111,7 @@ public class OpensslServer implements Server, AutoCloseable {
         }
 
         try {
-            int code = Utils.exec(server_stop_template, containerName).waitFor();
+            int code = Utils.waitProcessFinish(output, server_stop_template, containerName);
             if (code != 0) {
                 output.achtung("could not stop the server (exit code %d)", code);
                 failed = true;
@@ -106,16 +122,6 @@ public class OpensslServer implements Server, AutoCloseable {
         }
 
         return this;
-    }
-
-    @Override
-    public int port() {
-        return port;
-    }
-
-    @Override
-    public Engine recentEngine() {
-        throw new UnsupportedOperationException("no engines for you!");
     }
 
     @Override
@@ -133,22 +139,16 @@ public class OpensslServer implements Server, AutoCloseable {
     }
 
     @Override
-    public boolean failed() {
-        return failed;
-    }
-
-    @Override
-    public void close() throws Exception {
+    public void close() throws IOException, InterruptedException {
         stop();
 
         if (containerName != null) {
-            Utils.exec(remove_container_template, containerName);
+            int code = Utils.waitProcessFinish(output, remove_container_template, containerName);
+            if (code != 0) {
+                output.achtung("could not remove the container (exit code %d)", code);
+                failed = true;
+            }
         }
-    }
-
-    @Override
-    public void run() {
-        throw new UnsupportedOperationException("no running for you!");
     }
 
     private static String generateContainerName() {

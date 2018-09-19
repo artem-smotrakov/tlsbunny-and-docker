@@ -22,12 +22,13 @@ public class OpensslTestSuite {
     public void httpClient() throws Exception {
         new TestForServer()
                 .set(new HttpsClient())
-                .set(server).run();
+                .set(server)
+                .run();
     }
 
     @AfterClass
     public static void shutdown() throws Exception {
-        server.stop();
+        server.close();
         Utils.waitServerStop(server);
     }
 }

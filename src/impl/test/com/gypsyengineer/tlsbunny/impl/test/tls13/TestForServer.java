@@ -31,11 +31,10 @@ public class TestForServer {
         try (Output clientOutput = new Output("client");
              Output serverOutput = new Output("server")) {
 
-            server.set(serverOutput);
-
             // start the server if it's not running
             Thread serverThread = null;
             if (!server.running()) {
+                server.set(serverOutput);
                 serverThread = server.start();
                 Utils.waitServerStart(server);
             }
