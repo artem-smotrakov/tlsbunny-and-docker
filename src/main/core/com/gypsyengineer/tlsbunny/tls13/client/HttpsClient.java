@@ -15,12 +15,12 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
 import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.*;
 import static com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup.secp256r1;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv12;
-import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv13_draft_26;
+import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv13;
 import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp256r1_sha256;
 
 public class HttpsClient extends AbstractClient {
 
-    private ProtocolVersion protocolVersion = TLSv13_draft_26;
+    private ProtocolVersion protocolVersion = TLSv13;
 
     public static void main(String[] args) throws Exception {
         try (Output output = new Output()) {
@@ -63,7 +63,8 @@ public class HttpsClient extends AbstractClient {
 
                 // receive a ServerHello, EncryptedExtensions, Certificate,
                 // CertificateVerify and Finished messages
-                .loop(context -> !context.hasServerFinished())
+                // TODO: how can we make it more readable?
+                .loop(context -> !context.hasServerFinished() && !context.hasAlert())
                     .receive(() -> new IncomingMessages(Side.client))
 
                 // send Finished
@@ -80,7 +81,7 @@ public class HttpsClient extends AbstractClient {
                 .send(new OutgoingData())
 
                 // receive session tickets and application data
-                .loop(context -> !context.receivedApplicationData())
+                .loop(context -> !context.receivedApplicationData() && !context.hasAlert())
                     .receive(() -> new IncomingMessages(Side.client));
     }
 

@@ -48,7 +48,7 @@ public class Engine {
     private Throwable exception;
 
     // timeout for reading incoming data (in millis)
-    private long timeout = Connection.DEFAULT_READ_TIMEOUT;
+    private long timeout = Connection.default_read_timeout;
 
     // if true, always check for CCS after receiving data
     private boolean checkForCCS = false;
@@ -287,6 +287,8 @@ public class Engine {
                     output.info("stop, alert occurred: %s", context.getAlert());
                     break;
                 }
+
+                output.flush();
             }
         } catch (IOException e) {
             throw new EngineException(e);
@@ -381,13 +383,18 @@ public class Engine {
     }
 
     private void read(Connection connection, Action action) throws IOException {
-        while (buffer.remaining() == 0 && !context.hasAlert()) {
+        if (connection.isClosed()) {
+            throw new IOException("connection was closed");
+        }
+
+        while (buffer.remaining() == 0) {
             buffer = ByteBuffer.wrap(connection.read());
             if (buffer.remaining() == 0) {
                 throw new IOException("no data received");
             }
         }
 
+        // TODO: do we still need it?
         checkCCS();
 
         action.in(buffer);
