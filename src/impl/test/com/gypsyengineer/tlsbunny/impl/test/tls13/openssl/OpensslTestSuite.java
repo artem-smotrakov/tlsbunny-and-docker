@@ -26,6 +26,7 @@ public class OpensslTestSuite {
                 .run();
     }
 
+    // TODO: check server logs for ASan findings
     @AfterClass
     public static void tearDown() throws Exception {
         server.close();

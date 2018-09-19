@@ -6,7 +6,6 @@ import com.gypsyengineer.tlsbunny.utils.Output;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.ServerSocket;
 import java.util.concurrent.TimeUnit;
 
 public class Utils {
