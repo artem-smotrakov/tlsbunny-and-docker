@@ -11,17 +11,23 @@ import java.nio.ByteBuffer;
 
 public class Connection implements AutoCloseable {
 
-    private static final long READ_DELAY = 100;
-    public static final long DEFAULT_READ_TIMEOUT = 5000;  // in millis
+    private static final long read_delay = 100;             // in millis
+    public static final long default_read_timeout = 5000;   // in millis
 
+    private final Socket socket;
     private final InputStream is;
     private final OutputStream os;
     private final long readTimeout;
 
-    private Connection(InputStream is, OutputStream os, long readTimeout) {
-        this.is = is;
-        this.os = os;
+    private Connection(Socket socket, long readTimeout) throws IOException {
+        this.socket = socket;
+        this.is = new BufferedInputStream(socket.getInputStream());
+        this.os = new BufferedOutputStream(socket.getOutputStream());
         this.readTimeout = readTimeout;
+    }
+
+    public boolean isClosed() {
+        return socket.isClosed();
     }
 
     public void send(ByteBuffer buffer) throws IOException {
@@ -42,7 +48,7 @@ public class Connection implements AutoCloseable {
     public byte[] read() throws IOException {
         long start = System.currentTimeMillis();
         while (is.available() == 0) {
-            Utils.sleep(READ_DELAY);
+            Utils.sleep(read_delay);
 
             if (System.currentTimeMillis() - start > readTimeout) {
                 return new byte[0];
@@ -63,7 +69,7 @@ public class Connection implements AutoCloseable {
 
     public static Connection create(String host, int port)
             throws IOException {
-        return create(host, port, DEFAULT_READ_TIMEOUT);
+        return create(host, port, default_read_timeout);
     }
 
     public static Connection create(String host, int port, long readTimeout)
@@ -79,16 +85,13 @@ public class Connection implements AutoCloseable {
     }
 
     public static Connection create(Socket socket) throws IOException {
-        return create(socket, DEFAULT_READ_TIMEOUT);
+        return create(socket, default_read_timeout);
     }
 
     public static Connection create(Socket socket, long readTimeout)
             throws IOException {
 
-        return new Connection(
-                new BufferedInputStream(socket.getInputStream()),
-                new BufferedOutputStream(socket.getOutputStream()),
-                readTimeout);
+        return new Connection(socket, readTimeout);
     }
 
 }
