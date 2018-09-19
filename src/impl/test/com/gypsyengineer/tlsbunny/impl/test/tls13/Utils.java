@@ -1,9 +1,13 @@
 package com.gypsyengineer.tlsbunny.impl.test.tls13;
 
 import com.gypsyengineer.tlsbunny.tls13.server.Server;
+import com.gypsyengineer.tlsbunny.utils.Output;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.ServerSocket;
+import java.util.concurrent.TimeUnit;
 
 public class Utils {
 
@@ -55,5 +59,27 @@ public class Utils {
                         "timeout reached while waiting for the server to stop");
             }
         } while (server.running());
+    }
+
+    public static int waitProcessFinish(Output output, String template, Object... params)
+            throws IOException, InterruptedException {
+
+        return waitProcessFinish(output, exec(template, params));
+    }
+
+    public static int waitProcessFinish(Output output, Process process)
+            throws IOException, InterruptedException {
+
+        InputStream is = new BufferedInputStream(process.getInputStream());
+        byte[] bytes = new byte[4096];
+        do {
+            if (is.available() > 0) {
+                int len = is.read(bytes);
+                output.info("%s", new String(bytes, 0, len));
+                output.flush();
+            }
+        } while (!process.waitFor(delay, TimeUnit.MILLISECONDS));
+
+        return process.exitValue();
     }
 }
