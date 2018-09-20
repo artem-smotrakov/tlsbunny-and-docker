@@ -11,6 +11,16 @@ public class GeneratingAlert extends AbstractAction<GeneratingAlert> {
     private AlertLevel level = AlertLevel.fatal;
     private AlertDescription description = AlertDescription.close_notify;
 
+    public GeneratingAlert level(AlertLevel level) {
+        this.level = level;
+        return this;
+    }
+
+    public GeneratingAlert description(AlertDescription description) {
+        this.description = description;
+        return this;
+    }
+
     @Override
     public String name() {
         return String.format("generating Alert (%s, %s)", level, description);
