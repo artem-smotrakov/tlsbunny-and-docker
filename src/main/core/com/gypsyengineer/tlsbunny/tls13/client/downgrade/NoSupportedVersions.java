@@ -1,5 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls13.client.downgrade;
 
+import com.gypsyengineer.tlsbunny.tls13.connection.Check;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.DowngradeMessageCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
@@ -9,6 +10,8 @@ import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 import com.gypsyengineer.tlsbunny.tls13.client.AbstractClient;
 import com.gypsyengineer.tlsbunny.utils.Output;
+
+import java.util.List;
 
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.alert;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
@@ -32,7 +35,7 @@ public class NoSupportedVersions extends AbstractClient {
                 .set(StructFactory.getDefault())
                 .set(output);
 
-        client.connect().engine().run(new DowngradeMessageCheck().ifTLSv12());
+        client.connect();
         return client;
     }
 
@@ -76,6 +79,11 @@ public class NoSupportedVersions extends AbstractClient {
                         .type(alert)
                         .version(TLSv12))
                 .send(new OutgoingData());
+    }
+
+    @Override
+    protected List<Check> createChecks() {
+        return List.of(new DowngradeMessageCheck().ifTLSv12());
     }
 
 }

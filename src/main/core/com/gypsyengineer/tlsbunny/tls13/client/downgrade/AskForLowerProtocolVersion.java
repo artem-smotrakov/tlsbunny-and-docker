@@ -1,6 +1,8 @@
 package com.gypsyengineer.tlsbunny.tls13.client.downgrade;
 
 import com.gypsyengineer.tlsbunny.tls13.client.AbstractClient;
+import com.gypsyengineer.tlsbunny.tls13.client.Client;
+import com.gypsyengineer.tlsbunny.tls13.connection.Check;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.DowngradeMessageCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
@@ -10,6 +12,8 @@ import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.Output;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
+
+import java.util.List;
 
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.alert;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
@@ -23,7 +27,7 @@ public class AskForLowerProtocolVersion extends AbstractClient {
 
     private ProtocolVersion version = TLSv12;
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         try (Output output = new Output()) {
             Config config = SystemPropertiesConfig.load();
             run(output, config, TLSv13);
@@ -33,26 +37,12 @@ public class AskForLowerProtocolVersion extends AbstractClient {
         }
     }
 
-    public static AskForLowerProtocolVersion run(
-            Output output, Config config, ProtocolVersion version) throws Exception {
-
-        AskForLowerProtocolVersion client =
-                (AskForLowerProtocolVersion) new AskForLowerProtocolVersion()
+    public static Client run(Output output, Config config, ProtocolVersion version) {
+        return new AskForLowerProtocolVersion()
                         .set(version)
                         .set(config)
                         .set(output)
                         .set(StructFactory.getDefault());
-
-        Engine engine = client.connect().engine();
-        if (TLSv13.equals(version)) {
-            engine.run(new DowngradeMessageCheck().ifNoDowngrade());
-        } else if (TLSv12.equals(version)) {
-            engine.run(new DowngradeMessageCheck().ifTLSv12());
-        } else {
-            engine.run(new DowngradeMessageCheck().ifBelowTLSv12());
-        }
-
-        return client;
     }
 
     public AskForLowerProtocolVersion set(ProtocolVersion version) {
@@ -101,6 +91,21 @@ public class AskForLowerProtocolVersion extends AbstractClient {
                         .type(alert)
                         .version(TLSv12))
                 .send(new OutgoingData());
+    }
+
+    @Override
+    protected List<Check> createChecks() {
+        DowngradeMessageCheck check = new DowngradeMessageCheck();
+
+        if (TLSv13.equals(version)) {
+            check.ifNoDowngrade();
+        } else if (TLSv12.equals(version)) {
+            check.ifTLSv12();
+        } else {
+            check.ifBelowTLSv12();
+        }
+
+        return List.of(check);
     }
 
 }

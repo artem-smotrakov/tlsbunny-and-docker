@@ -6,6 +6,8 @@ import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
+import java.util.List;
+
 public class AnotherHttpsClient extends AbstractClient {
 
     public static void main(String[] args) throws Exception {
@@ -14,9 +16,7 @@ public class AnotherHttpsClient extends AbstractClient {
                     .set(SystemPropertiesConfig.load())
                     .set(StructFactory.getDefault())
                     .set(output)
-                    .connect()
-                    .engine()
-                    .run(new NoAlertCheck());
+                    .connect();
         }
     }
 
@@ -39,6 +39,11 @@ public class AnotherHttpsClient extends AbstractClient {
                 .send(new OutgoingFinished())
                 .send(new OutgoingHttpGetRequest())
                 .receive(new IncomingApplicationData());
+    }
+
+    @Override
+    protected List<Check> createChecks() {
+        return List.of(new NoAlertCheck());
     }
 
 }

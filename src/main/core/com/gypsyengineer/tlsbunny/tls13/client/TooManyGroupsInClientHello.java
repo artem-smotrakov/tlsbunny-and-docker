@@ -1,12 +1,16 @@
 package com.gypsyengineer.tlsbunny.tls13.client;
 
+import com.gypsyengineer.tlsbunny.tls13.connection.Check;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
+import com.gypsyengineer.tlsbunny.utils.Output;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
+
+import java.util.List;
 
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.application_data;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
@@ -19,12 +23,13 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp
 public class TooManyGroupsInClientHello extends AbstractClient {
 
     public static void main(String[] args) throws Exception {
-        new TooManyGroupsInClientHello()
-                .set(SystemPropertiesConfig.load())
-                .set(StructFactory.getDefault())
-                .connect()
-                .engine()
-                .run(new NoAlertCheck());
+        try (Output output = new Output()) {
+            new TooManyGroupsInClientHello()
+                    .set(output)
+                    .set(SystemPropertiesConfig.load())
+                    .set(StructFactory.getDefault())
+                    .connect();
+        }
     }
 
     @Override
@@ -137,6 +142,11 @@ public class TooManyGroupsInClientHello extends AbstractClient {
                 .run(new ProcessingApplicationDataTLSCiphertext()
                         .expect(application_data))
                 .run(new PrintingData());
+    }
+
+    @Override
+    protected List<Check> createChecks() {
+        return List.of(new NoAlertCheck());
     }
 
 }

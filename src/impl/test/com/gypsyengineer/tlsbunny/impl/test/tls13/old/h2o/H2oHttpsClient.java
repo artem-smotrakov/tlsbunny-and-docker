@@ -1,5 +1,6 @@
 package com.gypsyengineer.tlsbunny.impl.test.tls13.old.h2o;
 
+import com.gypsyengineer.tlsbunny.tls13.connection.Check;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
@@ -7,6 +8,8 @@ import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 import com.gypsyengineer.tlsbunny.tls13.client.AbstractClient;
+
+import java.util.List;
 
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.application_data;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
@@ -22,9 +25,7 @@ public class H2oHttpsClient extends AbstractClient {
         new H2oHttpsClient()
                 .set(SystemPropertiesConfig.load())
                 .set(StructFactory.getDefault())
-                .connect()
-                .engine()
-                .run(new NoAlertCheck());
+                .connect();
     }
 
     @Override
@@ -115,6 +116,11 @@ public class H2oHttpsClient extends AbstractClient {
                 .run(new ProcessingApplicationDataTLSCiphertext()
                         .expect(application_data))
                 .run(new PrintingData());
+    }
+
+    @Override
+    protected List<Check> createChecks() {
+        return List.of(new NoAlertCheck());
     }
 
 }

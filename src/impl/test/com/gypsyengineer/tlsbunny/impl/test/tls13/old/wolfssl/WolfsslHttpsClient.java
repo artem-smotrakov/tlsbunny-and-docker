@@ -1,12 +1,16 @@
 package com.gypsyengineer.tlsbunny.impl.test.tls13.old.wolfssl;
 
+import com.gypsyengineer.tlsbunny.tls13.connection.Check;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
+import com.gypsyengineer.tlsbunny.utils.Output;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 import com.gypsyengineer.tlsbunny.tls13.client.AbstractClient;
+
+import java.util.List;
 
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
 import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.*;
@@ -18,12 +22,13 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp
 public class WolfsslHttpsClient extends AbstractClient {
 
     public static void main(String[] args) throws Exception {
-        new WolfsslHttpsClient()
-                .set(SystemPropertiesConfig.load())
-                .set(StructFactory.getDefault())
-                .connect()
-                .engine()
-                .run(new NoAlertCheck());
+        try (Output output = new Output()) {
+            new WolfsslHttpsClient()
+                    .set(output)
+                    .set(SystemPropertiesConfig.load())
+                    .set(StructFactory.getDefault())
+                    .connect();
+        }
     }
 
     @Override
@@ -117,6 +122,11 @@ public class WolfsslHttpsClient extends AbstractClient {
 
                 // wolfssl server actually sends a "close_notify" alert
                 // but we just ignore it for now
+    }
+
+    @Override
+    protected List<Check> createChecks() {
+        return List.of(new NoAlertCheck());
     }
 
 }
