@@ -2,6 +2,7 @@ package com.gypsyengineer.tlsbunny.impl.test.tls13.openssl;
 
 import com.gypsyengineer.tlsbunny.impl.test.tls13.TestForServer;
 import com.gypsyengineer.tlsbunny.impl.test.tls13.Utils;
+import com.gypsyengineer.tlsbunny.tls13.client.CCSAfterHandshake;
 import com.gypsyengineer.tlsbunny.tls13.client.HttpsClient;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -22,6 +23,14 @@ public class OpensslTestSuite {
     public void httpClient() throws Exception {
         new TestForServer()
                 .set(new HttpsClient())
+                .set(server)
+                .run();
+    }
+
+    @Test
+    public void ccsAfterHandshake() throws Exception {
+        new TestForServer()
+                .set(new CCSAfterHandshake())
                 .set(server)
                 .run();
     }
