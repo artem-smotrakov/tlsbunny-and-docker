@@ -7,7 +7,6 @@ import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.handshake.NegotiatorException;
 import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
-import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
@@ -25,7 +24,7 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp
 
 public class StartWithEmptyTLSPlaintext extends AbstractClient {
 
-    private ContentType type;
+    private ContentType type = handshake;
 
     public static void main(String[] args) throws Exception {
         Config config = SystemPropertiesConfig.load();

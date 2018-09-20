@@ -5,6 +5,8 @@ import com.gypsyengineer.tlsbunny.impl.test.tls13.Utils;
 import com.gypsyengineer.tlsbunny.tls13.client.CCSAfterHandshake;
 import com.gypsyengineer.tlsbunny.tls13.client.DoubleClientHello;
 import com.gypsyengineer.tlsbunny.tls13.client.HttpsClient;
+import com.gypsyengineer.tlsbunny.tls13.client.StartWithEmptyTLSPlaintext;
+import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -40,6 +42,38 @@ public class OpensslTestSuite {
     public void doubleClientHello() throws Exception {
         new TestForServer()
                 .set(new DoubleClientHello())
+                .set(server)
+                .run();
+    }
+
+    @Test
+    public void startWithTLSPlaintextWithHandshake() throws Exception {
+        new TestForServer()
+                .set(new StartWithEmptyTLSPlaintext().set(ContentType.handshake))
+                .set(server)
+                .run();
+    }
+
+    @Test
+    public void startWithTLSPlaintextWithCCS() throws Exception {
+        new TestForServer()
+                .set(new StartWithEmptyTLSPlaintext().set(ContentType.change_cipher_spec))
+                .set(server)
+                .run();
+    }
+
+    @Test
+    public void startWithTLSPlaintextWithApplicationData() throws Exception {
+        new TestForServer()
+                .set(new StartWithEmptyTLSPlaintext().set(ContentType.application_data))
+                .set(server)
+                .run();
+    }
+
+    @Test
+    public void startWithTLSPlaintextWithAlert() throws Exception {
+        new TestForServer()
+                .set(new StartWithEmptyTLSPlaintext().set(ContentType.alert))
                 .set(server)
                 .run();
     }
