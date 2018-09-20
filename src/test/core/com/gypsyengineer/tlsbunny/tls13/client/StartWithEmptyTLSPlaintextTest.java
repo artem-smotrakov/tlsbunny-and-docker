@@ -7,11 +7,13 @@ import com.gypsyengineer.tlsbunny.tls13.connection.action.Side;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.OutgoingChangeCipherSpec;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
+import com.gypsyengineer.tlsbunny.tls13.server.NConnectionsReceived;
 import com.gypsyengineer.tlsbunny.tls13.server.OneConnectionReceived;
 import com.gypsyengineer.tlsbunny.tls13.server.SingleThreadServer;
 import com.gypsyengineer.tlsbunny.tls13.struct.Alert;
 import com.gypsyengineer.tlsbunny.tls13.struct.AlertDescription;
 import com.gypsyengineer.tlsbunny.tls13.struct.AlertLevel;
+import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.Output;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
@@ -39,26 +41,46 @@ public class StartWithEmptyTLSPlaintextTest {
         serverConfig.serverCertificate(serverCertificatePath);
         serverConfig.serverKey(serverKeyPath);
 
-        StartWithEmptyTLSPlaintext client = new StartWithEmptyTLSPlaintext();
+        CorrectServerEngineFactoryImpl serverEngineFactory =
+                (CorrectServerEngineFactoryImpl) new CorrectServerEngineFactoryImpl()
+                        .set(serverConfig)
+                        .set(serverOutput);
 
         SingleThreadServer server = new SingleThreadServer()
-                .set(new CorrectServerEngineFactoryImpl()
-                        .set(serverConfig)
-                        .set(serverOutput))
+                .set(serverEngineFactory)
                 .set(serverConfig)
                 .set(serverOutput)
-                .stopWhen(new OneConnectionReceived());
+                .stopWhen(new NConnectionsReceived(4));
 
-        try (client; server; clientOutput; serverOutput) {
+        try (server; clientOutput; serverOutput) {
             server.start();
             Config clientConfig = SystemPropertiesConfig.load().port(server.port());
-            client.set(clientConfig).set(clientOutput).connect();
-        }
 
-        Alert alert = client.engine().context().getAlert();
-        assertNotNull(alert);
-        assertEquals(alert.getLevel(), AlertLevel.fatal);
-        assertEquals(alert.getDescription(), AlertDescription.unexpected_message);
+            serverEngineFactory.set(handshake);
+            test(clientConfig, clientOutput, handshake);
+
+            serverEngineFactory.set(change_cipher_spec);
+            test(clientConfig, clientOutput, change_cipher_spec);
+
+            serverEngineFactory.set(application_data);
+            test(clientConfig, clientOutput, application_data);
+
+            serverEngineFactory.set(alert);
+            test(clientConfig, clientOutput, alert);
+        }
+    }
+
+    private static void test(Config config, Output output, ContentType type)
+            throws Exception {
+
+        try (StartWithEmptyTLSPlaintext client = new StartWithEmptyTLSPlaintext()) {
+            client.set(type).set(config).set(output).connect();
+
+            Alert alert = client.engine().context().getAlert();
+            assertNotNull(alert);
+            assertEquals(alert.getLevel(), AlertLevel.fatal);
+            assertEquals(alert.getDescription(), AlertDescription.unexpected_message);
+        }
     }
 
     @Test
@@ -97,6 +119,14 @@ public class StartWithEmptyTLSPlaintextTest {
     // sends an alert after receiving an empty TLSPlaintext
     private static class CorrectServerEngineFactoryImpl extends BaseEngineFactory {
 
+        private ContentType type;
+
+        // TODO: add synchronization
+        public CorrectServerEngineFactoryImpl set(ContentType type) {
+            this.type = type;
+            return this;
+        }
+
         @Override
         protected Engine createImpl() throws Exception {
             return Engine.init()
@@ -106,7 +136,8 @@ public class StartWithEmptyTLSPlaintextTest {
                     .receive(new IncomingData())
 
                     // process an empty TLSPlaintext
-                    .run(new ProcessingTLSPlaintext())
+                    .run(new ProcessingTLSPlaintext()
+                            .expect(type))
 
                     // send an alert
                     .run(new GeneratingAlert()
