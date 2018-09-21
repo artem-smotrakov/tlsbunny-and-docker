@@ -2,7 +2,6 @@ package com.gypsyengineer.tlsbunny.tls13.connection;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.ActionFailed;
-import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.IncomingChangeCipherSpec;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AEADException;
 import com.gypsyengineer.tlsbunny.tls13.crypto.HKDF;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
@@ -49,9 +48,6 @@ public class Engine {
 
     // timeout for reading incoming data (in millis)
     private long timeout = Connection.default_read_timeout;
-
-    // if true, always check for CCS after receiving data
-    private boolean checkForCCS = false;
 
     // if true, then stop if an alert occurred
     private boolean stopIfAlert = true;
@@ -106,11 +102,6 @@ public class Engine {
 
     public Engine continueIfAlert() {
         stopIfAlert = false;
-        return this;
-    }
-
-    public Engine checkForCCS() {
-        checkForCCS = true;
         return this;
     }
 
@@ -394,25 +385,7 @@ public class Engine {
             }
         }
 
-        // TODO: do we still need it?
-        checkCCS();
-
         action.in(buffer);
-    }
-
-    private void checkCCS() {
-        if (checkForCCS) {
-            buffer.mark();
-            try {
-                IncomingChangeCipherSpec incomingCCS = new IncomingChangeCipherSpec();
-                output.info("met for %s", incomingCCS.name());
-                init(incomingCCS);
-                incomingCCS.run();
-                output.info("found %s", incomingCCS.name());
-            } catch (Exception e) {
-                buffer.reset(); // restore out
-            }
-        }
     }
 
     public static Engine init() throws NoSuchAlgorithmException, NegotiatorException {

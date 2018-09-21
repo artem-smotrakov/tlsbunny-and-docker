@@ -1,74 +1,88 @@
 package com.gypsyengineer.tlsbunny.tls13.client;
 
+import com.gypsyengineer.tlsbunny.tls13.connection.Check;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertCheck;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.Side;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.*;
-import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
+import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
-public class MultipleCCS {
+import java.util.List;
 
-    public static int N = 100;
+import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
+import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.client_hello;
+import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.finished;
+import static com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup.secp256r1;
+import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv12;
+import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv13;
+import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp256r1_sha256;
+
+public class MultipleCCS extends AbstractClient {
+
+    public static final int number_of_ccs = 10;
 
     public static void main(String[] args) throws Exception {
-        SystemPropertiesConfig config = SystemPropertiesConfig.load();
-        Output output = new Output();
-
-        output.info("test 0: send a CCS message after each handshake message");
-        try {
-            Engine.init()
-                    .target(config.host())
-                    .target(config.port())
+        try (Output output = new Output()) {
+            new MultipleCCS()
                     .set(output)
-                    .send(new OutgoingClientHello())
-                    .send(new OutgoingChangeCipherSpec())
-                    .receive(new IncomingServerHello())
-                    .send(new OutgoingChangeCipherSpec())
-                    .receive(new IncomingEncryptedExtensions())
-                    .send(new OutgoingChangeCipherSpec())
-                    .receive(new IncomingCertificate())
-                    .send(new OutgoingChangeCipherSpec())
-                    .receive(new IncomingCertificateVerify())
-                    .send(new OutgoingChangeCipherSpec())
-                    .receive(new IncomingFinished())
-                    .send(new OutgoingChangeCipherSpec())
-                    .send(new OutgoingFinished())
-                    .send(new OutgoingHttpGetRequest())
-                    .receive(new IncomingApplicationData())
-                    .connect()
-                    .run(new NoAlertCheck());
-
-            output.info("test passed");
-        } finally {
-            output.flush();
-        }
-
-        for (int i = 1; i < N; i++) {
-            output.info("test %d: send %d CCS messages", i, i);
-            try {
-                Engine.init()
-                        .target(config.host())
-                        .target(config.port())
-                        .set(output)
-                        .send(new OutgoingClientHello())
-                        .send(i, () -> new OutgoingChangeCipherSpec())
-                        .receive(new IncomingServerHello())
-                        .receive(new IncomingChangeCipherSpec())
-                        .receive(new IncomingEncryptedExtensions())
-                        .receive(new IncomingCertificate())
-                        .receive(new IncomingCertificateVerify())
-                        .receive(new IncomingFinished())
-                        .send(new OutgoingFinished())
-                        .send(new OutgoingHttpGetRequest())
-                        .receive(new IncomingApplicationData())
-                        .connect()
-                        .run(new NoAlertCheck());
-
-                output.info("test passed");
-            } finally {
-                output.flush();
-            }
+                    .connect();
         }
     }
 
+    @Override
+    protected Engine createEngine() throws Exception {
+        return Engine.init()
+                .target(config.host())
+                .target(config.port())
+                .set(factory)
+                .set(output)
+
+                // send ClientHello
+                .run(new GeneratingClientHello()
+                        .supportedVersions(TLSv13)
+                        .groups(secp256r1)
+                        .signatureSchemes(ecdsa_secp256r1_sha256)
+                        .keyShareEntries(context -> context.negotiator.createKeyShareEntry()))
+                .run(new WrappingIntoHandshake()
+                        .type(client_hello)
+                        .updateContext(Context.Element.first_client_hello))
+                .run(new WrappingIntoTLSPlaintexts()
+                        .type(handshake)
+                        .version(TLSv12))
+                .send(new OutgoingData())
+
+                .send(number_of_ccs, () -> new OutgoingChangeCipherSpec())
+
+                // receive a ServerHello, EncryptedExtensions, Certificate,
+                // CertificateVerify and Finished messages
+                // TODO: how can we make it more readable?
+                .loop(context -> !context.hasServerFinished() && !context.hasAlert())
+                .receive(() -> new IncomingMessages(Side.client))
+
+                .send(number_of_ccs, () -> new OutgoingChangeCipherSpec())
+
+                // send Finished
+                .run(new GeneratingFinished())
+                .run(new WrappingIntoHandshake()
+                        .type(finished)
+                        .updateContext(Context.Element.client_finished))
+                .run(new WrappingHandshakeDataIntoTLSCiphertext())
+                .send(new OutgoingData())
+
+                // send application data
+                .run(new PreparingHttpGetRequest())
+                .run(new WrappingApplicationDataIntoTLSCiphertext())
+                .send(new OutgoingData())
+
+                // receive session tickets and application data
+                .loop(context -> !context.receivedApplicationData() && !context.hasAlert())
+                .receive(() -> new IncomingMessages(Side.client));
+    }
+
+    @Override
+    protected List<Check> createChecks() {
+        return List.of(new NoAlertCheck());
+    }
 }

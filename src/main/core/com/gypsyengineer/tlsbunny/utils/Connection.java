@@ -65,6 +65,7 @@ public class Connection implements AutoCloseable {
     public void close() throws IOException {
         is.close();
         os.close();
+        socket.close();
     }
 
     public static Connection create(String host, int port)
