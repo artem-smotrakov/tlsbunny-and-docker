@@ -54,7 +54,8 @@ public class ProcessingTLSCiphertext extends AbstractAction<ProcessingTLSCiphert
         }
 
         if (!tlsCiphertext.containsApplicationData()) {
-            throw new ActionFailed("expected a TLSCiphertext");
+            throw new ActionFailed(String.format(
+                    "expected application_data, but received %s", tlsCiphertext.getType()));
         }
 
         AEAD decryptor = getDecryptor();
