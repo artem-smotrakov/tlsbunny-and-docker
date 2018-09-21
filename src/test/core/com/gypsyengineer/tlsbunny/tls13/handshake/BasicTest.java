@@ -48,8 +48,6 @@ public class BasicTest {
         serverConfig.serverCertificate(serverCertificatePath);
         serverConfig.serverKey(serverKeyPath);
 
-        boolean success = false;
-
         SingleThreadServer server = new SingleThreadServer()
                 .set(new EngineFactoryImpl()
                         .set(serverConfig)
@@ -71,11 +69,10 @@ public class BasicTest {
                         .run(new SuccessCheck())
                         .run(new NoExceptionCheck())
                         .apply(new NoAlertAnalyzer());
-                success = true;
             }
         }
 
-        success &= checkContexts(
+        boolean success = checkContexts(
                 client.engine().context(),
                 server.recentEngine().context(),
                 clientOutput);
