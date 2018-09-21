@@ -24,32 +24,30 @@ The framework also provides an engine which runs specified actions. The engine s
 Here is an example on HTTPS connection using TLS 1.3:
 
 ```java
-CommonConfig config = CommonConfig.load();
+        Engine.init()
+                .target(config.host())
+                .target(config.port())
+                .send(new OutgoingClientHello())
+                .send(new OutgoingChangeCipherSpec())
+                .receive(new IncomingServerHello())
+                .receive(new IncomingChangeCipherSpec())
+                .receive(new IncomingEncryptedExtensions())
+                .receive(new IncomingCertificate())
+                .receive(new IncomingCertificateVerify())
+                .receive(new IncomingFinished())
+                .send(new OutgoingFinished())
+                .send(new OutgoingHttpGetRequest())
+                .receive(new IncomingApplicationData());
 
-Engine.init()
-        .target(config.host())
-        .target(config.port())
-        .send(new OutgoingClientHello())
-        .send(new OutgoingChangeCipherSpec())
-        .require(new IncomingServerHello())
-        .require(new IncomingChangeCipherSpec())
-        .require(new IncomingEncryptedExtensions())
-        .require(new IncomingCertificate())
-        .require(new IncomingCertificateVerify())
-        .require(new IncomingFinished())
-        .send(new OutgoingFinished())
-        .allow(new IncomingNewSessionTicket())
-        .send(new OutgoingHttpGetRequest())
-        .require(new IncomingApplicationData())
-        .connect()
-        .run(new NoAlertCheck());
+                .connect()
+                .run(new NoAlertCheck());
 ```
 
 ## Supported features
 
 - [TLS 1.3 protocol defined in RFC 8446](https://tools.ietf.org/html/rfc8446) 
-- Handshake as a client
-- Client authentication
+- Client and server sides
+- Client and server authentication
 - Key exchange with ECDHE using secp256r1 curve
 - ecdsa_secp256r1_sha256 signatures
 - AES-GCM cipher with 128-bit key
@@ -70,51 +68,14 @@ The libs above are built with enabled AddressSanitizer and debug/verbose output.
 ## Fuzzing
 
 tlsbunny provides several fuzzers for TLS 1.3 sturctures such as TLSPlaintext, Handshake, ClientHello and Finished.
-Fuzzers based on the framework can generate fuzzed messages and feed a target application via stdin, files or network socket.
+Fuzzers based on the framework can generate fuzzed messages and feed a target application via stdin, files or network sockets.
+
 On the one hand, such a fuzzer is not going to be as fast as LibFuzzer. On the other hand, the fuzzer can be easily re-used with multiple TLS implementations written in different languages (not only C/C++). 
-Traditionally, fuzzing is used for testing applications written in C/C++ to uncover memory corruption issues which most likely may have security implications.
-Fuzzing can also be used for testing applications written in other languages even if those languages prevent using memory directly like Java. 
+
+Traditionally, fuzzing is used for testing applications written in C/C++ to uncover memory corruption issues which most likely may have security implications. But fuzzing techniques can also be used for testing applications written in other languages even if those languages prevent using memory directly like Java. See for example [AFL-based Java fuzzers and the Java Security Manager
+(https://www.modzero.ch/modlog/archives/2018/09/20/java_bugs_with_and_without_fuzzing/index.html). 
+
 No matter which language is used, a good TLS implementation should properly handle incorrect data and react with an expected action, for example, by thowing a documented exception. An unexpected behavior in processing incorrect data may still have security implications.
-
-## Some test results
-
-### TLS server
-
-|                                          | Notes           | OpenSSL (+ASan) | GnuTLS (+ASan)  | NSS (+ASan)   | h2o + picotls (+ASan) | wolfSSL (+ASan) |
-| -----------------------------------------|-----------------|-----------------|-----------------|---------------|-----------------------|-----------------|
-| TLSPlaintext fuzzing                     | 400  tests      |                 | Ok              | Ok            | Ok                    | Ok              |
-| Handshake fuzzing                        | 4000 tests      |                 | Ok              | Ok            | Ok                    | Ok              |
-| ClientHello fuzzing                      | 4000 tests      |                 | Ok              | Ok            | Ok                    | Ok              |
-| Certificate fuzzing (client auth)        |                 |                 |                 |               |                       |                 |
-| CertificateVerify fuzzing (client auth)  |                 |                 |                 |               |                       |                 |
-| Finished fuzzing                         | 4000 tests      |                 | Ok              | Ok            | Ok                    | Ok              |
-| CCS fuzzing                              | 40   tests      |                 | Ok              | Ok            | Ok                    | Ok              |
-| Legacy session ID fuzzing                | 39   tests      |                 |                 |               |                       |                 |
-| Double ClientHello                       |                 |                 |                 |               |                       |                 |
-| Invalid CCS                              |                 |                 |                 |               |                       |                 |
-| CCS after handshake is done              |                 |                 |                 |               |                       |                 |
-| Multiple CCS                             |                 |                 |                 |               |                       |                 |
-| Start with CCS                           |                 |                 |                 |               |                       |                 |
-| Weak ECDHE key                           |                 |                 |                 |               |                       |                 |
-
-### TLS client
-
-|                             | OpenSSL (+ASan) | GnuTLS (+ASan)  | NSS (+ASan)   | h2o + picotls (+ASan) | wolfSSL (+ASan) |
-| ----------------------------|-----------------|-----------------|---------------|-----------------------|-----------------|
-| TLSPlaintext fuzzing        |                 |                 |               |                       |                 |
-| Handshake fuzzing           |                 |                 |               |                       |                 |
-| ServerHello fuzzing         |                 |                 |               |                       |                 |
-| EncryptedExtensions fuzzing |                 |                 |               |                       |                 |
-| Certificate fuzzing         |                 |                 |               |                       |                 |
-| CertificateVerify fuzzing   |                 |                 |               |                       |                 |
-| Finished fuzzing            |                 |                 |               |                       |                 |
-| CCS fuzzing                 |                 |                 |               |                       |                 |
-| Double ServerHello          |                 |                 |               |                       |                 |
-| Invalid CCS                 |                 |                 |               |                       |                 |
-| CCS after handshake is done |                 |                 |               |                       |                 |
-| Multiple CCS                |                 |                 |               |                       |                 |
-| Start with CCS              |                 |                 |               |                       |                 |
-| Weak ECDHE key              |                 |                 |               |                       |                 |
 
 ## Similar projects
 
