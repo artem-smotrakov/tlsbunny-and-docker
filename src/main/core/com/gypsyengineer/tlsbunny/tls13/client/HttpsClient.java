@@ -1,8 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls13.client;
 
-import com.gypsyengineer.tlsbunny.tls13.connection.Check;
-import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
-import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertCheck;
+import com.gypsyengineer.tlsbunny.tls13.connection.*;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Side;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.IncomingMessages;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.OutgoingChangeCipherSpec;
@@ -95,6 +93,9 @@ public class HttpsClient extends AbstractClient {
 
     @Override
     protected List<Check> createChecks() {
-        return List.of(new NoAlertCheck());
+        return List.of(
+                new NoAlertCheck(),
+                new SuccessCheck(),
+                new NoExceptionCheck());
     }
 }

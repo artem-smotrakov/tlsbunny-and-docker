@@ -64,11 +64,7 @@ public class BasicTest {
             client.set(clientConfig).set(clientOutput);
 
             try (client) {
-                client.connect().engine()
-                        .run(new NoAlertCheck())
-                        .run(new SuccessCheck())
-                        .run(new NoExceptionCheck())
-                        .apply(new NoAlertAnalyzer());
+                client.connect().engine().apply(new NoAlertAnalyzer());
             }
         }
 

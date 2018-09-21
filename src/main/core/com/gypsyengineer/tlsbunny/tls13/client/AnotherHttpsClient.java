@@ -43,7 +43,10 @@ public class AnotherHttpsClient extends AbstractClient {
 
     @Override
     protected List<Check> createChecks() {
-        return List.of(new NoAlertCheck());
+        return List.of(
+                new NoAlertCheck(),
+                new SuccessCheck(),
+                new NoExceptionCheck());
     }
 
 }
