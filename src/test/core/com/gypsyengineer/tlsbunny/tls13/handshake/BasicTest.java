@@ -5,6 +5,7 @@ import com.gypsyengineer.tlsbunny.tls13.client.Client;
 import com.gypsyengineer.tlsbunny.tls13.client.HttpsClient;
 import com.gypsyengineer.tlsbunny.tls13.connection.*;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Side;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.IncomingChangeCipherSpec;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.OutgoingChangeCipherSpec;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.server.SingleThreadServer;
@@ -204,6 +205,8 @@ public class BasicTest {
                             .expect(client_hello)
                             .updateContext(Context.Element.first_client_hello))
                     .run(new ProcessingClientHello())
+
+                    .receive(new IncomingChangeCipherSpec())
 
                     // send ServerHello
                     .run(new GeneratingServerHello()

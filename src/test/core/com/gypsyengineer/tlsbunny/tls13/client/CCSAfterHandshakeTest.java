@@ -234,6 +234,9 @@ public class CCSAfterHandshakeTest {
                             .updateContext(Context.Element.first_client_hello))
                     .run(new ProcessingClientHello())
 
+                    // receive an expected CCS
+                    .receive(new IncomingChangeCipherSpec())
+
                     // send ServerHello
                     .run(new GeneratingServerHello()
                             .supportedVersion(TLSv13_draft_26)
@@ -294,7 +297,6 @@ public class CCSAfterHandshakeTest {
                     .send(new OutgoingData())
 
                     .receive(new IncomingData())
-
                     .run(new ProcessingHandshakeTLSCiphertext()
                             .expect(handshake))
                     .run(new ProcessingHandshake()
