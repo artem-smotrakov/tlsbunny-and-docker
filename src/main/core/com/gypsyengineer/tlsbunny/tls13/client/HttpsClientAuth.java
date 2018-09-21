@@ -10,7 +10,7 @@ import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 
 import java.util.List;
 
-public class HttpsClientAuth extends AbstractClient {
+public class HttpsClientAuth extends SingleConnectionClient {
 
     public static void main(String[] args) throws Exception {
         try (Output output = new Output()) {

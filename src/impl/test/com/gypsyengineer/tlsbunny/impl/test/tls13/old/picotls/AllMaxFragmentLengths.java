@@ -9,7 +9,7 @@ import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.struct.MaxFragmentLength;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
-import com.gypsyengineer.tlsbunny.tls13.client.AbstractClient;
+import com.gypsyengineer.tlsbunny.tls13.client.SingleConnectionClient;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
 import java.util.List;
@@ -55,7 +55,7 @@ public class AllMaxFragmentLengths {
         }
     }
 
-    private static class ClientImpl extends AbstractClient {
+    private static class ClientImpl extends SingleConnectionClient {
 
         // maxFragmentLength for max_fragment_length extension
         private MaxFragmentLength maxFragmentLength = NO_MAX_FRAGMENT_LENGTH;

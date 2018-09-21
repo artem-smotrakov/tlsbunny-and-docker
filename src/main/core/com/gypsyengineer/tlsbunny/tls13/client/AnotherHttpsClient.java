@@ -8,7 +8,7 @@ import com.gypsyengineer.tlsbunny.utils.Output;
 
 import java.util.List;
 
-public class AnotherHttpsClient extends AbstractClient {
+public class AnotherHttpsClient extends SingleConnectionClient {
 
     public static void main(String[] args) throws Exception {
         try (Output output = new Output()) {

@@ -19,7 +19,7 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv12;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv13;
 import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp256r1_sha256;
 
-public class MultipleCCS extends AbstractClient {
+public class MultipleCCS extends SingleConnectionClient {
 
     public static final int number_of_ccs = 10;
 

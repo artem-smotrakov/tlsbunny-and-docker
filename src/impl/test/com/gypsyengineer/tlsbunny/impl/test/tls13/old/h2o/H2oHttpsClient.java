@@ -7,7 +7,7 @@ import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
-import com.gypsyengineer.tlsbunny.tls13.client.AbstractClient;
+import com.gypsyengineer.tlsbunny.tls13.client.SingleConnectionClient;
 
 import java.util.List;
 
@@ -19,7 +19,7 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv12;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv13_draft_26;
 import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp256r1_sha256;
 
-public class H2oHttpsClient extends AbstractClient {
+public class H2oHttpsClient extends SingleConnectionClient {
 
     public static void main(String[] args) throws Exception {
         new H2oHttpsClient()
