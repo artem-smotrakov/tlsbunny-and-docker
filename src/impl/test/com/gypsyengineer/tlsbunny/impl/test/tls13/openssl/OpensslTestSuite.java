@@ -2,10 +2,7 @@ package com.gypsyengineer.tlsbunny.impl.test.tls13.openssl;
 
 import com.gypsyengineer.tlsbunny.impl.test.tls13.TestForServer;
 import com.gypsyengineer.tlsbunny.impl.test.tls13.Utils;
-import com.gypsyengineer.tlsbunny.tls13.client.CCSAfterHandshake;
-import com.gypsyengineer.tlsbunny.tls13.client.DoubleClientHello;
-import com.gypsyengineer.tlsbunny.tls13.client.HttpsClient;
-import com.gypsyengineer.tlsbunny.tls13.client.StartWithEmptyTLSPlaintext;
+import com.gypsyengineer.tlsbunny.tls13.client.*;
 import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -74,6 +71,14 @@ public class OpensslTestSuite {
     public void startWithTLSPlaintextWithAlert() throws Exception {
         new TestForServer()
                 .set(new StartWithEmptyTLSPlaintext().set(ContentType.alert))
+                .set(server)
+                .run();
+    }
+
+    @Test
+    public void multipleCCS() throws Exception {
+        new TestForServer()
+                .set(new MultipleCCS())
                 .set(server)
                 .run();
     }
