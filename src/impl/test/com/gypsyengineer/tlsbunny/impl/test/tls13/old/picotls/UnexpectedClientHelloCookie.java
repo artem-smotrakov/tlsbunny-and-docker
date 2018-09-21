@@ -1,5 +1,6 @@
 package com.gypsyengineer.tlsbunny.impl.test.tls13.old.picotls;
 
+import com.gypsyengineer.tlsbunny.tls13.connection.Check;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.FailureCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
@@ -8,6 +9,8 @@ import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 import com.gypsyengineer.tlsbunny.tls13.client.AbstractClient;
 import com.gypsyengineer.tlsbunny.utils.Output;
+
+import java.util.List;
 
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.application_data;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
@@ -28,9 +31,7 @@ public class UnexpectedClientHelloCookie extends AbstractClient {
                     .set(SystemPropertiesConfig.load())
                     .set(StructFactory.getDefault())
                     .set(output)
-                    .connect()
-                    .engine()
-                    .run(new FailureCheck());
+                    .connect();
         }
     }
 
@@ -124,6 +125,11 @@ public class UnexpectedClientHelloCookie extends AbstractClient {
                 .run(new ProcessingApplicationDataTLSCiphertext()
                         .expect(application_data))
                 .run(new PrintingData());
+    }
+
+    @Override
+    protected List<Check> createChecks() {
+        return List.of(new FailureCheck());
     }
 
 }

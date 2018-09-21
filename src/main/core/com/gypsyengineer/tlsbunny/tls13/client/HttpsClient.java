@@ -1,15 +1,20 @@
 package com.gypsyengineer.tlsbunny.tls13.client;
 
+import com.gypsyengineer.tlsbunny.tls13.connection.Check;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Side;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.IncomingMessages;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
+import com.gypsyengineer.tlsbunny.tls13.handshake.NegotiatorException;
 import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 import com.gypsyengineer.tlsbunny.utils.Output;
+
+import java.security.NoSuchAlgorithmException;
+import java.util.List;
 
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
 import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.*;
@@ -28,9 +33,7 @@ public class HttpsClient extends AbstractClient {
                     .set(SystemPropertiesConfig.load())
                     .set(StructFactory.getDefault())
                     .set(output)
-                    .connect()
-                    .engine()
-                    .run(new NoAlertCheck());
+                    .connect();
         }
     }
 
@@ -40,7 +43,9 @@ public class HttpsClient extends AbstractClient {
     }
 
     @Override
-    protected Engine createEngine() throws Exception {
+    protected Engine createEngine()
+            throws NegotiatorException, NoSuchAlgorithmException {
+
         return Engine.init()
                 .target(config.host())
                 .target(config.port())
@@ -85,4 +90,8 @@ public class HttpsClient extends AbstractClient {
                     .receive(() -> new IncomingMessages(Side.client));
     }
 
+    @Override
+    protected List<Check> createChecks() {
+        return List.of(new NoAlertCheck());
+    }
 }

@@ -1,5 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls13.client;
 
+import com.gypsyengineer.tlsbunny.tls13.connection.Check;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Side;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.IncomingMessages;
@@ -9,6 +10,8 @@ import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.Output;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
+
+import java.util.List;
 
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.alert;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
@@ -69,6 +72,12 @@ public class SendAlertAfterHello extends AbstractClient {
                         .type(alert)
                         .version(TLSv12))
                 .send(new OutgoingData());
+    }
+
+    @Override
+    protected List<Check> createChecks() {
+        // TODO: any checks here?
+        return List.of();
     }
 
 }

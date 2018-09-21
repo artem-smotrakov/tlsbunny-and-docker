@@ -1,5 +1,6 @@
 package com.gypsyengineer.tlsbunny.impl.test.tls13.old.openssl;
 
+import com.gypsyengineer.tlsbunny.tls13.connection.Check;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
@@ -8,6 +9,8 @@ import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 import com.gypsyengineer.tlsbunny.tls13.client.AbstractClient;
 import com.gypsyengineer.tlsbunny.utils.Output;
+
+import java.util.List;
 
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.application_data;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
@@ -24,9 +27,7 @@ public class OpensslHttpsClient extends AbstractClient {
                     .set(SystemPropertiesConfig.load())
                     .set(StructFactory.getDefault())
                     .set(output)
-                    .connect()
-                    .engine()
-                    .run(new NoAlertCheck());
+                    .connect();
         }
     }
 
@@ -134,6 +135,11 @@ public class OpensslHttpsClient extends AbstractClient {
                 .run(new ProcessingApplicationDataTLSCiphertext()
                         .expect(application_data))
                 .run(new PrintingData());
+    }
+
+    @Override
+    protected List<Check> createChecks() {
+        return List.of(new NoAlertCheck());
     }
 
 }
