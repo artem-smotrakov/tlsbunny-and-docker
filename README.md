@@ -72,8 +72,8 @@ Fuzzers based on the framework can generate fuzzed messages and feed a target ap
 
 On the one hand, such a fuzzer is not going to be as fast as LibFuzzer. On the other hand, the fuzzer can be easily re-used with multiple TLS implementations written in different languages (not only C/C++). 
 
-Traditionally, fuzzing is used for testing applications written in C/C++ to uncover memory corruption issues which most likely may have security implications. But fuzzing techniques can also be used for testing applications written in other languages even if those languages prevent using memory directly like Java. See for example [AFL-based Java fuzzers and the Java Security Manager
-(https://www.modzero.ch/modlog/archives/2018/09/20/java_bugs_with_and_without_fuzzing/index.html). 
+Traditionally, fuzzing is used for testing applications written in C/C++ to uncover memory corruption issues which most likely may have security implications. But fuzzing techniques can also be used for testing applications written in other languages even if those languages prevent using memory directly like Java. See for example [AFL-based Java fuzzers and the Java Security Manager]
+(https://www.modzero.ch/modlog/archives/2018/09/20/java_bugs_with_and_without_fuzzing/index.html).
 
 No matter which language is used, a good TLS implementation should properly handle incorrect data and react with an expected action, for example, by thowing a documented exception. An unexpected behavior in processing incorrect data may still have security implications.
 
