@@ -171,6 +171,7 @@ public class StartWithEmptyTLSPlaintextTest {
                     .run(new ProcessingTLSPlaintext())
 
                     // process ClientHello
+                    .receive(new IncomingData())
                     .run(new ProcessingTLSPlaintext()
                             .expect(handshake))
                     .run(new ProcessingHandshake()

@@ -99,6 +99,7 @@ public class StartWithEmptyTLSPlaintext extends AbstractClient {
                 .send(new GeneratingEmptyTLSPlaintext()
                         .type(type)
                         .version(TLSv12))
+                .send(new OutgoingData())
 
                 // send ClientHello
                 .run(new GeneratingClientHello()
