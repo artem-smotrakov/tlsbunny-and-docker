@@ -65,6 +65,11 @@ public class OpensslServer implements Server, AutoCloseable {
     }
 
     @Override
+    public Engine[] engines() {
+        throw new UnsupportedOperationException("no engines for you!");
+    }
+
+    @Override
     public int port() {
         return port;
     }

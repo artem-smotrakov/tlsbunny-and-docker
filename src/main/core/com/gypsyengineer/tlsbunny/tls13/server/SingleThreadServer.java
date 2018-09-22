@@ -10,6 +10,8 @@ import com.gypsyengineer.tlsbunny.utils.Output;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SingleThreadServer implements Server {
 
@@ -28,6 +30,7 @@ public class SingleThreadServer implements Server {
 
     // TODO: add synchronization
     private Engine recentEngine;
+    private List<Engine> engines = new ArrayList<>();
 
     // TODO: add synchronization
     private boolean running = false;
@@ -90,6 +93,11 @@ public class SingleThreadServer implements Server {
     }
 
     @Override
+    public Engine[] engines() {
+        return engines.toArray(new Engine[engines.size()]);
+    }
+
+    @Override
     public int port() {
         return serverSocket.getLocalPort();
     }
@@ -106,10 +114,14 @@ public class SingleThreadServer implements Server {
         while (stopCondition.shouldRun()) {
             try (Connection connection = Connection.create(serverSocket.accept())) {
                 output.info("accepted");
+
                 recentEngine = factory.create();
+                engines.add(recentEngine);
+
                 recentEngine.set(output);
                 recentEngine.set(connection);
                 recentEngine.connect(); // TODO: rename connect -> run
+
                 if (check != null) {
                     output.info("run check: %s", check.name());
                     check.set(recentEngine);
@@ -117,6 +129,7 @@ public class SingleThreadServer implements Server {
                     check.run();
                     failed &= check.failed();
                 }
+
                 output.info("done");
             } catch (Exception e) {
                 output.achtung("exception: ", e);

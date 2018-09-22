@@ -37,6 +37,11 @@ public interface Server extends Runnable, AutoCloseable {
     Engine recentEngine();
 
     /**
+     * @return all Engine instances which were used to handle connections
+     */
+    Engine[] engines();
+
+    /**
      * @return true if the server is running, false otherwise
      */
     boolean running();
