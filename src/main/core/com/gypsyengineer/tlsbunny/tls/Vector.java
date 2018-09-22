@@ -1,6 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls;
 
-import com.gypsyengineer.tlsbunny.utils.Convertor;
+import com.gypsyengineer.tlsbunny.utils.Converter;
 import com.gypsyengineer.tlsbunny.utils.Utils;
 
 import java.io.IOException;
@@ -45,7 +45,7 @@ public interface Vector<T> extends Struct {
     static byte[] getVectorBytes(ByteBuffer buffer, int lengthBytes) {
         byte[] lengthEncoding = new byte[lengthBytes];
         buffer.get(lengthEncoding);
-        int length = Convertor.bytes2int(lengthEncoding);
+        int length = Converter.bytes2int(lengthEncoding);
         
         byte[] bytes = new byte[length];
         buffer.get(bytes);
