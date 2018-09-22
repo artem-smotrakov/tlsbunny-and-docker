@@ -81,6 +81,14 @@ public class OpensslTestSuite {
     }
 
     @Test
+    public void startWithCCS() throws Exception {
+        new TestForServer()
+                .set(new StartWithCCS())
+                .set(server)
+                .run();
+    }
+
+    @Test
     public void multipleCCS() throws Exception {
         new TestForServer()
                 .set(new MultipleCCS())
