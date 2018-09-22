@@ -293,7 +293,7 @@ public class Engine {
         return this;
     }
 
-    public Engine run(Check... checks) throws ActionFailed {
+    public Engine run(List<Check> checks) throws ActionFailed {
         for (Check check : checks) {
             check.set(this);
             check.set(context);
@@ -306,6 +306,10 @@ public class Engine {
         }
 
         return this;
+    }
+
+    public Engine run(Check... checks) throws ActionFailed {
+        return run(List.of(checks));
     }
 
     public Engine apply(Analyzer analyzer) {

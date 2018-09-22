@@ -1,10 +1,14 @@
 package com.gypsyengineer.tlsbunny.tls13.client;
 
+import com.gypsyengineer.tlsbunny.tls13.connection.Check;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 import com.gypsyengineer.tlsbunny.utils.Output;
+
+import java.util.Collections;
+import java.util.List;
 
 public abstract class AbstractClient implements Client, AutoCloseable {
 
@@ -12,6 +16,7 @@ public abstract class AbstractClient implements Client, AutoCloseable {
     protected StructFactory factory = StructFactory.getDefault();
     protected Output output = new Output();
     protected Engine engine;
+    protected List<Check> checks = Collections.emptyList();
 
     @Override
     public Config config() {
@@ -33,6 +38,12 @@ public abstract class AbstractClient implements Client, AutoCloseable {
     @Override
     public Client set(Output output) {
         this.output = output;
+        return this;
+    }
+
+    @Override
+    public Client set(Check... checks) {
+        this.checks = List.of(checks);
         return this;
     }
 

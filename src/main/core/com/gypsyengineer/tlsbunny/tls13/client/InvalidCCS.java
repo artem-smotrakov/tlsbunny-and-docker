@@ -9,6 +9,7 @@ import com.gypsyengineer.tlsbunny.tls13.handshake.NegotiatorException;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 
 import static com.gypsyengineer.tlsbunny.tls13.struct.ChangeCipherSpec.MAX;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ChangeCipherSpec.MIN;
@@ -31,6 +32,10 @@ public class InvalidCCS extends AbstractClient {
         }
     }
 
+    public InvalidCCS() {
+        checks = List.of(new AlertCheck());
+    }
+
     @Override
     public Client connect() throws Exception {
         Analyzer analyzer = new NoAlertAnalyzer().set(output);
@@ -39,7 +44,7 @@ public class InvalidCCS extends AbstractClient {
                 continue;
             }
             output.info("try CCS with %d", ccsValue);
-            engine(ccsValue).connect().run(checks()).apply(analyzer);
+            engine(ccsValue).connect().run(checks).apply(analyzer);
         }
         analyzer.run();
 
@@ -77,7 +82,7 @@ public class InvalidCCS extends AbstractClient {
                 // CertificateVerify and Finished messages
                 // TODO: how can we make it more readable?
                 .loop(context -> !context.hasServerFinished() && !context.hasAlert())
-                .receive(() -> new IncomingMessages(Side.client))
+                    .receive(() -> new IncomingMessages(Side.client))
 
                 // send Finished
                 .run(new GeneratingFinished())
@@ -97,9 +102,4 @@ public class InvalidCCS extends AbstractClient {
                     .receive(() -> new IncomingMessages(Side.client));
     }
 
-    private Check[] checks() {
-        return new Check[] {
-                new AlertCheck()
-        };
-    }
 }
