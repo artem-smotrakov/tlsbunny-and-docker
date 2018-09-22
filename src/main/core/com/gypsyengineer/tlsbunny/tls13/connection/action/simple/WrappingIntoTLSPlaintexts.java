@@ -10,7 +10,7 @@ import java.io.IOException;
 public class WrappingIntoTLSPlaintexts extends AbstractAction {
 
     private ContentType type;
-    private ProtocolVersion version;
+    private ProtocolVersion version = ProtocolVersion.TLSv12;
 
     public WrappingIntoTLSPlaintexts type(ContentType type) {
         this.type = type;
@@ -29,6 +29,14 @@ public class WrappingIntoTLSPlaintexts extends AbstractAction {
 
     @Override
     public Action run() throws IOException {
+        if (version == null) {
+            throw new IllegalStateException("what the hell? version is null!");
+        }
+
+        if (type == null) {
+            throw new IllegalStateException("what the hell? content type is null!");
+        }
+
         byte[] content = new byte[in.remaining()];
         in.get(content);
 
