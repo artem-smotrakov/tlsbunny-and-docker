@@ -1,13 +1,18 @@
 package com.gypsyengineer.tlsbunny.tls13.client;
 
-import com.gypsyengineer.tlsbunny.tls13.connection.*;
+import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
+import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertCheck;
+import com.gypsyengineer.tlsbunny.tls13.connection.NoExceptionCheck;
+import com.gypsyengineer.tlsbunny.tls13.connection.SuccessCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Side;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.IncomingMessages;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.OutgoingChangeCipherSpec;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
+import com.gypsyengineer.tlsbunny.tls13.handshake.ECDHENegotiator;
 import com.gypsyengineer.tlsbunny.tls13.handshake.NegotiatorException;
-import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
+import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
+import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
 import java.security.NoSuchAlgorithmException;
@@ -20,36 +25,52 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv12;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv13;
 import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp256r1_sha256;
 
-public class HttpsClient extends SingleConnectionClient {
+public class ECDHEStrictValidation extends AbstractClient {
 
-    private ProtocolVersion protocolVersion = TLSv13;
+    private int n = 5000;
 
     public static void main(String[] args) throws Exception {
         try (Output output = new Output()) {
-            new HttpsClient()
+            new ECDHEStrictValidation()
                     .set(output)
                     .connect();
         }
     }
 
-    public HttpsClient version(ProtocolVersion protocolVersion) {
-        this.protocolVersion = protocolVersion;
+    public ECDHEStrictValidation() {
+        checks = List.of(
+                new NoAlertCheck(), new SuccessCheck(), new NoExceptionCheck());
+    }
+
+    public ECDHEStrictValidation connections(int n) {
+        this.n = n;
         return this;
     }
 
     @Override
-    protected Engine createEngine()
-            throws NegotiatorException, NoSuchAlgorithmException {
+    public ECDHEStrictValidation connect() throws Exception {
+        for (int i = 0; i < n; i++) {
+            output.info("test %d", i);
+            recentEngine = createEngine().connect().run(checks);
+            engines.add(recentEngine);
+        }
+
+        return this;
+    }
+
+    private Engine createEngine() throws NegotiatorException, NoSuchAlgorithmException {
+        ECDHENegotiator negotiator = ECDHENegotiator.create(
+                NamedGroup.Secp.secp256r1, StructFactory.getDefault()).strictValidation();
 
         return Engine.init()
                 .target(config.host())
                 .target(config.port())
-                .set(factory)
                 .set(output)
+                .set(negotiator)
 
                 // send ClientHello
                 .run(new GeneratingClientHello()
-                        .supportedVersions(protocolVersion)
+                        .supportedVersions(TLSv13)
                         .groups(secp256r1)
                         .signatureSchemes(ecdsa_secp256r1_sha256)
                         .keyShareEntries(context -> context.negotiator.createKeyShareEntry()))
@@ -67,7 +88,7 @@ public class HttpsClient extends SingleConnectionClient {
                 // CertificateVerify and Finished messages
                 // TODO: how can we make it more readable?
                 .loop(context -> !context.hasServerFinished() && !context.hasAlert())
-                    .receive(() -> new IncomingMessages(Side.client))
+                .receive(() -> new IncomingMessages(Side.client))
 
                 // send Finished
                 .run(new GeneratingFinished())
@@ -87,11 +108,4 @@ public class HttpsClient extends SingleConnectionClient {
                     .receive(() -> new IncomingMessages(Side.client));
     }
 
-    @Override
-    protected List<Check> createChecks() {
-        return List.of(
-                new NoAlertCheck(),
-                new SuccessCheck(),
-                new NoExceptionCheck());
-    }
 }

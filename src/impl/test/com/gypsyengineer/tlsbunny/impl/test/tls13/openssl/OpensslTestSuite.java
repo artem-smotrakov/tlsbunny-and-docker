@@ -81,6 +81,14 @@ public class OpensslTestSuite {
     }
 
     @Test
+    public void startWithCCS() throws Exception {
+        new TestForServer()
+                .set(new StartWithCCS())
+                .set(server)
+                .run();
+    }
+
+    @Test
     public void multipleCCS() throws Exception {
         new TestForServer()
                 .set(new MultipleCCS())
@@ -99,6 +107,14 @@ public class OpensslTestSuite {
                                 .add(new AlertCheck())
                                 .add(new ExceptionCheck()
                                         .set(SocketException.class))))
+                .set(server)
+                .run();
+    }
+
+    @Test
+    public void ecdheStrictValidation() throws Exception {
+        new TestForServer()
+                .set(new ECDHEStrictValidation())
                 .set(server)
                 .run();
     }

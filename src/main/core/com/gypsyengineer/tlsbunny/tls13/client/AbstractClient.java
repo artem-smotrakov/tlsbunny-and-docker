@@ -7,6 +7,7 @@ import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -15,7 +16,8 @@ public abstract class AbstractClient implements Client, AutoCloseable {
     protected Config config = SystemPropertiesConfig.load();
     protected StructFactory factory = StructFactory.getDefault();
     protected Output output = new Output();
-    protected Engine engine;
+    protected Engine recentEngine;
+    protected List<Engine> engines = new ArrayList<>();
     protected List<Check> checks = Collections.emptyList();
 
     @Override
@@ -56,12 +58,16 @@ public abstract class AbstractClient implements Client, AutoCloseable {
 
     @Override
     public Engine engine() {
-        if (engine == null) {
+        if (recentEngine == null) {
             throw new IllegalStateException(
                     "what the hell? recent engine not initialized! (null)");
         }
 
-        return engine;
+        return recentEngine;
+    }
+
+    public Engine[] engines() {
+        return engines.toArray(new Engine[engines.size()]);
     }
 
 }

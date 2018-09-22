@@ -9,7 +9,6 @@ import com.gypsyengineer.tlsbunny.tls13.handshake.NegotiatorException;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.gypsyengineer.tlsbunny.tls13.struct.ChangeCipherSpec.MAX;
@@ -24,8 +23,6 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv13;
 import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp256r1_sha256;
 
 public class InvalidCCS extends AbstractClient {
-
-    private List<Engine> engines = new ArrayList<>();
 
     public static void main(String[] args) throws Exception {
         try (Output output = new Output()) {
@@ -47,19 +44,15 @@ public class InvalidCCS extends AbstractClient {
                 continue;
             }
             output.info("try CCS with %d", ccsValue);
-            engine = engine(ccsValue).connect().run(checks).apply(analyzer);
-            engines.add(engine);
+            recentEngine = createEngine(ccsValue).connect().run(checks).apply(analyzer);
+            engines.add(recentEngine);
         }
         analyzer.run();
 
         return this;
     }
 
-    public Engine[] engines() {
-        return engines.toArray(new Engine[engines.size()]);
-    }
-
-    private Engine engine(int ccsValue)
+    private Engine createEngine(int ccsValue)
             throws NegotiatorException, NoSuchAlgorithmException {
 
         return Engine.init()
