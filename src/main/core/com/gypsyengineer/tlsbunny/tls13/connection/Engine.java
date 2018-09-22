@@ -328,7 +328,7 @@ public class Engine {
             throw new EngineException("unexpected exception", e);
         }
 
-        output.achtung("error: %s", e.getMessage());
+        output.achtung("error: %s", e.toString());
         return this;
     }
 
