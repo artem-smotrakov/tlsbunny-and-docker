@@ -1,6 +1,7 @@
 package com.gypsyengineer.tlsbunny.tls;
 
 import java.nio.ByteBuffer;
+import java.util.Objects;
 
 public class UInt16 implements Struct {
 
@@ -13,7 +14,8 @@ public class UInt16 implements Struct {
 
     public UInt16(int value) {
         if (value < MIN || value > MAX) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException(
+                    String.format("wrong value (%d)", value));
         }
 
         this.value = value;
@@ -36,5 +38,24 @@ public class UInt16 implements Struct {
     public static UInt16 parse(ByteBuffer data) {
         return new UInt16(data.getShort() & 0xFFFF);
     }
-    
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        UInt16 uInt16 = (UInt16) o;
+        return value == uInt16.value;
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(value);
+    }
 }

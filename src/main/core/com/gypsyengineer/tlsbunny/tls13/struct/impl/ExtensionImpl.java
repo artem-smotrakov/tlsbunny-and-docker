@@ -5,6 +5,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.Extension;
 import com.gypsyengineer.tlsbunny.tls13.struct.ExtensionType;
 import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.io.IOException;
+import java.util.Objects;
 
 public class ExtensionImpl implements Extension {
 
@@ -36,4 +37,23 @@ public class ExtensionImpl implements Extension {
         return Utils.encoding(extension_type, extension_data);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        ExtensionImpl extension = (ExtensionImpl) o;
+        return Objects.equals(extension_type, extension.extension_type) &&
+                Objects.equals(extension_data, extension.extension_data);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(extension_type, extension_data);
+    }
 }

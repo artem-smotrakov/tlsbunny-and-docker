@@ -11,6 +11,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType;
 import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
 import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.io.IOException;
+import java.util.Objects;
 
 public class ClientHelloImpl implements ClientHello {
     
@@ -105,4 +106,33 @@ public class ClientHelloImpl implements ClientHello {
         return HandshakeTypeImpl.client_hello;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        ClientHelloImpl that = (ClientHelloImpl) o;
+        return Objects.equals(legacy_version, that.legacy_version) &&
+                Objects.equals(random, that.random) &&
+                Objects.equals(legacy_session_id, that.legacy_session_id) &&
+                Objects.equals(cipher_suites, that.cipher_suites) &&
+                Objects.equals(legacy_compression_methods, that.legacy_compression_methods) &&
+                Objects.equals(extensions, that.extensions);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(
+                legacy_version,
+                random,
+                legacy_session_id,
+                cipher_suites,
+                legacy_compression_methods,
+                extensions);
+    }
 }

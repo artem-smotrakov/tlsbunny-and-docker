@@ -4,7 +4,7 @@ import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-public class Convertor {
+public class Converter {
     
     private static final int INTEGER_ENCODING_LENGTH = 4; 
     private static final int LONG_ENCODING_LENGTH = 8; 
@@ -26,6 +26,11 @@ public class Convertor {
     }
     
     public static int bytes2int(byte[] bytes) {
+        //int n = 0;
+        //for (int i = 0; i < bytes.length; i++) {
+        //    n += bytes[i] * ((int) Math.pow(255, i));
+        //}
+        //return n;
         return ByteBuffer.wrap(leftPadding(bytes, INTEGER_ENCODING_LENGTH)).getInt();
     }
 
@@ -74,6 +79,16 @@ public class Convertor {
         
         byte[] array = new byte[length];
         System.arraycopy(bytes, 0, array, length - bytes.length, bytes.length);
+        return array;
+    }
+
+    public static byte[] rightPadding(byte[] bytes, int length) {
+        if (length <= bytes.length) {
+            return bytes;
+        }
+
+        byte[] array = new byte[length];
+        System.arraycopy(bytes, 0, array, 0, bytes.length);
         return array;
     }
 }

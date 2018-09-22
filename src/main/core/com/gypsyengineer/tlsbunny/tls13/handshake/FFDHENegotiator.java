@@ -3,7 +3,7 @@ package com.gypsyengineer.tlsbunny.tls13.handshake;
 import com.gypsyengineer.tlsbunny.tls13.struct.KeyShareEntry;
 import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
-import com.gypsyengineer.tlsbunny.utils.Convertor;
+import com.gypsyengineer.tlsbunny.utils.Converter;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -46,7 +46,7 @@ public class FFDHENegotiator extends AbstractNegotiator {
                 throw new RuntimeException();
             }
 
-            byte[] publicPart = Convertor.leftPadding(
+            byte[] publicPart = Converter.leftPadding(
                     y.toByteArray(), parameters.p.toByteArray().length);
 
             return new FFDHENegotiator(

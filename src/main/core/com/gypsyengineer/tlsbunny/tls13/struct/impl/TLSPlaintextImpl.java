@@ -7,6 +7,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
 import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.io.IOException;
+import java.util.Objects;
 
 public class TLSPlaintextImpl implements TLSPlaintext {
 
@@ -72,5 +73,28 @@ public class TLSPlaintextImpl implements TLSPlaintext {
     @Override
     public boolean containsChangeCipherSpec() {
         return type.isChangeCipherSpec();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        TLSPlaintextImpl that = (TLSPlaintextImpl) o;
+        return Objects.equals(type, that.type) &&
+                Objects.equals(legacy_record_version, that.legacy_record_version) &&
+                Objects.equals(length, that.length) &&
+                Objects.equals(fragment, that.fragment);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(type, legacy_record_version, length, fragment);
     }
 }

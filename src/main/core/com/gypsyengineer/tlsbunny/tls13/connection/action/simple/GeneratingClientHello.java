@@ -11,7 +11,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GeneratingClientHello extends AbstractAction {
+public class GeneratingClientHello extends AbstractAction<GeneratingClientHello> {
 
     public static final byte[] NO_COOKIE = null;
     public static final MaxFragmentLength NO_MAX_FRAGMENT_LENGTH = null;

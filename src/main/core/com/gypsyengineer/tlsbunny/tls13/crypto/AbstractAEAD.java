@@ -1,6 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls13.crypto;
 
-import com.gypsyengineer.tlsbunny.utils.Convertor;
+import com.gypsyengineer.tlsbunny.utils.Converter;
 import com.gypsyengineer.tlsbunny.utils.Utils;
 
 public abstract class AbstractAEAD implements AEAD {
@@ -22,7 +22,7 @@ public abstract class AbstractAEAD implements AEAD {
     }
 
     byte[] nextNonce() {
-        return Utils.xor(Convertor.long2bytes(sequenceNumber++, iv.length), iv);
+        return Utils.xor(Converter.long2bytes(sequenceNumber++, iv.length), iv);
     }
 
     @Override

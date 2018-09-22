@@ -1,7 +1,7 @@
 package com.gypsyengineer.tlsbunny.tls13.fuzzer;
 
 import com.gypsyengineer.tlsbunny.tls.Vector;
-import com.gypsyengineer.tlsbunny.utils.Convertor;
+import com.gypsyengineer.tlsbunny.utils.Converter;
 
 import java.nio.ByteBuffer;
 import java.util.List;
@@ -83,7 +83,7 @@ public class FuzzedVector<T> implements Vector<T> {
     @Override
     public byte[] encoding() {
         return ByteBuffer.allocate(lengthBytes + content.length)
-                .put(Convertor.int2bytes(length, lengthBytes))
+                .put(Converter.int2bytes(length, lengthBytes))
                 .put(content)
                 .array();
     }
