@@ -1,66 +1,72 @@
 package com.gypsyengineer.tlsbunny.tls13.client;
 
-import com.gypsyengineer.tlsbunny.tls13.connection.*;
+import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
+import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertCheck;
+import com.gypsyengineer.tlsbunny.tls13.connection.NoExceptionCheck;
+import com.gypsyengineer.tlsbunny.tls13.connection.SuccessCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Side;
-import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.*;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.IncomingMessages;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.OutgoingChangeCipherSpec;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
+import com.gypsyengineer.tlsbunny.tls13.handshake.ECDHENegotiator;
 import com.gypsyengineer.tlsbunny.tls13.handshake.NegotiatorException;
+import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
+import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
-import static com.gypsyengineer.tlsbunny.tls13.struct.ChangeCipherSpec.MAX;
-import static com.gypsyengineer.tlsbunny.tls13.struct.ChangeCipherSpec.MIN;
-import static com.gypsyengineer.tlsbunny.tls13.struct.ChangeCipherSpec.VALID_VALUE;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
-import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.client_hello;
-import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.finished;
+import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.*;
 import static com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup.secp256r1;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv12;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv13;
 import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp256r1_sha256;
 
-public class InvalidCCS extends AbstractClient {
+public class ECDHEStrictValidation extends AbstractClient {
+
+    private int n = 5000;
 
     public static void main(String[] args) throws Exception {
         try (Output output = new Output()) {
-            new InvalidCCS()
+            new ECDHEStrictValidation()
                     .set(output)
                     .connect();
         }
     }
 
-    public InvalidCCS() {
-        checks = List.of(new AlertCheck());
+    public ECDHEStrictValidation() {
+        checks = List.of(
+                new NoAlertCheck(), new SuccessCheck(), new NoExceptionCheck());
+    }
+
+    public ECDHEStrictValidation connections(int n) {
+        this.n = n;
+        return this;
     }
 
     @Override
-    public Client connect() throws Exception {
-        Analyzer analyzer = new NoAlertAnalyzer().set(output);
-        for (int ccsValue = MIN; ccsValue <= MAX; ccsValue++) {
-            if (ccsValue == VALID_VALUE) {
-                continue;
-            }
-            output.info("try CCS with %d", ccsValue);
-            recentEngine = createEngine(ccsValue).connect().run(checks).apply(analyzer);
+    public ECDHEStrictValidation connect() throws Exception {
+        for (int i = 0; i < n; i++) {
+            output.info("test %d", i);
+            recentEngine = createEngine().connect().run(checks);
             engines.add(recentEngine);
         }
-        analyzer.run();
 
         return this;
     }
 
-    private Engine createEngine(int ccsValue)
-            throws NegotiatorException, NoSuchAlgorithmException {
+    private Engine createEngine() throws NegotiatorException, NoSuchAlgorithmException {
+        ECDHENegotiator negotiator = ECDHENegotiator.create(
+                NamedGroup.Secp.secp256r1, StructFactory.getDefault()).strictValidation();
 
         return Engine.init()
                 .target(config.host())
                 .target(config.port())
-                .set(factory)
                 .set(output)
-                .label(String.format("invalid_ccs:%d", ccsValue))
+                .set(negotiator)
 
                 // send ClientHello
                 .run(new GeneratingClientHello()
@@ -76,14 +82,13 @@ public class InvalidCCS extends AbstractClient {
                         .version(TLSv12))
                 .send(new OutgoingData())
 
-                .send(new OutgoingChangeCipherSpec()
-                        .set(ccsValue))
+                .send(new OutgoingChangeCipherSpec())
 
                 // receive a ServerHello, EncryptedExtensions, Certificate,
                 // CertificateVerify and Finished messages
                 // TODO: how can we make it more readable?
                 .loop(context -> !context.hasServerFinished() && !context.hasAlert())
-                    .receive(() -> new IncomingMessages(Side.client))
+                .receive(() -> new IncomingMessages(Side.client))
 
                 // send Finished
                 .run(new GeneratingFinished())

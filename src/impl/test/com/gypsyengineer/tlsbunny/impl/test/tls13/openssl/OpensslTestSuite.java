@@ -103,6 +103,14 @@ public class OpensslTestSuite {
                 .run();
     }
 
+    @Test
+    public void ecdheStrictValidation() throws Exception {
+        new TestForServer()
+                .set(new ECDHEStrictValidation())
+                .set(server)
+                .run();
+    }
+
     // TODO: check server logs for ASan findings
     @AfterClass
     public static void tearDown() throws Exception {

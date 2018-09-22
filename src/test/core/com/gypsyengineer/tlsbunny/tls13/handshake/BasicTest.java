@@ -2,6 +2,7 @@ package com.gypsyengineer.tlsbunny.tls13.handshake;
 
 import com.gypsyengineer.tlsbunny.tls13.client.AnotherHttpsClient;
 import com.gypsyengineer.tlsbunny.tls13.client.Client;
+import com.gypsyengineer.tlsbunny.tls13.client.ECDHEStrictValidation;
 import com.gypsyengineer.tlsbunny.tls13.client.HttpsClient;
 import com.gypsyengineer.tlsbunny.tls13.connection.*;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Side;
@@ -32,15 +33,20 @@ public class BasicTest {
 
     @Test
     public void httpsClient() throws Exception {
-        test(new HttpsClient());
+        test(new HttpsClient(), 1);
     }
 
     @Test
     public void anotherHttpsClient() throws Exception {
-        test(new AnotherHttpsClient());
+        test(new AnotherHttpsClient(), 1);
     }
 
-    private static void test(Client client) throws Exception {
+    @Test
+    public void strictValidation() throws Exception {
+        test(new ECDHEStrictValidation().connections(10), 10);
+    }
+
+    private static void test(Client client, int n) throws Exception {
         Output serverOutput = new Output("server");
         Output clientOutput = new Output("client");
 
@@ -54,7 +60,7 @@ public class BasicTest {
                         .set(serverOutput))
                 .set(serverConfig)
                 .set(serverOutput)
-                .stopWhen(new OneConnectionReceived());
+                .maxConnections(n);
 
         try (server; clientOutput; serverOutput) {
             new Thread(server).start();
