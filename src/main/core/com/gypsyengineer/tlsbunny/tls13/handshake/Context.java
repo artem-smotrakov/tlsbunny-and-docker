@@ -293,6 +293,10 @@ public class Context {
         this.clientFinished = clientFinished;
     }
 
+    public boolean receivedServerCertificateRequest() {
+        return serverCertificateRequest != null;
+    }
+
     public void set(Element element, Handshake message) {
         switch (element) {
             case first_client_hello:

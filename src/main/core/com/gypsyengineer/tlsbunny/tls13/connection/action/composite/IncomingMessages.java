@@ -177,6 +177,11 @@ public class IncomingMessages extends AbstractAction<IncomingMessages> {
                 continue;
             }
 
+            if (handshake.containsCertificateRequest()) {
+                processCertificateRequest(handshake);
+                continue;
+            }
+
             if (handshake.containsCertificate()) {
                 processCertificate(handshake);
                 continue;
@@ -289,6 +294,16 @@ public class IncomingMessages extends AbstractAction<IncomingMessages> {
         context.setEncryptedExtensions(handshake);
     }
 
+    private void processCertificateRequest(Handshake handshake) {
+        new ProcessingCertificateRequest()
+                .set(output)
+                .set(context)
+                .in(handshake.getBody())
+                .run();
+
+        context.setServerCertificateRequest(handshake);
+    }
+
     private void processCertificate(Handshake handshake) {
         new ProcessingCertificate()
                 .set(output)
@@ -320,11 +335,13 @@ public class IncomingMessages extends AbstractAction<IncomingMessages> {
                 .in(handshake.getBody())
                 .run();
 
-        new ComputingApplicationTrafficKeys()
-                .set(output)
-                .set(context)
-                .side(side)
-                .run();
+        if (!context.receivedServerCertificateRequest()) {
+            new ComputingApplicationTrafficKeys()
+                    .set(output)
+                    .set(context)
+                    .side(side)
+                    .run();
+        }
     }
 
     private void processNewSessionTicket(Handshake handshake) throws IOException {

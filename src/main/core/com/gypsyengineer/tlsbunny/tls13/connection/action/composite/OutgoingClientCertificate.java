@@ -14,7 +14,7 @@ import java.nio.file.Paths;
 
 import static com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext.NO_PADDING;
 
-public class OutgoingCertificate extends AbstractAction {
+public class OutgoingClientCertificate extends AbstractAction {
 
     private byte[] cert_data;
 
@@ -37,11 +37,7 @@ public class OutgoingCertificate extends AbstractAction {
     public Action run() throws IOException, AEADException {
         Certificate certificate = createCertificate();
         Handshake handshake = toHandshake(certificate);
-
-        // TODO: the class should be renamed to OutgoingClientCertificate
-        //       since it sets a client certificate in context
         context.setClientCertificate(handshake);
-
         out = TLS13Utils.store(encrypt(handshake));
 
         return this;

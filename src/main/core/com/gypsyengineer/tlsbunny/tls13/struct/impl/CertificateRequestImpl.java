@@ -13,7 +13,7 @@ public class CertificateRequestImpl implements CertificateRequest {
     private final Vector<Extension> extensions;
 
     CertificateRequestImpl(Vector<Byte> certificate_request_context, 
-            Vector<Extension> extensions) {
+                           Vector<Extension> extensions) {
 
         this.certificate_request_context = certificate_request_context;
         this.extensions = extensions;

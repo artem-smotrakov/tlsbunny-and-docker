@@ -159,8 +159,25 @@ public class StructFactoryImpl implements StructFactory {
     }
     
     @Override
-    public CertificateRequest createCertificateRequest() {
-        throw new UnsupportedOperationException("I don't know how to do it yet!");
+    public CertificateRequest createCertificateRequest(byte[] certificate_request_context,
+                                                       Vector<Extension> extensions) {
+
+        return new CertificateRequestImpl(
+                Vector.wrap(
+                        CertificateRequest.CERTIFICATE_REQUEST_CONTEXT_LENGTH_BYTES,
+                        certificate_request_context),
+                extensions);
+    }
+
+    @Override
+    public CertificateRequest createCertificateRequest(byte[] certificate_request_context,
+                                                       List<Extension> extensions) {
+
+        return createCertificateRequest(
+                certificate_request_context,
+                Vector.wrap(
+                        CertificateRequest.EXTENSIONS_LENGTH_BYTES,
+                        extensions));
     }
     
     @Override
