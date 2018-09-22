@@ -1,6 +1,5 @@
 package com.gypsyengineer.tlsbunny.tls13.connection.action;
 
-import com.gypsyengineer.tlsbunny.tls.Struct;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.GeneratingClientHello;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.ProcessingClientHello;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
@@ -97,18 +96,17 @@ public class ClientHelloTest {
             assertArrayEquals(firstHello.encoding(), secondHello.encoding());
             assertEquals(firstHello, secondHello);
 
-            TLSPlaintext one = wrap(firstHello);
-            TLSPlaintext two = wrap(secondHello);
+            TLSPlaintext[] one = wrap(firstHello);
+            TLSPlaintext[] two = wrap(secondHello);
 
-            assertEquals(one, two);
-            assertArrayEquals(one.encoding(), two.encoding());
+            assertArrayEquals(one, two);
         }
     }
 
-    private static TLSPlaintext wrap(ClientHello hello) throws IOException {
+    private static TLSPlaintext[] wrap(ClientHello hello) throws IOException {
         StructFactory factory = StructFactory.getDefault();
 
-        return factory.createTLSPlaintext(
+        return factory.createTLSPlaintexts(
                 ContentType.handshake,
                 ProtocolVersion.TLSv12,
                 factory.createHandshake(

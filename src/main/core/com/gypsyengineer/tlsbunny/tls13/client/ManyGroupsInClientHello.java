@@ -20,6 +20,8 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp
 
 public class ManyGroupsInClientHello extends SingleConnectionClient {
 
+    private int numberOfGroups = 30000;
+
     public static void main(String[] args) throws Exception {
         try (Output output = new Output()) {
             new ManyGroupsInClientHello()
@@ -28,12 +30,16 @@ public class ManyGroupsInClientHello extends SingleConnectionClient {
         }
     }
 
+    public ManyGroupsInClientHello numberOfGroups(int n) {
+        numberOfGroups = n;
+        return this;
+    }
+
     @Override
     protected Engine createEngine() throws Exception {
-        int n = 30000;
-        NamedGroup[] tooManyGroups = new NamedGroup[n];
-        for (int i = 0; i < n; i++) {
-            tooManyGroups[i] = secp256r1;
+        NamedGroup[] manyGroups = new NamedGroup[numberOfGroups];
+        for (int i = 0; i < numberOfGroups; i++) {
+            manyGroups[i] = secp256r1;
         }
 
         return Engine.init()
@@ -45,7 +51,7 @@ public class ManyGroupsInClientHello extends SingleConnectionClient {
                 // send ClientHello
                 .run(new GeneratingClientHello()
                         .supportedVersions(TLSv13)
-                        .groups(tooManyGroups)
+                        .groups(manyGroups)
                         .signatureSchemes(ecdsa_secp256r1_sha256)
                         .keyShareEntries(context -> context.negotiator.createKeyShareEntry()))
                 .run(new WrappingIntoHandshake()

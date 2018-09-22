@@ -40,7 +40,9 @@ public class BasicTest {
 
     @Test
     public void manyGroupsInClientHello() throws Exception {
-        test(new ManyGroupsInClientHello(), 1);
+        // we use only 3000 groups here because a higher number results to multiple TLSPlaintext
+        // but the server currently can't assemble them
+        test(new ManyGroupsInClientHello().numberOfGroups(3000), 1);
     }
 
     @Test
