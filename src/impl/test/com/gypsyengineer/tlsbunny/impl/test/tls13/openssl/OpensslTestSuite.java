@@ -3,10 +3,15 @@ package com.gypsyengineer.tlsbunny.impl.test.tls13.openssl;
 import com.gypsyengineer.tlsbunny.impl.test.tls13.TestForServer;
 import com.gypsyengineer.tlsbunny.impl.test.tls13.Utils;
 import com.gypsyengineer.tlsbunny.tls13.client.*;
+import com.gypsyengineer.tlsbunny.tls13.connection.AlertCheck;
+import com.gypsyengineer.tlsbunny.tls13.connection.AllFailedCheck;
+import com.gypsyengineer.tlsbunny.tls13.connection.ExceptionCheck;
 import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.net.SocketException;
 
 public class OpensslTestSuite {
 
@@ -79,6 +84,21 @@ public class OpensslTestSuite {
     public void multipleCCS() throws Exception {
         new TestForServer()
                 .set(new MultipleCCS())
+                .set(server)
+                .run();
+    }
+
+    @Test
+    public void invalidCCS() throws Exception {
+        // sometimes OpenSSL sends an alert, but sometimes it just closes the connection
+        // it may be a little bug, needs more investigation
+
+        new TestForServer()
+                .set(new InvalidCCS()
+                        .set(new AllFailedCheck()
+                                .add(new AlertCheck())
+                                .add(new ExceptionCheck()
+                                        .set(SocketException.class))))
                 .set(server)
                 .run();
     }

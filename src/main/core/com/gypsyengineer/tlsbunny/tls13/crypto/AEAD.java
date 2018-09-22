@@ -7,8 +7,6 @@ import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
 import com.gypsyengineer.tlsbunny.utils.Utils;
 
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
-import javax.crypto.NoSuchPaddingException;
 
 public interface AEAD {
 

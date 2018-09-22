@@ -65,6 +65,11 @@ public class OpensslServer implements Server, AutoCloseable {
     }
 
     @Override
+    public Engine[] engines() {
+        throw new UnsupportedOperationException("no engines for you!");
+    }
+
+    @Override
     public int port() {
         return port;
     }
@@ -94,7 +99,7 @@ public class OpensslServer implements Server, AutoCloseable {
         try {
             int code = Utils.waitProcessFinish(output, server_start_template, port, port, containerName);
             if (code != 0) {
-                output.achtung("could not start the server (exit code %d)", code);
+                output.achtung("the server exited with a non-zero exit code (%d)", code);
                 failed = true;
             }
         } catch (InterruptedException | IOException e) {
@@ -149,6 +154,8 @@ public class OpensslServer implements Server, AutoCloseable {
                 failed = true;
             }
         }
+
+        output.flush();
     }
 
     private static String generateContainerName() {

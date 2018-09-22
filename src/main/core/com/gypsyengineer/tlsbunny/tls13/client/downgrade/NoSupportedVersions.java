@@ -1,5 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls13.client.downgrade;
 
+import com.gypsyengineer.tlsbunny.tls13.client.SingleConnectionClient;
 import com.gypsyengineer.tlsbunny.tls13.connection.Check;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.DowngradeMessageCheck;
@@ -8,7 +9,6 @@ import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
-import com.gypsyengineer.tlsbunny.tls13.client.AbstractClient;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
 import java.util.List;
@@ -21,7 +21,7 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup.secp256r1;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv12;
 import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp256r1_sha256;
 
-public class NoSupportedVersions extends AbstractClient {
+public class NoSupportedVersions extends SingleConnectionClient {
 
     public static void main(String[] args) throws Exception {
         try (Output output = new Output()) {

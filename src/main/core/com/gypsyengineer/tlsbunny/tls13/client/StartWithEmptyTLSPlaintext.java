@@ -22,7 +22,7 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup.secp256r1;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.*;
 import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp256r1_sha256;
 
-public class StartWithEmptyTLSPlaintext extends AbstractClient {
+public class StartWithEmptyTLSPlaintext extends SingleConnectionClient {
 
     private ContentType type = handshake;
 

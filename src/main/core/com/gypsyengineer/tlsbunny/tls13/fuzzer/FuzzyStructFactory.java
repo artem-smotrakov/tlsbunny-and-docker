@@ -9,7 +9,6 @@ import java.util.List;
 
 public abstract class FuzzyStructFactory<T> implements StructFactory, Fuzzer<T> {
 
-    public static final String DEFAULT_START_TEST = "0";
     public static final String STATE_DELIMITER = ":";
 
     Target target;
@@ -87,7 +86,6 @@ public abstract class FuzzyStructFactory<T> implements StructFactory, Fuzzer<T> 
                     "what the hell? state should not be empty!");
         }
 
-        String subState = DEFAULT_START_TEST;
         String[] parts = state.split(STATE_DELIMITER);
 
         switch (parts.length) {
@@ -96,7 +94,6 @@ public abstract class FuzzyStructFactory<T> implements StructFactory, Fuzzer<T> 
                 break;
             case 2:
                 target = Target.valueOf(parts[0]);
-                subState = parts[1];
                 break;
             default:
                 throw new IllegalArgumentException(

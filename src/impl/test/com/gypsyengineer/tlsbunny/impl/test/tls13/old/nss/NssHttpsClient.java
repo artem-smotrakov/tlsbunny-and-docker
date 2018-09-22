@@ -7,7 +7,7 @@ import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
-import com.gypsyengineer.tlsbunny.tls13.client.AbstractClient;
+import com.gypsyengineer.tlsbunny.tls13.client.SingleConnectionClient;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
 import java.util.List;
@@ -19,7 +19,7 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup.secp256r1;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.*;
 import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp256r1_sha256;
 
-public class NssHttpsClient extends AbstractClient {
+public class NssHttpsClient extends SingleConnectionClient {
 
     public static void main(String[] args) throws Exception {
         try (Output output = new Output()) {

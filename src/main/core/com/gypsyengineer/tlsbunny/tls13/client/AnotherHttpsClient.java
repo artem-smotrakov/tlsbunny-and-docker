@@ -8,7 +8,7 @@ import com.gypsyengineer.tlsbunny.utils.Output;
 
 import java.util.List;
 
-public class AnotherHttpsClient extends AbstractClient {
+public class AnotherHttpsClient extends SingleConnectionClient {
 
     public static void main(String[] args) throws Exception {
         try (Output output = new Output()) {
@@ -43,7 +43,10 @@ public class AnotherHttpsClient extends AbstractClient {
 
     @Override
     protected List<Check> createChecks() {
-        return List.of(new NoAlertCheck());
+        return List.of(
+                new NoAlertCheck(),
+                new SuccessCheck(),
+                new NoExceptionCheck());
     }
 
 }

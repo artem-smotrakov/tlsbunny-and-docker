@@ -9,7 +9,6 @@ import com.gypsyengineer.tlsbunny.tls13.struct.*;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
 public class GeneratingFinished extends AbstractAction {

@@ -2,9 +2,9 @@ package com.gypsyengineer.tlsbunny.tls13.connection.action.simple;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.action.AbstractAction;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
-import com.gypsyengineer.tlsbunny.tls13.struct.CertificateVerify;
 
-public class ProcessingCertificateVerify extends AbstractAction<ProcessingCertificateVerify> {
+public class ProcessingCertificateVerify
+        extends AbstractAction<ProcessingCertificateVerify> {
 
     @Override
     public String name() {

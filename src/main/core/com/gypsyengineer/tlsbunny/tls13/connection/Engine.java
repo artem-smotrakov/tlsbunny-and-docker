@@ -53,7 +53,7 @@ public class Engine {
     private boolean stopIfAlert = true;
 
     // if true, then an exception is thrown in case of error
-    private boolean strict = true;
+    private boolean strict = false;
 
     // this is a label to mark a particular connection
     private String label = String.format("connection:%d", System.currentTimeMillis());
@@ -208,8 +208,7 @@ public class Engine {
         try (Connection connection = initConnection()) {
             buffer = NOTHING;
 
-            loop:
-            for (ActionHolder holder : actions) {
+            loop: for (ActionHolder holder : actions) {
                 ActionFactory actionFactory = holder.factory;
 
                 Action action;
@@ -282,7 +281,7 @@ public class Engine {
                 output.flush();
             }
         } catch (IOException e) {
-            throw new EngineException(e);
+            reportError(e);
         } finally {
             output.flush();
         }
@@ -294,17 +293,23 @@ public class Engine {
         return this;
     }
 
-    public Engine run(Check check) throws ActionFailed {
-        check.set(this);
-        check.set(context);
+    public Engine run(List<Check> checks) throws ActionFailed {
+        for (Check check : checks) {
+            check.set(this);
+            check.set(context);
 
-        check.run();
-        if (check.failed()) {
-            throw new ActionFailed(String.format("%s check failed", check.name()));
+            check.run();
+            if (check.failed()) {
+                throw new ActionFailed(String.format("%s check failed", check.name()));
+            }
+            output.info(String.format("check passed: %s", check.name()));
         }
-        output.info(String.format("check passed: %s", check.name()));
 
         return this;
+    }
+
+    public Engine run(Check... checks) throws ActionFailed {
+        return run(List.of(checks));
     }
 
     public Engine apply(Analyzer analyzer) {
@@ -323,7 +328,7 @@ public class Engine {
             throw new EngineException("unexpected exception", e);
         }
 
-        output.achtung("error: %s", e.getMessage());
+        output.achtung("error: %s", e.toString());
         return this;
     }
 
