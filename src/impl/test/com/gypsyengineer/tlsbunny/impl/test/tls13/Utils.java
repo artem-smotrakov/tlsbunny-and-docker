@@ -17,8 +17,11 @@ public class Utils {
     public static Process exec(String template, Object... params)
             throws IOException {
 
-        return new ProcessBuilder(String.format(template, params).split("\\s+"))
-                .start();
+        ProcessBuilder pb = new ProcessBuilder(
+                String.format(template, params).split("\\s+"));
+        pb.redirectErrorStream(true);
+
+        return pb.start();
     }
 
     public static void waitServerStart(Server server) throws Exception {
