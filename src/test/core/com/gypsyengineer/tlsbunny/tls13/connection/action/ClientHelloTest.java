@@ -31,7 +31,7 @@ public class ClientHelloTest {
         try (Output output = new Output()) {
             ByteBuffer buffer = new GeneratingClientHello()
                     .supportedVersions(TLSv13)
-                    .groups(NamedGroup.secp256r1)
+                    .groups(secp256r1)
                     .signatureSchemes(ecdsa_secp256r1_sha256)
                     .keyShareEntries(c -> c.negotiator.createKeyShareEntry())
                     .set(context)
