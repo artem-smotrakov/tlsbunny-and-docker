@@ -1,7 +1,7 @@
 package com.gypsyengineer.tlsbunny.tls13.handshake;
 
 import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
-import com.gypsyengineer.tlsbunny.utils.Convertor;
+import com.gypsyengineer.tlsbunny.utils.Converter;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,7 +19,7 @@ class FFDHEParemeters {
         this.spec = new DHParameterSpec(p, g);
     }
     
-    private static final BigInteger FFDHE2048_P = Convertor.hex2int(
+    private static final BigInteger FFDHE2048_P = Converter.hex2int(
             "FFFFFFFFFFFFFFFFADF85458A2BB4A9AAFDC5620273D3CF1" +
             "D8B9C583CE2D3695A9E13641146433FBCC939DCE249B3EF9" +
             "7D2FE363630C75D8F681B202AEC4617AD3DF1ED5D5FD6561" +
