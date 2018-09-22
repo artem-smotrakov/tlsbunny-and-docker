@@ -1,9 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls13.handshake;
 
-import com.gypsyengineer.tlsbunny.tls13.client.AnotherHttpsClient;
-import com.gypsyengineer.tlsbunny.tls13.client.Client;
-import com.gypsyengineer.tlsbunny.tls13.client.ECDHEStrictValidation;
-import com.gypsyengineer.tlsbunny.tls13.client.HttpsClient;
+import com.gypsyengineer.tlsbunny.tls13.client.*;
 import com.gypsyengineer.tlsbunny.tls13.connection.*;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Side;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.IncomingChangeCipherSpec;
@@ -39,6 +36,11 @@ public class BasicTest {
     @Test
     public void anotherHttpsClient() throws Exception {
         test(new AnotherHttpsClient(), 1);
+    }
+
+    @Test
+    public void manyGroupsInClientHello() throws Exception {
+        test(new ManyGroupsInClientHello(), 1);
     }
 
     @Test

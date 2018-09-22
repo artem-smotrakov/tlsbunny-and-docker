@@ -119,6 +119,14 @@ public class OpensslTestSuite {
                 .run();
     }
 
+    @Test
+    public void manyGroupsInClientHello() throws Exception {
+        new TestForServer()
+                .set(new ManyGroupsInClientHello())
+                .set(server)
+                .run();
+    }
+
     // TODO: check server logs for ASan findings
     @AfterClass
     public static void tearDown() throws Exception {
