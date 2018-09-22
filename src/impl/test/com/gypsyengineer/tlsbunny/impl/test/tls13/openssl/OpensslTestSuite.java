@@ -83,6 +83,14 @@ public class OpensslTestSuite {
                 .run();
     }
 
+    @Test
+    public void invalidCCS() throws Exception {
+        new TestForServer()
+                .set(new InvalidCCS())
+                .set(server)
+                .run();
+    }
+
     // TODO: check server logs for ASan findings
     @AfterClass
     public static void tearDown() throws Exception {

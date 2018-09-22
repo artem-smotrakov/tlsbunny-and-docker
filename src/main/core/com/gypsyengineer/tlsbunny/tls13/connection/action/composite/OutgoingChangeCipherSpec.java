@@ -9,14 +9,22 @@ import java.io.IOException;
 
 public class OutgoingChangeCipherSpec extends AbstractAction {
 
+    private int value = ChangeCipherSpec.VALID_VALUE;
+
+    public OutgoingChangeCipherSpec set(int value) {
+        this.value = value;
+        return this;
+    }
+
     @Override
     public String name() {
-        return "generating ChangeCipherSpec";
+        return String.format("generating ChangeCipherSpec (%d)", value);
     }
 
     @Override
     public Action run() throws IOException {
-        ChangeCipherSpec ccs = context.factory.createChangeCipherSpec(ChangeCipherSpec.VALID_VALUE);
+        ChangeCipherSpec ccs = context.factory.createChangeCipherSpec(value);
+
         TLSPlaintext[] tlsPlaintexts = context.factory.createTLSPlaintexts(
                 ContentType.change_cipher_spec,
                 ProtocolVersion.TLSv12,
