@@ -1,6 +1,7 @@
 package com.gypsyengineer.tlsbunny.tls;
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 public class Bytes implements Struct {
 
@@ -27,5 +28,24 @@ public class Bytes implements Struct {
         buffer.get(body);
         
         return new Bytes(body);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        Bytes bytes1 = (Bytes) o;
+        return Arrays.equals(bytes, bytes1.bytes);
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(bytes);
     }
 }

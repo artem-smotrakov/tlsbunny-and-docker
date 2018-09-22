@@ -1,6 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls;
 
-import com.gypsyengineer.tlsbunny.utils.Convertor;
+import com.gypsyengineer.tlsbunny.utils.Converter;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -116,7 +116,7 @@ public class VectorImpl<T> implements Vector<T> {
                             encodingLength, maxEncodingLength));
         }
 
-        byte[] lengthEncoding = Convertor.int2bytes(encodingLength, lengthBytes);
+        byte[] lengthEncoding = Converter.int2bytes(encodingLength, lengthBytes);
         ByteBuffer buffer = ByteBuffer.allocate(lengthBytes + encodingLength);
         buffer.put(lengthEncoding);
 

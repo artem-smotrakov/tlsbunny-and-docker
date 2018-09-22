@@ -2,6 +2,7 @@ package com.gypsyengineer.tlsbunny.tls;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 public class Random implements Struct {
 
@@ -65,4 +66,22 @@ public class Random implements Struct {
         return new Random(bytes);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        Random random = (Random) o;
+        return Arrays.equals(bytes, random.bytes);
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(bytes);
+    }
 }
