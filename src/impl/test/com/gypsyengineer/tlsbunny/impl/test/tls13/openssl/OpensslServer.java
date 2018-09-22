@@ -10,15 +10,16 @@ import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 // TODO: should we really use Server interface if we don't support many its methods?
 //       would it be better to create a separate interface for external servers?
 public class OpensslServer implements Server, AutoCloseable {
 
     public static final int port = 10101;
-
-    private static final String server_start_template =
-            "docker run -p %d:%d --name %s openssl/server/tls13";
 
     private static final String server_stop_template =
             "docker container kill %s";
@@ -33,6 +34,12 @@ public class OpensslServer implements Server, AutoCloseable {
     private String containerName;
     private boolean failed = false;
     private final Output output = new Output("openssl_server");
+    private Map<String, String> dockerEnvs = new HashMap<>();
+
+    public OpensslServer dockerEnv(String name, String value) {
+        dockerEnvs.put(name, value);
+        return this;
+    }
 
     @Override
     public OpensslServer set(Config config) {
@@ -96,8 +103,25 @@ public class OpensslServer implements Server, AutoCloseable {
     public void run() {
         containerName = generateContainerName();
 
+        List<String> command = new ArrayList<>();
+        command.add("docker");
+        command.add("run");
+        command.add("-p");
+        command.add(String.format("%d:%d", port, port));
+
+        if (!dockerEnvs.isEmpty()) {
+            for (Map.Entry entry : dockerEnvs.entrySet()) {
+                command.add("-e");
+                command.add(String.format("%s=%s", entry.getKey(), entry.getValue()));
+            }
+        }
+
+        command.add("--name");
+        command.add(containerName);
+        command.add("openssl/server/tls13");
+
         try {
-            int code = Utils.waitProcessFinish(output, server_start_template, port, port, containerName);
+            int code = Utils.waitProcessFinish(output, command);
             if (code != 0) {
                 output.achtung("the server exited with a non-zero exit code (%d)", code);
                 failed = true;
@@ -136,7 +160,8 @@ public class OpensslServer implements Server, AutoCloseable {
         }
 
         try {
-            return Utils.exec(check_container_running_template, containerName).waitFor() == 0;
+            return Utils.exec(output, check_container_running_template, containerName)
+                    .waitFor() == 0;
         } catch (InterruptedException | IOException e) {
             failed = true;
             throw new RuntimeException("unexpected exception occurred", e);
