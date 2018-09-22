@@ -1,7 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls13.connection.action.composite;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.action.AbstractAction;
-import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
 import com.gypsyengineer.tlsbunny.tls13.utils.TLS13Utils;
 
@@ -22,7 +21,7 @@ public class OutgoingChangeCipherSpec extends AbstractAction {
     }
 
     @Override
-    public Action run() throws IOException {
+    public OutgoingChangeCipherSpec run() throws IOException {
         ChangeCipherSpec ccs = context.factory.createChangeCipherSpec(value);
 
         TLSPlaintext[] tlsPlaintexts = context.factory.createTLSPlaintexts(
