@@ -32,6 +32,9 @@ import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Target.*;
 
 public class CommonFuzzer implements Runnable {
 
+    public static Runner.FuzzerFactory fuzzerFactory =
+            (config, output) -> new CommonFuzzer(output, config);
+
     public static final int TLS_PLAINTEXT_HEADER_LENGTH =
             ContentType.ENCODING_LENGTH + ProtocolVersion.ENCODING_LENGTH
                     + UInt16.ENCODING_LENGTH - 1;
@@ -42,6 +45,12 @@ public class CommonFuzzer implements Runnable {
     // read timeouts in millis
     public static final long long_read_timeout = 5000;
     public static final long short_read_timeout = 500;
+
+    private static final int max_attempts = 3;
+    private static final int delay = 3000; // in millis
+
+    protected final Output output;
+    protected final FuzzerConfig config;
 
     public static FuzzerConfig[] tlsPlaintextConfigs() {
         return new FuzzerConfig[] {
@@ -281,15 +290,6 @@ public class CommonFuzzer implements Runnable {
         return configs.toArray(new FuzzerConfig[configs.size()]);
     }
 
-    public static Runner.FuzzerFactory fuzzerFactory =
-            (config, output) -> new CommonFuzzer(output, config);
-
-    private static final int MAX_ATTEMPTS = 3;
-    private static final int DELAY = 3000; // in millis
-
-    protected final Output output;
-    protected final FuzzerConfig config;
-
     public CommonFuzzer(Output output, FuzzerConfig config) {
         this.output = output;
         this.config = config;
@@ -349,14 +349,14 @@ public class CommonFuzzer implements Runnable {
                             throw e;
                         }
 
-                        if (attempt == MAX_ATTEMPTS) {
+                        if (attempt == max_attempts) {
                             throw new IOException("looks like the server closed connection");
                         }
                         attempt++;
 
                         output.info("connection failed: %s ", cause.getMessage());
                         output.info("let's wait a bit and try again (attempt %d)", attempt);
-                        Thread.sleep(DELAY);
+                        Thread.sleep(delay);
 
                         continue;
                     }

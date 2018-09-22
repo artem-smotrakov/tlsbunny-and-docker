@@ -18,7 +18,11 @@ public class CCSTest {
         Context context = new Context();
         context.factory = StructFactory.getDefault();
 
-        ByteBuffer buffer = new OutgoingChangeCipherSpec().set(context).run().out();
+        ByteBuffer buffer = new OutgoingChangeCipherSpec()
+                .set(ChangeCipherSpec.VALID_VALUE)
+                .set(context)
+                .run()
+                .out();
         assertNotNull(buffer);
 
         new IncomingChangeCipherSpec()

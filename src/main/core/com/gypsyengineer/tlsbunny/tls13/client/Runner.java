@@ -126,8 +126,8 @@ public class Runner {
     }
 
     private static class Holder {
-        FuzzerConfig fuzzerConfig;
-        FuzzerFactory fuzzerFactory;
+        private FuzzerConfig fuzzerConfig;
+        private FuzzerFactory fuzzerFactory;
 
         Holder(FuzzerConfig fuzzerConfig, FuzzerFactory fuzzerFactory) {
             this.fuzzerConfig = fuzzerConfig;

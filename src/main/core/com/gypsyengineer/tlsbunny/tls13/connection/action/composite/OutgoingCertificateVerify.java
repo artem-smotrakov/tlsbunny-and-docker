@@ -1,7 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls13.connection.action.composite;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.action.AbstractAction;
-import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.ActionFailed;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AEAD;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AEADException;
