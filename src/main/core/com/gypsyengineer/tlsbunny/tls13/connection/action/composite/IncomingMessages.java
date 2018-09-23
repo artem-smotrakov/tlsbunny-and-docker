@@ -273,6 +273,7 @@ public class IncomingMessages extends AbstractAction<IncomingMessages> {
                 .set(output)
                 .set(context)
                 .run();
+
         new ComputingHandshakeTrafficKeys()
                 .set(output)
                 .set(context)
@@ -335,13 +336,11 @@ public class IncomingMessages extends AbstractAction<IncomingMessages> {
                 .in(handshake.getBody())
                 .run();
 
-        if (!context.receivedServerCertificateRequest()) {
-            new ComputingApplicationTrafficKeys()
-                    .set(output)
-                    .set(context)
-                    .side(side)
-                    .run();
-        }
+        new ComputingApplicationTrafficKeys()
+                .set(output)
+                .set(context)
+                .side(side)
+                .run();
     }
 
     private void processNewSessionTicket(Handshake handshake) throws IOException {

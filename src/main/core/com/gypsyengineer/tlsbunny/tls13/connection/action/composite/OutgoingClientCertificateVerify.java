@@ -50,7 +50,9 @@ public class OutgoingClientCertificateVerify
     }
 
     @Override
-    public OutgoingClientCertificateVerify run() throws IOException, AEADException, ActionFailed {
+    public OutgoingClientCertificateVerify run()
+            throws IOException, AEADException, ActionFailed {
+
         CertificateVerify certificateVerify = createCertificateVerify();
         Handshake handshake = toHandshake(certificateVerify);
         context.setClientCertificateVerify(handshake);

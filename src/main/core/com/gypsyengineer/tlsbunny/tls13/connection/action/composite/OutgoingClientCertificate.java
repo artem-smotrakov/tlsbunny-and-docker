@@ -46,8 +46,13 @@ public class OutgoingClientCertificate extends AbstractAction {
     private Certificate createCertificate() throws IOException {
         // TODO: looks like this class can't be used on server side
         //       on server side, certificate_request_context should be empty
+        byte[] certificate_request_context = new byte[0];
+        if (context.certificate_request_context != null) {
+            certificate_request_context = context.certificate_request_context.bytes();
+        }
+
         return context.factory.createCertificate(
-                context.certificate_request_context.bytes(),
+                certificate_request_context,
                 context.factory.createX509CertificateEntry(cert_data));
     }
 

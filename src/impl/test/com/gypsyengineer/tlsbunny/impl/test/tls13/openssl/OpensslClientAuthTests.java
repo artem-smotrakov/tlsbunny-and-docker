@@ -17,6 +17,7 @@ public class OpensslClientAuthTests {
 
     private static OpensslServer server;
 
+    // TODO: why openssl doesn't send a CertificateRequest message?
     @BeforeClass
     public static void setUp() throws Exception {
         server = new OpensslServer();

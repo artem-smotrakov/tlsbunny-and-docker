@@ -24,7 +24,7 @@ public class ClientAuth extends SingleConnectionClient {
 
     public static void main(String[] args) throws Exception {
         try (Output output = new Output()) {
-            new HttpsClient()
+            new ClientAuth()
                     .set(output)
                     .connect();
         }
@@ -66,9 +66,6 @@ public class ClientAuth extends SingleConnectionClient {
                         .certificate(config.clientCertificate()))
                 .send(new OutgoingClientCertificateVerify()
                         .key(config.clientKey()))
-
-                .run(new ComputingApplicationTrafficKeys()
-                        .client())
 
                 // send Finished
                 .run(new GeneratingFinished())
