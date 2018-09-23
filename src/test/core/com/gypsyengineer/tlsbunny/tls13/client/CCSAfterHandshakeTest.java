@@ -29,20 +29,12 @@ import static org.junit.Assert.*;
 
 public class CCSAfterHandshakeTest {
 
-    private static final String serverCertificatePath = "certs/server_cert.der";
-    private static final String serverKeyPath = "certs/server_key.pkcs8";
-
     @Test
     public void expectedAlertReceived() throws Exception {
         Output serverOutput = new Output("server");
         Output clientOutput = new Output("client");
 
         Config serverConfig = SystemPropertiesConfig.load();
-        serverConfig.serverCertificate(serverCertificatePath);
-        serverConfig.serverKey(serverKeyPath);
-
-        CCSAfterHandshake client = new CCSAfterHandshake();
-
         SingleThreadServer server = new SingleThreadServer()
                 .set(new CorrectServerEngineFactoryImpl()
                         .set(serverConfig)
@@ -50,6 +42,8 @@ public class CCSAfterHandshakeTest {
                 .set(serverConfig)
                 .set(serverOutput)
                 .stopWhen(new OneConnectionReceived());
+
+        CCSAfterHandshake client = new CCSAfterHandshake();
 
         try (client; server; clientOutput; serverOutput) {
             server.start();
@@ -69,11 +63,6 @@ public class CCSAfterHandshakeTest {
         Output clientOutput = new Output("client");
 
         Config serverConfig = SystemPropertiesConfig.load();
-        serverConfig.serverCertificate(serverCertificatePath);
-        serverConfig.serverKey(serverKeyPath);
-
-        CCSAfterHandshake client = new CCSAfterHandshake();
-
         SingleThreadServer server = new SingleThreadServer()
                 .set(new IncorrectServerEngineFactoryImpl()
                         .set(serverConfig)
@@ -81,6 +70,8 @@ public class CCSAfterHandshakeTest {
                 .set(serverConfig)
                 .set(serverOutput)
                 .stopWhen(new OneConnectionReceived());
+
+        CCSAfterHandshake client = new CCSAfterHandshake();
 
         try (client; server; clientOutput; serverOutput) {
             server.start();

@@ -27,9 +27,6 @@ public class StartWithCCSTest {
         Output clientOutput = new Output("client");
 
         Config serverConfig = SystemPropertiesConfig.load();
-
-        StartWithCCS client = new StartWithCCS();
-
         SingleThreadServer server = new SingleThreadServer()
                 .set(new EngineFactoryImpl()
                         .set(serverConfig)
@@ -37,6 +34,8 @@ public class StartWithCCSTest {
                 .set(serverConfig)
                 .set(serverOutput)
                 .maxConnections(1);
+
+        StartWithCCS client = new StartWithCCS();
 
         try (server; clientOutput; serverOutput) {
             server.start();

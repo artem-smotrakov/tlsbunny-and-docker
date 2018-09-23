@@ -27,20 +27,12 @@ import static org.junit.Assert.*;
 
 public class DoubleClientHelloTest {
 
-    private static final String serverCertificatePath = "certs/server_cert.der";
-    private static final String serverKeyPath = "certs/server_key.pkcs8";
-
     @Test
     public void expectedAlertReceived() throws Exception {
         Output serverOutput = new Output("server");
         Output clientOutput = new Output("client");
 
         Config serverConfig = SystemPropertiesConfig.load();
-        serverConfig.serverCertificate(serverCertificatePath);
-        serverConfig.serverKey(serverKeyPath);
-
-        DoubleClientHello client = new DoubleClientHello();
-
         SingleThreadServer server = new SingleThreadServer()
                 .set(new CorrectServerEngineFactoryImpl()
                         .set(serverConfig)
@@ -48,6 +40,8 @@ public class DoubleClientHelloTest {
                 .set(serverConfig)
                 .set(serverOutput)
                 .stopWhen(new OneConnectionReceived());
+
+        DoubleClientHello client = new DoubleClientHello();
 
         try (client; server; clientOutput; serverOutput) {
             server.start();
@@ -67,11 +61,6 @@ public class DoubleClientHelloTest {
         Output clientOutput = new Output("client");
 
         Config serverConfig = SystemPropertiesConfig.load();
-        serverConfig.serverCertificate(serverCertificatePath);
-        serverConfig.serverKey(serverKeyPath);
-
-        DoubleClientHello client = new DoubleClientHello();
-
         SingleThreadServer server = new SingleThreadServer()
                 .set(new IncorrectServerEngineFactoryImpl()
                         .set(serverConfig)
@@ -79,6 +68,8 @@ public class DoubleClientHelloTest {
                 .set(serverConfig)
                 .set(serverOutput)
                 .stopWhen(new OneConnectionReceived());
+
+        DoubleClientHello client = new DoubleClientHello();
 
         try (client; server; clientOutput; serverOutput) {
             server.start();

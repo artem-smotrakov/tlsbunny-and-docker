@@ -24,21 +24,12 @@ import static org.junit.Assert.*;
 
 public class MultipleCCSTest {
 
-    private static final long delay = 1000; // in millis
-    private static final String serverCertificatePath = "certs/server_cert.der";
-    private static final String serverKeyPath = "certs/server_key.pkcs8";
-
     @Test
     public void test() throws Exception {
         Output serverOutput = new Output("server");
         Output clientOutput = new Output("client");
 
         Config serverConfig = SystemPropertiesConfig.load();
-        serverConfig.serverCertificate(serverCertificatePath);
-        serverConfig.serverKey(serverKeyPath);
-
-        MultipleCCS client = new MultipleCCS();
-
         SingleThreadServer server = new SingleThreadServer()
                 .set(new EngineFactoryImpl()
                         .set(serverConfig)
@@ -47,9 +38,9 @@ public class MultipleCCSTest {
                 .set(serverOutput)
                 .stopWhen(new OneConnectionReceived());
 
+        MultipleCCS client = new MultipleCCS();
         try (server; clientOutput; serverOutput) {
-            new Thread(server).start();
-            Thread.sleep(delay);
+            server.start();
 
             Config clientConfig = SystemPropertiesConfig.load().port(server.port());
             client.set(clientConfig).set(clientOutput);
