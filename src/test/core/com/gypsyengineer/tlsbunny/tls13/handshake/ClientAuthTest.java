@@ -269,6 +269,9 @@ public class ClientAuthTest {
                     .restore()
                     .send(new OutgoingData())
 
+                    .run(new ComputingApplicationTrafficKeys()
+                            .server())
+
                     .receive(new IncomingData())
                     .run(new ProcessingHandshakeTLSCiphertext()
                             .expect(handshake))
@@ -291,9 +294,6 @@ public class ClientAuthTest {
                     .run(new ProcessingHandshake()
                             .expect(finished))
                     .run(new ProcessingFinished(Side.server))
-
-                    .run(new ComputingApplicationTrafficKeys()
-                            .server())
 
                     // receive application data
                     .receive(new IncomingData())
