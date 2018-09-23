@@ -161,7 +161,15 @@ public class SingleThreadServer implements Server {
 
     @Override
     public SingleThreadServer stop() {
-        throw new UnsupportedOperationException("no stops for you!");
+        if (!serverSocket.isClosed()) {
+            try {
+                serverSocket.close();
+            } catch (IOException e) {
+                output.achtung("exception occurred while stopping the server", e);
+            }
+        }
+
+        return this;
     }
 
     @Override
