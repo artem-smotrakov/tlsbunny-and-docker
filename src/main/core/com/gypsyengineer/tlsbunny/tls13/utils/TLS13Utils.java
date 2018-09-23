@@ -46,18 +46,26 @@ public class TLS13Utils {
     public static KeyShare.ServerHello findKeyShare(StructFactory factory, ServerHello hello)
             throws IOException {
 
+        Extension ext = hello.findExtension(ExtensionType.key_share);
+        if (ext == null) {
+            throw new IOException("could not find key_share extension (null)");
+        }
+
         return factory.parser()
                 .parseKeyShareFromServerHello(
-                        hello.findExtension(ExtensionType.key_share)
-                                .getExtensionData().bytes());
+                        ext.getExtensionData().bytes());
     }
 
     public static SupportedVersions.ServerHello findSupportedVersion(
             StructFactory factory, ServerHello hello) throws IOException {
 
+        Extension ext = hello.findExtension(ExtensionType.supported_versions);
+        if (ext == null) {
+            throw new IOException("could not find supported_versions extension (null)");
+        }
+
         return factory.parser().parseSupportedVersionsServerHello(
-                hello.findExtension(ExtensionType.supported_versions)
-                        .getExtensionData().bytes());
+                ext.getExtensionData().bytes());
     }
 
     public static int getCoordinateLength(NamedGroup.Secp group) {

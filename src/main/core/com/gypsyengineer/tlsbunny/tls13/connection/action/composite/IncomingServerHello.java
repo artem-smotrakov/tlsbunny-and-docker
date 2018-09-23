@@ -40,7 +40,9 @@ public class IncomingServerHello extends AbstractAction {
             throw new ActionFailed("expected a handshake message");
         }
 
-        Handshake handshake = context.factory.parser().parseHandshake(tlsPlaintext.getFragment());
+        Handshake handshake = context.factory.parser()
+                .parseHandshake(tlsPlaintext.getFragment());
+
         if (!handshake.containsServerHello()) {
             throw new ActionFailed("expected a ServerHello message");
         }
@@ -50,8 +52,11 @@ public class IncomingServerHello extends AbstractAction {
         return this;
     }
 
-    private void processServerHello(Handshake handshake) throws ActionFailed, IOException, NegotiatorException, AEADException {
-        ServerHello serverHello = context.factory.parser().parseServerHello(handshake.getBody());
+    private void processServerHello(Handshake handshake)
+            throws ActionFailed, IOException, NegotiatorException, AEADException {
+
+        ServerHello serverHello = context.factory.parser()
+                .parseServerHello(handshake.getBody());
 
         if (!context.suite.equals(serverHello.getCipherSuite())) {
             output.info("expected cipher suite: %s", context.suite);
@@ -61,11 +66,6 @@ public class IncomingServerHello extends AbstractAction {
 
         SupportedVersions.ServerHello selected_version = findSupportedVersion(
                 context.factory, serverHello);
-        if (!selected_version.equals(ProtocolVersion.TLSv13)) {
-            output.info("ServerHello.selected version: %s",
-                    selected_version.getSelectedVersion());
-            // TODO: when TLSBUNNY 1.3 spec is finished, we should throw an exception here
-        }
 
         // TODO: we look for only first key share, but there may be multiple key shares
         KeyShare.ServerHello keyShare = findKeyShare(context.factory, serverHello);

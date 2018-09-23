@@ -22,7 +22,7 @@ public class OpensslClientAuthTests {
     @Test
     public void httpsClient() throws Exception {
         new TestForServer()
-                .set(new ClientAuth())
+                .set(new HttpsClientAuth())
                 .set(server)
                 .run();
     }

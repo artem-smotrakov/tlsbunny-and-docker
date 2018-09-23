@@ -127,6 +127,22 @@ public class OpensslTests {
                 .run();
     }
 
+    @Test
+    public void startWithServerHello() throws Exception {
+        new TestForServer()
+                .set(new StartWithServerHello())
+                .set(server)
+                .run();
+    }
+
+    @Test
+    public void startWithFinished() throws Exception {
+        new TestForServer()
+                .set(new StartWithFinished())
+                .set(server)
+                .run();
+    }
+
     // TODO: check server logs for ASan findings
     @AfterClass
     public static void tearDown() throws Exception {

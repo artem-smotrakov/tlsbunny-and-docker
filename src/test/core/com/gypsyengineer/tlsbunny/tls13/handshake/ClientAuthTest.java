@@ -41,7 +41,7 @@ public class ClientAuthTest {
                 .set(serverOutput)
                 .stopWhen(new OneConnectionReceived());
 
-        ClientAuth client = new ClientAuth();
+        HttpsClientAuth client = new HttpsClientAuth();
 
         try (server; clientOutput; serverOutput) {
             server.start();

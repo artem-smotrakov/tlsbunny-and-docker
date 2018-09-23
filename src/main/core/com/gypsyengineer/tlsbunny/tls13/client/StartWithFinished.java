@@ -1,30 +1,27 @@
 package com.gypsyengineer.tlsbunny.tls13.client;
 
-import com.gypsyengineer.tlsbunny.tls13.connection.*;
+import com.gypsyengineer.tlsbunny.tls13.connection.AlertCheck;
+import com.gypsyengineer.tlsbunny.tls13.connection.Check;
+import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Side;
-import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.*;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.IncomingMessages;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.OutgoingChangeCipherSpec;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.handshake.NegotiatorException;
 import com.gypsyengineer.tlsbunny.utils.Output;
-
-import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
-import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.client_hello;
 import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.finished;
-import static com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup.secp256r1;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv12;
-import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv13;
-import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp256r1_sha256;
 
-public class ClientAuth extends SingleConnectionClient {
+public class StartWithFinished extends SingleConnectionClient {
 
     public static void main(String[] args) throws Exception {
         try (Output output = new Output()) {
-            new ClientAuth()
+            new StartWithFinished()
                     .set(output)
                     .connect();
         }
@@ -32,7 +29,7 @@ public class ClientAuth extends SingleConnectionClient {
 
     @Override
     protected Engine createEngine()
-            throws NegotiatorException, NoSuchAlgorithmException, IOException {
+            throws NegotiatorException, NoSuchAlgorithmException {
 
         return Engine.init()
                 .target(config.host())
@@ -40,15 +37,12 @@ public class ClientAuth extends SingleConnectionClient {
                 .set(factory)
                 .set(output)
 
-                // send ClientHello
-                .run(new GeneratingClientHello()
-                        .supportedVersions(TLSv13)
-                        .groups(secp256r1)
-                        .signatureSchemes(ecdsa_secp256r1_sha256)
-                        .keyShareEntries(context -> context.negotiator.createKeyShareEntry()))
+                // send Finished
+                .run(new GeneratingRandomFinishedKey())
+                .run(new GeneratingFinished())
                 .run(new WrappingIntoHandshake()
-                        .type(client_hello)
-                        .updateContext(Context.Element.first_client_hello))
+                        .type(finished)
+                        .run((context, message) -> context.setClientFinished(message)))
                 .run(new WrappingIntoTLSPlaintexts()
                         .type(handshake)
                         .version(TLSv12))
@@ -61,11 +55,6 @@ public class ClientAuth extends SingleConnectionClient {
                 // TODO: how can we make it more readable?
                 .loop(context -> !context.hasServerFinished() && !context.hasAlert())
                     .receive(() -> new IncomingMessages(Side.client))
-
-                .send(new OutgoingClientCertificate()
-                        .certificate(config.clientCertificate()))
-                .send(new OutgoingClientCertificateVerify()
-                        .key(config.clientKey()))
 
                 // send Finished
                 .run(new GeneratingFinished())
@@ -87,9 +76,8 @@ public class ClientAuth extends SingleConnectionClient {
 
     @Override
     protected List<Check> createChecks() {
-        return List.of(
-                new NoAlertCheck(),
-                new SuccessCheck(),
-                new NoExceptionCheck());
+        return List.of(new AlertCheck());
     }
+
+
 }
