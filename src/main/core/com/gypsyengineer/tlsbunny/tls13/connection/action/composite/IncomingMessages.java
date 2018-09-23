@@ -177,6 +177,11 @@ public class IncomingMessages extends AbstractAction<IncomingMessages> {
                 continue;
             }
 
+            if (handshake.containsCertificateRequest()) {
+                processCertificateRequest(handshake);
+                continue;
+            }
+
             if (handshake.containsCertificate()) {
                 processCertificate(handshake);
                 continue;
@@ -268,6 +273,7 @@ public class IncomingMessages extends AbstractAction<IncomingMessages> {
                 .set(output)
                 .set(context)
                 .run();
+
         new ComputingHandshakeTrafficKeys()
                 .set(output)
                 .set(context)
@@ -287,6 +293,16 @@ public class IncomingMessages extends AbstractAction<IncomingMessages> {
                 .run();
 
         context.setEncryptedExtensions(handshake);
+    }
+
+    private void processCertificateRequest(Handshake handshake) {
+        new ProcessingCertificateRequest()
+                .set(output)
+                .set(context)
+                .in(handshake.getBody())
+                .run();
+
+        context.setServerCertificateRequest(handshake);
     }
 
     private void processCertificate(Handshake handshake) {

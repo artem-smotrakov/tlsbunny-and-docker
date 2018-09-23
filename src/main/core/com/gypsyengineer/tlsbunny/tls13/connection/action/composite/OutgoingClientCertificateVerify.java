@@ -19,8 +19,8 @@ import java.security.spec.PKCS8EncodedKeySpec;
 
 import static com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext.NO_PADDING;
 
-// TODO: looks like this class can be used only on client side
-public class OutgoingCertificateVerify extends AbstractAction<OutgoingCertificateVerify> {
+public class OutgoingClientCertificateVerify
+        extends AbstractAction<OutgoingClientCertificateVerify> {
 
     private static final byte[] CERTIFICATE_VERIFY_PREFIX = new byte[64];
     static {
@@ -34,7 +34,7 @@ public class OutgoingCertificateVerify extends AbstractAction<OutgoingCertificat
 
     private byte[] key_data;
 
-    public OutgoingCertificateVerify key(String path) throws IOException {
+    public OutgoingClientCertificateVerify key(String path) throws IOException {
         if (path == null || path.trim().isEmpty()) {
             throw  new IllegalArgumentException("no certificate key specified");
         }
@@ -50,14 +50,12 @@ public class OutgoingCertificateVerify extends AbstractAction<OutgoingCertificat
     }
 
     @Override
-    public OutgoingCertificateVerify run() throws IOException, AEADException, ActionFailed {
+    public OutgoingClientCertificateVerify run()
+            throws IOException, AEADException, ActionFailed {
+
         CertificateVerify certificateVerify = createCertificateVerify();
         Handshake handshake = toHandshake(certificateVerify);
-
-        // TODO: the class should be renamed to OutgoingClientCertificateVerify
-        //       since it sets a client CertificateVerify in context
         context.setClientCertificateVerify(handshake);
-
         out = TLS13Utils.store(encrypt(handshake));
 
         return this;

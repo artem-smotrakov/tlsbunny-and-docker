@@ -6,6 +6,7 @@ import com.gypsyengineer.tlsbunny.utils.Output;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class Utils {
@@ -14,11 +15,27 @@ public class Utils {
     public static final int default_server_start_timeout = 10 * 1000; // im millis
     public static final int default_server_stop_timeout  = 10 * 1000; // im millis
 
-    public static Process exec(String template, Object... params)
+    public static Process exec(Output output, String template, Object... params)
             throws IOException {
 
+        String command = String.format(template, params);
+        output.info("run: %s", command);
+
         ProcessBuilder pb = new ProcessBuilder(
-                String.format(template, params).split("\\s+"));
+                command.split("\\s+"));
+        pb.redirectErrorStream(true);
+
+        return pb.start();
+    }
+
+    public static Process exec(Output output, List<String> command) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        for (String part : command) {
+            sb.append(part).append(" ");
+        }
+        output.info("run: %s", sb.toString());
+
+        ProcessBuilder pb = new ProcessBuilder(command);
         pb.redirectErrorStream(true);
 
         return pb.start();
@@ -58,10 +75,17 @@ public class Utils {
         } while (server.running());
     }
 
-    public static int waitProcessFinish(Output output, String template, Object... params)
+    public static int waitProcessFinish(Output output, List<String> command)
             throws IOException, InterruptedException {
 
-        return waitProcessFinish(output, exec(template, params));
+        return waitProcessFinish(output, exec(output, command));
+    }
+
+    public static int waitProcessFinish(
+            Output output, String template, Object... params)
+                throws IOException, InterruptedException {
+
+        return waitProcessFinish(output, exec(output, template, params));
     }
 
     public static int waitProcessFinish(Output output, Process process)

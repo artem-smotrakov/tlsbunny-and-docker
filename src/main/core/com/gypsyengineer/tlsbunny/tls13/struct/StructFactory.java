@@ -51,7 +51,10 @@ public interface StructFactory {
     Handshake createHandshake(HandshakeType type, byte[] content);
     Certificate createCertificate(byte[] certificate_request_context,
                                   CertificateEntry... certificate_list);
-    CertificateRequest createCertificateRequest();
+    CertificateRequest createCertificateRequest(byte[] certificate_request_context,
+                                                Vector<Extension> extensions);
+    CertificateRequest createCertificateRequest(byte[] certificate_request_context,
+                                                List<Extension> extensions);
     CertificateVerify createCertificateVerify(SignatureScheme algorithm,
                                               byte[] signature);
     ClientHello createClientHello(ProtocolVersion legacy_version,

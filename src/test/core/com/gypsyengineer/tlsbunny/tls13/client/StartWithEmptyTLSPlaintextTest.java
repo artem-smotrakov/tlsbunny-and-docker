@@ -29,18 +29,12 @@ import static org.junit.Assert.*;
 
 public class StartWithEmptyTLSPlaintextTest {
 
-    private static final String serverCertificatePath = "certs/server_cert.der";
-    private static final String serverKeyPath = "certs/server_key.pkcs8";
-
     @Test
     public void expectedAlertReceived() throws Exception {
         Output serverOutput = new Output("server");
         Output clientOutput = new Output("client");
 
         Config serverConfig = SystemPropertiesConfig.load();
-        serverConfig.serverCertificate(serverCertificatePath);
-        serverConfig.serverKey(serverKeyPath);
-
         CorrectServerEngineFactoryImpl serverEngineFactory =
                 (CorrectServerEngineFactoryImpl) new CorrectServerEngineFactoryImpl()
                         .set(serverConfig)
@@ -89,11 +83,6 @@ public class StartWithEmptyTLSPlaintextTest {
         Output clientOutput = new Output("client");
 
         Config serverConfig = SystemPropertiesConfig.load();
-        serverConfig.serverCertificate(serverCertificatePath);
-        serverConfig.serverKey(serverKeyPath);
-
-        StartWithEmptyTLSPlaintext client = new StartWithEmptyTLSPlaintext();
-
         SingleThreadServer server = new SingleThreadServer()
                 .set(new IncorrectServerEngineFactoryImpl()
                         .set(serverConfig)
@@ -101,6 +90,8 @@ public class StartWithEmptyTLSPlaintextTest {
                 .set(serverConfig)
                 .set(serverOutput)
                 .stopWhen(new OneConnectionReceived());
+
+        StartWithEmptyTLSPlaintext client = new StartWithEmptyTLSPlaintext();
 
         try (client; server; clientOutput; serverOutput) {
             server.start();

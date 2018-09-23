@@ -246,8 +246,17 @@ public abstract class FuzzyStructFactory<T> implements StructFactory, Fuzzer<T> 
     }
 
     @Override
-    public CertificateRequest createCertificateRequest() {
-        return factory.createCertificateRequest();
+    public CertificateRequest createCertificateRequest(byte[] certificate_request_context,
+                                                Vector<Extension> extensions) {
+
+        return factory.createCertificateRequest(certificate_request_context, extensions);
+    }
+
+    @Override
+    public CertificateRequest createCertificateRequest(byte[] certificate_request_context,
+                                                List<Extension> extensions) {
+
+        return factory.createCertificateRequest(certificate_request_context, extensions);
     }
 
     @Override

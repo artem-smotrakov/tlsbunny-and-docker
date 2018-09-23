@@ -1,36 +1,95 @@
 package com.gypsyengineer.tlsbunny.tls13.client;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.*;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.Side;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.*;
-import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
-import com.gypsyengineer.tlsbunny.utils.Config;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
+import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
+import com.gypsyengineer.tlsbunny.tls13.handshake.NegotiatorException;
+import com.gypsyengineer.tlsbunny.utils.Output;
 
-public class ClientAuth {
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.util.List;
+
+import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
+import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.client_hello;
+import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.finished;
+import static com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup.secp256r1;
+import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv12;
+import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv13;
+import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp256r1_sha256;
+
+public class ClientAuth extends SingleConnectionClient {
 
     public static void main(String[] args) throws Exception {
-        Config config = SystemPropertiesConfig.load();
-
-        Engine.init()
-                .target(config.host())
-                .target(config.port())
-                .send(new OutgoingClientHello())
-                .send(new OutgoingChangeCipherSpec())
-                .receive(new IncomingServerHello())
-                .receive(new IncomingChangeCipherSpec())
-                .receive(new IncomingEncryptedExtensions())
-                .receive(new IncomingCertificateRequest())
-                .receive(new IncomingCertificate())
-                .receive(new IncomingCertificateVerify())
-                .receive(new IncomingFinished())
-                .send(new OutgoingCertificate()
-                        .certificate(config.clientCertificate()))
-                .send(new OutgoingCertificateVerify()
-                        .key(config.clientKey()))
-                .send(new OutgoingFinished())
-                .send(new OutgoingHttpGetRequest())
-                .receive(new IncomingApplicationData())
-                .connect()
-                .run(new NoAlertCheck());
+        try (Output output = new Output()) {
+            new ClientAuth()
+                    .set(output)
+                    .connect();
+        }
     }
 
+    @Override
+    protected Engine createEngine()
+            throws NegotiatorException, NoSuchAlgorithmException, IOException {
+
+        return Engine.init()
+                .target(config.host())
+                .target(config.port())
+                .set(factory)
+                .set(output)
+
+                // send ClientHello
+                .run(new GeneratingClientHello()
+                        .supportedVersions(TLSv13)
+                        .groups(secp256r1)
+                        .signatureSchemes(ecdsa_secp256r1_sha256)
+                        .keyShareEntries(context -> context.negotiator.createKeyShareEntry()))
+                .run(new WrappingIntoHandshake()
+                        .type(client_hello)
+                        .updateContext(Context.Element.first_client_hello))
+                .run(new WrappingIntoTLSPlaintexts()
+                        .type(handshake)
+                        .version(TLSv12))
+                .send(new OutgoingData())
+
+                .send(new OutgoingChangeCipherSpec())
+
+                // receive a ServerHello, EncryptedExtensions, Certificate,
+                // CertificateVerify and Finished messages
+                // TODO: how can we make it more readable?
+                .loop(context -> !context.hasServerFinished() && !context.hasAlert())
+                    .receive(() -> new IncomingMessages(Side.client))
+
+                .send(new OutgoingClientCertificate()
+                        .certificate(config.clientCertificate()))
+                .send(new OutgoingClientCertificateVerify()
+                        .key(config.clientKey()))
+
+                // send Finished
+                .run(new GeneratingFinished())
+                .run(new WrappingIntoHandshake()
+                        .type(finished)
+                        .updateContext(Context.Element.client_finished))
+                .run(new WrappingHandshakeDataIntoTLSCiphertext())
+                .send(new OutgoingData())
+
+                // send application data
+                .run(new PreparingHttpGetRequest())
+                .run(new WrappingApplicationDataIntoTLSCiphertext())
+                .send(new OutgoingData())
+
+                // receive session tickets and application data
+                .loop(context -> !context.receivedApplicationData() && !context.hasAlert())
+                    .receive(() -> new IncomingMessages(Side.client));
+    }
+
+    @Override
+    protected List<Check> createChecks() {
+        return List.of(
+                new NoAlertCheck(),
+                new SuccessCheck(),
+                new NoExceptionCheck());
+    }
 }

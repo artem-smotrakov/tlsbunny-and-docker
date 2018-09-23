@@ -13,7 +13,7 @@ import org.junit.Test;
 
 import java.net.SocketException;
 
-public class OpensslTestSuite {
+public class OpensslTests {
 
     private static OpensslServer server;
 

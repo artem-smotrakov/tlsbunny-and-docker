@@ -10,6 +10,8 @@ public class SystemPropertiesConfig implements Config {
     public static final int DEFAULT_PORT = 10101;
     public static final String DEFAULT_HOST = "localhost";
     public static final int DEFAULT_THREADS = 3;
+    public static final String DEFAULT_SERVER_CERTIFICATE = "certs/server_cert.der";
+    public static final String DEFAULT_SERVER_KEY = "certs/server_key.pkcs8";
     public static final String DEFAULT_CLIENT_CERTIFICATE = "certs/client_cert.der";
     public static final String DEFAULT_CLIENT_KEY = "certs/client_key.pkcs8";
     public static final long DEFAULT_READ_TIMEOUT = 5000; // in millis
@@ -184,7 +186,11 @@ public class SystemPropertiesConfig implements Config {
         config.threads = Integer.getInteger("tlsbunny.threads", DEFAULT_THREADS);
         config.parts = Integer.getInteger("tlsbunny.parts", DEFAULT_PARTS);
         config.startTest = Long.getLong("tlsbunny.start.test", DEFAULT_START_TEST);
-        config.endTest = Long.getLong("tlsbunny.ebd.test", DEFAULT_END_TEST);
+        config.endTest = Long.getLong("tlsbunny.end.test", DEFAULT_END_TEST);
+        config.serverCertificate = System.getProperty(
+                "tlsbunny.server.cert", DEFAULT_SERVER_CERTIFICATE);
+        config.serverKey = System.getProperty(
+                "tlsbunny.server.key", DEFAULT_SERVER_KEY);
         config.clientCertificate = System.getProperty(
                 "tlsbunny.client.cert", DEFAULT_CLIENT_CERTIFICATE);
         config.clientKey = System.getProperty(
