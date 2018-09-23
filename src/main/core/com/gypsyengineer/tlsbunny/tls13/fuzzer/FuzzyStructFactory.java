@@ -94,13 +94,12 @@ public abstract class FuzzyStructFactory<T> implements StructFactory, Fuzzer<T> 
                 break;
             case 2:
                 target = Target.valueOf(parts[0]);
+                fuzzer.setState(parts[1]);
                 break;
             default:
                 throw new IllegalArgumentException(
                         String.format("what the hell? invalid state: %s", state));
         }
-
-        throw new UnsupportedOperationException("it's actually not implemented, ha ha");
     }
 
     @Override
