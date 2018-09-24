@@ -1,4 +1,4 @@
-package com.gypsyengineer.tlsbunny.tls13.fuzzer;
+package com.gypsyengineer.tlsbunny.fuzzer;
 
 import java.util.BitSet;
 
