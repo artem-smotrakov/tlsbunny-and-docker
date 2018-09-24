@@ -373,7 +373,7 @@ public class CommonFuzzer implements Runnable {
         }
         Client client = config.client();
 
-        fuzzer.setOutput(output);
+        fuzzer.set(output);
 
         if (smokeTest) {
             try {
@@ -396,8 +396,7 @@ public class CommonFuzzer implements Runnable {
         output.info("smoke test passed, start fuzzing");
         try {
             while (fuzzer.canFuzz()) {
-                output.info("test %d", fuzzer.getTest());
-                output.info("now fuzzer's state is '%s'", fuzzer.getState());
+                output.info("test %d", fuzzer.currentTest());
 
                 int attempt = 0;
                 while (true) {

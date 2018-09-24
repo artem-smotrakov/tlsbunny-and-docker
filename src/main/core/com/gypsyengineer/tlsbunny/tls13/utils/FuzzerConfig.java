@@ -181,8 +181,6 @@ public class FuzzerConfig implements Config {
     }
 
     public FuzzyStructFactory factory() {
-        factory.setStartTest(startTest());
-        factory.setEndTest(endTest());
         return factory;
     }
 

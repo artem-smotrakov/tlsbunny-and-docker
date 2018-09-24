@@ -15,7 +15,6 @@ public class SimpleVectorFuzzer implements Fuzzer<Vector<Byte>> {
 
     private final Generator[] generators;
     private int state = 0;
-    private int end;
     private Output output;
 
     public SimpleVectorFuzzer() {
@@ -103,48 +102,39 @@ public class SimpleVectorFuzzer implements Fuzzer<Vector<Byte>> {
                 (vector, output) -> new FuzzedVector(
                         vector.lengthBytes(), 255, generateArray(255)),
         };
-
-        end = generators.length - 1;
-    }
-    
-    @Override
-    synchronized public String getState() {
-        return Integer.toString(state);
     }
 
     @Override
-    synchronized public void setState(String state) {
-        setStartTest(Integer.parseInt(state));
-    }
-
-    @Override
-    synchronized public void setStartTest(long state) {
-        this.state = check(state);
-    }
-
-    @Override
-    synchronized public void setEndTest(long end) {
-        this.end = check(end);
-    }
-
-    @Override
-    synchronized public void setOutput(Output output) {
+    synchronized public void set(Output output) {
         this.output = output;
     }
 
     @Override
-    synchronized public Output getOutput() {
+    synchronized public Output output() {
         return output;
     }
 
     @Override
-    synchronized public long getTest() {
+    synchronized public long currentTest() {
         return state;
     }
 
     @Override
+    synchronized public void currentTest(long test) {
+        if (test < 0) {
+            throw new IllegalArgumentException("what the hell? test number can't be negative!");
+        }
+
+        if (test >= generators.length) {
+            throw new IllegalArgumentException("what the hell? test number is too big!");
+        }
+
+        state = (int) test;
+    }
+
+    @Override
     synchronized public boolean canFuzz() {
-        return state <= end;
+        return state <= generators.length - 1;
     }
 
     @Override

@@ -12,16 +12,14 @@ public abstract class AbstractFlipFuzzer implements Fuzzer<byte[]> {
     static final int FROM_THE_BEGINNING = 0;
     static final int NOT_SPECIFIED = -1;
 
-    double minRatio;
-    double maxRatio;
     private int startIndex;
     private int endIndex;
-    final Random random;
 
-    Output output;
-
-    long state = 0;
-    long end = Long.MAX_VALUE;
+    protected double minRatio;
+    protected double maxRatio;
+    protected final Random random;
+    protected Output output;
+    protected long state = 0;
 
     public AbstractFlipFuzzer() {
         this(DEFAULT_MIN_RATIO, DEFAULT_MAX_RATIO, FROM_THE_BEGINNING, NOT_SPECIFIED);
@@ -85,43 +83,25 @@ public abstract class AbstractFlipFuzzer implements Fuzzer<byte[]> {
     }
 
     @Override
-    synchronized public String getState() {
-        return Long.toString(state);
-    }
-
-    @Override
-    synchronized public void setState(String state) {
-        long value = Long.parseLong(state);
-        if (value < 0) {
-            throw new IllegalArgumentException();
-        }
-        setStartTest(value);
-    }
-
-    @Override
-    synchronized public void setStartTest(long state) {
-        this.state = state;
-    }
-
-    @Override
-    synchronized public void setEndTest(long end) {
-        this.end = end;
-    }
-
-    @Override
-    synchronized public long getTest() {
+    synchronized public long currentTest() {
         return state;
     }
 
     @Override
+    synchronized public void currentTest(long test) {
+        state = test;
+    }
+
+    @Override
     synchronized public boolean canFuzz() {
-        return state <= end;
+        return state <= Long.MAX_VALUE;
     }
 
     @Override
     synchronized public void moveOn() {
         if (state == Long.MAX_VALUE) {
-            throw new IllegalStateException();
+            throw new IllegalStateException(
+                    "what the hell? I can't move on because max state is reached!");
         }
         state++;
         random.setSeed(state);
@@ -134,18 +114,18 @@ public abstract class AbstractFlipFuzzer implements Fuzzer<byte[]> {
     }
 
     @Override
-    synchronized public void setOutput(Output output) {
+    synchronized public void set(Output output) {
         this.output = output;
     }
 
     @Override
-    synchronized public Output getOutput() {
+    synchronized public Output output() {
         return output;
     }
 
     abstract byte[] fuzzImpl(byte[] array);
 
-    int getStartIndex() {
+    protected int getStartIndex() {
         if (startIndex > 0) {
             return startIndex;
         }
@@ -153,7 +133,7 @@ public abstract class AbstractFlipFuzzer implements Fuzzer<byte[]> {
         return 0;
     }
 
-    int getEndIndex(byte[] array) {
+    protected int getEndIndex(byte[] array) {
         if (endIndex > 0 && endIndex < array.length) {
             return endIndex;
         }
@@ -161,7 +141,7 @@ public abstract class AbstractFlipFuzzer implements Fuzzer<byte[]> {
         return array.length - 1;
     }
 
-    double getRatio() {
+    protected double getRatio() {
         return minRatio + (maxRatio - minRatio) * random.nextDouble();
     }
 
