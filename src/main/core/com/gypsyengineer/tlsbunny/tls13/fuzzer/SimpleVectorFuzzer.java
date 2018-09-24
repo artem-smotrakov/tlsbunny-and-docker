@@ -4,6 +4,7 @@ import com.gypsyengineer.tlsbunny.fuzzer.FuzzedVector;
 import com.gypsyengineer.tlsbunny.fuzzer.Fuzzer;
 import com.gypsyengineer.tlsbunny.tls.Vector;
 import com.gypsyengineer.tlsbunny.utils.Output;
+import com.gypsyengineer.tlsbunny.utils.WhatTheHell;
 
 import java.io.IOException;
 
@@ -123,15 +124,7 @@ public class SimpleVectorFuzzer implements Fuzzer<Vector<Byte>> {
 
     @Override
     synchronized public void currentTest(long test) {
-        if (test < 0) {
-            throw whatTheHell("Test number can't be negative!");
-        }
-
-        if (test >= generators.length) {
-            throw whatTheHell("test number is too big!");
-        }
-
-        state = (int) test;
+        state = check(test);
     }
 
     @Override
@@ -148,20 +141,23 @@ public class SimpleVectorFuzzer implements Fuzzer<Vector<Byte>> {
     }
 
     @Override
-    synchronized public final Vector<Byte> fuzz(Vector<Byte> legacySessionId) {
+    synchronized public final Vector<Byte> fuzz(Vector<Byte> vector) {
+        if (!canFuzz()) {
+            throw new WhatTheHell("I can't fuzz anymore!");
+        }
+
         try {
-            return generators[state].run(legacySessionId, output);
+            return generators[state].run(vector, output);
         } catch (IOException e) {
-            // TODO: can we do better?
-            throw new RuntimeException(e);
+            throw whatTheHell("unexpected exception", e);
         }
     }
 
     private int check(long state) {
         if (state < 0 || state > generators.length - 1) {
-            throw new IllegalArgumentException(
-                    String.format("state should be in [0, %d], but %d received",
-                            generators.length - 1, state));
+            throw whatTheHell(
+                    "state should be in [0, %d], but %d received",
+                    generators.length - 1, state);
         }
 
         return (int) state;

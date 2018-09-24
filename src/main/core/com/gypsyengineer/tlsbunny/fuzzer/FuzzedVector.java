@@ -4,7 +4,9 @@ import com.gypsyengineer.tlsbunny.tls.Vector;
 import com.gypsyengineer.tlsbunny.utils.Converter;
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class FuzzedVector<T> implements Vector<T> {
 
@@ -88,4 +90,26 @@ public class FuzzedVector<T> implements Vector<T> {
                 .array();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        FuzzedVector<?> that = (FuzzedVector<?>) o;
+        return lengthBytes == that.lengthBytes &&
+                length == that.length &&
+                Arrays.equals(content, that.content);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(lengthBytes, length);
+        result = 31 * result + Arrays.hashCode(content);
+        return result;
+    }
 }
