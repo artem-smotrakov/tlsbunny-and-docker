@@ -60,6 +60,7 @@ public class FuzzyHttpsClient implements Client {
 
     @Override
     public Client set(Check... check) {
+        // TODO: we need to be able to set checks
         throw new UnsupportedOperationException("no checks for you!");
     }
 
