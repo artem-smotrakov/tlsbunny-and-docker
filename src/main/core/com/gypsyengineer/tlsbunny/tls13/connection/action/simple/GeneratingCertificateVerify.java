@@ -16,6 +16,8 @@ import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 
+import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
+
 public class GeneratingCertificateVerify extends AbstractAction<GeneratingCertificateVerify> {
 
     private static final byte[] CERTIFICATE_VERIFY_PREFIX = new byte[64];
@@ -92,7 +94,7 @@ public class GeneratingCertificateVerify extends AbstractAction<GeneratingCertif
 
     private byte[] contextString() {
         if (side == null) {
-            throw new IllegalStateException("what the hell? side not specified! (null)");
+            throw whatTheHell("side not specified! (null)");
         }
 
         switch (side) {
@@ -101,8 +103,7 @@ public class GeneratingCertificateVerify extends AbstractAction<GeneratingCertif
             case server:
                 return SERVER_CERTIFICATE_VERIFY_CONTEXT_STRING;
             default:
-                throw new IllegalStateException(
-                        String.format("what the hell? unexpected side: %s", side));
+                throw whatTheHell("unexpected side: %s", side);
         }
     }
 }

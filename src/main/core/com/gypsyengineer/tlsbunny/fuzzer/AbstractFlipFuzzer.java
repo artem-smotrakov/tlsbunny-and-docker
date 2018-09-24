@@ -4,6 +4,8 @@ import com.gypsyengineer.tlsbunny.utils.Output;
 
 import java.util.Random;
 
+import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
+
 public abstract class AbstractFlipFuzzer implements Fuzzer<byte[]> {
 
     public static final double DEFAULT_MIN_RATIO = 0.01;
@@ -33,17 +35,15 @@ public abstract class AbstractFlipFuzzer implements Fuzzer<byte[]> {
         this.maxRatio = maxRatio;
 
         if (endIndex == 0) {
-            throw new IllegalArgumentException("what the hell? end index is None!");
+            throw whatTheHell("end index is None!");
         }
 
         if (startIndex == endIndex && startIndex > 0) {
-            throw new IllegalArgumentException(
-                    "what the hell? end and start indexes are the same!");
+            throw whatTheHell("end and start indexes are the same!");
         }
 
         if (endIndex >= 0 && startIndex > endIndex) {
-            throw new IllegalArgumentException(
-                    "what the hell? start index is greater than end index!");
+            throw whatTheHell("start index is greater than end index!");
         }
         this.startIndex = startIndex;
         this.endIndex = endIndex;
@@ -64,13 +64,11 @@ public abstract class AbstractFlipFuzzer implements Fuzzer<byte[]> {
 
     synchronized public AbstractFlipFuzzer startIndex(int index) {
         if (index < 0) {
-            throw new IllegalArgumentException(
-                    "what the hell? start index is negative!");
+            throw whatTheHell("start index is negative!");
         }
 
         if (endIndex >= 0 && index >= endIndex) {
-            throw new IllegalArgumentException(
-                    "what the hell? start index is greater than end index!");
+            throw whatTheHell("start index is greater than end index!");
         }
 
         startIndex = index;
@@ -100,8 +98,7 @@ public abstract class AbstractFlipFuzzer implements Fuzzer<byte[]> {
     @Override
     synchronized public void moveOn() {
         if (state == Long.MAX_VALUE) {
-            throw new IllegalStateException(
-                    "what the hell? I can't move on because max state is reached!");
+            throw whatTheHell("I can't move on because max state is reached!");
         }
         state++;
         random.setSeed(state);
@@ -147,8 +144,7 @@ public abstract class AbstractFlipFuzzer implements Fuzzer<byte[]> {
 
     private static double check(double ratio) {
         if (ratio <= 0 || ratio > 1) {
-            throw new IllegalArgumentException(
-                    String.format("what the hell? wrong ratio: %.2f", ratio));
+            throw whatTheHell("wrong ratio: %.2f", ratio);
         }
 
         return ratio;
@@ -158,8 +154,7 @@ public abstract class AbstractFlipFuzzer implements Fuzzer<byte[]> {
         check(minRatio);
         check(maxRatio);
         if (minRatio > maxRatio) {
-            throw new IllegalArgumentException(
-                    "what the hell? min ration should not be greater than max ratio!");
+            throw whatTheHell("min ration should not be greater than max ratio!");
         }
     }
 

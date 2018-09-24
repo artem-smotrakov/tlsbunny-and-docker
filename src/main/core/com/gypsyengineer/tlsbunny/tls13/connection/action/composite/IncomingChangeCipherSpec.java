@@ -6,6 +6,8 @@ import com.gypsyengineer.tlsbunny.tls13.struct.ChangeCipherSpec;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
 import java.io.IOException;
 
+import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
+
 public class IncomingChangeCipherSpec extends AbstractAction {
 
     private int expectedValue = -1;
@@ -17,8 +19,7 @@ public class IncomingChangeCipherSpec extends AbstractAction {
 
     public IncomingChangeCipherSpec expect(int ccsValue) {
         if (ccsValue < 0 || ccsValue > 255) {
-            throw new IllegalArgumentException(String.format(
-                    "what the hell? invalid CCS value (%d)", ccsValue));
+            throw whatTheHell("invalid CCS value (%d)", ccsValue);
         }
 
         expectedValue = ccsValue;

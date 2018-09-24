@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
+import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
+
 public class Random implements Struct {
 
     public static final int LENGTH = 32;
@@ -46,11 +48,11 @@ public class Random implements Struct {
 
     public void setLastBytes(byte[] lastBytes) {
         if (lastBytes == null) {
-            throw new IllegalArgumentException("what the hell? bytes is null!");
+            throw whatTheHell("bytes is null!");
         }
 
         if (lastBytes.length > bytes.length) {
-            throw new IllegalArgumentException("what the hell? it's too long!");
+            throw whatTheHell("it's too long!");
         }
 
         int i = 0;

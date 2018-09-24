@@ -7,6 +7,8 @@ import com.gypsyengineer.tlsbunny.utils.Output;
 
 import java.io.IOException;
 
+import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
+
 public class SimpleVectorFuzzer implements Fuzzer<Vector<Byte>> {
 
     public static SimpleVectorFuzzer newSimpleVectorFuzzer() {
@@ -122,11 +124,11 @@ public class SimpleVectorFuzzer implements Fuzzer<Vector<Byte>> {
     @Override
     synchronized public void currentTest(long test) {
         if (test < 0) {
-            throw new IllegalArgumentException("what the hell? test number can't be negative!");
+            throw whatTheHell("Test number can't be negative!");
         }
 
         if (test >= generators.length) {
-            throw new IllegalArgumentException("what the hell? test number is too big!");
+            throw whatTheHell("test number is too big!");
         }
 
         state = (int) test;

@@ -15,6 +15,7 @@ import java.io.IOException;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.application_data;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv12;
 import static com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext.NO_PADDING;
+import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public class WrappingIntoTLSCiphertext extends AbstractAction {
 
@@ -49,13 +50,11 @@ public class WrappingIntoTLSCiphertext extends AbstractAction {
                 encryptor = context.applicationDataEncryptor;
                 break;
             default:
-                throw new IllegalArgumentException(
-                        String.format("what the hell? unknown phase: %s", phase));
+                throw whatTheHell("unknown phase: %s", phase);
         }
 
         if (encryptor == null) {
-            throw new IllegalStateException(
-                    "what the hell? encryptor is not initialized (null)");
+            throw whatTheHell("encryptor is not initialized (null)");
         }
 
         TLSInnerPlaintext tlsInnerPlaintext = context.factory.createTLSInnerPlaintext(

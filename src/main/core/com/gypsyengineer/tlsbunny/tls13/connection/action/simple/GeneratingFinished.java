@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.security.NoSuchAlgorithmException;
 
+import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
+
 public class GeneratingFinished extends AbstractAction {
 
     private Side side;
@@ -46,7 +48,7 @@ public class GeneratingFinished extends AbstractAction {
     @Override
     public Action run() throws IOException, ActionFailed {
         if (side == null) {
-            throw new IllegalStateException("what the hell? side not specified! (null)");
+            throw whatTheHell("side not specified! (null)");
         }
 
         try {
@@ -68,8 +70,7 @@ public class GeneratingFinished extends AbstractAction {
                 context.verifyServerFinished();
                 break;
             default:
-                throw new IllegalArgumentException(
-                        "what the hell? unknown side: " + side);
+                throw whatTheHell("unknown side: " + side);
         }
 
         return this;

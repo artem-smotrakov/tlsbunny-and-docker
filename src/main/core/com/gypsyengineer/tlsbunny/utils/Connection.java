@@ -9,6 +9,8 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 
+import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
+
 public class Connection implements AutoCloseable {
 
     private static final long read_delay = 100;             // in millis
@@ -77,9 +79,7 @@ public class Connection implements AutoCloseable {
             throws IOException {
 
         if (readTimeout <= 0) {
-            throw new IllegalArgumentException(String.format(
-                    "what the hell? timeout should be more than 0, but %d passed",
-                            readTimeout));
+            throw whatTheHell("timeout should be more than 0, but %d passed", readTimeout);
         }
 
         return create(new Socket(host, port), readTimeout);

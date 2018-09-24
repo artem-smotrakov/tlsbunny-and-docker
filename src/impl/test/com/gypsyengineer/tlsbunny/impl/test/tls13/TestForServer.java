@@ -4,6 +4,8 @@ import com.gypsyengineer.tlsbunny.tls13.client.Client;
 import com.gypsyengineer.tlsbunny.tls13.server.Server;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
+import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
+
 public class TestForServer {
 
     private Client client;
@@ -21,11 +23,11 @@ public class TestForServer {
 
     public TestForServer run() throws Exception {
         if (client == null) {
-            throw new IllegalStateException("what the hell? client is not set! (null)");
+            throw whatTheHell("client is not set! (null)");
         }
 
         if (server == null) {
-            throw new IllegalStateException("what the hell? server is not set! (null)");
+            throw whatTheHell("server is not set! (null)");
         }
 
         try (Output clientOutput = new Output("client");

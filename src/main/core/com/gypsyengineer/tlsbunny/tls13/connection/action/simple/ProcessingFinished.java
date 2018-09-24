@@ -12,6 +12,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 import static com.gypsyengineer.tlsbunny.tls13.handshake.Context.ZERO_HASH_VALUE;
+import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public class ProcessingFinished extends AbstractAction<ProcessingFinished> {
 
@@ -48,8 +49,7 @@ public class ProcessingFinished extends AbstractAction<ProcessingFinished> {
     @Override
     public Action run() throws IOException, ActionFailed {
         if (side == null) {
-            throw new IllegalStateException(
-                    "what the hell? side not specified! (null)");
+            throw whatTheHell("side not specified! (null)");
         }
 
         Finished finished = context.factory.parser().parseFinished(
@@ -83,8 +83,7 @@ public class ProcessingFinished extends AbstractAction<ProcessingFinished> {
                 context.verifyClientFinished();
                 break;
             default:
-                throw new IllegalArgumentException(
-                        "what the hell? unknown side: " + side);
+                throw whatTheHell("unknown side: " + side);
         }
 
         output.info("verified Finished message");
@@ -99,8 +98,7 @@ public class ProcessingFinished extends AbstractAction<ProcessingFinished> {
             case server:
                 return context.client_handshake_traffic_secret;
             default:
-                throw new IllegalArgumentException(
-                        "what the hell? unknown side: " + side);
+                throw whatTheHell("unknown side: " + side);
         }
     }
 

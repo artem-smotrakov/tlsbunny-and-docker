@@ -7,6 +7,8 @@ import com.gypsyengineer.tlsbunny.tls13.utils.TLS13Utils;
 
 import java.io.IOException;
 
+import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
+
 public class WrappingIntoTLSPlaintexts extends AbstractAction {
 
     private ContentType type;
@@ -30,11 +32,11 @@ public class WrappingIntoTLSPlaintexts extends AbstractAction {
     @Override
     public Action run() throws IOException {
         if (version == null) {
-            throw new IllegalStateException("what the hell? version is null!");
+            throw whatTheHell("version is null!");
         }
 
         if (type == null) {
-            throw new IllegalStateException("what the hell? content type is null!");
+            throw whatTheHell("content type is null!");
         }
 
         byte[] content = new byte[in.remaining()];

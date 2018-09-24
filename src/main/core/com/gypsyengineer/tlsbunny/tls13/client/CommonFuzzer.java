@@ -30,6 +30,7 @@ import static com.gypsyengineer.tlsbunny.tls13.fuzzer.LegacySessionIdFuzzer.newL
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.MutatedStructFactory.newMutatedStructFactory;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.SimpleVectorFuzzer.newSimpleVectorFuzzer;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Target.*;
+import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public class CommonFuzzer implements Runnable {
 
@@ -363,13 +364,12 @@ public class CommonFuzzer implements Runnable {
     @Override
     public void run() {
         if (config.noFactory()) {
-            throw new IllegalArgumentException(
-                    "what the hell? no fuzzy set specified!");
+            throw whatTheHell("no fuzzy set specified!");
         }
         FuzzyStructFactory fuzzer = config.factory();
 
         if (config.noClient()) {
-            throw new IllegalArgumentException("what the hell? no client specified");
+            throw whatTheHell("no client specified");
         }
         Client client = config.client();
 
