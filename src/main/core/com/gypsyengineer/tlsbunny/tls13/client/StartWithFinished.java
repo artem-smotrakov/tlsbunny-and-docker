@@ -1,7 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls13.client;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.AlertCheck;
-import com.gypsyengineer.tlsbunny.tls13.connection.Check;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Side;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.IncomingMessages;
@@ -25,6 +24,10 @@ public class StartWithFinished extends SingleConnectionClient {
                     .set(output)
                     .connect();
         }
+    }
+
+    public StartWithFinished() {
+        checks = List.of(new AlertCheck());
     }
 
     @Override
@@ -73,11 +76,5 @@ public class StartWithFinished extends SingleConnectionClient {
                 .loop(context -> !context.receivedApplicationData() && !context.hasAlert())
                     .receive(() -> new IncomingMessages(Side.client));
     }
-
-    @Override
-    protected List<Check> createChecks() {
-        return List.of(new AlertCheck());
-    }
-
 
 }

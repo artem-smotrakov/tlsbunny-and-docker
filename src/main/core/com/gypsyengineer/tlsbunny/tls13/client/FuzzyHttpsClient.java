@@ -9,14 +9,11 @@ import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.Output;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 
-import static com.gypsyengineer.tlsbunny.tls13.client.CommonFuzzer.*;
-
 public class FuzzyHttpsClient implements Client {
 
-    private Config config = SystemPropertiesConfig.load();
-    private Output output = new Output();
-    private FuzzerConfig[] fuzzerConfigs = noClientAuthConfigs();
-    private Client client = new HttpsClient();
+    private Config mainConfig;
+    private FuzzerConfig[] fuzzerConfigs;
+    private Output output;
 
     public static void main(String[] args) throws Exception {
         try (Output output = new Output()) {
@@ -26,9 +23,14 @@ public class FuzzyHttpsClient implements Client {
         }
     }
 
+    public FuzzyHttpsClient() {
+        mainConfig = SystemPropertiesConfig.load();
+        fuzzerConfigs = FuzzyClient.noClientAuthConfigs(mainConfig);
+    }
+
     @Override
     public Config config() {
-        return config;
+        return mainConfig;
     }
 
     public FuzzyHttpsClient set(FuzzerConfig... fuzzerConfigs) {
@@ -36,25 +38,33 @@ public class FuzzyHttpsClient implements Client {
         return this;
     }
 
-    public FuzzyHttpsClient set(Client client) {
-        this.client = client;
-        return this;
-    }
-
     @Override
-    public Client set(Config config) {
-        this.config = config;
+    public Client set(Config mainConfig) {
+        this.mainConfig = mainConfig;
         return this;
-    }
-
-    @Override
-    public Client set(StructFactory factory) {
-        throw new UnsupportedOperationException("no factories for you!");
     }
 
     @Override
     public Client set(Output output) {
         this.output = output;
+        return this;
+    }
+
+    @Override
+    public Client connect() throws Exception {
+        try (Client client = new HttpsClient()) {
+            client.set(output).set(mainConfig).set(no_checks);
+
+            new Runner()
+                    .set(mainConfig)
+                    .set(output)
+                    .set(FuzzyClient.fuzzerFactory)
+                    .set(client)
+                    .set(fuzzerConfigs)
+                    .set(new NoAlertAnalyzer())
+                    .submit();
+        }
+
         return this;
     }
 
@@ -65,26 +75,20 @@ public class FuzzyHttpsClient implements Client {
     }
 
     @Override
-    public Client connect() throws Exception {
-        client.set(output).set(config);
-
-        new Runner()
-                .set(config)
-                .set(output)
-                .add(fuzzerFactory, combine(fuzzerConfigs, client))
-                .set(new NoAlertAnalyzer())
-                .submit();
-
-        return this;
+    public Client set(StructFactory factory) {
+        throw new UnsupportedOperationException("no factories for you!");
     }
 
     @Override
     public Engine engine() {
+        // TODO: return engines
         throw new UnsupportedOperationException("no engines for you!");
     }
 
     @Override
-    public void close() throws Exception {
-        client.close();
+    public void close() {
+        if (output != null) {
+            output.flush();
+        }
     }
 }

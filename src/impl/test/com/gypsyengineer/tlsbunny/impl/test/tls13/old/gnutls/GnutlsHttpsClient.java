@@ -1,6 +1,5 @@
 package com.gypsyengineer.tlsbunny.impl.test.tls13.old.gnutls;
 
-import com.gypsyengineer.tlsbunny.tls13.connection.Check;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
@@ -30,6 +29,10 @@ public class GnutlsHttpsClient extends SingleConnectionClient {
                     .set(output)
                     .connect();
         }
+    }
+
+    public GnutlsHttpsClient() {
+        checks = List.of(new NoAlertCheck());
     }
 
     @Override
@@ -129,11 +132,6 @@ public class GnutlsHttpsClient extends SingleConnectionClient {
 
                 // GnuTLS server actually sends a "close_notify" alert
                 // but we just ignore it for now
-    }
-
-    @Override
-    protected List<Check> createChecks() {
-        return List.of(new NoAlertCheck());
     }
 
 }

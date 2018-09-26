@@ -1,6 +1,5 @@
 package com.gypsyengineer.tlsbunny.tls13.client;
 
-import com.gypsyengineer.tlsbunny.tls13.connection.Check;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Side;
@@ -29,6 +28,10 @@ public class MultipleCCS extends SingleConnectionClient {
                     .set(output)
                     .connect();
         }
+    }
+
+    public MultipleCCS() {
+        checks = List.of(new NoAlertCheck());
     }
 
     @Override
@@ -81,8 +84,4 @@ public class MultipleCCS extends SingleConnectionClient {
                 .receive(() -> new IncomingMessages(Side.client));
     }
 
-    @Override
-    protected List<Check> createChecks() {
-        return List.of(new NoAlertCheck());
-    }
 }

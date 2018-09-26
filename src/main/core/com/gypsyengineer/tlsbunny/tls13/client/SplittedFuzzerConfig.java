@@ -3,6 +3,7 @@ package com.gypsyengineer.tlsbunny.tls13.client;
 import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.FuzzyStructFactory;
 import com.gypsyengineer.tlsbunny.tls13.utils.FuzzerConfig;
+import com.gypsyengineer.tlsbunny.utils.Config;
 
 public class SplittedFuzzerConfig extends FuzzerConfig {
 
@@ -147,5 +148,55 @@ public class SplittedFuzzerConfig extends FuzzerConfig {
     @Override
     public Client client() {
         return config.client();
+    }
+
+    @Override
+    public FuzzerConfig set(Config mainConfig) {
+        return config.set(mainConfig);
+    }
+
+    @Override
+    public String serverCertificate() {
+        return config.serverCertificate();
+    }
+
+    @Override
+    public String serverKey() {
+        return config.serverKey();
+    }
+
+    @Override
+    public String targetFilter() {
+        return config.targetFilter();
+    }
+
+    @Override
+    public Config host(String host) {
+        return config.host(host);
+    }
+
+    @Override
+    public Config port(int port) {
+        return config.port(port);
+    }
+
+    @Override
+    public Config clientCertificate(String path) {
+        return config.clientCertificate(path);
+    }
+
+    @Override
+    public Config clientKey(String path) {
+        return config.clientKey(path);
+    }
+
+    @Override
+    public Config serverCertificate(String path) {
+        return config.serverCertificate(path);
+    }
+
+    @Override
+    public Config serverKey(String path) {
+        return config.serverKey(path);
     }
 }

@@ -28,6 +28,10 @@ public class StartWithCCS extends SingleConnectionClient {
         }
     }
 
+    public StartWithCCS() {
+        checks = List.of(new AlertCheck());
+    }
+
     @Override
     protected Engine createEngine() throws Exception {
         return Engine.init()
@@ -76,8 +80,4 @@ public class StartWithCCS extends SingleConnectionClient {
                     .receive(() -> new IncomingMessages(Side.client));
     }
 
-    @Override
-    protected List<Check> createChecks() {
-        return List.of(new AlertCheck());
-    }
 }

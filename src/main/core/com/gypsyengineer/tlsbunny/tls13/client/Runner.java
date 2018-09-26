@@ -3,12 +3,8 @@ package com.gypsyengineer.tlsbunny.tls13.client;
 import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
 import com.gypsyengineer.tlsbunny.tls13.utils.FuzzerConfig;
 import com.gypsyengineer.tlsbunny.utils.Config;
-import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -17,33 +13,41 @@ import static com.gypsyengineer.tlsbunny.utils.Utils.info;
 
 public class Runner {
 
-    private final List<Holder> holders = new ArrayList<>();
+    public interface FuzzerFactory {
+        Runnable create(FuzzerConfig config, Output output);
+    }
 
-    private Config mainConfig = SystemPropertiesConfig.load();
-    private Output output = new Output();
+    private Config mainConfig;
+    private FuzzerConfig[] fuzzerConfigs;
+    private FuzzerFactory fuzzerFactory;
+    private Client client;
+    private Output output;
     private Analyzer analyzer;
     private int index;
 
-    public Runner set(Config config) {
-        mainConfig = config;
+    public Runner set(Config mainConfig) {
+        this.mainConfig = mainConfig;
+        return this;
+    }
+
+    public Runner set(FuzzerConfig... fuzzerConfigs) {
+        this.fuzzerConfigs = fuzzerConfigs;
+        return this;
+    }
+
+    public Runner set(FuzzerFactory fuzzerFactory) {
+        this.fuzzerFactory = fuzzerFactory;
+        return this;
+    }
+
+    public Runner set(Client client) {
+        this.client = client;
         return this;
     }
 
     public Runner set(Output output) {
         this.output = output;
         return this;
-    }
-
-    public Runner add(FuzzerFactory fuzzerFactory, List<FuzzerConfig> configs) {
-        for (FuzzerConfig config : configs) {
-            this.holders.add(new Holder(config, fuzzerFactory));
-        }
-
-        return this;
-    }
-
-    public Runner add(FuzzerFactory fuzzerFactory, FuzzerConfig... configs) {
-        return add(fuzzerFactory, Arrays.asList(configs));
     }
 
     public Runner set(Analyzer analyzer) {
@@ -53,9 +57,9 @@ public class Runner {
 
     public void submit() throws InterruptedException {
         int threads = 1;
-        for (Holder holder : holders) {
-            if (threads < holder.fuzzerConfig.threads()) {
-                threads = holder.fuzzerConfig.threads();
+        for (FuzzerConfig fuzzerConfig : fuzzerConfigs) {
+            if (threads < fuzzerConfig.threads()) {
+                threads = fuzzerConfig.threads();
             }
         }
 
@@ -69,14 +73,24 @@ public class Runner {
         ExecutorService executor = Executors.newFixedThreadPool(threads);
         try {
             index = 0;
-            for (Holder holder : holders) {
-                if (skip(holder.fuzzerConfig)) {
+            for (FuzzerConfig fuzzerConfig : fuzzerConfigs) {
+                if (skip(fuzzerConfig)) {
                     info("skip config with target '%s'",
-                            holder.fuzzerConfig.factory().target());
+                            fuzzerConfig.factory().target());
                     continue;
                 }
 
-                submit(executor, holder);
+                fuzzerConfig.set(mainConfig);
+                fuzzerConfig.client(client);
+
+                if (analyzer != Analyzer.NOTHING) {
+                    fuzzerConfig.analyzer(analyzer);
+                }
+
+                for (FuzzerConfig subConfig : split(fuzzerConfig)) {
+                    output.prefix(String.format("part-%d", index++));
+                    executor.submit(fuzzerFactory.create(subConfig, output));
+                }
             }
         } finally {
             executor.shutdown();
@@ -104,13 +118,6 @@ public class Runner {
         return false;
     }
 
-    private void submit(ExecutorService executor, Holder holder) {
-        for (FuzzerConfig subConfig : split(holder.fuzzerConfig)) {
-            output.prefix(String.format("part-%d", index++));
-            executor.submit(holder.fuzzerFactory.create(subConfig, output));
-        }
-    }
-
     private FuzzerConfig[] split(FuzzerConfig config) {
         FuzzerConfig[] configs = new FuzzerConfig[config.parts()];
         long perThread = (config.endTest() - config.startTest()) / config.parts();
@@ -118,33 +125,12 @@ public class Runner {
         long end = start + perThread;
 
         for (int i = 0; i < config.parts(); i++) {
-            FuzzerConfig subConfig = new SplittedFuzzerConfig(config, start, end);
-
-            if (analyzer != Analyzer.NOTHING) {
-                subConfig.analyzer(analyzer);
-            }
-
-            configs[i] = subConfig;
-
+            configs[i] = new SplittedFuzzerConfig(config, start, end);
             start = end;
             end = start + perThread;
         }
 
         return configs;
-    }
-
-    public interface FuzzerFactory {
-        Runnable create(FuzzerConfig config, Output output);
-    }
-
-    private static class Holder {
-        private FuzzerConfig fuzzerConfig;
-        private FuzzerFactory fuzzerFactory;
-
-        Holder(FuzzerConfig fuzzerConfig, FuzzerFactory fuzzerFactory) {
-            this.fuzzerConfig = fuzzerConfig;
-            this.fuzzerFactory = fuzzerFactory;
-        }
     }
 
 }

@@ -32,6 +32,13 @@ public class HttpsClient extends SingleConnectionClient {
         }
     }
 
+    public HttpsClient() {
+        checks = List.of(
+                new NoAlertCheck(),
+                new SuccessCheck(),
+                new NoExceptionCheck());
+    }
+
     public HttpsClient version(ProtocolVersion protocolVersion) {
         this.protocolVersion = protocolVersion;
         return this;
@@ -87,11 +94,4 @@ public class HttpsClient extends SingleConnectionClient {
                     .receive(() -> new IncomingMessages(Side.client));
     }
 
-    @Override
-    protected List<Check> createChecks() {
-        return List.of(
-                new NoAlertCheck(),
-                new SuccessCheck(),
-                new NoExceptionCheck());
-    }
 }

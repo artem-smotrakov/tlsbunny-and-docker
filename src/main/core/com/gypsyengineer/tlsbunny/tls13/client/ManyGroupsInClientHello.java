@@ -30,6 +30,10 @@ public class ManyGroupsInClientHello extends SingleConnectionClient {
         }
     }
 
+    public ManyGroupsInClientHello() {
+        checks = List.of(new NoAlertCheck(), new SuccessCheck(), new NoExceptionCheck());
+    }
+
     public ManyGroupsInClientHello numberOfGroups(int n) {
         numberOfGroups = n;
         return this;
@@ -86,12 +90,6 @@ public class ManyGroupsInClientHello extends SingleConnectionClient {
                 // receive session tickets and application data
                 .loop(context -> !context.receivedApplicationData() && !context.hasAlert())
                     .receive(() -> new IncomingMessages(Side.client));
-    }
-
-    @Override
-    protected List<Check> createChecks() {
-        return List.of(
-                new NoAlertCheck(), new SuccessCheck(), new NoExceptionCheck());
     }
 
 }

@@ -1,6 +1,5 @@
 package com.gypsyengineer.tlsbunny.impl.test.tls13.old.wolfssl;
 
-import com.gypsyengineer.tlsbunny.tls13.connection.Check;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
@@ -29,6 +28,10 @@ public class WolfsslHttpsClient extends SingleConnectionClient {
                     .set(StructFactory.getDefault())
                     .connect();
         }
+    }
+
+    public WolfsslHttpsClient() {
+        checks = List.of(new NoAlertCheck());
     }
 
     @Override
@@ -122,11 +125,6 @@ public class WolfsslHttpsClient extends SingleConnectionClient {
 
                 // wolfssl server actually sends a "close_notify" alert
                 // but we just ignore it for now
-    }
-
-    @Override
-    protected List<Check> createChecks() {
-        return List.of(new NoAlertCheck());
     }
 
 }

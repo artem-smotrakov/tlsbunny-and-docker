@@ -7,6 +7,9 @@ import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
 public interface Client extends AutoCloseable {
+
+    Check[] no_checks = new Check[0];
+
     Config config();
     Client set(Config config);
     Client set(StructFactory factory);

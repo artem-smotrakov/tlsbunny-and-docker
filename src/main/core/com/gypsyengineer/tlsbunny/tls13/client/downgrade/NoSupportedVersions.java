@@ -1,7 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls13.client.downgrade;
 
 import com.gypsyengineer.tlsbunny.tls13.client.SingleConnectionClient;
-import com.gypsyengineer.tlsbunny.tls13.connection.Check;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.DowngradeMessageCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
@@ -27,6 +26,10 @@ public class NoSupportedVersions extends SingleConnectionClient {
         try (Output output = new Output()) {
             run(output, SystemPropertiesConfig.load());
         }
+    }
+
+    public NoSupportedVersions() {
+        checks = List.of(new DowngradeMessageCheck().ifTLSv12());
     }
 
     public static NoSupportedVersions run(Output output, Config config) throws Exception {
@@ -79,11 +82,6 @@ public class NoSupportedVersions extends SingleConnectionClient {
                         .type(alert)
                         .version(TLSv12))
                 .send(new OutgoingData());
-    }
-
-    @Override
-    protected List<Check> createChecks() {
-        return List.of(new DowngradeMessageCheck().ifTLSv12());
     }
 
 }

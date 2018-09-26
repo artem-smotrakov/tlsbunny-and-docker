@@ -33,6 +33,10 @@ public class CCSAfterHandshake extends SingleConnectionClient {
         }
     }
 
+    public CCSAfterHandshake() {
+        checks = List.of(new AlertCheck());
+    }
+
     @Override
     protected Engine createEngine()
             throws NegotiatorException, NoSuchAlgorithmException {
@@ -86,8 +90,4 @@ public class CCSAfterHandshake extends SingleConnectionClient {
                     .receive(() -> new IncomingMessages(Side.client));
     }
 
-    @Override
-    protected List<Check> createChecks() {
-        return List.of(new AlertCheck());
-    }
 }
