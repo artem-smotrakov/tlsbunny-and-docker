@@ -8,7 +8,8 @@ import com.gypsyengineer.tlsbunny.utils.Output;
 
 import java.util.List;
 
-public abstract class FuzzyStructFactory<T> implements StructFactory, Fuzzer<T> {
+public abstract class FuzzyStructFactory<T>
+        implements StructFactory, Fuzzer<T> {
 
     protected final StructFactory factory;
 
@@ -42,8 +43,9 @@ public abstract class FuzzyStructFactory<T> implements StructFactory, Fuzzer<T> 
     // implement methods from Fuzzer
 
     @Override
-    synchronized public void set(Output output) {
+    synchronized public FuzzyStructFactory set(Output output) {
         this.output = output;
+        return this;
     }
 
     @Override

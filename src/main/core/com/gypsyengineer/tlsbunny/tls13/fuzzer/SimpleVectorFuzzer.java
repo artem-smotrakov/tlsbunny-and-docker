@@ -3,6 +3,7 @@ package com.gypsyengineer.tlsbunny.tls13.fuzzer;
 import com.gypsyengineer.tlsbunny.fuzzer.FuzzedVector;
 import com.gypsyengineer.tlsbunny.fuzzer.Fuzzer;
 import com.gypsyengineer.tlsbunny.tls.Vector;
+import com.gypsyengineer.tlsbunny.utils.HasOutput;
 import com.gypsyengineer.tlsbunny.utils.Output;
 import com.gypsyengineer.tlsbunny.utils.WhatTheHell;
 
@@ -10,7 +11,8 @@ import java.io.IOException;
 
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
-public class SimpleVectorFuzzer implements Fuzzer<Vector<Byte>> {
+public class SimpleVectorFuzzer
+        implements Fuzzer<Vector<Byte>> {
 
     public static SimpleVectorFuzzer newSimpleVectorFuzzer() {
         return new SimpleVectorFuzzer();
@@ -108,8 +110,9 @@ public class SimpleVectorFuzzer implements Fuzzer<Vector<Byte>> {
     }
 
     @Override
-    synchronized public void set(Output output) {
+    synchronized public SimpleVectorFuzzer set(Output output) {
         this.output = output;
+        return this;
     }
 
     @Override
