@@ -92,7 +92,7 @@ public abstract class AbstractFlipFuzzer implements Fuzzer<byte[]> {
 
     @Override
     synchronized public boolean canFuzz() {
-        return state <= Long.MAX_VALUE;
+        return state < Long.MAX_VALUE;
     }
 
     @Override
