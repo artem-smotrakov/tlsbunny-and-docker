@@ -16,5 +16,8 @@ public interface Client extends AutoCloseable {
     Client set(Output output);
     Client set(Check... check);
     Client connect() throws Exception;
+
+    // TODO: should engine() be removed? or renamed ot lastEngine/recentEngine?
     Engine engine();
+    Engine[] engines();
 }

@@ -86,6 +86,12 @@ public class FuzzyHttpsClient implements Client {
     }
 
     @Override
+    public Engine[] engines() {
+        // TODO: return engines
+        throw new UnsupportedOperationException("no engines for you!");
+    }
+
+    @Override
     public void close() {
         if (output != null) {
             output.flush();

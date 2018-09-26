@@ -67,6 +67,7 @@ public abstract class AbstractClient implements Client, AutoCloseable {
         return recentEngine;
     }
 
+    @Override
     public Engine[] engines() {
         return engines.toArray(new Engine[engines.size()]);
     }

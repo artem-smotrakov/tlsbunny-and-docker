@@ -68,7 +68,7 @@ public class FuzzyClientTest {
                     .set(clientOutput)
                     .connect();
         }
-        
+
         // TODO: add asserts
     }
 
