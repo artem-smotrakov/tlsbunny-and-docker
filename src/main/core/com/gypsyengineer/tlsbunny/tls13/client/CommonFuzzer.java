@@ -440,7 +440,7 @@ public class CommonFuzzer implements Runnable {
 
     protected void reportError(String message, Throwable e) {
         if (strict) {
-            throw new RuntimeException(message, e);
+            throw whatTheHell(message, e);
         }
 
         output.achtung(message, e);
