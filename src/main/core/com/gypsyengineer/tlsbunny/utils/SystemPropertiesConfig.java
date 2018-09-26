@@ -172,6 +172,7 @@ public class SystemPropertiesConfig implements Config {
         return readTimeout;
     }
 
+    @Override
     public String targetFilter() {
         return System.getProperty("tlsbunny.target.filter", EMPTY_STRING).trim();
     }

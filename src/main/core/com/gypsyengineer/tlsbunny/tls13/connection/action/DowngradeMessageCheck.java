@@ -6,6 +6,8 @@ import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
 import com.gypsyengineer.tlsbunny.tls13.struct.ServerHello;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 
+import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
+
 public class DowngradeMessageCheck extends AbstractCheck {
 
     private static final byte[] downgrade_tls12_message = new byte[] {
@@ -20,7 +22,7 @@ public class DowngradeMessageCheck extends AbstractCheck {
 
     public DowngradeMessageCheck set(ProtocolVersion version) {
         if (version == null) {
-            throw new IllegalArgumentException("what the hell? version is null!");
+            throw whatTheHell("version is null!");
         }
 
         if (ProtocolVersion.TLSv13.equals(version)) {

@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
+
 public abstract class AbstractClient implements Client, AutoCloseable {
 
     protected Config config = SystemPropertiesConfig.load();
@@ -59,8 +61,7 @@ public abstract class AbstractClient implements Client, AutoCloseable {
     @Override
     public Engine engine() {
         if (recentEngine == null) {
-            throw new IllegalStateException(
-                    "what the hell? recent engine not initialized! (null)");
+            throw whatTheHell("recent engine not initialized! (null)");
         }
 
         return recentEngine;

@@ -11,29 +11,40 @@ import com.gypsyengineer.tlsbunny.tls13.struct.AlertLevel;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.Output;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
+import com.gypsyengineer.tlsbunny.utils.WhatTheHell;
 import org.junit.Test;
 
-import static com.gypsyengineer.tlsbunny.tls13.struct.ChangeCipherSpec.MAX;
-import static com.gypsyengineer.tlsbunny.tls13.struct.ChangeCipherSpec.MIN;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.alert;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
 import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.*;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv12;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class InvalidCCSTest {
 
-    private static final int number_of_connections = MAX - MIN;
+    @Test
+    public void invalidParameters() {
+        checkException(() -> new InvalidCCS().startWith(-1));
+        checkException(() -> new InvalidCCS().startWith(256));
+        checkException(() -> new InvalidCCS().endWith(-1));
+        checkException(() -> new InvalidCCS().endWith(256));
+        checkException(() -> new InvalidCCS().startWith(10).endWith(5).connect());
+    }
 
     @Test
-    public void test() throws Exception {
+    public void run() throws Exception {
         Output serverOutput = new Output("server");
         Output clientOutput = new Output("client");
 
         Config serverConfig = SystemPropertiesConfig.load();
 
         InvalidCCS client = new InvalidCCS();
+
+        int start = 10;
+        int end = 15;
+        int number_of_connections = end - start + 1;
 
         SingleThreadServer server = new SingleThreadServer()
                 .set(new EngineFactoryImpl()
@@ -43,15 +54,14 @@ public class InvalidCCSTest {
                 .set(serverOutput)
                 .maxConnections(number_of_connections);
 
-        try (server; clientOutput; serverOutput) {
+        try (client; server; clientOutput; serverOutput) {
             server.start();
 
             Config clientConfig = SystemPropertiesConfig.load().port(server.port());
-            client.set(clientConfig).set(clientOutput);
 
-            try (client) {
-                client.connect();
-            }
+            client.startWith(start).endWith(end)
+                    .set(clientConfig).set(clientOutput)
+                    .connect();
         }
 
         assertEquals(number_of_connections, client.engines().length);
@@ -97,6 +107,22 @@ public class InvalidCCSTest {
                             .version(TLSv12)
                             .type(alert))
                     .send(new OutgoingData());
+        }
+    }
+
+    interface ExceptionTest {
+        void run() throws Exception;
+    }
+
+    private static void checkException(ExceptionTest task) {
+        try {
+            task.run();
+            fail("expected WhatTheHell exception");
+        } catch (WhatTheHell e) {
+            // good
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("unexpected exception");
         }
     }
 }

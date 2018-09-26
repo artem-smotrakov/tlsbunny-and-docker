@@ -12,6 +12,7 @@ import static com.gypsyengineer.tlsbunny.tls13.handshake.Context.ZERO_HASH_VALUE
 import static com.gypsyengineer.tlsbunny.tls13.handshake.Context.ZERO_SALT;
 import static com.gypsyengineer.tlsbunny.utils.Utils.concatenate;
 import static com.gypsyengineer.tlsbunny.utils.Utils.zeroes;
+import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public class ComputingHandshakeTrafficKeys
         extends AbstractAction<ComputingHandshakeTrafficKeys> {
@@ -41,7 +42,7 @@ public class ComputingHandshakeTrafficKeys
     @Override
     public ComputingHandshakeTrafficKeys run() throws IOException, AEADException {
         if (side == null) {
-            throw new IllegalStateException("what the hell? side not specified! (null)");
+            throw whatTheHell("side not specified! (null)");
         }
 
         byte[] psk = zeroes(context.hkdf.getHashLength());

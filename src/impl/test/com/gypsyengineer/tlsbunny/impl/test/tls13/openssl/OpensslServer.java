@@ -15,6 +15,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
+
 // TODO: should we really use Server interface if we don't support many its methods?
 //       would it be better to create a separate interface for external servers?
 public class OpensslServer implements Server, AutoCloseable {
@@ -89,8 +91,7 @@ public class OpensslServer implements Server, AutoCloseable {
     @Override
     public Thread start() {
         if (containerName != null) {
-            throw new IllegalStateException(
-                    "what the hell? the server has already been started!");
+            throw whatTheHell("the server has already been started!");
         }
 
         Thread thread = new Thread(this);
@@ -135,8 +136,7 @@ public class OpensslServer implements Server, AutoCloseable {
     @Override
     public OpensslServer stop() {
         if (containerName == null) {
-            throw new IllegalStateException(
-                    "what the hell? the server has not been started yet!");
+            throw whatTheHell("the server has not been started yet!");
         }
 
         try {

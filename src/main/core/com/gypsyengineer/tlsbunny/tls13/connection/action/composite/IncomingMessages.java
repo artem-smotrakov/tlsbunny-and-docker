@@ -12,6 +12,8 @@ import com.gypsyengineer.tlsbunny.tls13.struct.*;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
+import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
+
 public class IncomingMessages extends AbstractAction<IncomingMessages> {
 
     private Side side;
@@ -130,7 +132,7 @@ public class IncomingMessages extends AbstractAction<IncomingMessages> {
             return;
         }
 
-        throw new IllegalStateException("what the hell? unexpected content type!");
+        throw whatTheHell("unexpected content type!");
     }
 
     private boolean expectEncryptedHandshakeData() {
@@ -202,7 +204,7 @@ public class IncomingMessages extends AbstractAction<IncomingMessages> {
                 continue;
             }
 
-            throw new IllegalStateException("what the hell? unexpected handshake message!");
+            throw whatTheHell("unexpected handshake message!");
         }
     }
 

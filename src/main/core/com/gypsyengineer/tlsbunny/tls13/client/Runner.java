@@ -2,6 +2,7 @@ package com.gypsyengineer.tlsbunny.tls13.client;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
 import com.gypsyengineer.tlsbunny.tls13.utils.FuzzerConfig;
+import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
@@ -16,10 +17,22 @@ import static com.gypsyengineer.tlsbunny.utils.Utils.info;
 
 public class Runner {
 
-    private final SystemPropertiesConfig systemPropertiesConfig = SystemPropertiesConfig.load();
     private final List<Holder> holders = new ArrayList<>();
+
+    private Config mainConfig = SystemPropertiesConfig.load();
+    private Output output = new Output();
     private Analyzer analyzer;
     private int index;
+
+    public Runner set(Config config) {
+        mainConfig = config;
+        return this;
+    }
+
+    public Runner set(Output output) {
+        this.output = output;
+        return this;
+    }
 
     public Runner add(FuzzerFactory fuzzerFactory, List<FuzzerConfig> configs) {
         for (FuzzerConfig config : configs) {
@@ -48,7 +61,7 @@ public class Runner {
 
         info("we are going to use %d threads", threads);
 
-        String targetFilter = systemPropertiesConfig.targetFilter();
+        String targetFilter = mainConfig.targetFilter();
         if (!targetFilter.isEmpty()) {
             info("target filter: %s", targetFilter);
         }
@@ -83,7 +96,7 @@ public class Runner {
     }
 
     private boolean skip(FuzzerConfig config) {
-        String targetFilter = systemPropertiesConfig.targetFilter();
+        String targetFilter = mainConfig.targetFilter();
         if (!targetFilter.isEmpty()) {
             return !config.factory().target().toString().contains(targetFilter);
         }
@@ -93,7 +106,6 @@ public class Runner {
 
     private void submit(ExecutorService executor, Holder holder) {
         for (FuzzerConfig subConfig : split(holder.fuzzerConfig)) {
-            Output output = new Output();
             output.prefix(String.format("part-%d", index++));
             executor.submit(holder.fuzzerFactory.create(subConfig, output));
         }

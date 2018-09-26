@@ -1,11 +1,18 @@
 package com.gypsyengineer.tlsbunny.tls13.fuzzer;
 
+import com.gypsyengineer.tlsbunny.fuzzer.FuzzedVector;
+import com.gypsyengineer.tlsbunny.fuzzer.Fuzzer;
 import com.gypsyengineer.tlsbunny.tls.Vector;
+import com.gypsyengineer.tlsbunny.utils.HasOutput;
 import com.gypsyengineer.tlsbunny.utils.Output;
+import com.gypsyengineer.tlsbunny.utils.WhatTheHell;
 
 import java.io.IOException;
 
-public class SimpleVectorFuzzer implements Fuzzer<Vector<Byte>> {
+import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
+
+public class SimpleVectorFuzzer
+        implements Fuzzer<Vector<Byte>> {
 
     public static SimpleVectorFuzzer newSimpleVectorFuzzer() {
         return new SimpleVectorFuzzer();
@@ -13,7 +20,6 @@ public class SimpleVectorFuzzer implements Fuzzer<Vector<Byte>> {
 
     private final Generator[] generators;
     private int state = 0;
-    private int end;
     private Output output;
 
     public SimpleVectorFuzzer() {
@@ -101,48 +107,32 @@ public class SimpleVectorFuzzer implements Fuzzer<Vector<Byte>> {
                 (vector, output) -> new FuzzedVector(
                         vector.lengthBytes(), 255, generateArray(255)),
         };
-
-        end = generators.length - 1;
-    }
-    
-    @Override
-    synchronized public String getState() {
-        return Integer.toString(state);
     }
 
     @Override
-    synchronized public void setState(String state) {
-        setStartTest(Integer.parseInt(state));
-    }
-
-    @Override
-    synchronized public void setStartTest(long state) {
-        this.state = check(state);
-    }
-
-    @Override
-    synchronized public void setEndTest(long end) {
-        this.end = check(end);
-    }
-
-    @Override
-    synchronized public void setOutput(Output output) {
+    synchronized public SimpleVectorFuzzer set(Output output) {
         this.output = output;
+        return this;
     }
 
     @Override
-    synchronized public Output getOutput() {
+    synchronized public Output output() {
         return output;
     }
 
     @Override
-    synchronized public long getTest() {
+    synchronized public long currentTest() {
         return state;
     }
 
     @Override
+    synchronized public void currentTest(long test) {
+        state = check(test);
+    }
+
+    @Override
     synchronized public boolean canFuzz() {
-        return state <= end;
+        return state <= generators.length - 1;
     }
 
     @Override
@@ -154,20 +144,23 @@ public class SimpleVectorFuzzer implements Fuzzer<Vector<Byte>> {
     }
 
     @Override
-    synchronized public final Vector<Byte> fuzz(Vector<Byte> legacySessionId) {
+    synchronized public final Vector<Byte> fuzz(Vector<Byte> vector) {
+        if (!canFuzz()) {
+            throw new WhatTheHell("I can't fuzz anymore!");
+        }
+
         try {
-            return generators[state].run(legacySessionId, output);
+            return generators[state].run(vector, output);
         } catch (IOException e) {
-            // TODO: can we do better?
-            throw new RuntimeException(e);
+            throw whatTheHell("unexpected exception", e);
         }
     }
 
     private int check(long state) {
         if (state < 0 || state > generators.length - 1) {
-            throw new IllegalArgumentException(
-                    String.format("state should be in [0, %d], but %d received",
-                            generators.length - 1, state));
+            throw whatTheHell(
+                    "state should be in [0, %d], but %d received",
+                    generators.length - 1, state);
         }
 
         return (int) state;

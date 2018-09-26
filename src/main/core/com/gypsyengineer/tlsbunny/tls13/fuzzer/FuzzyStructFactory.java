@@ -1,5 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls13.fuzzer;
 
+import com.gypsyengineer.tlsbunny.fuzzer.Fuzzer;
 import com.gypsyengineer.tlsbunny.tls.Random;
 import com.gypsyengineer.tlsbunny.tls.Vector;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
@@ -7,14 +8,14 @@ import com.gypsyengineer.tlsbunny.utils.Output;
 
 import java.util.List;
 
-public abstract class FuzzyStructFactory<T> implements StructFactory, Fuzzer<T> {
+public abstract class FuzzyStructFactory<T>
+        implements StructFactory, Fuzzer<T> {
 
-    public static final String STATE_DELIMITER = ":";
+    protected final StructFactory factory;
 
-    Target target;
-    Output output;
-    final StructFactory factory;
-    Fuzzer<T> fuzzer;
+    protected Target target;
+    protected Output output;
+    protected Fuzzer<T> fuzzer;
 
     public FuzzyStructFactory(StructFactory factory, Output output) {
         this.factory = factory;
@@ -42,65 +43,24 @@ public abstract class FuzzyStructFactory<T> implements StructFactory, Fuzzer<T> 
     // implement methods from Fuzzer
 
     @Override
-    synchronized public void setOutput(Output output) {
+    synchronized public FuzzyStructFactory set(Output output) {
         this.output = output;
+        return this;
     }
 
     @Override
-    synchronized public Output getOutput() {
+    synchronized public Output output() {
         return output;
     }
 
     @Override
-    synchronized public String getState() {
-        return String.join(STATE_DELIMITER,
-                target.toString(), fuzzer.getState());
+    synchronized public long currentTest() {
+        return fuzzer.currentTest();
     }
 
     @Override
-    synchronized public void setStartTest(long test) {
-        setState(String.join(STATE_DELIMITER,
-                target.toString(), String.valueOf(test)));
-    }
-
-    @Override
-    synchronized public void setEndTest(long test) {
-        fuzzer.setEndTest(test);
-    }
-
-    @Override
-    synchronized public long getTest() {
-        return fuzzer.getTest();
-    }
-
-    @Override
-    synchronized public void setState(String state) {
-        if (state == null) {
-            throw new IllegalArgumentException(
-                    "what the hell? state should not be null!");
-        }
-
-        state = state.toLowerCase().trim();
-        if (state.isEmpty()) {
-            throw new IllegalArgumentException(
-                    "what the hell? state should not be empty!");
-        }
-
-        String[] parts = state.split(STATE_DELIMITER);
-
-        switch (parts.length) {
-            case 1:
-                target = Target.valueOf(parts[0]);
-                break;
-            case 2:
-                target = Target.valueOf(parts[0]);
-                break;
-            default:
-                throw new IllegalArgumentException(
-                        String.format("what the hell? invalid state: %s", state));
-        }
-
-        throw new UnsupportedOperationException("it's actually not implemented, ha ha");
+    synchronized public void currentTest(long test) {
+        fuzzer.currentTest(test);
     }
 
     @Override

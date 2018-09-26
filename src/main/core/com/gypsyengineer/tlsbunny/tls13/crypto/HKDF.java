@@ -11,6 +11,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import javax.crypto.Mac;
 import static com.gypsyengineer.tlsbunny.utils.Utils.concatenate;
+import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
+
 import javax.crypto.spec.SecretKeySpec;
 
 public class HKDF {
@@ -69,8 +71,7 @@ public class HKDF {
         try {
             mac.init(new SecretKeySpec(PRK, mac.getAlgorithm()));
         } catch (InvalidKeyException e) {
-            throw new RuntimeException(
-                    "What the hell? InvalidKeyException should not occur!", e);
+            throw whatTheHell("InvalidKeyException should not occur!", e);
         }
 
         for (int i = 1; i <= N; i++) {
@@ -115,8 +116,7 @@ public class HKDF {
         try {
             mac.init(new RawKey(key, mac.getAlgorithm()));
         } catch (InvalidKeyException e) {
-            throw new RuntimeException(
-                    "What the hell? InvalidKeyException should not occur!", e);
+            throw whatTheHell("InvalidKeyException should not occur!", e);
         }
         return mac.doFinal(input);
     }

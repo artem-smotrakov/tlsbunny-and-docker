@@ -18,6 +18,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
+
 public class Engine {
 
     private static final ByteBuffer NOTHING = ByteBuffer.allocate(0);
@@ -421,8 +423,7 @@ public class Engine {
             return Connection.create(host, port, timeout);
         }
 
-        throw new IllegalArgumentException(
-                "what the hell? connection can't be initialized!");
+        throw whatTheHell("connection can't be initialized!");
     }
 
     public interface Condition {

@@ -10,6 +10,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
 import com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType;
 import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
+import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 import com.gypsyengineer.tlsbunny.tls13.utils.FuzzerConfig;
 import com.gypsyengineer.tlsbunny.utils.Output;
@@ -20,8 +21,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.gypsyengineer.tlsbunny.tls13.fuzzer.BitFlipFuzzer.newBitFlipFuzzer;
-import static com.gypsyengineer.tlsbunny.tls13.fuzzer.ByteFlipFuzzer.newByteFlipFuzzer;
+import static com.gypsyengineer.tlsbunny.fuzzer.BitFlipFuzzer.newBitFlipFuzzer;
+import static com.gypsyengineer.tlsbunny.fuzzer.ByteFlipFuzzer.newByteFlipFuzzer;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.CipherSuitesFuzzer.newCipherSuitesFuzzer;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.ExtensionVectorFuzzer.newExtensionVectorFuzzer;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.LegacyCompressionMethodsFuzzer.newLegacyCompressionMethodsFuzzer;
@@ -29,6 +30,7 @@ import static com.gypsyengineer.tlsbunny.tls13.fuzzer.LegacySessionIdFuzzer.newL
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.MutatedStructFactory.newMutatedStructFactory;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.SimpleVectorFuzzer.newSimpleVectorFuzzer;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Target.*;
+import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public class CommonFuzzer implements Runnable {
 
@@ -52,9 +54,16 @@ public class CommonFuzzer implements Runnable {
     protected final Output output;
     protected final FuzzerConfig config;
 
+    protected boolean strict = true;
+    protected boolean smokeTest = true;
+
     public static FuzzerConfig[] tlsPlaintextConfigs() {
+        return tlsPlaintextConfigs(SystemPropertiesConfig.load());
+    }
+
+    public static FuzzerConfig[] tlsPlaintextConfigs(Config config) {
         return new FuzzerConfig[] {
-                new FuzzerConfig(SystemPropertiesConfig.load())
+                new FuzzerConfig(config)
                         .factory(newMutatedStructFactory()
                                 .target(tls_plaintext)
                                 .fuzzer(newByteFlipFuzzer()
@@ -65,7 +74,7 @@ public class CommonFuzzer implements Runnable {
                         .readTimeout(short_read_timeout)
                         .endTest(200)
                         .parts(2),
-                new FuzzerConfig(SystemPropertiesConfig.load())
+                new FuzzerConfig(config)
                         .factory(newMutatedStructFactory()
                                 .target(tls_plaintext)
                                 .fuzzer(newBitFlipFuzzer()
@@ -80,8 +89,12 @@ public class CommonFuzzer implements Runnable {
     }
 
     public static FuzzerConfig[] ccsConfigs() {
+        return ccsConfigs(SystemPropertiesConfig.load());
+    }
+
+    public static FuzzerConfig[] ccsConfigs(Config config) {
         return new FuzzerConfig[] {
-                new FuzzerConfig(SystemPropertiesConfig.load())
+                new FuzzerConfig(config)
                         .factory(newMutatedStructFactory()
                                 .target(ccs)
                                 .fuzzer(newByteFlipFuzzer()
@@ -89,7 +102,7 @@ public class CommonFuzzer implements Runnable {
                                         .maxRatio(0.09)))
                         .readTimeout(long_read_timeout)
                         .endTest(20),
-                new FuzzerConfig(SystemPropertiesConfig.load())
+                new FuzzerConfig(config)
                         .factory(newMutatedStructFactory()
                                 .target(ccs)
                                 .fuzzer(newBitFlipFuzzer()
@@ -101,8 +114,12 @@ public class CommonFuzzer implements Runnable {
     }
 
     public static FuzzerConfig[] handshakeConfigs() {
+        return handshakeConfigs(SystemPropertiesConfig.load());
+    }
+
+    public static FuzzerConfig[] handshakeConfigs(Config config) {
         return new FuzzerConfig[] {
-                new FuzzerConfig(SystemPropertiesConfig.load())
+                new FuzzerConfig(config)
                         .factory(newMutatedStructFactory()
                                 .target(handshake)
                                 .fuzzer(newByteFlipFuzzer()
@@ -113,7 +130,7 @@ public class CommonFuzzer implements Runnable {
                         .readTimeout(short_read_timeout)
                         .endTest(2000)
                         .parts(5),
-                new FuzzerConfig(SystemPropertiesConfig.load())
+                new FuzzerConfig(config)
                         .factory(newMutatedStructFactory()
                                 .target(handshake)
                                 .fuzzer(newBitFlipFuzzer()
@@ -128,8 +145,12 @@ public class CommonFuzzer implements Runnable {
     }
 
     public static FuzzerConfig[] clientHelloConfigs() {
+        return clientHelloConfigs(SystemPropertiesConfig.load());
+    }
+
+    public static FuzzerConfig[] clientHelloConfigs(Config config) {
         return new FuzzerConfig[] {
-                new FuzzerConfig(SystemPropertiesConfig.load())
+                new FuzzerConfig(config)
                         .factory(newMutatedStructFactory()
                                 .target(client_hello)
                                 .fuzzer(newByteFlipFuzzer()
@@ -138,7 +159,7 @@ public class CommonFuzzer implements Runnable {
                         .readTimeout(long_read_timeout)
                         .endTest(2000)
                         .parts(5),
-                new FuzzerConfig(SystemPropertiesConfig.load())
+                new FuzzerConfig(config)
                         .factory(newMutatedStructFactory()
                                 .target(client_hello)
                                 .fuzzer(newBitFlipFuzzer()
@@ -151,8 +172,12 @@ public class CommonFuzzer implements Runnable {
     }
 
     public static FuzzerConfig[] certificateConfigs() {
+        return certificateConfigs(SystemPropertiesConfig.load());
+    }
+
+    public static FuzzerConfig[] certificateConfigs(Config config) {
         return new FuzzerConfig[] {
-                new FuzzerConfig(SystemPropertiesConfig.load())
+                new FuzzerConfig(config)
                         .factory(newMutatedStructFactory()
                                 .target(certificate)
                                 .fuzzer(newByteFlipFuzzer()
@@ -161,7 +186,7 @@ public class CommonFuzzer implements Runnable {
                         .readTimeout(long_read_timeout)
                         .endTest(2000)
                         .parts(5),
-                new FuzzerConfig(SystemPropertiesConfig.load())
+                new FuzzerConfig(config)
                         .factory(newMutatedStructFactory()
                                 .target(certificate)
                                 .fuzzer(newBitFlipFuzzer()
@@ -174,8 +199,12 @@ public class CommonFuzzer implements Runnable {
     }
 
     public static FuzzerConfig[] certificateVerifyConfigs() {
+        return certificateVerifyConfigs(SystemPropertiesConfig.load());
+    }
+
+    public static FuzzerConfig[] certificateVerifyConfigs(Config config) {
         return new FuzzerConfig[] {
-                new FuzzerConfig(SystemPropertiesConfig.load())
+                new FuzzerConfig(config)
                         .factory(newMutatedStructFactory()
                                 .target(certificate_verify)
                                 .fuzzer(newByteFlipFuzzer()
@@ -184,7 +213,7 @@ public class CommonFuzzer implements Runnable {
                         .readTimeout(long_read_timeout)
                         .endTest(2000)
                         .parts(5),
-                new FuzzerConfig(SystemPropertiesConfig.load())
+                new FuzzerConfig(config)
                         .factory(newMutatedStructFactory()
                                 .target(certificate_verify)
                                 .fuzzer(newBitFlipFuzzer()
@@ -197,8 +226,12 @@ public class CommonFuzzer implements Runnable {
     }
 
     public static FuzzerConfig[] finishedConfigs() {
+        return finishedConfigs(SystemPropertiesConfig.load());
+    }
+
+    public static FuzzerConfig[] finishedConfigs(Config config) {
         return new FuzzerConfig[] {
-                new FuzzerConfig(SystemPropertiesConfig.load())
+                new FuzzerConfig(config)
                         .factory(newMutatedStructFactory()
                                 .target(finished)
                                 .fuzzer(newByteFlipFuzzer()
@@ -207,7 +240,7 @@ public class CommonFuzzer implements Runnable {
                         .readTimeout(long_read_timeout)
                         .endTest(2000)
                         .parts(5),
-                new FuzzerConfig(SystemPropertiesConfig.load())
+                new FuzzerConfig(config)
                         .factory(newMutatedStructFactory()
                                 .target(finished)
                                 .fuzzer(newBitFlipFuzzer()
@@ -220,8 +253,12 @@ public class CommonFuzzer implements Runnable {
     }
 
     public static FuzzerConfig[] cipherSuitesConfigs() {
+        return cipherSuitesConfigs(SystemPropertiesConfig.load());
+    }
+
+    public static FuzzerConfig[] cipherSuitesConfigs(Config config) {
         return new FuzzerConfig[] {
-                new FuzzerConfig(SystemPropertiesConfig.load())
+                new FuzzerConfig(config)
                         .factory(newCipherSuitesFuzzer()
                                 .target(client_hello)
                                 .fuzzer(newSimpleVectorFuzzer()))
@@ -230,8 +267,12 @@ public class CommonFuzzer implements Runnable {
     }
 
     public static FuzzerConfig[] extensionVectorConfigs() {
+        return extensionVectorConfigs(SystemPropertiesConfig.load());
+    }
+
+    public static FuzzerConfig[] extensionVectorConfigs(Config config) {
         return new FuzzerConfig[] {
-                new FuzzerConfig(SystemPropertiesConfig.load())
+                new FuzzerConfig(config)
                         .factory(newExtensionVectorFuzzer()
                                 .target(client_hello)
                                 .fuzzer(newSimpleVectorFuzzer()))
@@ -240,8 +281,12 @@ public class CommonFuzzer implements Runnable {
     }
 
     public static FuzzerConfig[] legacySessionIdConfigs() {
+        return legacySessionIdConfigs(SystemPropertiesConfig.load());
+    }
+
+    public static FuzzerConfig[] legacySessionIdConfigs(Config config) {
         return new FuzzerConfig[] {
-                new FuzzerConfig(SystemPropertiesConfig.load())
+                new FuzzerConfig(config)
                         .factory(newLegacySessionIdFuzzer()
                                 .target(client_hello)
                                 .fuzzer(newSimpleVectorFuzzer()))
@@ -250,8 +295,12 @@ public class CommonFuzzer implements Runnable {
     }
 
     public static FuzzerConfig[] legacyCompressionMethodsConfigs() {
+        return legacyCompressionMethodsConfigs(SystemPropertiesConfig.load());
+    }
+
+    public static FuzzerConfig[] legacyCompressionMethodsConfigs(Config config) {
         return new FuzzerConfig[] {
-                new FuzzerConfig(SystemPropertiesConfig.load())
+                new FuzzerConfig(config)
                         .factory(newLegacyCompressionMethodsFuzzer()
                                 .target(client_hello)
                                 .fuzzer(newSimpleVectorFuzzer()))
@@ -260,32 +309,44 @@ public class CommonFuzzer implements Runnable {
     }
 
     public static FuzzerConfig[] noClientAuthConfigs() {
+        return noClientAuthConfigs(SystemPropertiesConfig.load());
+    }
+
+    public static FuzzerConfig[] noClientAuthConfigs(Config config) {
         List<FuzzerConfig> configs = new ArrayList<>();
-        configs.addAll(Arrays.asList(tlsPlaintextConfigs()));
-        configs.addAll(Arrays.asList(ccsConfigs()));
-        configs.addAll(Arrays.asList(handshakeConfigs()));
-        configs.addAll(Arrays.asList(clientHelloConfigs()));
-        configs.addAll(Arrays.asList(finishedConfigs()));
-        configs.addAll(Arrays.asList(cipherSuitesConfigs()));
-        configs.addAll(Arrays.asList(extensionVectorConfigs()));
-        configs.addAll(Arrays.asList(legacySessionIdConfigs()));
-        configs.addAll(Arrays.asList(legacyCompressionMethodsConfigs()));
+        configs.addAll(Arrays.asList(tlsPlaintextConfigs(config)));
+        configs.addAll(Arrays.asList(ccsConfigs(config)));
+        configs.addAll(Arrays.asList(handshakeConfigs(config)));
+        configs.addAll(Arrays.asList(clientHelloConfigs(config)));
+        configs.addAll(Arrays.asList(finishedConfigs(config)));
+        configs.addAll(Arrays.asList(cipherSuitesConfigs(config)));
+        configs.addAll(Arrays.asList(extensionVectorConfigs(config)));
+        configs.addAll(Arrays.asList(legacySessionIdConfigs(config)));
+        configs.addAll(Arrays.asList(legacyCompressionMethodsConfigs(config)));
 
         return configs.toArray(new FuzzerConfig[configs.size()]);
     }
 
     public static FuzzerConfig[] clientAuthConfigs() {
+        return clientAuthConfigs(SystemPropertiesConfig.load());
+    }
+
+    public static FuzzerConfig[] clientAuthConfigs(Config config) {
         List<FuzzerConfig> configs = new ArrayList<>();
-        configs.addAll(Arrays.asList(certificateConfigs()));
-        configs.addAll(Arrays.asList(certificateVerifyConfigs()));
+        configs.addAll(Arrays.asList(certificateConfigs(config)));
+        configs.addAll(Arrays.asList(certificateVerifyConfigs(config)));
 
         return configs.toArray(new FuzzerConfig[configs.size()]);
     }
 
     public static FuzzerConfig[] allConfigs() {
+        return allConfigs(SystemPropertiesConfig.load());
+    }
+
+    public static FuzzerConfig[] allConfigs(Config config) {
         List<FuzzerConfig> configs = new ArrayList<>();
-        configs.addAll(Arrays.asList(noClientAuthConfigs()));
-        configs.addAll(Arrays.asList(clientAuthConfigs()));
+        configs.addAll(Arrays.asList(noClientAuthConfigs(config)));
+        configs.addAll(Arrays.asList(clientAuthConfigs(config)));
 
         return configs.toArray(new FuzzerConfig[configs.size()]);
     }
@@ -295,42 +356,47 @@ public class CommonFuzzer implements Runnable {
         this.config = config;
     }
 
+    public CommonFuzzer noSmokeTest() {
+        smokeTest = false;
+        return this;
+    }
+
     @Override
     public void run() {
         if (config.noFactory()) {
-            throw new IllegalArgumentException(
-                    "what the hell? no fuzzy set specified!");
+            throw whatTheHell("no fuzzy set specified!");
         }
         FuzzyStructFactory fuzzer = config.factory();
 
         if (config.noClient()) {
-            throw new IllegalArgumentException("what the hell? no client specified");
+            throw whatTheHell("no client specified");
         }
         Client client = config.client();
 
-        fuzzer.setOutput(output);
+        fuzzer.set(output);
 
-        try {
-            output.info("run a smoke test before fuzzing");
-            client.set(StructFactory.getDefault())
-                    .set(config)
-                    .set(output)
-                    .connect()
-                    .engine()
-                    .run(new SuccessCheck());
-        } catch (Exception e) {
-            output.achtung("smoke test failed: %s", e.getMessage());
-            output.achtung("skip fuzzing");
-            return;
-        } finally {
-            output.flush();
+        if (smokeTest) {
+            try {
+                output.info("run a smoke test before fuzzing");
+                client.set(StructFactory.getDefault())
+                        .set(config)
+                        .set(output)
+                        .connect()
+                        .engine()
+                        .run(new SuccessCheck());
+            } catch (Exception e) {
+                reportError("smoke test failed", e);
+                output.achtung("skip fuzzing");
+                return;
+            } finally {
+                output.flush();
+            }
         }
 
         output.info("smoke test passed, start fuzzing");
         try {
             while (fuzzer.canFuzz()) {
-                output.info("test %d", fuzzer.getTest());
-                output.info("now fuzzer's state is '%s'", fuzzer.getState());
+                output.info("test %d", fuzzer.currentTest());
 
                 int attempt = 0;
                 while (true) {
@@ -370,6 +436,14 @@ public class CommonFuzzer implements Runnable {
         } finally {
             output.flush();
         }
+    }
+
+    protected void reportError(String message, Throwable e) {
+        if (strict) {
+            throw whatTheHell(message, e);
+        }
+
+        output.achtung(message, e);
     }
 
     public static FuzzerConfig[] combine(FuzzerConfig[] configs, Client client) {

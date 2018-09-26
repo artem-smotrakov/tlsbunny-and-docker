@@ -2,6 +2,8 @@ package com.gypsyengineer.tlsbunny.tls13.struct.impl;
 
 import com.gypsyengineer.tlsbunny.tls13.struct.MaxFragmentLength;
 
+import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
+
 public class MaxFragmentLengthImpl implements MaxFragmentLength {
 
     private final int code;
@@ -55,8 +57,7 @@ public class MaxFragmentLengthImpl implements MaxFragmentLength {
 
     private static void check(int code) {
         if (code < 0 || code > 255) {
-            throw new IllegalArgumentException(
-                    String.format("what the hell? code is wrong: %d", code));
+            throw whatTheHell("code is wrong: %d", code);
         }
     }
 

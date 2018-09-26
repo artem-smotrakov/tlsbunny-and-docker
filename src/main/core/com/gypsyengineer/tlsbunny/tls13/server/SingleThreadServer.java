@@ -13,6 +13,8 @@ import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
+
 public class SingleThreadServer implements Server {
 
     private static final int free_port = 0;
@@ -105,8 +107,7 @@ public class SingleThreadServer implements Server {
     @Override
     public void run() {
         if (factory == null) {
-            throw new IllegalStateException(
-                    "what the hell? engine factory is not set! (null)");
+            throw whatTheHell("engine factory is not set! (null)");
         }
 
         output.info("started on port %d", port());
@@ -161,7 +162,15 @@ public class SingleThreadServer implements Server {
 
     @Override
     public SingleThreadServer stop() {
-        throw new UnsupportedOperationException("no stops for you!");
+        if (!serverSocket.isClosed()) {
+            try {
+                serverSocket.close();
+            } catch (IOException e) {
+                output.achtung("exception occurred while stopping the server", e);
+            }
+        }
+
+        return this;
     }
 
     @Override

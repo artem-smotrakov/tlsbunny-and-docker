@@ -77,6 +77,11 @@ public class FuzzerConfig implements Config {
     }
 
     @Override
+    public String targetFilter() {
+        return commonConfig.targetFilter();
+    }
+
+    @Override
     public long readTimeout() {
         return commonConfig.readTimeout();
     }

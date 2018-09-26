@@ -9,6 +9,7 @@ import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import java.io.IOException;
 
 import static com.gypsyengineer.tlsbunny.tls13.handshake.Context.ZERO_HASH_VALUE;
+import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public class ComputingApplicationTrafficKeys
         extends AbstractAction<ComputingApplicationTrafficKeys> {
@@ -38,7 +39,7 @@ public class ComputingApplicationTrafficKeys
     @Override
     public ComputingApplicationTrafficKeys run() throws IOException, AEADException {
         if (side == null) {
-            throw new IllegalStateException("what the hell? side not specified! (null)");
+            throw whatTheHell("side not specified! (null)");
         }
 
         context.client_application_traffic_secret_0 = context.hkdf.deriveSecret(

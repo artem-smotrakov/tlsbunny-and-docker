@@ -12,10 +12,7 @@ public abstract class SingleConnectionClient extends AbstractClient {
         output.info("connect to %s:%d", config.host(), config.port());
         recentEngine = createEngine();
         recentEngine.connect();
-        List<Check> checks = createChecks();
-        for (Check check : checks) {
-            recentEngine.run(check);
-        }
+        recentEngine.run(createChecks());
         return this;
     }
 

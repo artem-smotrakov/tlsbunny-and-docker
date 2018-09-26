@@ -12,6 +12,8 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
+
 public class GeneratingServerHello extends AbstractAction {
 
     private static final byte[] downgrade_tls12_message = new byte[] {
@@ -40,8 +42,7 @@ public class GeneratingServerHello extends AbstractAction {
 
     public GeneratingServerHello supportedVersion(ProtocolVersion... versions) {
         if (versions == null) {
-            throw new IllegalArgumentException(
-                    "what the hell? no supported versions specified! (null)");
+            throw whatTheHell("no supported versions specified! (null)");
         }
         this.versions = versions;
         return this;
