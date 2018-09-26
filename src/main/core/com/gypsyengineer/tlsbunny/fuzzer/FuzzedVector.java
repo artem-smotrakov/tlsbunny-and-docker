@@ -21,7 +21,7 @@ public class FuzzedVector<T> implements Vector<T> {
 
         long maxEncodingLength = Vector.maxEncodingLength(lengthBytes);
         if (length > maxEncodingLength) {
-            throw new IllegalStateException(
+            throw new IllegalArgumentException(
                     String.format("encoding length is %d but max allowed is %d",
                             length, maxEncodingLength));
         }
