@@ -1,29 +1,25 @@
 package com.gypsyengineer.tlsbunny.tls13.client;
 
-import com.gypsyengineer.tlsbunny.tls13.connection.BaseEngineFactory;
-import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
+import com.gypsyengineer.tlsbunny.tls13.connection.*;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Side;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.IncomingChangeCipherSpec;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.OutgoingChangeCipherSpec;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
-import com.gypsyengineer.tlsbunny.tls13.server.Server;
 import com.gypsyengineer.tlsbunny.tls13.server.SingleThreadServer;
+import com.gypsyengineer.tlsbunny.tls13.struct.AlertDescription;
+import com.gypsyengineer.tlsbunny.tls13.struct.AlertLevel;
 import com.gypsyengineer.tlsbunny.tls13.utils.FuzzerConfig;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.Output;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-import static com.gypsyengineer.tlsbunny.fuzzer.BitFlipFuzzer.newBitFlipFuzzer;
-import static com.gypsyengineer.tlsbunny.fuzzer.ByteFlipFuzzer.newByteFlipFuzzer;
-import static com.gypsyengineer.tlsbunny.tls13.fuzzer.MutatedStructFactory.newMutatedStructFactory;
-import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Target.ccs;
+import static com.gypsyengineer.tlsbunny.tls13.client.FuzzyClient.*;
+import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.alert;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.application_data;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
 import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.*;
@@ -33,77 +29,120 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup.secp256r1;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv12;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv13;
 import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp256r1_sha256;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-public class FuzzyHttpsClientTest {
+/**
+ * This is just a smoke test for the fuzzy https client
+ * because the server sends an alert immediately,
+ * so that the fuzzer may not be able to fuzz a message
+ * if it goes later in the handshake process (for example, Finished message).
+ */
+public class FuzzyClientTest {
+
+    private static final int start = 10;
+    private static final int end = 15;
+    private static final int parts = 1;
+
+    private static final Check[] checks = {
+            new AlertCheck(),
+            new FailureCheck()
+    };
 
     static {
         System.setProperty("tlsbunny.threads", "1");
     }
 
-    private static Server server;
-    private static Output serverOutput = new Output("server");
-    private static Config clientConfig = SystemPropertiesConfig.load();
-    public static final long short_read_timeout = 500;
-
-    public static FuzzerConfig[] ccsConfigs() {
-        return new FuzzerConfig[] {
-                new FuzzerConfig(clientConfig)
-                        .factory(newMutatedStructFactory()
-                                .target(ccs)
-                                .fuzzer(newByteFlipFuzzer()
-                                        .minRatio(0.01)
-                                        .maxRatio(0.09)))
-                        .readTimeout(short_read_timeout)
-                        .endTest(10),
-                new FuzzerConfig(clientConfig)
-                        .factory(newMutatedStructFactory()
-                                .target(ccs)
-                                .fuzzer(newBitFlipFuzzer()
-                                        .minRatio(0.01)
-                                        .maxRatio(0.09)))
-                        .readTimeout(short_read_timeout)
-                        .endTest(10),
-        };
-    }
-
-    @BeforeClass
-    public static void setUp() throws IOException {
-        Config config = SystemPropertiesConfig.load();
-
-        server = new SingleThreadServer()
-                .set(new EngineFactoryImpl()
-                        .set(config)
-                        .set(serverOutput))
-                .set(config)
-                .set(serverOutput);
-
-        server.start();
-
-        clientConfig.port(server.port());
+    @Test
+    public void tlsPlaintext() throws Exception {
+        test(minimized(tlsPlaintextConfigs()));
     }
 
     @Test
-    @Ignore
-    // the test doesn't work
-    public void ccs() throws Exception {
-        test(ccsConfigs(), new HttpsClient());
+    public void handshake() throws Exception {
+        test(minimized(handshakeConfigs()));
     }
 
-    public void test(FuzzerConfig[] configs, Client client) throws Exception {
-        try (FuzzyHttpsClient fuzzer = new FuzzyHttpsClient();
-             Output output = new Output("client")) {
+    @Test
+    public void clientHello() throws Exception {
+        test(minimized(clientHelloConfigs()));
+    }
 
-            fuzzer.set(configs).set(client).set(clientConfig).set(output).connect();
+    @Test
+    public void ccs() throws Exception {
+        test(minimized(ccsConfigs()));
+    }
+
+    @Test
+    public void finished() throws Exception {
+        test(minimized(finishedConfigs()));
+    }
+
+    @Test
+    public void cipherSuites() throws Exception {
+        test(minimized(cipherSuitesConfigs()));
+    }
+
+    @Test
+    public void extensionVector() throws Exception {
+        test(minimized(extensionVectorConfigs()));
+    }
+
+    @Test
+    public void legacySessionId() throws Exception {
+        test(minimized(legacySessionIdConfigs()));
+    }
+
+    @Test
+    public void legacyCompressionMethods() throws Exception {
+        test(minimized(legacyCompressionMethodsConfigs()));
+    }
+
+    public void test(FuzzerConfig[] configs) throws Exception {
+        Output serverOutput = new Output("server");
+        Output clientOutput = new Output("client");
+
+        Config serverConfig = SystemPropertiesConfig.load();
+        SingleThreadServer server = new SingleThreadServer()
+                .set(new EngineFactoryImpl()
+                        .set(serverConfig)
+                        .set(serverOutput))
+                .set(serverConfig)
+                .set(serverOutput)
+                .maxConnections(end - start + 2);
+
+        FuzzyHttpsClient fuzzyClient = new FuzzyHttpsClient();
+
+        TestAnalyzer analyzer = new TestAnalyzer();
+        analyzer.set(clientOutput);
+
+        try (fuzzyClient; server; clientOutput; serverOutput) {
+            server.start();
+            Config clientConfig = SystemPropertiesConfig.load().port(server.port());
+
+            fuzzyClient.set(configs)
+                    .set(clientConfig)
+                    .set(clientOutput)
+                    .set(analyzer)
+                    .connect();
+        }
+
+        analyzer.run();
+        assertEquals(end - start + 1, analyzer.engines().length);
+        for (Engine engine : analyzer.engines()) {
+            assertTrue(engine.context().hasAlert());
+            assertEquals(
+                    AlertLevel.fatal,
+                    engine.context().getAlert().getLevel());
+            assertEquals(
+                    AlertDescription.close_notify,
+                    engine.context().getAlert().getDescription());
         }
     }
 
-    @AfterClass
-    public static void tearDown() {
-        server.stop();
-        serverOutput.close();
-    }
-
     private static class EngineFactoryImpl extends BaseEngineFactory {
+
+        private boolean generateAlert = false;
 
         public EngineFactoryImpl set(Config config) {
             this.config = config;
@@ -112,6 +151,35 @@ public class FuzzyHttpsClientTest {
 
         @Override
         protected Engine createImpl() throws Exception {
+            if (generateAlert) {
+                return sendAlert();
+            }
+
+            return fullHandshake();
+        }
+
+        private Engine sendAlert() throws Exception {
+            return Engine.init()
+                    .set(structFactory)
+                    .set(output)
+
+                    .receive(new IncomingData())
+                    .run(new PrintingData())
+
+                    // send an alert
+                    .run(new GeneratingAlert()
+                            .level(AlertLevel.fatal)
+                            .description(AlertDescription.close_notify))
+                    .run(new WrappingIntoTLSPlaintexts()
+                            .version(TLSv12)
+                            .type(alert))
+                    .send(new OutgoingData());
+        }
+
+        private Engine fullHandshake() throws Exception {
+            // we do a full handshake only once to pass a smoke test
+            generateAlert = true;
+
             return Engine.init()
                     .set(structFactory)
                     .set(output)
@@ -209,5 +277,45 @@ public class FuzzyHttpsClientTest {
                     .run(new WrappingApplicationDataIntoTLSCiphertext())
                     .send(new OutgoingData());
         }
+    }
+
+    private static class TestAnalyzer implements Analyzer {
+
+        private Output output;
+        private final List<Engine> engines = new ArrayList<>();
+
+        @Override
+        public Analyzer set(Output output) {
+            this.output = output;
+            return this;
+        }
+
+        @Override
+        public Analyzer add(Engine... engines) {
+            this.engines.addAll(List.of(engines));
+            return this;
+        }
+
+        @Override
+        public Analyzer run() {
+            output.info("run analyzer");
+            return this;
+        }
+
+        @Override
+        public Engine[] engines() {
+            return engines.toArray(new Engine[engines.size()]);
+        }
+    }
+
+    private static FuzzerConfig[] minimized(FuzzerConfig[] configs) {
+        for (FuzzerConfig config : configs) {
+            config.startTest(start);
+            config.endTest(end);
+            config.parts(parts);
+            config.set(checks);
+        }
+
+        return configs;
     }
 }

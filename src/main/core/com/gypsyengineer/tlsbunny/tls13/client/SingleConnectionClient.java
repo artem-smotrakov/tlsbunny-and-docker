@@ -1,9 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls13.client;
 
-import com.gypsyengineer.tlsbunny.tls13.connection.Check;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
-
-import java.util.List;
 
 public abstract class SingleConnectionClient extends AbstractClient {
 
@@ -12,12 +9,9 @@ public abstract class SingleConnectionClient extends AbstractClient {
         output.info("connect to %s:%d", config.host(), config.port());
         recentEngine = createEngine();
         recentEngine.connect();
-        recentEngine.run(createChecks());
+        recentEngine.run(checks);
         return this;
     }
 
     protected abstract Engine createEngine() throws Exception;
-
-    protected abstract List<Check> createChecks();
-
 }

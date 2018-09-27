@@ -1,5 +1,8 @@
 package com.gypsyengineer.tlsbunny.fuzzer;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class ByteFlipFuzzer extends AbstractFlipFuzzer implements Fuzzer<byte[]> {
 
     public static ByteFlipFuzzer newByteFlipFuzzer() {
@@ -27,24 +30,17 @@ public class ByteFlipFuzzer extends AbstractFlipFuzzer implements Fuzzer<byte[]>
             n = 1;
         }
 
-        int[] processed = new int[n];
+        Set<Integer> processed = new HashSet<>();
         int i = 0;
         while (i < n) {
             int pos = start + random.nextInt(end - start + 1);
 
-            boolean found = false;
-            for (int k = 0; k < n; k++) {
-                if (processed[k] == pos) {
-                    found = true;
-                    break;
-                }
-            }
-
-            if (found) {
+            if (processed.contains(pos)) {
                 continue;
             }
 
             fuzzed[pos] = (byte) random.nextInt(256);
+            processed.add(pos);
             i++;
         }
 

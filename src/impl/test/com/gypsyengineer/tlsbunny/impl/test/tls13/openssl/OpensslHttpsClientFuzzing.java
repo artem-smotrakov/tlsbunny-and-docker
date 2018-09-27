@@ -1,15 +1,11 @@
 package com.gypsyengineer.tlsbunny.impl.test.tls13.openssl;
 
-import com.gypsyengineer.tlsbunny.impl.test.tls13.TestForServer;
 import com.gypsyengineer.tlsbunny.impl.test.tls13.Utils;
-import com.gypsyengineer.tlsbunny.tls13.client.*;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import static com.gypsyengineer.tlsbunny.tls13.client.CommonFuzzer.ccsConfigs;
 
 public class OpensslHttpsClientFuzzing {
 
@@ -25,12 +21,7 @@ public class OpensslHttpsClientFuzzing {
 
     @Test
     public void ccs() throws Exception {
-        new TestForServer()
-                .set(new FuzzyHttpsClient()
-                        .set(ccsConfigs(config))
-                        .set(new HttpsClient()))
-                .set(server)
-                .run();
+        // TODO
     }
 
     // TODO: check server logs for ASan findings

@@ -1,6 +1,5 @@
 package com.gypsyengineer.tlsbunny.impl.test.tls13.old.openssl;
 
-import com.gypsyengineer.tlsbunny.tls13.connection.Check;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
@@ -29,6 +28,10 @@ public class OpensslHttpsClient extends SingleConnectionClient {
                     .set(output)
                     .connect();
         }
+    }
+
+    public OpensslHttpsClient() {
+        checks = List.of(new NoAlertCheck());
     }
 
     @Override
@@ -135,11 +138,6 @@ public class OpensslHttpsClient extends SingleConnectionClient {
                 .run(new ProcessingApplicationDataTLSCiphertext()
                         .expect(application_data))
                 .run(new PrintingData());
-    }
-
-    @Override
-    protected List<Check> createChecks() {
-        return List.of(new NoAlertCheck());
     }
 
 }

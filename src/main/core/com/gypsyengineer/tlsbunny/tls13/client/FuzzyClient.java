@@ -32,10 +32,10 @@ import static com.gypsyengineer.tlsbunny.tls13.fuzzer.SimpleVectorFuzzer.newSimp
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Target.*;
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
-public class CommonFuzzer implements Runnable {
+public class FuzzyClient implements Runnable {
 
     public static Runner.FuzzerFactory fuzzerFactory =
-            (config, output) -> new CommonFuzzer(output, config);
+            (config, output) -> new FuzzyClient(output, config);
 
     public static final int TLS_PLAINTEXT_HEADER_LENGTH =
             ContentType.ENCODING_LENGTH + ProtocolVersion.ENCODING_LENGTH
@@ -52,10 +52,10 @@ public class CommonFuzzer implements Runnable {
     private static final int delay = 3000; // in millis
 
     protected final Output output;
-    protected final FuzzerConfig config;
+    protected final FuzzerConfig fuzzerConfig;
 
     protected boolean strict = true;
-    protected boolean smokeTest = true;
+    protected boolean needSmokeTest = true;
 
     public static FuzzerConfig[] tlsPlaintextConfigs() {
         return tlsPlaintextConfigs(SystemPropertiesConfig.load());
@@ -351,35 +351,34 @@ public class CommonFuzzer implements Runnable {
         return configs.toArray(new FuzzerConfig[configs.size()]);
     }
 
-    public CommonFuzzer(Output output, FuzzerConfig config) {
+    public FuzzyClient(Output output, FuzzerConfig fuzzerConfig) {
         this.output = output;
-        this.config = config;
+        this.fuzzerConfig = fuzzerConfig;
     }
 
-    public CommonFuzzer noSmokeTest() {
-        smokeTest = false;
+    public FuzzyClient noSmokeTest() {
+        needSmokeTest = false;
         return this;
     }
 
     @Override
     public void run() {
-        if (config.noFactory()) {
+        if (fuzzerConfig.noFactory()) {
             throw whatTheHell("no fuzzy set specified!");
         }
-        FuzzyStructFactory fuzzer = config.factory();
+        FuzzyStructFactory fuzzyStructFactory = fuzzerConfig.factory();
+        fuzzyStructFactory.set(output);
 
-        if (config.noClient()) {
+        if (fuzzerConfig.noClient()) {
             throw whatTheHell("no client specified");
         }
-        Client client = config.client();
+        Client client = fuzzerConfig.client();
 
-        fuzzer.set(output);
-
-        if (smokeTest) {
+        if (needSmokeTest) {
             try {
                 output.info("run a smoke test before fuzzing");
                 client.set(StructFactory.getDefault())
-                        .set(config)
+                        .set(fuzzerConfig)
                         .set(output)
                         .connect()
                         .engine()
@@ -391,21 +390,27 @@ public class CommonFuzzer implements Runnable {
             } finally {
                 output.flush();
             }
+            output.info("smoke test passed, start fuzzing");
+        } else {
+            output.info("don't run smoke test, start fuzzing");
         }
 
-        output.info("smoke test passed, start fuzzing");
         try {
-            while (fuzzer.canFuzz()) {
-                output.info("test %d", fuzzer.currentTest());
+            while (fuzzyStructFactory.canFuzz()) {
+                output.info("test %d", fuzzyStructFactory.currentTest());
 
                 int attempt = 0;
                 while (true) {
                     try {
-                        Engine engine = client.set(fuzzer).set(config).set(output)
-                                .connect().engine();
+                        Engine engine = client.set(fuzzyStructFactory)
+                                .set(fuzzerConfig)
+                                .set(output)
+                                .set(fuzzerConfig.checks())
+                                .connect()
+                                .engine();
 
-                        if (config.hasAnalyzer()) {
-                            engine.apply(config.analyzer());
+                        if (fuzzerConfig.hasAnalyzer()) {
+                            engine.apply(fuzzerConfig.analyzer());
                         }
 
                         break;
@@ -429,7 +434,7 @@ public class CommonFuzzer implements Runnable {
                 }
 
                 output.flush();
-                fuzzer.moveOn();
+                fuzzyStructFactory.moveOn();
             }
         } catch (Exception e) {
             output.achtung("what the hell? unexpected exception", e);

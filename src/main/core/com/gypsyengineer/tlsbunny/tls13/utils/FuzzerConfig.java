@@ -1,160 +1,171 @@
 package com.gypsyengineer.tlsbunny.tls13.utils;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
+import com.gypsyengineer.tlsbunny.tls13.connection.Check;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.FuzzyStructFactory;
 import com.gypsyengineer.tlsbunny.tls13.client.Client;
 import com.gypsyengineer.tlsbunny.utils.Config;
 
 public class FuzzerConfig implements Config {
 
-    private final Config commonConfig;
+    private Config mainConfig;
     private Analyzer analyzer;
+    private Check[] checks;
     private FuzzyStructFactory factory;
     private Client client;
 
-    public FuzzerConfig(Config commonConfig) {
-        this.commonConfig = commonConfig;
+    public FuzzerConfig() {
+
+    }
+
+    public FuzzerConfig(Config mainConfig) {
+        this.mainConfig = mainConfig;
+    }
+
+    public FuzzerConfig set(Config mainConfig) {
+        this.mainConfig = mainConfig;
+        return this;
     }
 
     @Override
     public String host() {
-        return commonConfig.host();
+        return mainConfig.host();
     }
 
     @Override
     public int port() {
-        return commonConfig.port();
+        return mainConfig.port();
     }
 
     @Override
     public double minRatio() {
-        return commonConfig.minRatio();
+        return mainConfig.minRatio();
     }
 
     @Override
     public double maxRatio() {
-        return commonConfig.maxRatio();
+        return mainConfig.maxRatio();
     }
 
     @Override
     public int threads() {
-        return commonConfig.threads();
+        return mainConfig.threads();
     }
 
     @Override
     public int parts() {
-        return commonConfig.parts();
+        return mainConfig.parts();
     }
 
     @Override
     public long startTest() {
-        return commonConfig.startTest();
+        return mainConfig.startTest();
     }
 
     @Override
     public long endTest() {
-        return commonConfig.endTest();
+        return mainConfig.endTest();
     }
 
     @Override
     public String clientCertificate() {
-        return commonConfig.clientCertificate();
+        return mainConfig.clientCertificate();
     }
 
     @Override
     public String clientKey() {
-        return commonConfig.clientKey();
+        return mainConfig.clientKey();
     }
 
     @Override
     public String serverCertificate() {
-        return commonConfig.serverCertificate();
+        return mainConfig.serverCertificate();
     }
 
     @Override
     public String serverKey() {
-        return commonConfig.serverKey();
+        return mainConfig.serverKey();
     }
 
     @Override
     public String targetFilter() {
-        return commonConfig.targetFilter();
+        return mainConfig.targetFilter();
     }
 
     @Override
     public long readTimeout() {
-        return commonConfig.readTimeout();
+        return mainConfig.readTimeout();
     }
 
     @Override
     public Config host(String host) {
-        commonConfig.host(host);
+        mainConfig.host(host);
         return this;
     }
 
     @Override
     public Config port(int port) {
-        commonConfig.port(port);
+        mainConfig.port(port);
         return this;
     }
 
     @Override
     public FuzzerConfig minRatio(double minRatio) {
-        commonConfig.minRatio(minRatio);
+        mainConfig.minRatio(minRatio);
         return this;
     }
 
     @Override
     public FuzzerConfig maxRatio(double maxRatio) {
-        commonConfig.maxRatio(maxRatio);
+        mainConfig.maxRatio(maxRatio);
         return this;
     }
 
     @Override
     public FuzzerConfig startTest(long test) {
-        commonConfig.startTest(test);
+        mainConfig.startTest(test);
         return this;
     }
 
     @Override
     public FuzzerConfig endTest(long test) {
-        commonConfig.endTest(test);
+        mainConfig.endTest(test);
         return this;
     }
 
     @Override
     public FuzzerConfig parts(int parts) {
-        commonConfig.parts(parts);
+        mainConfig.parts(parts);
         return this;
     }
 
     @Override
     public FuzzerConfig readTimeout(long timeout) {
-        commonConfig.readTimeout(timeout);
+        mainConfig.readTimeout(timeout);
         return this;
     }
 
     @Override
     public Config clientCertificate(String path) {
-        commonConfig.clientCertificate(path);
+        mainConfig.clientCertificate(path);
         return this;
     }
 
     @Override
     public Config clientKey(String path) {
-        commonConfig.clientKey(path);
+        mainConfig.clientKey(path);
         return this;
     }
 
     @Override
     public Config serverCertificate(String path) {
-        commonConfig.serverCertificate(path);
+        mainConfig.serverCertificate(path);
         return this;
     }
 
     @Override
     public Config serverKey(String path) {
-        commonConfig.serverKey(path);
+        mainConfig.serverKey(path);
         return this;
     }
 
@@ -169,6 +180,19 @@ public class FuzzerConfig implements Config {
 
     public Analyzer analyzer() {
         return analyzer;
+    }
+
+    public FuzzerConfig set(Check... checks) {
+        this.checks = checks;
+        return this;
+    }
+
+    public boolean hasChecks() {
+        return checks != null && checks.length != 0;
+    }
+
+    public Check[] checks() {
+        return checks;
     }
 
     public boolean noFactory() {

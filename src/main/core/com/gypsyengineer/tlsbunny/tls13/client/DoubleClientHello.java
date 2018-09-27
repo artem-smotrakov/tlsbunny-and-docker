@@ -33,6 +33,10 @@ public class DoubleClientHello extends SingleConnectionClient {
         }
     }
 
+    public DoubleClientHello() {
+        checks = List.of(new AlertCheck());
+    }
+
     @Override
     protected Engine createEngine()
             throws NegotiatorException, NoSuchAlgorithmException {
@@ -95,8 +99,4 @@ public class DoubleClientHello extends SingleConnectionClient {
                     .receive(() -> new IncomingMessages(Side.client));
     }
 
-    @Override
-    protected List<Check> createChecks() {
-        return List.of(new AlertCheck());
-    }
 }

@@ -80,6 +80,10 @@ public class StartWithEmptyTLSPlaintext extends SingleConnectionClient {
         }
     }
 
+    public StartWithEmptyTLSPlaintext() {
+        checks = List.of(new AlertCheck());
+    }
+
     public StartWithEmptyTLSPlaintext set(ContentType type) {
         this.type = type;
         return this;
@@ -137,11 +141,6 @@ public class StartWithEmptyTLSPlaintext extends SingleConnectionClient {
                 // receive session tickets and application data
                 .loop(context -> !context.receivedApplicationData() && !context.hasAlert())
                     .receive(() -> new IncomingMessages(Side.client));
-    }
-
-    @Override
-    protected List<Check> createChecks() {
-        return List.of(new AlertCheck());
     }
 
 }

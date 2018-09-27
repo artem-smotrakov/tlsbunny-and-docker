@@ -1,6 +1,5 @@
 package com.gypsyengineer.tlsbunny.impl.test.tls13.old.h2o;
 
-import com.gypsyengineer.tlsbunny.tls13.connection.Check;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
@@ -26,6 +25,10 @@ public class H2oHttpsClient extends SingleConnectionClient {
                 .set(SystemPropertiesConfig.load())
                 .set(StructFactory.getDefault())
                 .connect();
+    }
+
+    public H2oHttpsClient() {
+        checks = List.of(new NoAlertCheck());
     }
 
     @Override
@@ -116,11 +119,6 @@ public class H2oHttpsClient extends SingleConnectionClient {
                 .run(new ProcessingApplicationDataTLSCiphertext()
                         .expect(application_data))
                 .run(new PrintingData());
-    }
-
-    @Override
-    protected List<Check> createChecks() {
-        return List.of(new NoAlertCheck());
     }
 
 }

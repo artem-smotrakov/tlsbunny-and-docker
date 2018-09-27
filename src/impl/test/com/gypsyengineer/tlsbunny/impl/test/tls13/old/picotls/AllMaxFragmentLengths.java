@@ -1,6 +1,5 @@
 package com.gypsyengineer.tlsbunny.impl.test.tls13.old.picotls;
 
-import com.gypsyengineer.tlsbunny.tls13.connection.Check;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.FailureCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.SuccessCheck;
@@ -11,8 +10,6 @@ import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 import com.gypsyengineer.tlsbunny.tls13.client.SingleConnectionClient;
 import com.gypsyengineer.tlsbunny.utils.Output;
-
-import java.util.List;
 
 import static com.gypsyengineer.tlsbunny.tls13.connection.action.simple.GeneratingClientHello.NO_MAX_FRAGMENT_LENGTH;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.application_data;
@@ -167,11 +164,6 @@ public class AllMaxFragmentLengths {
                     .run(new PrintingData());
         }
 
-        @Override
-        protected List<Check> createChecks() {
-            // TODO: move checks to here
-            return List.of();
-        }
     }
 
 }

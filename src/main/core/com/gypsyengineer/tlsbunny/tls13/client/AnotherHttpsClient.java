@@ -20,6 +20,13 @@ public class AnotherHttpsClient extends SingleConnectionClient {
         }
     }
 
+    public AnotherHttpsClient() {
+        checks = List.of(
+                new NoAlertCheck(),
+                new SuccessCheck(),
+                new NoExceptionCheck());
+    }
+
     @Override
     protected Engine createEngine() throws Exception {
         return Engine.init()
@@ -39,14 +46,6 @@ public class AnotherHttpsClient extends SingleConnectionClient {
                 .send(new OutgoingFinished())
                 .send(new OutgoingHttpGetRequest())
                 .receive(new IncomingApplicationData());
-    }
-
-    @Override
-    protected List<Check> createChecks() {
-        return List.of(
-                new NoAlertCheck(),
-                new SuccessCheck(),
-                new NoExceptionCheck());
     }
 
 }

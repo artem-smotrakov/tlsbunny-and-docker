@@ -1,6 +1,5 @@
 package com.gypsyengineer.tlsbunny.impl.test.tls13.old.picotls;
 
-import com.gypsyengineer.tlsbunny.tls13.connection.Check;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.FailureCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
@@ -33,6 +32,10 @@ public class UnexpectedClientHelloCookie extends SingleConnectionClient {
                     .set(output)
                     .connect();
         }
+    }
+
+    public UnexpectedClientHelloCookie() {
+        checks = List.of(new FailureCheck());
     }
 
     @Override
@@ -125,11 +128,6 @@ public class UnexpectedClientHelloCookie extends SingleConnectionClient {
                 .run(new ProcessingApplicationDataTLSCiphertext()
                         .expect(application_data))
                 .run(new PrintingData());
-    }
-
-    @Override
-    protected List<Check> createChecks() {
-        return List.of(new FailureCheck());
     }
 
 }

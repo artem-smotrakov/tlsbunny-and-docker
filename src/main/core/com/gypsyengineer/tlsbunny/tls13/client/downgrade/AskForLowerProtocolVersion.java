@@ -2,7 +2,6 @@ package com.gypsyengineer.tlsbunny.tls13.client.downgrade;
 
 import com.gypsyengineer.tlsbunny.tls13.client.Client;
 import com.gypsyengineer.tlsbunny.tls13.client.SingleConnectionClient;
-import com.gypsyengineer.tlsbunny.tls13.connection.Check;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.DowngradeMessageCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
@@ -35,6 +34,20 @@ public class AskForLowerProtocolVersion extends SingleConnectionClient {
             run(output, config, TLSv11);
             run(output, config, TLSv10);
         }
+    }
+
+    public AskForLowerProtocolVersion() {
+        DowngradeMessageCheck check = new DowngradeMessageCheck();
+
+        if (TLSv13.equals(version)) {
+            check.ifNoDowngrade();
+        } else if (TLSv12.equals(version)) {
+            check.ifTLSv12();
+        } else {
+            check.ifBelowTLSv12();
+        }
+
+        checks = List.of(check);
     }
 
     public static Client run(Output output, Config config, ProtocolVersion version) {
@@ -91,21 +104,6 @@ public class AskForLowerProtocolVersion extends SingleConnectionClient {
                         .type(alert)
                         .version(TLSv12))
                 .send(new OutgoingData());
-    }
-
-    @Override
-    protected List<Check> createChecks() {
-        DowngradeMessageCheck check = new DowngradeMessageCheck();
-
-        if (TLSv13.equals(version)) {
-            check.ifNoDowngrade();
-        } else if (TLSv12.equals(version)) {
-            check.ifTLSv12();
-        } else {
-            check.ifBelowTLSv12();
-        }
-
-        return List.of(check);
     }
 
 }

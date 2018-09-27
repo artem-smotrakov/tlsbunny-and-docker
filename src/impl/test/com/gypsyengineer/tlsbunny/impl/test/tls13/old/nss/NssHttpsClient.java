@@ -1,6 +1,5 @@
 package com.gypsyengineer.tlsbunny.impl.test.tls13.old.nss;
 
-import com.gypsyengineer.tlsbunny.tls13.connection.Check;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
@@ -29,6 +28,10 @@ public class NssHttpsClient extends SingleConnectionClient {
                     .set(output)
                     .connect();
         }
+    }
+
+    public NssHttpsClient() {
+        checks = List.of(new NoAlertCheck());
     }
 
     @Override
@@ -120,11 +123,6 @@ public class NssHttpsClient extends SingleConnectionClient {
 
                 // selfserv actually sends a "close_notify" alert
                 // but we just ignore it for now
-    }
-
-    @Override
-    protected List<Check> createChecks() {
-        return List.of(new NoAlertCheck());
     }
 
 }

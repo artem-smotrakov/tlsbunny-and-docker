@@ -1,5 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls13.client;
 
+import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
 import com.gypsyengineer.tlsbunny.tls13.connection.Check;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
@@ -19,6 +20,7 @@ public abstract class AbstractClient implements Client, AutoCloseable {
     protected StructFactory factory = StructFactory.getDefault();
     protected Output output = new Output();
     protected Engine recentEngine;
+    protected Analyzer analyzer;
     protected List<Engine> engines = new ArrayList<>();
     protected List<Check> checks = Collections.emptyList();
 
@@ -47,7 +49,13 @@ public abstract class AbstractClient implements Client, AutoCloseable {
 
     @Override
     public Client set(Check... checks) {
-        this.checks = List.of(checks);
+        this.checks = List.of(checks != null ? checks : no_checks);
+        return this;
+    }
+
+    @Override
+    public Client set(Analyzer analyzer) {
+        this.analyzer = analyzer;
         return this;
     }
 
@@ -67,6 +75,7 @@ public abstract class AbstractClient implements Client, AutoCloseable {
         return recentEngine;
     }
 
+    @Override
     public Engine[] engines() {
         return engines.toArray(new Engine[engines.size()]);
     }

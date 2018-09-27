@@ -41,6 +41,16 @@ public class FlipFuzzerTest {
         setTestIn(newByteFlipFuzzer());
     }
 
+    @Test
+    public void oneByteArrayWithBitFlipFuzzer() {
+        oneByteArray(newBitFlipFuzzer());
+    }
+
+    @Test
+    public void oneByteArrayWithByteFlipFuzzer() {
+        oneByteArray(newByteFlipFuzzer());
+    }
+
     private static void iterate(Fuzzer<byte[]> fuzzer) {
         try (Output output = new Output()) {
             fuzzer.set(output);
@@ -128,6 +138,17 @@ public class FlipFuzzerTest {
 
             assertEquals(Long.MAX_VALUE, fuzzer.currentTest());
             assertFalse(fuzzer.canFuzz());
+        }
+    }
+
+    private static void oneByteArray(Fuzzer<byte[]> fuzzer) {
+        try (Output output = new Output()) {
+            fuzzer.set(output);
+
+            byte[] array = new byte[] { 1 };
+            byte[] fuzzed = fuzzer.fuzz(array);
+            assertFalse(Arrays.equals(array, fuzzed));
+            assertArrayEquals(fuzzed, fuzzer.fuzz(array));
         }
     }
 

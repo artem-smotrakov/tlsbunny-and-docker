@@ -30,6 +30,13 @@ public class HttpsClientAuth extends SingleConnectionClient {
         }
     }
 
+    public HttpsClientAuth() {
+        checks = List.of(
+                new NoAlertCheck(),
+                new SuccessCheck(),
+                new NoExceptionCheck());
+    }
+
     @Override
     protected Engine createEngine()
             throws NegotiatorException, NoSuchAlgorithmException, IOException {
@@ -85,11 +92,4 @@ public class HttpsClientAuth extends SingleConnectionClient {
                     .receive(() -> new IncomingMessages(Side.client));
     }
 
-    @Override
-    protected List<Check> createChecks() {
-        return List.of(
-                new NoAlertCheck(),
-                new SuccessCheck(),
-                new NoExceptionCheck());
-    }
 }

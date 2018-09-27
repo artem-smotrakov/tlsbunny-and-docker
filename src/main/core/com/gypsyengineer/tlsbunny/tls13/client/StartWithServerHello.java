@@ -30,6 +30,10 @@ public class StartWithServerHello extends SingleConnectionClient {
         }
     }
 
+    public StartWithServerHello() {
+        checks = List.of(new AlertCheck());
+    }
+
     @Override
     protected Engine createEngine()
             throws NegotiatorException, NoSuchAlgorithmException {
@@ -78,11 +82,6 @@ public class StartWithServerHello extends SingleConnectionClient {
                 // receive session tickets and application data
                 .loop(context -> !context.receivedApplicationData() && !context.hasAlert())
                     .receive(() -> new IncomingMessages(Side.client));
-    }
-
-    @Override
-    protected List<Check> createChecks() {
-        return List.of(new AlertCheck());
     }
 
 }
