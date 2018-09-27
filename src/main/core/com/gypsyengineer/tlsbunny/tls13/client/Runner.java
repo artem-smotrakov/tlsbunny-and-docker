@@ -1,10 +1,13 @@
 package com.gypsyengineer.tlsbunny.tls13.client;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
+import com.gypsyengineer.tlsbunny.tls13.connection.Check;
 import com.gypsyengineer.tlsbunny.tls13.utils.FuzzerConfig;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -22,6 +25,7 @@ public class Runner {
     private FuzzerFactory fuzzerFactory;
     private Client client;
     private Output output;
+    private List<Check> checks = Collections.emptyList();
     private Analyzer analyzer;
     private int index;
 
@@ -47,6 +51,11 @@ public class Runner {
 
     public Runner set(Output output) {
         this.output = output;
+        return this;
+    }
+
+    public Runner set(Check... checks) {
+        this.checks = List.of(checks);
         return this;
     }
 

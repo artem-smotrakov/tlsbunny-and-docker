@@ -17,8 +17,8 @@ public class NoAlertAnalyzer implements Analyzer {
     }
 
     @Override
-    public Analyzer add(Engine engine) {
-        engines.add(engine);
+    public Analyzer add(Engine... engines) {
+        this.engines.addAll(List.of(engines));
         return this;
     }
 
@@ -51,6 +51,9 @@ public class NoAlertAnalyzer implements Analyzer {
         return this;
     }
 
-
+    @Override
+    public Engine[] engines() {
+        return engines.toArray(new Engine[engines.size()]);
+    }
 
 }

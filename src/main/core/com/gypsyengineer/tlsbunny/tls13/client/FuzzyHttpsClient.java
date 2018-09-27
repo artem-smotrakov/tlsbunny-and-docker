@@ -1,19 +1,24 @@
 package com.gypsyengineer.tlsbunny.tls13.client;
 
+import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
 import com.gypsyengineer.tlsbunny.tls13.connection.Check;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
-import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertAnalyzer;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.tls13.utils.FuzzerConfig;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.Output;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 
+import java.util.Collections;
+import java.util.List;
+
 public class FuzzyHttpsClient implements Client {
 
     private Config mainConfig;
     private FuzzerConfig[] fuzzerConfigs;
     private Output output;
+    private Analyzer analyzer;
+    private List<Check> checks = Collections.emptyList();
 
     public static void main(String[] args) throws Exception {
         try (Output output = new Output()) {
@@ -61,7 +66,7 @@ public class FuzzyHttpsClient implements Client {
                     .set(FuzzyClient.fuzzerFactory)
                     .set(client)
                     .set(fuzzerConfigs)
-                    .set(new NoAlertAnalyzer())
+                    .set(analyzer)
                     .submit();
         }
 
@@ -69,9 +74,15 @@ public class FuzzyHttpsClient implements Client {
     }
 
     @Override
-    public Client set(Check... check) {
-        // TODO: we need to be able to set checks
-        throw new UnsupportedOperationException("no checks for you!");
+    public Client set(Check... checks) {
+        this.checks = List.of(checks);
+        return this;
+    }
+
+    @Override
+    public Client set(Analyzer analyzer) {
+        this.analyzer = analyzer;
+        return this;
     }
 
     @Override
@@ -81,13 +92,11 @@ public class FuzzyHttpsClient implements Client {
 
     @Override
     public Engine engine() {
-        // TODO: return engines
         throw new UnsupportedOperationException("no engines for you!");
     }
 
     @Override
     public Engine[] engines() {
-        // TODO: return engines
         throw new UnsupportedOperationException("no engines for you!");
     }
 

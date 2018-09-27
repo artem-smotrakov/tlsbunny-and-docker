@@ -1,5 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls13.client;
 
+import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
 import com.gypsyengineer.tlsbunny.tls13.connection.BaseEngineFactory;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Side;
@@ -16,6 +17,9 @@ import com.gypsyengineer.tlsbunny.utils.Output;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static com.gypsyengineer.tlsbunny.tls13.client.FuzzyClient.ccsConfigs;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.alert;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.application_data;
@@ -27,13 +31,14 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup.secp256r1;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv12;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv13;
 import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp256r1_sha256;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class FuzzyClientTest {
 
     private static final int start = 10;
     private static final int end = 15;
     private static final int parts = 1;
-    private static final int number_of_connections = end - start + 1;
 
     static {
         System.setProperty("tlsbunny.threads", "1");
@@ -55,9 +60,12 @@ public class FuzzyClientTest {
                         .set(serverOutput))
                 .set(serverConfig)
                 .set(serverOutput)
-                .maxConnections(number_of_connections);
+                .maxConnections(end - start + 2);
 
         FuzzyHttpsClient fuzzyClient = new FuzzyHttpsClient();
+
+        TestAnalyzer analyzer = new TestAnalyzer();
+        analyzer.set(clientOutput);
 
         try (fuzzyClient; server; clientOutput; serverOutput) {
             server.start();
@@ -66,10 +74,21 @@ public class FuzzyClientTest {
             fuzzyClient.set(configs)
                     .set(clientConfig)
                     .set(clientOutput)
+                    .set(analyzer)
                     .connect();
         }
 
-        // TODO: add asserts (maybe use analyzers)
+        analyzer.run();
+        assertEquals(end - start + 1, analyzer.engines().length);
+        for (Engine engine : analyzer.engines()) {
+            assertTrue(engine.context().hasAlert());
+            assertEquals(
+                    AlertLevel.fatal,
+                    engine.context().getAlert().getLevel());
+            assertEquals(
+                    AlertDescription.close_notify,
+                    engine.context().getAlert().getDescription());
+        }
     }
 
     private static class EngineFactoryImpl extends BaseEngineFactory {
@@ -101,7 +120,7 @@ public class FuzzyClientTest {
                     // send an alert
                     .run(new GeneratingAlert()
                             .level(AlertLevel.fatal)
-                            .description(AlertDescription.unexpected_message))
+                            .description(AlertDescription.close_notify))
                     .run(new WrappingIntoTLSPlaintexts()
                             .version(TLSv12)
                             .type(alert))
@@ -208,6 +227,35 @@ public class FuzzyClientTest {
                     .run(new PreparingHttpResponse())
                     .run(new WrappingApplicationDataIntoTLSCiphertext())
                     .send(new OutgoingData());
+        }
+    }
+
+    private static class TestAnalyzer implements Analyzer {
+
+        private Output output;
+        private final List<Engine> engines = new ArrayList<>();
+
+        @Override
+        public Analyzer set(Output output) {
+            this.output = output;
+            return this;
+        }
+
+        @Override
+        public Analyzer add(Engine... engines) {
+            this.engines.addAll(List.of(engines));
+            return this;
+        }
+
+        @Override
+        public Analyzer run() {
+            output.info("run analyzer");
+            return this;
+        }
+
+        @Override
+        public Engine[] engines() {
+            return engines.toArray(new Engine[engines.size()]);
         }
     }
 
