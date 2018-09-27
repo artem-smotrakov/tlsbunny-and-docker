@@ -3,18 +3,15 @@ package com.gypsyengineer.tlsbunny.tls13.fuzzer;
 import com.gypsyengineer.tlsbunny.fuzzer.FuzzedVector;
 import com.gypsyengineer.tlsbunny.fuzzer.Fuzzer;
 import com.gypsyengineer.tlsbunny.tls.Vector;
-import com.gypsyengineer.tlsbunny.utils.HasOutput;
 import com.gypsyengineer.tlsbunny.utils.Output;
-import com.gypsyengineer.tlsbunny.utils.WhatTheHell;
 
 import java.io.IOException;
 
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
-public class SimpleVectorFuzzer
-        implements Fuzzer<Vector<Byte>> {
+public class SimpleVectorFuzzer<T> implements Fuzzer<Vector<T>> {
 
-    public static SimpleVectorFuzzer newSimpleVectorFuzzer() {
+    public static SimpleVectorFuzzer simpleVectorFuzzer() {
         return new SimpleVectorFuzzer();
     }
 
@@ -144,9 +141,9 @@ public class SimpleVectorFuzzer
     }
 
     @Override
-    synchronized public final Vector<Byte> fuzz(Vector<Byte> vector) {
+    synchronized public final Vector<T> fuzz(Vector<T> vector) {
         if (!canFuzz()) {
-            throw new WhatTheHell("I can't fuzz anymore!");
+            throw whatTheHell("I can't fuzz anymore!");
         }
 
         try {
@@ -182,7 +179,7 @@ public class SimpleVectorFuzzer
         return array;
     }
 
-    private interface Generator {
-        Vector<Byte> run (Vector<Byte> vector, Output output) throws IOException;
+    private interface Generator<T> {
+        Vector<Byte> run (Vector<T> vector, Output output) throws IOException;
     }
 }

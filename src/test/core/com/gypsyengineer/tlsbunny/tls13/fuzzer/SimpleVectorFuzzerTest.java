@@ -9,7 +9,7 @@ import org.junit.Test;
 import java.util.HashSet;
 import java.util.Set;
 
-import static com.gypsyengineer.tlsbunny.tls13.fuzzer.SimpleVectorFuzzer.newSimpleVectorFuzzer;
+import static com.gypsyengineer.tlsbunny.tls13.fuzzer.SimpleVectorFuzzer.simpleVectorFuzzer;
 import static org.junit.Assert.*;
 
 public class SimpleVectorFuzzerTest {
@@ -54,7 +54,7 @@ public class SimpleVectorFuzzerTest {
     @Test
     public void set() {
         try (Output output = new Output()) {
-            SimpleVectorFuzzer fuzzer = newSimpleVectorFuzzer();
+            SimpleVectorFuzzer fuzzer = simpleVectorFuzzer();
             fuzzer.set(output);
 
             try {

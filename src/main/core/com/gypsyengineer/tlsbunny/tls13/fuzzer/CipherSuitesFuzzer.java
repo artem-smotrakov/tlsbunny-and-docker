@@ -14,7 +14,7 @@ public class CipherSuitesFuzzer extends FuzzyStructFactory<Vector<CipherSuite>> 
 
     public static final Target DEFAULT_TARGET = Target.client_hello;
 
-    public static CipherSuitesFuzzer newCipherSuitesFuzzer() {
+    public static CipherSuitesFuzzer cipherSuitesFuzzer() {
         return new CipherSuitesFuzzer();
     }
 
@@ -22,8 +22,7 @@ public class CipherSuitesFuzzer extends FuzzyStructFactory<Vector<CipherSuite>> 
         this(StructFactory.getDefault(), new Output());
     }
 
-    public CipherSuitesFuzzer(StructFactory factory,
-                              Output output) {
+    public CipherSuitesFuzzer(StructFactory factory, Output output) {
         super(factory, output);
         target(DEFAULT_TARGET);
     }
