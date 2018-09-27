@@ -34,6 +34,12 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+/**
+ * This is just a smoke test for the fuzzy https client
+ * because the server sends an alert immediately,
+ * so that the fuzzer may not be able to fuzz a message
+ * if it goes later in the handshake process (for example, Finished message).
+ */
 public class FuzzyClientTest {
 
     private static final int start = 10;
