@@ -109,10 +109,18 @@ public class Engine {
 
     public Engine label(String label) {
         if (label == null || label.trim().isEmpty()) {
-            throw new IllegalArgumentException();
+            throw whatTheHell("empty label!");
         }
         this.label = label;
         return this;
+    }
+
+    public String label() {
+        return label;
+    }
+
+    public Output output() {
+        return output;
     }
 
     public Engine set(Connection connection) {
@@ -315,8 +323,7 @@ public class Engine {
     }
 
     public Engine apply(Analyzer analyzer) {
-        analyzer.add(label, context);
-        analyzer.add(label, output);
+        analyzer.add(this);
         return this;
     }
 

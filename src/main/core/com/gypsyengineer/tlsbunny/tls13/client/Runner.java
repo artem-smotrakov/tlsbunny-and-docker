@@ -83,7 +83,7 @@ public class Runner {
                 fuzzerConfig.set(mainConfig);
                 fuzzerConfig.client(client);
 
-                if (analyzer != Analyzer.NOTHING) {
+                if (analyzer != null) {
                     fuzzerConfig.analyzer(analyzer);
                 }
 
@@ -101,11 +101,8 @@ public class Runner {
 
         info("phew, we are done!");
 
-        if (analyzer != Analyzer.NOTHING) {
-            try (Output output = new Output()) {
-                analyzer.set(output);
-                analyzer.run();
-            }
+        if (analyzer != null) {
+            analyzer.set(output).run();
         }
     }
 

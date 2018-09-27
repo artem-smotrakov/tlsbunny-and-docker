@@ -69,7 +69,7 @@ public class FuzzyClientTest {
                     .connect();
         }
 
-        // TODO: add asserts
+        // TODO: add asserts (maybe use analyzers)
     }
 
     private static class EngineFactoryImpl extends BaseEngineFactory {

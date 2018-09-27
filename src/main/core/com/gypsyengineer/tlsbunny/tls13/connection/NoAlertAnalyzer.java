@@ -1,15 +1,14 @@
 package com.gypsyengineer.tlsbunny.tls13.connection;
 
-import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 public class NoAlertAnalyzer implements Analyzer {
 
     private Output output;
-    private final Map<String, Holder> contexts = new HashMap<>();
+    private final List<Engine> engines = new ArrayList<>();
 
     @Override
     public Analyzer set(Output output) {
@@ -18,24 +17,8 @@ public class NoAlertAnalyzer implements Analyzer {
     }
 
     @Override
-    public Analyzer add(String label, Context context) {
-        Holder holder = contexts.get(label);
-        if (holder == null) {
-            holder = new Holder();
-            contexts.put(label, holder);
-        }
-        holder.context = context;
-        return this;
-    }
-
-    @Override
-    public Analyzer add(String label, Output output) {
-        Holder holder = contexts.get(label);
-        if (holder == null) {
-            holder = new Holder();
-            contexts.put(label, holder);
-        }
-        holder.output = output;
+    public Analyzer add(Engine engine) {
+        engines.add(engine);
         return this;
     }
 
@@ -43,19 +26,16 @@ public class NoAlertAnalyzer implements Analyzer {
     public Analyzer run() {
         output.info("let's look for connections with no alerts");
 
-        if (contexts.entrySet().isEmpty()) {
+        if (engines.isEmpty()) {
             output.info("there is nothing to analyze!");
             return this;
         }
 
         int count = 0;
-        for (Map.Entry<String, Holder> entry : contexts.entrySet()) {
-            String label = entry.getKey();
-            Holder holder = entry.getValue();
-
-            if (!holder.context.hasAlert()) {
-                output.info("connection '%s' didn't result to an alert:", label);
-                output.add(holder.output);
+        for (Engine engine : engines) {
+            if (!engine.context().hasAlert()) {
+                output.info("connection '%s' didn't result to an alert:", engine.label());
+                output.add(engine.output());
                 count++;
             }
         }
@@ -71,9 +51,6 @@ public class NoAlertAnalyzer implements Analyzer {
         return this;
     }
 
-    private static class Holder {
-        Output output;
-        Context context;
-    }
+
 
 }
