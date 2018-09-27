@@ -6,8 +6,6 @@ import com.gypsyengineer.tlsbunny.tls13.utils.FuzzerConfig;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -16,16 +14,12 @@ import static com.gypsyengineer.tlsbunny.utils.Utils.info;
 
 public class Runner {
 
-    public interface FuzzerFactory {
-        Runnable create(FuzzerConfig config, Output output);
-    }
-
     private Config mainConfig;
     private FuzzerConfig[] fuzzerConfigs;
     private FuzzerFactory fuzzerFactory;
     private Client client;
     private Output output;
-    private List<Check> checks = Collections.emptyList();
+    private Check[] checks;
     private Analyzer analyzer;
     private int index;
 
@@ -55,7 +49,7 @@ public class Runner {
     }
 
     public Runner set(Check... checks) {
-        this.checks = List.of(checks);
+        this.checks = checks;
         return this;
     }
 
@@ -94,6 +88,10 @@ public class Runner {
 
                 if (analyzer != null) {
                     fuzzerConfig.analyzer(analyzer);
+                }
+
+                if (checks != null) {
+                    fuzzerConfig.set(checks);
                 }
 
                 for (FuzzerConfig subConfig : split(fuzzerConfig)) {
@@ -137,6 +135,10 @@ public class Runner {
         }
 
         return configs;
+    }
+
+    public interface FuzzerFactory {
+        Runnable create(FuzzerConfig config, Output output);
     }
 
 }

@@ -49,7 +49,7 @@ public abstract class AbstractClient implements Client, AutoCloseable {
 
     @Override
     public Client set(Check... checks) {
-        this.checks = List.of(checks);
+        this.checks = List.of(checks != null ? checks : no_checks);
         return this;
     }
 

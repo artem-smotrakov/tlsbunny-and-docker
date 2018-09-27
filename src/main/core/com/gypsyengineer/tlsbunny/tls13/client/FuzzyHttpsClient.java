@@ -9,16 +9,13 @@ import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.Output;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 
-import java.util.Collections;
-import java.util.List;
-
 public class FuzzyHttpsClient implements Client {
 
     private Config mainConfig;
     private FuzzerConfig[] fuzzerConfigs;
     private Output output;
     private Analyzer analyzer;
-    private List<Check> checks = Collections.emptyList();
+    private Check[] checks;
 
     public static void main(String[] args) throws Exception {
         try (Output output = new Output()) {
@@ -66,6 +63,7 @@ public class FuzzyHttpsClient implements Client {
                     .set(FuzzyClient.fuzzerFactory)
                     .set(client)
                     .set(fuzzerConfigs)
+                    .set(checks)
                     .set(analyzer)
                     .submit();
         }
@@ -75,7 +73,7 @@ public class FuzzyHttpsClient implements Client {
 
     @Override
     public Client set(Check... checks) {
-        this.checks = List.of(checks);
+        this.checks = checks;
         return this;
     }
 

@@ -1,6 +1,7 @@
 package com.gypsyengineer.tlsbunny.tls13.utils;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
+import com.gypsyengineer.tlsbunny.tls13.connection.Check;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.FuzzyStructFactory;
 import com.gypsyengineer.tlsbunny.tls13.client.Client;
 import com.gypsyengineer.tlsbunny.utils.Config;
@@ -9,6 +10,7 @@ public class FuzzerConfig implements Config {
 
     private Config mainConfig;
     private Analyzer analyzer;
+    private Check[] checks;
     private FuzzyStructFactory factory;
     private Client client;
 
@@ -178,6 +180,19 @@ public class FuzzerConfig implements Config {
 
     public Analyzer analyzer() {
         return analyzer;
+    }
+
+    public FuzzerConfig set(Check... checks) {
+        this.checks = checks;
+        return this;
+    }
+
+    public boolean hasChecks() {
+        return checks != null && checks.length != 0;
+    }
+
+    public Check[] checks() {
+        return checks;
     }
 
     public boolean noFactory() {

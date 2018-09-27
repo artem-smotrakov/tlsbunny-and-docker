@@ -402,8 +402,12 @@ public class FuzzyClient implements Runnable {
                 int attempt = 0;
                 while (true) {
                     try {
-                        Engine engine = client.set(fuzzyStructFactory).set(fuzzerConfig).set(output)
-                                .connect().engine();
+                        Engine engine = client.set(fuzzyStructFactory)
+                                .set(fuzzerConfig)
+                                .set(output)
+                                .set(fuzzerConfig.checks())
+                                .connect()
+                                .engine();
 
                         if (fuzzerConfig.hasAnalyzer()) {
                             engine.apply(fuzzerConfig.analyzer());
