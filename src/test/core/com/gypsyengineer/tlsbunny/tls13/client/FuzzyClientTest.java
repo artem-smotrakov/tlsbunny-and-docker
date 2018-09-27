@@ -1,8 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls13.client;
 
-import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
-import com.gypsyengineer.tlsbunny.tls13.connection.BaseEngineFactory;
-import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
+import com.gypsyengineer.tlsbunny.tls13.connection.*;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Side;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.IncomingChangeCipherSpec;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.OutgoingChangeCipherSpec;
@@ -45,6 +43,11 @@ public class FuzzyClientTest {
     private static final int start = 10;
     private static final int end = 15;
     private static final int parts = 1;
+
+    private static final Check[] checks = {
+            new AlertCheck(),
+            new FailureCheck()
+    };
 
     static {
         System.setProperty("tlsbunny.threads", "1");
@@ -310,6 +313,7 @@ public class FuzzyClientTest {
             config.startTest(start);
             config.endTest(end);
             config.parts(parts);
+            config.set(checks);
         }
 
         return configs;
