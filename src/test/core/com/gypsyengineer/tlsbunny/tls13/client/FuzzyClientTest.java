@@ -20,7 +20,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.gypsyengineer.tlsbunny.tls13.client.FuzzyClient.ccsConfigs;
+import static com.gypsyengineer.tlsbunny.tls13.client.FuzzyClient.*;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.alert;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.application_data;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
@@ -45,8 +45,48 @@ public class FuzzyClientTest {
     }
 
     @Test
+    public void tlsPlaintext() throws Exception {
+        test(minimized(tlsPlaintextConfigs()));
+    }
+
+    @Test
+    public void handshake() throws Exception {
+        test(minimized(handshakeConfigs()));
+    }
+
+    @Test
+    public void clientHello() throws Exception {
+        test(minimized(clientHelloConfigs()));
+    }
+
+    @Test
     public void ccs() throws Exception {
         test(minimized(ccsConfigs()));
+    }
+
+    @Test
+    public void finished() throws Exception {
+        test(minimized(finishedConfigs()));
+    }
+
+    @Test
+    public void cipherSuites() throws Exception {
+        test(minimized(cipherSuitesConfigs()));
+    }
+
+    @Test
+    public void extensionVector() throws Exception {
+        test(minimized(extensionVectorConfigs()));
+    }
+
+    @Test
+    public void legacySessionId() throws Exception {
+        test(minimized(legacySessionIdConfigs()));
+    }
+
+    @Test
+    public void legacyCompressionMethods() throws Exception {
+        test(minimized(legacyCompressionMethodsConfigs()));
     }
 
     public void test(FuzzerConfig[] configs) throws Exception {
