@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.gypsyengineer.tlsbunny.impl.test.tls13.Utils.waitServerStop;
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 // TODO: should we really use Server interface if we don't support many its methods?
@@ -23,14 +24,8 @@ public class OpensslServer implements Server, AutoCloseable {
 
     public static final int port = 10101;
 
-    private static final String server_stop_template =
-            "docker container kill %s";
-
     private static final String remove_container_template =
             "docker container rm %s";
-
-    private static final String check_container_running_template =
-            "docker container port %s";
 
     // TODO: add synchronization
     private String containerName;
@@ -140,7 +135,16 @@ public class OpensslServer implements Server, AutoCloseable {
         }
 
         try {
-            int code = Utils.waitProcessFinish(output, server_stop_template, containerName);
+            List<String> command = List.of(
+                    "docker",
+                    "exec",
+                    containerName,
+                    "bash",
+                    "-c",
+                    "pidof openssl | xargs kill -SIGINT"
+            );
+
+            int code = Utils.waitProcessFinish(output, command);
             if (code != 0) {
                 output.achtung("could not stop the server (exit code %d)", code);
                 failed = true;
@@ -160,8 +164,12 @@ public class OpensslServer implements Server, AutoCloseable {
         }
 
         try {
-            return Utils.exec(output, check_container_running_template, containerName)
-                    .waitFor() == 0;
+            List<String> command = List.of(
+                    "/bin/bash",
+                    "-c",
+                    String.format("docker container ps | grep %s", containerName)
+            );
+            return Utils.exec(output, command).waitFor() == 0;
         } catch (InterruptedException | IOException e) {
             failed = true;
             throw new RuntimeException("unexpected exception occurred", e);
@@ -169,8 +177,11 @@ public class OpensslServer implements Server, AutoCloseable {
     }
 
     @Override
-    public void close() throws IOException, InterruptedException {
+    public void close() throws Exception {
         stop();
+
+        waitServerStop(this);
+        output.info("server stopped");
 
         if (containerName != null) {
             int code = Utils.waitProcessFinish(output, remove_container_template, containerName);

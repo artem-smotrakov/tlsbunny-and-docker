@@ -101,6 +101,8 @@ public class Utils {
             }
         } while (!process.waitFor(delay, TimeUnit.MILLISECONDS));
 
+        output.flush();
+
         return process.exitValue();
     }
 }
