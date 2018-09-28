@@ -141,7 +141,7 @@ public class OpensslServer implements Server, AutoCloseable {
                     containerName,
                     "bash",
                     "-c",
-                    "pidof openssl | xargs kill -SIGINT"
+                    "pidof server | xargs kill -SIGINT"
             );
 
             int code = Utils.waitProcessFinish(output, command);
