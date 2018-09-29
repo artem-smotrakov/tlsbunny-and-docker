@@ -7,7 +7,6 @@ import com.gypsyengineer.tlsbunny.tls.UInt24;
 import com.gypsyengineer.tlsbunny.tls.Vector;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
 import com.gypsyengineer.tlsbunny.utils.Utils;
-import java.util.List;
 
 // TODO: all implementations should return immutable vectors
 public class StructFactoryImpl implements StructFactory {
@@ -50,38 +49,20 @@ public class StructFactoryImpl implements StructFactory {
     public Handshake createHandshake(HandshakeType type, byte[] content) {
         return new HandshakeImpl(type, new UInt24(content.length), new Bytes(content));
     }
-    
+
+    @Override
+    public Certificate createCertificate(Vector<Byte> certificate_request_context,
+                                         Vector<CertificateEntry> certificate_list) {
+
+        return new CertificateImpl(certificate_request_context, certificate_list);
+    }
+
     @Override
     public Alert createAlert(AlertLevel level, AlertDescription description) {
         return new AlertImpl(level, description);
     }
     
     // handshake messages below
-    
-    @Override
-    public ClientHello createClientHello(ProtocolVersion legacy_version,
-                                         Random random,
-                                         byte[] legacy_session_id,
-                                         List<CipherSuite> cipher_suites,
-                                         List<CompressionMethod> legacy_compression_methods,
-                                         List<Extension> extensions) {
-        
-        return createClientHello(
-                legacy_version, 
-                random, 
-                Vector.wrap(
-                        ClientHelloImpl.LEGACY_SESSION_ID_LENGTH_BYTES,
-                        legacy_session_id),
-                Vector.wrap(
-                        ClientHelloImpl.CIPHER_SUITES_LENGTH_BYTES,
-                        cipher_suites),
-                Vector.wrap(
-                        ClientHelloImpl.LEGACY_COMPRESSION_METHODS_LENGTH_BYTES,
-                        legacy_compression_methods),
-                Vector.wrap(
-                        ClientHelloImpl.EXTENSIONS_LENGTH_BYTES,
-                        extensions));
-    }
 
     @Override
     public ClientHello createClientHello(ProtocolVersion legacy_version,
@@ -98,27 +79,6 @@ public class StructFactoryImpl implements StructFactory {
     @Override
     public ChangeCipherSpec createChangeCipherSpec(int value) {
         return new ChangeCipherSpecImpl(value);
-    }
-    
-    @Override
-    public ServerHello createServerHello(ProtocolVersion version,
-                                         Random random,
-                                         byte[] legacy_session_id_echo,
-                                         CipherSuite cipher_suite,
-                                         CompressionMethod legacy_compression_method,
-                                         List<Extension> extensions) {
-
-        return createServerHello(
-                version,
-                random,
-                Vector.wrap(
-                        ServerHelloImpl.LEGACY_SESSION_ID_ECHO_LENGTH_BYTES,
-                        legacy_session_id_echo),
-                cipher_suite,
-                legacy_compression_method,
-                Vector.wrap(
-                        ServerHelloImpl.EXTENSIONS_LENGTH_BYTES,
-                        extensions));
     }
 
     @Override
@@ -167,27 +127,6 @@ public class StructFactoryImpl implements StructFactory {
                         CertificateRequest.CERTIFICATE_REQUEST_CONTEXT_LENGTH_BYTES,
                         certificate_request_context),
                 extensions);
-    }
-
-    @Override
-    public CertificateRequest createCertificateRequest(byte[] certificate_request_context,
-                                                       List<Extension> extensions) {
-
-        return createCertificateRequest(
-                certificate_request_context,
-                Vector.wrap(
-                        CertificateRequest.EXTENSIONS_LENGTH_BYTES,
-                        extensions));
-    }
-    
-    @Override
-    public Certificate createCertificate(
-            byte[] certificate_request_context,
-            CertificateEntry... certificate_list) {
-        
-        return new CertificateImpl(
-                Vector.wrap(CertificateImpl.CONTEXT_LENGTH_BYTES, certificate_request_context),
-                Vector.wrap(CertificateImpl.CERTIFICATE_LIST_LENGTH_BYTES, certificate_list));
     }
     
     @Override
