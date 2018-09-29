@@ -12,8 +12,17 @@ import java.util.concurrent.TimeUnit;
 public class Utils {
 
     public static final int delay = 500; // in millis
+    public static final int no_timeout = -1;
     public static final int default_server_start_timeout = 10 * 1000; // im millis
     public static final int default_server_stop_timeout  = 10 * 1000; // im millis
+
+    public static void delay(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            // ignore
+        }
+    }
 
     public static Process exec(Output output, String template, Object... params)
             throws IOException {
@@ -42,7 +51,7 @@ public class Utils {
     }
 
     public static void waitServerStart(Server server) throws Exception {
-        waitServerStart(server, default_server_start_timeout);
+        waitServerStart(server, no_timeout);
     }
 
     public static void waitServerStart(Server server, long timeout)
@@ -51,7 +60,7 @@ public class Utils {
         long start = System.currentTimeMillis();
         do {
             Thread.sleep(delay);
-            if (System.currentTimeMillis() - start > timeout) {
+            if (timeout > 0 && System.currentTimeMillis() - start > timeout) {
                 throw new IOException(
                         "timeout reached while waiting for the server to start");
             }
@@ -59,7 +68,7 @@ public class Utils {
     }
 
     public static void waitServerStop(Server server) throws Exception {
-        waitServerStop(server, default_server_stop_timeout);
+        waitServerStop(server, no_timeout);
     }
 
     public static void waitServerStop(Server server, long timeout)
@@ -68,7 +77,7 @@ public class Utils {
         long start = System.currentTimeMillis();
         do {
             Thread.sleep(delay);
-            if (System.currentTimeMillis() - start > timeout) {
+            if (timeout > 0 && System.currentTimeMillis() - start > timeout) {
                 throw new IOException(
                         "timeout reached while waiting for the server to stop");
             }
@@ -100,6 +109,8 @@ public class Utils {
                 output.flush();
             }
         } while (!process.waitFor(delay, TimeUnit.MILLISECONDS));
+
+        output.flush();
 
         return process.exitValue();
     }

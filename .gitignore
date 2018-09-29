@@ -8,3 +8,4 @@ openssl_src
 tlsbunny.iml
 out
 .gradle/
+openssl_report

@@ -23,12 +23,12 @@ import java.util.List;
 
 import static com.gypsyengineer.tlsbunny.fuzzer.BitFlipFuzzer.newBitFlipFuzzer;
 import static com.gypsyengineer.tlsbunny.fuzzer.ByteFlipFuzzer.newByteFlipFuzzer;
-import static com.gypsyengineer.tlsbunny.tls13.fuzzer.CipherSuitesFuzzer.newCipherSuitesFuzzer;
+import static com.gypsyengineer.tlsbunny.tls13.fuzzer.CipherSuitesFuzzer.cipherSuitesFuzzer;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.ExtensionVectorFuzzer.newExtensionVectorFuzzer;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.LegacyCompressionMethodsFuzzer.newLegacyCompressionMethodsFuzzer;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.LegacySessionIdFuzzer.newLegacySessionIdFuzzer;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.MutatedStructFactory.newMutatedStructFactory;
-import static com.gypsyengineer.tlsbunny.tls13.fuzzer.SimpleVectorFuzzer.newSimpleVectorFuzzer;
+import static com.gypsyengineer.tlsbunny.tls13.fuzzer.SimpleVectorFuzzer.simpleVectorFuzzer;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Target.*;
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
@@ -259,9 +259,9 @@ public class FuzzyClient implements Runnable {
     public static FuzzerConfig[] cipherSuitesConfigs(Config config) {
         return new FuzzerConfig[] {
                 new FuzzerConfig(config)
-                        .factory(newCipherSuitesFuzzer()
+                        .factory(cipherSuitesFuzzer()
                                 .target(client_hello)
-                                .fuzzer(newSimpleVectorFuzzer()))
+                                .fuzzer(simpleVectorFuzzer()))
                         .readTimeout(long_read_timeout)
         };
     }
@@ -275,7 +275,7 @@ public class FuzzyClient implements Runnable {
                 new FuzzerConfig(config)
                         .factory(newExtensionVectorFuzzer()
                                 .target(client_hello)
-                                .fuzzer(newSimpleVectorFuzzer()))
+                                .fuzzer(simpleVectorFuzzer()))
                         .readTimeout(long_read_timeout)
         };
     }
@@ -289,7 +289,7 @@ public class FuzzyClient implements Runnable {
                 new FuzzerConfig(config)
                         .factory(newLegacySessionIdFuzzer()
                                 .target(client_hello)
-                                .fuzzer(newSimpleVectorFuzzer()))
+                                .fuzzer(simpleVectorFuzzer()))
                         .readTimeout(long_read_timeout)
         };
     }
@@ -303,7 +303,7 @@ public class FuzzyClient implements Runnable {
                 new FuzzerConfig(config)
                         .factory(newLegacyCompressionMethodsFuzzer()
                                 .target(client_hello)
-                                .fuzzer(newSimpleVectorFuzzer()))
+                                .fuzzer(simpleVectorFuzzer()))
                         .readTimeout(long_read_timeout)
         };
     }

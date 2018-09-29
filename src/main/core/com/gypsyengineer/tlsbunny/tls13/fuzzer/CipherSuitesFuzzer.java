@@ -6,7 +6,6 @@ import com.gypsyengineer.tlsbunny.tls13.struct.*;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
 import java.io.IOException;
-import java.util.List;
 
 import static com.gypsyengineer.tlsbunny.utils.HexDump.printHexDiff;
 
@@ -14,7 +13,7 @@ public class CipherSuitesFuzzer extends FuzzyStructFactory<Vector<CipherSuite>> 
 
     public static final Target DEFAULT_TARGET = Target.client_hello;
 
-    public static CipherSuitesFuzzer newCipherSuitesFuzzer() {
+    public static CipherSuitesFuzzer cipherSuitesFuzzer() {
         return new CipherSuitesFuzzer();
     }
 
@@ -22,8 +21,7 @@ public class CipherSuitesFuzzer extends FuzzyStructFactory<Vector<CipherSuite>> 
         this(StructFactory.getDefault(), new Output());
     }
 
-    public CipherSuitesFuzzer(StructFactory factory,
-                              Output output) {
+    public CipherSuitesFuzzer(StructFactory factory, Output output) {
         super(factory, output);
         target(DEFAULT_TARGET);
     }
@@ -31,31 +29,23 @@ public class CipherSuitesFuzzer extends FuzzyStructFactory<Vector<CipherSuite>> 
     @Override
     synchronized public ClientHello createClientHello(ProtocolVersion legacy_version,
                                                       Random random,
-                                                      byte[] legacy_session_id,
-                                                      List<CipherSuite> cipher_suites,
-                                                      List<CompressionMethod> legacy_compression_methods,
-                                                      List<Extension> extensions) {
+                                                      Vector<Byte> legacy_session_id,
+                                                      Vector<CipherSuite> cipher_suites,
+                                                      Vector<CompressionMethod> legacy_compression_methods,
+                                                      Vector<Extension> extensions) {
 
-        ClientHello hello = factory.createClientHello(
+        if (target == Target.client_hello) {
+            output.info("fuzz cipher suites in ClientHello");
+            cipher_suites = fuzz(cipher_suites);
+        }
+
+        return factory.createClientHello(
                 legacy_version,
                 random,
                 legacy_session_id,
                 cipher_suites,
                 legacy_compression_methods,
                 extensions);
-
-        if (target == Target.client_hello) {
-            output.info("fuzz cipher suites in ClientHello");
-            hello = factory.createClientHello(
-                    hello.getProtocolVersion(),
-                    hello.getRandom(),
-                    hello.getLegacySessionId(),
-                    fuzz(hello.getCipherSuites()),
-                    hello.getLegacyCompressionMethods(),
-                    hello.getExtensions());
-        }
-
-        return hello;
     }
 
     @Override

@@ -85,6 +85,16 @@ public class Output implements AutoCloseable {
         index = 0;
     }
 
+    synchronized public boolean contains(String phrase) {
+        for (String string : strings) {
+            if (string.contains(phrase)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     synchronized public void flush() {
         synchronized (System.out) {
             while (index < strings.size()) {

@@ -4,7 +4,7 @@
 # the following command builds a docker image
 # it should be run from the root of tlsbunny repository
 #
-# docker build --file src/main/docker/openssl/Dockerfile --tag openssl/server/tls13 .
+# docker build --file src/impl/docker/openssl/Dockerfile --tag openssl/server/tls13 .
 #
 # the following command starts an OpenSSL server
 #
@@ -21,26 +21,29 @@ FROM ubuntu
 
 MAINTAINER artem.smotrakov@gmail.com
 
-RUN apt-get update && apt-get install -y \
-    gcc git make
+RUN apt-get update && apt-get install -y gcc git lcov make
 
-RUN mkdir -p /var/src/openssl /var/src/tlsbunny
+RUN mkdir -p /var/src/openssl /var/src/tlsbunny /var/reports
 
-RUN git clone https://github.com/openssl/openssl /var/src/openssl && \
-    cd /var/src/openssl && \
-    ./config \
-	    --prefix=/usr \
+ENV CFLAGS "-fprofile-arcs -ftest-coverage"
+ENV LDFLAGS "-fsanitize=address"
+
+RUN git clone https://github.com/openssl/openssl /var/src/openssl
+
+ADD . /var/src/tlsbunny
+WORKDIR /var/src/openssl
+RUN git apply /var/src/tlsbunny/src/impl/openssl/s_server.patch
+RUN ./config \
 	    --debug \
 	    enable-asan \
 	    enable-tls1_3 \
 	    enable-ssl-trace && \
 	make && make install
 
-EXPOSE 10101
-
 ENV LD_LIBRARY_PATH /usr/local/lib
 
-ADD . /var/src/tlsbunny
 WORKDIR /var/src/tlsbunny
 
-CMD [ "bash", "scripts/start_openssl_tls13_server.sh" ]
+EXPOSE 10101
+
+CMD [ "bash", "src/impl/openssl/start_server.sh", "/var/src/openssl" ]

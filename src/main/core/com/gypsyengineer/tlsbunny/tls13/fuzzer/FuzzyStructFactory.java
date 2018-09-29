@@ -6,10 +6,7 @@ import com.gypsyengineer.tlsbunny.tls.Vector;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
-import java.util.List;
-
-public abstract class FuzzyStructFactory<T>
-        implements StructFactory, Fuzzer<T> {
+public abstract class FuzzyStructFactory<T> implements StructFactory, Fuzzer<T> {
 
     protected final StructFactory factory;
 
@@ -35,7 +32,7 @@ public abstract class FuzzyStructFactory<T>
         return target;
     }
 
-    synchronized public FuzzyStructFactory fuzzer(Fuzzer<T> fuzzer) {
+    synchronized public FuzzyStructFactory<T> fuzzer(Fuzzer<T> fuzzer) {
         this.fuzzer = fuzzer;
         return this;
     }
@@ -74,6 +71,13 @@ public abstract class FuzzyStructFactory<T>
     }
 
     // override methods from StructFactory
+
+
+    @Override
+    public Certificate createCertificate(Vector<Byte> certificate_request_context,
+                                         Vector<CertificateEntry> certificate_list) {
+        return factory.createCertificate(certificate_request_context, certificate_list);
+    }
 
     @Override
     public CompressionMethod createCompressionMethod(int code) {
@@ -213,29 +217,10 @@ public abstract class FuzzyStructFactory<T>
     }
 
     @Override
-    public CertificateRequest createCertificateRequest(byte[] certificate_request_context,
-                                                List<Extension> extensions) {
-
-        return factory.createCertificateRequest(certificate_request_context, extensions);
-    }
-
-    @Override
     public CertificateVerify createCertificateVerify(
             SignatureScheme algorithm, byte[] signature) {
 
         return factory.createCertificateVerify(algorithm, signature);
-    }
-
-    @Override
-    public ClientHello createClientHello(ProtocolVersion legacy_version,
-                                         Random random,
-                                         byte[] legacy_session_id,
-                                         List<CipherSuite> cipher_suites,
-                                         List<CompressionMethod> legacy_compression_methods,
-                                         List<Extension> extensions) {
-
-        return factory.createClientHello(legacy_version, random, legacy_session_id,
-                cipher_suites, legacy_compression_methods, extensions);
     }
 
     @Override
@@ -268,18 +253,6 @@ public abstract class FuzzyStructFactory<T>
     @Override
     public HelloRetryRequest createHelloRetryRequest() {
         return factory.createHelloRetryRequest();
-    }
-
-    @Override
-    public ServerHello createServerHello(ProtocolVersion version,
-                                         Random random,
-                                         byte[] legacy_session_id_echo,
-                                         CipherSuite cipher_suite,
-                                         CompressionMethod legacy_compression_method,
-                                         List<Extension> extensions) {
-
-        return factory.createServerHello(version, random, legacy_session_id_echo,
-                cipher_suite, legacy_compression_method, extensions);
     }
 
     @Override
