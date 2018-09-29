@@ -15,6 +15,14 @@ public class Utils {
     public static final int default_server_start_timeout = 10 * 1000; // im millis
     public static final int default_server_stop_timeout  = 10 * 1000; // im millis
 
+    public static void delay(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            // ignore
+        }
+    }
+
     public static Process exec(Output output, String template, Object... params)
             throws IOException {
 
