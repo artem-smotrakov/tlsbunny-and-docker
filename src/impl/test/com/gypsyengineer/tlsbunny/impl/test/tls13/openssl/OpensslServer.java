@@ -93,10 +93,6 @@ public class OpensslServer implements Server, AutoCloseable {
         Thread thread = new Thread(this);
         thread.start();
 
-        // TODO: we need this delay to let lcov initialize
-        //       but we need to get rid of this delay
-        delay(30000);
-
         return thread;
     }
 
@@ -146,7 +142,7 @@ public class OpensslServer implements Server, AutoCloseable {
                     containerName,
                     "bash",
                     "-c",
-                    "pidof server | xargs kill -SIGINT"
+                    "pidof openssl | xargs kill -SIGINT"
             );
 
             int code = Utils.waitProcessFinish(output, command);
@@ -168,6 +164,14 @@ public class OpensslServer implements Server, AutoCloseable {
             return false;
         }
 
+        if (!output.contains("ACCEPT")) {
+            return false;
+        }
+
+        return containerRunning();
+    }
+
+    private boolean containerRunning() {
         try {
             List<String> command = List.of(
                     "/bin/bash",
