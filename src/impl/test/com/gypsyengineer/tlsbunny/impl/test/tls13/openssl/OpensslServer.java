@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.gypsyengineer.tlsbunny.impl.test.tls13.Utils.delay;
 import static com.gypsyengineer.tlsbunny.impl.test.tls13.Utils.waitServerStop;
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
@@ -91,6 +92,10 @@ public class OpensslServer implements Server, AutoCloseable {
 
         Thread thread = new Thread(this);
         thread.start();
+
+        // TODO: we need this delay to let lcov initialize
+        //       but we need to get rid of this delay
+        delay(30000);
 
         return thread;
     }

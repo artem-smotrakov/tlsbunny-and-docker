@@ -1,3 +1,4 @@
+#include <signal.h>
 #include <string.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -5,6 +6,26 @@
 #include <arpa/inet.h>
 #include <openssl/ssl.h>
 #include <openssl/err.h>
+
+/*
+ * Compile:
+ *
+ * gcc src/impl/openssl/server.c -o server \
+ *      -L/usr/local/lib -lssl -lcrypto \
+ *      -fsanitize=address -fno-omit-frame-pointer -g -O1 \
+ *      -fprofile-arcs -ftest-coverage
+ */
+
+// forward declaration of __gcov_flush()
+void __gcov_flush();
+
+// signal handler definition which flushes coverage data
+void signal_handler(int signum)
+{
+    fprintf(stderr, "received signal %d, dump code coverage data\n", signum);
+    __gcov_flush();
+    exit(1);
+}
 
 int create_socket(int port)
 {
@@ -85,6 +106,12 @@ int main(int argc, char **argv)
     int sock;
     SSL_CTX *ctx;
 
+    fprintf(stdout, "set a signal handler\n");
+    if (signal(SIGINT, signal_handler) == SIG_ERR) {
+        fprintf(stderr, "couldn't set a handler for signal\n");
+        exit(1);
+    }
+
     init_openssl();
     ctx = create_context();
 
@@ -92,14 +119,14 @@ int main(int argc, char **argv)
 
     sock = create_socket(10101);
 
+    fprintf(stdout, "hooray, server started\n");
+
     /* Handle connections */
     while(1) {
         struct sockaddr_in addr;
         uint len = sizeof(addr);
         SSL *ssl;
         const char reply[] = "test\n";
-
-        fprintf(stdout, "started");
 
         int client = accept(sock, (struct sockaddr*)&addr, &len);
         if (client < 0) {

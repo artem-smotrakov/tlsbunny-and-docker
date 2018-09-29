@@ -21,14 +21,19 @@ FROM ubuntu
 
 MAINTAINER artem.smotrakov@gmail.com
 
-RUN apt-get update && apt-get install -y \
-    gcc git make
+RUN apt-get update && apt-get install -y gcc git lcov make
 
 RUN mkdir -p /var/src/openssl /var/src/tlsbunny
 
-RUN git clone https://github.com/openssl/openssl /var/src/openssl && \
-    cd /var/src/openssl && \
-    ./config \
+ENV CFLAGS "-fprofile-arcs -ftest-coverage"
+ENV LDFLAGS "-fsanitize=address"
+
+RUN git clone https://github.com/openssl/openssl /var/src/openssl
+
+ADD . /var/src/tlsbunny
+WORKDIR /var/src/openssl
+RUN git apply /var/src/tlsbunny/src/impl/openssl/s_server.patch
+RUN ./config \
 	    --debug \
 	    enable-asan \
 	    enable-tls1_3 \
@@ -37,12 +42,8 @@ RUN git clone https://github.com/openssl/openssl /var/src/openssl && \
 
 ENV LD_LIBRARY_PATH /usr/local/lib
 
-ADD . /var/src/tlsbunny
 WORKDIR /var/src/tlsbunny
-
-RUN gcc /var/src/tlsbunny/src/impl/openssl/server.c -o server \
-    -L/usr/local/lib -lssl -lcrypto -fsanitize=address -fno-omit-frame-pointer -g -O1
 
 EXPOSE 10101
 
-CMD ./server
+CMD [ "bash", "src/impl/openssl/start_server.sh", "/var/src/openssl" ]
