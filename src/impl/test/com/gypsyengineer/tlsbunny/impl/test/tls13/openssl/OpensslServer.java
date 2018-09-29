@@ -10,23 +10,27 @@ import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.gypsyengineer.tlsbunny.impl.test.tls13.Utils.delay;
 import static com.gypsyengineer.tlsbunny.impl.test.tls13.Utils.waitServerStop;
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
-// TODO: should we really use Server interface if we don't support many its methods?
-//       would it be better to create a separate interface for external servers?
 public class OpensslServer implements Server, AutoCloseable {
 
     public static final int port = 10101;
 
     private static final String remove_container_template =
             "docker container rm %s";
+
+    private static final String host_report_directory = String.format(
+            "%s/openssl_report", System.getProperty("user.dir"));
+
+    private static final String container_report_directory = "/var/reports";
 
     // TODO: add synchronization
     private String containerName;
@@ -90,6 +94,8 @@ public class OpensslServer implements Server, AutoCloseable {
             throw whatTheHell("the server has already been started!");
         }
 
+        createReportDirectory();
+
         Thread thread = new Thread(this);
         thread.start();
 
@@ -105,6 +111,9 @@ public class OpensslServer implements Server, AutoCloseable {
         command.add("run");
         command.add("-p");
         command.add(String.format("%d:%d", port, port));
+        command.add("-v");
+        command.add(String.format("%s:%s",
+                host_report_directory, container_report_directory));
 
         if (!dockerEnvs.isEmpty()) {
             for (Map.Entry entry : dockerEnvs.entrySet()) {
@@ -171,20 +180,6 @@ public class OpensslServer implements Server, AutoCloseable {
         return containerRunning();
     }
 
-    private boolean containerRunning() {
-        try {
-            List<String> command = List.of(
-                    "/bin/bash",
-                    "-c",
-                    String.format("docker container ps | grep %s", containerName)
-            );
-            return Utils.exec(output, command).waitFor() == 0;
-        } catch (InterruptedException | IOException e) {
-            failed = true;
-            throw new RuntimeException("unexpected exception occurred", e);
-        }
-    }
-
     @Override
     public void close() throws Exception {
         stop();
@@ -201,6 +196,28 @@ public class OpensslServer implements Server, AutoCloseable {
         }
 
         output.flush();
+    }
+
+    private boolean containerRunning() {
+        try {
+            List<String> command = List.of(
+                    "/bin/bash",
+                    "-c",
+                    String.format("docker container ps | grep %s", containerName)
+            );
+            return Utils.exec(output, command).waitFor() == 0;
+        } catch (InterruptedException | IOException e) {
+            failed = true;
+            throw new RuntimeException("unexpected exception occurred", e);
+        }
+    }
+
+    private void createReportDirectory() {
+        try {
+            Files.createDirectories(Paths.get(host_report_directory));
+        } catch (IOException e) {
+            throw whatTheHell("could not create a directory for reports!", e);
+        }
     }
 
     private static String generateContainerName() {

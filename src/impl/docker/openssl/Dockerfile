@@ -23,7 +23,7 @@ MAINTAINER artem.smotrakov@gmail.com
 
 RUN apt-get update && apt-get install -y gcc git lcov make
 
-RUN mkdir -p /var/src/openssl /var/src/tlsbunny
+RUN mkdir -p /var/src/openssl /var/src/tlsbunny /var/reports
 
 ENV CFLAGS "-fprofile-arcs -ftest-coverage"
 ENV LDFLAGS "-fsanitize=address"
