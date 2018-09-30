@@ -9,7 +9,7 @@ public class SystemPropertiesConfig implements Config {
     public static final double DEFAULT_MAX_RATIO = 0.05;
     public static final int DEFAULT_PORT = 10101;
     public static final String DEFAULT_HOST = "localhost";
-    public static final int DEFAULT_THREADS = 3;
+    public static final int DEFAULT_THREADS = 1;
     public static final String DEFAULT_SERVER_CERTIFICATE = "certs/server_cert.der";
     public static final String DEFAULT_SERVER_KEY = "certs/server_key.pkcs8";
     public static final String DEFAULT_CLIENT_CERTIFICATE = "certs/client_cert.der";
