@@ -33,3 +33,35 @@ index 6f2a2ae..e0590c2 100644
      /* Init of few remaining global variables */
      local_argc = argc;
      local_argv = argv;
+diff --git a/apps/s_socket.c b/apps/s_socket.c
+index 76f9289..d582eb1 100644
+--- a/apps/s_socket.c
++++ b/apps/s_socket.c
+@@ -217,6 +217,9 @@ int do_server(int *accept_sock, const char *host, const char *port,
+     int sock_options = BIO_SOCK_REUSEADDR;
+     int ret = 0;
+ 
++
++    fprintf(stdout, "debug: do_server(): start\n");
++
+     if (BIO_sock_init() != 1)
+         return 0;
+ 
+@@ -333,6 +336,8 @@ int do_server(int *accept_sock, const char *host, const char *port,
+                 ERR_print_errors(bio_err);
+                 goto end;
+             }
++            (void)BIO_printf(bio_s_out, "tlsbunny: accept\n");
++            (void)BIO_flush(bio_s_out);
+             do {
+                 sock = BIO_accept_ex(asock, ourpeer, 0);
+             } while (sock < 0 && BIO_sock_should_retry(sock));
+@@ -374,6 +379,8 @@ int do_server(int *accept_sock, const char *host, const char *port,
+             i = (*cb)(asock, type, protocol, context);
+         }
+ 
++        BIO_printf(bio_s_out, "tlsbunny: done\n");
++        (void)BIO_flush(bio_s_out);
+         if (naccept != -1)
+             naccept--;
+         if (i < 0 || naccept == 0) {

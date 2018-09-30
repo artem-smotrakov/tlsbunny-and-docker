@@ -9,12 +9,6 @@ import javax.crypto.spec.DHParameterSpec;
 
 class FFDHEParameters {
     
-    public final DHParameterSpec spec;
-
-    public FFDHEParameters(BigInteger p, BigInteger g) {
-        this.spec = new DHParameterSpec(p, g);
-    }
-    
     private static final BigInteger ffdhe2048_p = Converter.hex2int(
             "FFFFFFFFFFFFFFFFADF85458A2BB4A9AAFDC5620273D3CF1" +
             "D8B9C583CE2D3695A9E13641146433FBCC939DCE249B3EF9" +
@@ -34,6 +28,12 @@ class FFDHEParameters {
     static {
         parameters.put(NamedGroup.ffdhe2048,
                 new FFDHEParameters(ffdhe2048_p, ffdhe2048_g));
+    }
+
+    public final DHParameterSpec spec;
+
+    public FFDHEParameters(BigInteger p, BigInteger g) {
+        this.spec = new DHParameterSpec(p, g);
     }
 
     public static FFDHEParameters create(NamedGroup group) {
