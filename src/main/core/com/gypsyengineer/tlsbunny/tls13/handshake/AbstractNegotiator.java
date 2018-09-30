@@ -17,6 +17,11 @@ abstract class AbstractNegotiator implements Negotiator {
     }
 
     @Override
+    public NamedGroup group() {
+        return group;
+    }
+
+    @Override
     public Negotiator set(Output output) {
         this.output = output;
         return this;

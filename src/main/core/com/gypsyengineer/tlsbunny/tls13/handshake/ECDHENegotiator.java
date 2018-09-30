@@ -91,17 +91,13 @@ public class ECDHENegotiator extends AbstractNegotiator {
         return keyAgreement.generateSecret();
     }
     
-    private NamedGroup.Secp getGroup() {
-        return (NamedGroup.Secp) group;
-    }
-    
     private ECPoint convertToECPoint(KeyShareEntry entry) 
             throws IOException {
         
         UncompressedPointRepresentation upr = 
                 factory.parser().parseUncompressedPointRepresentation(
                         entry.getKeyExchange().bytes(), 
-                        getCoordinateLength(getGroup()));
+                        getCoordinateLength(group));
 
         return new ECPoint(
                 toPositiveBigInteger(upr.getX()),
@@ -109,7 +105,7 @@ public class ECDHENegotiator extends AbstractNegotiator {
     }
 
     private UncompressedPointRepresentation createUPR(ECPoint point) {
-        int coordinate_length = getCoordinateLength(getGroup());
+        int coordinate_length = getCoordinateLength(group);
         return factory.createUncompressedPointRepresentation(
                 toBytes(point.getAffineX(), coordinate_length), 
                 toBytes(point.getAffineY(), coordinate_length));

@@ -150,6 +150,7 @@ public class Engine {
 
     public Engine set(Negotiator negotiator) {
         this.context.negotiator = negotiator;
+        this.context.group = negotiator.group();
         return this;
     }
 

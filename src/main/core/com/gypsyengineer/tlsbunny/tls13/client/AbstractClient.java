@@ -3,6 +3,7 @@ package com.gypsyengineer.tlsbunny.tls13.client;
 import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
 import com.gypsyengineer.tlsbunny.tls13.connection.Check;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
+import com.gypsyengineer.tlsbunny.tls13.handshake.Negotiator;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
@@ -18,6 +19,7 @@ public abstract class AbstractClient implements Client, AutoCloseable {
 
     protected Config config = SystemPropertiesConfig.load();
     protected StructFactory factory = StructFactory.getDefault();
+    protected Negotiator negotiator;
     protected Output output = new Output();
     protected Engine recentEngine;
     protected Analyzer analyzer;
@@ -38,6 +40,12 @@ public abstract class AbstractClient implements Client, AutoCloseable {
     @Override
     public Client set(StructFactory factory) {
         this.factory = factory;
+        return this;
+    }
+
+    @Override
+    public Client set(Negotiator negotiator) {
+        this.negotiator = negotiator;
         return this;
     }
 

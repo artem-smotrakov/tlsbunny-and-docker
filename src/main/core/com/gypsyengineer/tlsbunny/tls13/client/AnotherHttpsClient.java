@@ -33,6 +33,7 @@ public class AnotherHttpsClient extends SingleConnectionClient {
                 .target(config.host())
                 .target(config.port())
                 .set(factory)
+                .set(negotiator)
                 .set(output)
 
                 .send(new OutgoingClientHello())
