@@ -49,10 +49,6 @@ public class FuzzyClientTest {
             new FailureCheck()
     };
 
-    static {
-        System.setProperty("tlsbunny.threads", "1");
-    }
-
     @Test
     public void tlsPlaintext() throws Exception {
         test(minimized(tlsPlaintextConfigs()));

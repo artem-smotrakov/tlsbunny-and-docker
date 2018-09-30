@@ -17,18 +17,18 @@ import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public class FFDHENegotiator extends AbstractNegotiator {
 
-    private final FFDHEParemeters ffdheParemeters;
+    private final FFDHEParameters ffdheParameters;
     private final KeyAgreement keyAgreement;
     private final KeyPairGenerator generator;
 
     private FFDHENegotiator(NamedGroup.FFDHE group,
-                            FFDHEParemeters ffdheParemeters,
+                            FFDHEParameters ffdheParameters,
                             KeyAgreement keyAgreement,
                             KeyPairGenerator generator,
                             StructFactory factory) {
 
         super(group, factory);
-        this.ffdheParemeters = ffdheParemeters;
+        this.ffdheParameters = ffdheParameters;
         this.keyAgreement = keyAgreement;
         this.generator = generator;
     }
@@ -38,7 +38,7 @@ public class FFDHENegotiator extends AbstractNegotiator {
 
         try {
             KeyPairGenerator generator = KeyPairGenerator.getInstance("DiffieHellman");
-            FFDHEParemeters parameters = FFDHEParemeters.create(group);
+            FFDHEParameters parameters = FFDHEParameters.create(group);
             generator.initialize(parameters.spec);
 
             return new FFDHENegotiator(
@@ -55,15 +55,15 @@ public class FFDHENegotiator extends AbstractNegotiator {
     public KeyShareEntry createKeyShareEntry() throws NegotiatorException {
         try {
             KeyPair kp = generator.generateKeyPair();
-            keyAgreement.init(kp.getPrivate(), ffdheParemeters.spec);
+            keyAgreement.init(kp.getPrivate(), ffdheParameters.spec);
 
             BigInteger y = ((DHPublicKey) kp.getPublic()).getY();
-            if (y.compareTo(BigInteger.ONE) <= 0 || y.compareTo(ffdheParemeters.p) >= 0) {
+            if (y.compareTo(BigInteger.ONE) <= 0 || y.compareTo(ffdheParameters.spec.getP()) >= 0) {
                 throw whatTheHell("wrong y! (%s)", y.toString());
             }
 
             byte[] publicPart = Converter.leftPadding(
-                    y.toByteArray(), ffdheParemeters.p.toByteArray().length);
+                    y.toByteArray(), ffdheParameters.spec.getP().toByteArray().length);
 
             return factory.createKeyShareEntry(group, publicPart);
         } catch (InvalidAlgorithmParameterException | InvalidKeyException e) {
@@ -82,8 +82,8 @@ public class FFDHENegotiator extends AbstractNegotiator {
             PublicKey key = KeyFactory.getInstance("DiffieHellman").generatePublic(
                     new DHPublicKeySpec(
                             new BigInteger(1, entry.getKeyExchange().bytes()),
-                            ffdheParemeters.p,
-                            ffdheParemeters.g));
+                            ffdheParameters.spec.getP(),
+                            ffdheParameters.spec.getG()));
 
             keyAgreement.doPhase(key, true);
         } catch (NoSuchAlgorithmException | IOException | InvalidKeyException

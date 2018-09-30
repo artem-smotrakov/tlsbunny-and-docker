@@ -26,16 +26,16 @@ class SecpParameters {
         ecParameterSpec = new ECParameterSpec(curve, g, n, h);
     }
 
-    private static final BigInteger SECP256R1_N = hex2int(
+    private static final BigInteger Secp256r1_n = hex2int(
             "FFFFFFFF00000000FFFFFFFFFFFFFFFFBCE6FAADA7179E84F3B9CAC2FC632551");
 
-    private static final BigInteger SECP256R1_P = hex2int(
+    private static final BigInteger Secp256r1_p = hex2int(
             "FFFFFFFF00000001000000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFF");
 
-    private static final BigInteger SECP256R1_A = hex2int(
+    private static final BigInteger Secp256r1_a = hex2int(
             "FFFFFFFF00000001000000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFC");
 
-    private static final BigInteger SECP256R1_B = hex2int(
+    private static final BigInteger Secp256r1_b = hex2int(
             "5AC635D8AA3A93E7B3EBBD55769886BC651D06B0CC53B0F63BCE3C3E27D2604B");
 
     private static final BigInteger SECP256R1_G_X = hex2int(
@@ -44,20 +44,20 @@ class SecpParameters {
     private static final BigInteger SECP256R1_G_Y = hex2int(
             "4FE342E2FE1A7F9B8EE7EB4A7C0F9E162BCE33576B315ECECBB6406837BF51F5");
 
-    private static final ECPoint SECP256R1_G = new ECPoint(SECP256R1_G_X, SECP256R1_G_Y);
+    private static final ECPoint Secp256r1_g = new ECPoint(SECP256R1_G_X, SECP256R1_G_Y);
 
-    private static final int SECP256R1_H = 1;
+    private static final int Secp256r1_h = 1;
 
     private static final Map<NamedGroup.Secp, SecpParameters> PARAMETERS = new HashMap<>();
     static {
         PARAMETERS.put(NamedGroup.secp256r1,
-                new SecpParameters("secp256r1", 
-                        SECP256R1_P,
-                        SECP256R1_A, 
-                        SECP256R1_B, 
-                        SECP256R1_G, 
-                        SECP256R1_N, 
-                        SECP256R1_H));
+                new SecpParameters("secp256r1",
+                        Secp256r1_p,
+                        Secp256r1_a,
+                        Secp256r1_b,
+                        Secp256r1_g,
+                        Secp256r1_n,
+                        Secp256r1_h));
     }
 
     public static SecpParameters create(NamedGroup.Secp group) {

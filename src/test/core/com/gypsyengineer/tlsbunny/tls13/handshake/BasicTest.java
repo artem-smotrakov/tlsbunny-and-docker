@@ -32,46 +32,34 @@ public class BasicTest {
 
     @Test
     public void httpsClientWithSecp256r1() throws Exception {
-        test(new HttpsClient(),
-                NamedGroup.secp256r1,
-                1);
+        test(new HttpsClient(), NamedGroup.secp256r1, 1);
     }
 
     @Test
     public void httpsClientWithFFDHE2048() throws Exception {
-        test(new HttpsClient(),
-                NamedGroup.ffdhe2048,
-                1);
+        test(new HttpsClient(), NamedGroup.ffdhe2048, 1);
     }
 
     @Test
     public void anotherHttpsClientWithSecp256r1() throws Exception {
-        test(new AnotherHttpsClient(),
-                NamedGroup.secp256r1,
-                1);
+        test(new AnotherHttpsClient(), NamedGroup.secp256r1, 1);
     }
 
     @Test
     public void anotherHttpsClientWithFFDHE2048() throws Exception {
-        test(new AnotherHttpsClient(),
-                NamedGroup.ffdhe2048,
-                1);
+        test(new AnotherHttpsClient(), NamedGroup.ffdhe2048, 1);
     }
 
     @Test
     public void manyGroupsInClientHello() throws Exception {
         // we use only 3000 groups here because a higher number results to multiple TLSPlaintext
         // but the server currently can't assemble them
-        test(new ManyGroupsInClientHello().numberOfGroups(3000),
-                NamedGroup.secp256r1,
-                1);
+        test(new ManyGroupsInClientHello().numberOfGroups(3000), NamedGroup.secp256r1, 1);
     }
 
     @Test
     public void strictValidation() throws Exception {
-        test(new ECDHEStrictValidation().connections(10),
-                NamedGroup.secp256r1,
-                10);
+        test(new ECDHEStrictValidation().connections(10), NamedGroup.secp256r1, 10);
     }
 
     private static void test(Client client, NamedGroup group, int n) throws Exception {

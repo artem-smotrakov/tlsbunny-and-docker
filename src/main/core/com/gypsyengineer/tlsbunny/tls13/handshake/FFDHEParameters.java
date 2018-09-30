@@ -7,19 +7,15 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.crypto.spec.DHParameterSpec;
 
-class FFDHEParemeters {
+class FFDHEParameters {
     
-    public final BigInteger p;
-    public final BigInteger g;
     public final DHParameterSpec spec;
 
-    public FFDHEParemeters(BigInteger p, BigInteger g) {
-        this.p = p;
-        this.g = g;
+    public FFDHEParameters(BigInteger p, BigInteger g) {
         this.spec = new DHParameterSpec(p, g);
     }
     
-    private static final BigInteger FFDHE2048_P = Converter.hex2int(
+    private static final BigInteger ffdhe2048_p = Converter.hex2int(
             "FFFFFFFFFFFFFFFFADF85458A2BB4A9AAFDC5620273D3CF1" +
             "D8B9C583CE2D3695A9E13641146433FBCC939DCE249B3EF9" +
             "7D2FE363630C75D8F681B202AEC4617AD3DF1ED5D5FD6561" +
@@ -32,16 +28,16 @@ class FFDHEParemeters {
             "3BB5FCBC2EC22005C58EF1837D1683B2C6F34A26C1B2EFFA" +
             "886B423861285C97FFFFFFFFFFFFFFFF");
 
-    private static final BigInteger FFDHE2048_G = BigInteger.TWO;
+    private static final BigInteger ffdhe2048_g = BigInteger.TWO;
 
-    private static final Map<NamedGroup, FFDHEParemeters> PARAMETERS = new HashMap<>();
+    private static final Map<NamedGroup, FFDHEParameters> parameters = new HashMap<>();
     static {
-        PARAMETERS.put(NamedGroup.ffdhe2048, 
-                new FFDHEParemeters(FFDHE2048_P, FFDHE2048_G));
+        parameters.put(NamedGroup.ffdhe2048,
+                new FFDHEParameters(ffdhe2048_p, ffdhe2048_g));
     }
 
-    public static FFDHEParemeters create(NamedGroup group) {
-        return PARAMETERS.get(group);
+    public static FFDHEParameters create(NamedGroup group) {
+        return parameters.get(group);
     }
     
 }
