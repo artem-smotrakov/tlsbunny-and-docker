@@ -444,11 +444,10 @@ public class FuzzyClient implements Runnable {
     }
 
     protected void reportError(String message, Throwable e) {
-        if (strict) {
-            throw whatTheHell(message, e);
-        }
-
         output.achtung(message, e);
+        if (strict) {
+            throw whatTheHell("we failed!", e);
+        }
     }
 
     public static FuzzerConfig[] combine(FuzzerConfig[] configs, Client client) {
