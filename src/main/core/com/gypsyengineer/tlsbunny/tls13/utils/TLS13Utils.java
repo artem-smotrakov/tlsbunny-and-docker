@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.List;
 
+import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
+
 public class TLS13Utils {
 
     public static ByteBuffer store(TLSPlaintext[] tlsPlaintexts) throws IOException {
@@ -68,8 +70,13 @@ public class TLS13Utils {
                 ext.getExtensionData().bytes());
     }
 
-    public static int getCoordinateLength(NamedGroup.Secp group) {
-        switch (group.getCurve()) {
+    public static int getCoordinateLength(NamedGroup group) {
+        if (group instanceof NamedGroup.Secp == false) {
+            throw whatTheHell("expected NamedGroup.Secp!");
+        }
+        NamedGroup.Secp secp = (NamedGroup.Secp) group;
+
+        switch (secp.getCurve()) {
             case "secp256r1":
                 return 32;
             case "secp384r1":

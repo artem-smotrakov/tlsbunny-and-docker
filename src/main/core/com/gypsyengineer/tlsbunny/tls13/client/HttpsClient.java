@@ -52,6 +52,7 @@ public class HttpsClient extends SingleConnectionClient {
                 .target(config.host())
                 .target(config.port())
                 .set(factory)
+                .set(negotiator)
                 .set(output)
 
                 // send ClientHello

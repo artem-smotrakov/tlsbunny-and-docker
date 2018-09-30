@@ -27,7 +27,8 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp
 
 public class ECDHEStrictValidation extends AbstractClient {
 
-    private int n = 5000;
+    // TODO: should it be more?
+    private int n = 1;
 
     public static void main(String[] args) throws Exception {
         try (Output output = new Output()) {

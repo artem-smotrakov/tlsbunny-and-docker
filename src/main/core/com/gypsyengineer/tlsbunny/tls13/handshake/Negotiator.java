@@ -7,6 +7,7 @@ import com.gypsyengineer.tlsbunny.utils.Output;
 
 public interface Negotiator {
 
+    NamedGroup group();
     Negotiator set(Output output);
     KeyShareEntry createKeyShareEntry() throws NegotiatorException;
     void processKeyShareEntry(KeyShareEntry entry) throws NegotiatorException;

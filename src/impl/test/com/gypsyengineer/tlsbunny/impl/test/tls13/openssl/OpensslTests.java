@@ -8,9 +8,11 @@ import com.gypsyengineer.tlsbunny.tls13.connection.AllFailedCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.ExceptionCheck;
 import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.net.SocketException;
 
 public class OpensslTests {
@@ -22,6 +24,11 @@ public class OpensslTests {
         server = new OpensslServer();
         server.start();
         Utils.waitServerStart(server);
+    }
+
+    @Before
+    public void beforeTest() throws IOException, InterruptedException {
+        Utils.waitServerReady(server);
     }
 
     @Test

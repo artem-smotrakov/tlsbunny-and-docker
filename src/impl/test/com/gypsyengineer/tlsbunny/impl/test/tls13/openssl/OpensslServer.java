@@ -37,10 +37,28 @@ public class OpensslServer implements Server, AutoCloseable {
     private boolean failed = false;
     private final Output output = new Output("openssl_server");
     private Map<String, String> dockerEnvs = new HashMap<>();
+    private int acceptCounter = 0;
 
     public OpensslServer dockerEnv(String name, String value) {
         dockerEnvs.put(name, value);
         return this;
+    }
+
+    public boolean ready() {
+        List<String> strings = output.strings();
+        int acceptCounter = 0;
+        for (String string : strings) {
+            if (string.contains("tlsbunny: accept")) {
+                acceptCounter++;
+            }
+        }
+
+        if (acceptCounter != this.acceptCounter) {
+            this.acceptCounter = acceptCounter;
+            return true;
+        }
+
+        return false;
     }
 
     @Override
@@ -121,6 +139,9 @@ public class OpensslServer implements Server, AutoCloseable {
                 command.add(String.format("%s=%s", entry.getKey(), entry.getValue()));
             }
         }
+
+        // note: -debug and -tlsextdebug options enable more output
+        //       (they need to be passed to s_server via OPTIONS variable)
 
         command.add("--name");
         command.add(containerName);

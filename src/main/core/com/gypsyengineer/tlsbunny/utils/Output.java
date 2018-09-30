@@ -3,6 +3,7 @@ package com.gypsyengineer.tlsbunny.utils;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Output implements AutoCloseable {
@@ -52,7 +53,7 @@ public class Output implements AutoCloseable {
         }
     }
 
-    public void info(String format, Object... values) {
+    synchronized public void info(String format, Object... values) {
         String text = String.format(format, values);
         String[] lines = text.split("\\r?\\n");
         for (String line : lines) {
@@ -83,6 +84,10 @@ public class Output implements AutoCloseable {
 
     synchronized public void reset() {
         index = 0;
+    }
+
+    synchronized public List<String> strings() {
+        return Collections.unmodifiableList(strings);
     }
 
     synchronized public boolean contains(String phrase) {

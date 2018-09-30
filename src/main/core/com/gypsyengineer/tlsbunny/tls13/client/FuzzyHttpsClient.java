@@ -3,6 +3,7 @@ package com.gypsyengineer.tlsbunny.tls13.client;
 import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
 import com.gypsyengineer.tlsbunny.tls13.connection.Check;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
+import com.gypsyengineer.tlsbunny.tls13.handshake.Negotiator;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.tls13.utils.FuzzerConfig;
 import com.gypsyengineer.tlsbunny.utils.Config;
@@ -96,6 +97,11 @@ public class FuzzyHttpsClient implements Client {
     @Override
     public Engine[] engines() {
         throw new UnsupportedOperationException("no engines for you!");
+    }
+
+    @Override
+    public Client set(Negotiator negotiator) {
+        throw new UnsupportedOperationException("no negotiators for you!");
     }
 
     @Override

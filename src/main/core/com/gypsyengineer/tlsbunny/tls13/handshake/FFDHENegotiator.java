@@ -13,68 +13,77 @@ import javax.crypto.KeyAgreement;
 import javax.crypto.interfaces.DHPublicKey;
 import javax.crypto.spec.DHPublicKeySpec;
 
+import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
+
 public class FFDHENegotiator extends AbstractNegotiator {
 
-    private final FFDHEParemeters parameters;
+    private final FFDHEParameters ffdheParameters;
     private final KeyAgreement keyAgreement;
-    private final byte[] publicPart;
+    private final KeyPairGenerator generator;
 
-    private FFDHENegotiator(NamedGroup  group, KeyAgreement keyAgreement, 
-            FFDHEParemeters parameters, byte[] publicPart, StructFactory factory) {
+    private FFDHENegotiator(NamedGroup.FFDHE group,
+                            FFDHEParameters ffdheParameters,
+                            KeyAgreement keyAgreement,
+                            KeyPairGenerator generator,
+                            StructFactory factory) {
 
         super(group, factory);
-        this.parameters = parameters;
+        this.ffdheParameters = ffdheParameters;
         this.keyAgreement = keyAgreement;
-        this.publicPart = publicPart;
+        this.generator = generator;
     }
 
     public static FFDHENegotiator create(NamedGroup.FFDHE group, StructFactory factory) 
             throws NegotiatorException {
 
         try {
-            FFDHEParemeters parameters = FFDHEParemeters.create(group);
-
             KeyPairGenerator generator = KeyPairGenerator.getInstance("DiffieHellman");
+            FFDHEParameters parameters = FFDHEParameters.create(group);
             generator.initialize(parameters.spec);
-            KeyPair kp = generator.generateKeyPair();
-
-            KeyAgreement keyAgreement = KeyAgreement.getInstance("DiffieHellman");
-            keyAgreement.init(kp.getPrivate(), parameters.spec);
-
-            BigInteger y = ((DHPublicKey) kp.getPublic()).getY();
-            if (y.compareTo(BigInteger.ONE) <= 0 || y.compareTo(parameters.p) >= 0) {
-                throw new RuntimeException();
-            }
-
-            byte[] publicPart = Converter.leftPadding(
-                    y.toByteArray(), parameters.p.toByteArray().length);
 
             return new FFDHENegotiator(
-                    group, keyAgreement, parameters, publicPart, factory);
-
-        } catch (InvalidKeyException | NoSuchAlgorithmException
-                | InvalidAlgorithmParameterException e) {
+                    group,
+                    parameters,
+                    KeyAgreement.getInstance("DiffieHellman"),
+                    generator, factory);
+        } catch (NoSuchAlgorithmException | InvalidAlgorithmParameterException e) {
             throw new NegotiatorException(e);
         }
     }
 
     @Override
-    public KeyShareEntry createKeyShareEntry() {
-        return factory.createKeyShareEntry(group, publicPart);
+    public KeyShareEntry createKeyShareEntry() throws NegotiatorException {
+        try {
+            KeyPair kp = generator.generateKeyPair();
+            keyAgreement.init(kp.getPrivate(), ffdheParameters.spec);
+
+            BigInteger y = ((DHPublicKey) kp.getPublic()).getY();
+            if (y.compareTo(BigInteger.ONE) <= 0 || y.compareTo(ffdheParameters.spec.getP()) >= 0) {
+                throw whatTheHell("wrong y! (%s)", y.toString());
+            }
+
+            byte[] publicPart = Converter.leftPadding(
+                    y.toByteArray(), ffdheParameters.spec.getP().toByteArray().length);
+
+            return factory.createKeyShareEntry(group, publicPart);
+        } catch (InvalidAlgorithmParameterException | InvalidKeyException e) {
+            throw new NegotiatorException(e);
+        }
     }
 
     @Override
     public void processKeyShareEntry(KeyShareEntry  entry) throws NegotiatorException {
         if (!group.equals(entry.getNamedGroup())) {
-            throw new IllegalArgumentException();
+            throw whatTheHell("expected a key share entry with group %s but received %s",
+                    group, entry.getNamedGroup());
         }
 
         try {
             PublicKey key = KeyFactory.getInstance("DiffieHellman").generatePublic(
                     new DHPublicKeySpec(
-                            new BigInteger(1, entry.getKeyExchange().encoding()),
-                            parameters.p,
-                            parameters.g));
+                            new BigInteger(1, entry.getKeyExchange().bytes()),
+                            ffdheParameters.spec.getP(),
+                            ffdheParameters.spec.getG()));
 
             keyAgreement.doPhase(key, true);
         } catch (NoSuchAlgorithmException | IOException | InvalidKeyException

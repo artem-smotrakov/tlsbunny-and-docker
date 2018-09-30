@@ -1,5 +1,6 @@
 package com.gypsyengineer.tlsbunny.impl.test.tls13;
 
+import com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.OpensslServer;
 import com.gypsyengineer.tlsbunny.tls13.server.Server;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
@@ -50,7 +51,9 @@ public class Utils {
         return pb.start();
     }
 
-    public static void waitServerStart(Server server) throws Exception {
+    public static void waitServerStart(Server server)
+            throws IOException, InterruptedException {
+
         waitServerStart(server, no_timeout);
     }
 
@@ -67,7 +70,9 @@ public class Utils {
         } while (!server.running());
     }
 
-    public static void waitServerStop(Server server) throws Exception {
+    public static void waitServerStop(Server server)
+            throws IOException, InterruptedException {
+
         waitServerStop(server, no_timeout);
     }
 
@@ -82,6 +87,25 @@ public class Utils {
                         "timeout reached while waiting for the server to stop");
             }
         } while (server.running());
+    }
+
+    public static void waitServerReady(OpensslServer server)
+            throws IOException, InterruptedException {
+
+        waitServerReady(server, no_timeout);
+    }
+
+    public static void waitServerReady(OpensslServer server, long timeout)
+            throws IOException, InterruptedException {
+
+        long start = System.currentTimeMillis();
+        do {
+            Thread.sleep(delay);
+            if (timeout > 0 && System.currentTimeMillis() - start > timeout) {
+                throw new IOException(
+                        "timeout reached while waiting for the server to start");
+            }
+        } while (!server.ready());
     }
 
     public static int waitProcessFinish(Output output, List<String> command)

@@ -7,7 +7,8 @@ import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.IncomingChan
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.OutgoingChangeCipherSpec;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.server.SingleThreadServer;
-import com.gypsyengineer.tlsbunny.tls13.server.OneConnectionReceived;
+import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
+import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.Output;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
@@ -18,7 +19,7 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
 import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.*;
 import static com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup.secp256r1;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv12;
-import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv13_draft_26;
+import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv13;
 import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp256r1_sha256;
 import static org.junit.Assert.*;
 
@@ -27,30 +28,41 @@ public class BasicTest {
     private static final long delay = 1000; // in millis
     private static final String serverCertificatePath = "certs/server_cert.der";
     private static final String serverKeyPath = "certs/server_key.pkcs8";
+    private static StructFactory factory = StructFactory.getDefault();
 
     @Test
-    public void httpsClient() throws Exception {
-        test(new HttpsClient(), 1);
+    public void httpsClientWithSecp256r1() throws Exception {
+        test(new HttpsClient(), NamedGroup.secp256r1, 1);
     }
 
     @Test
-    public void anotherHttpsClient() throws Exception {
-        test(new AnotherHttpsClient(), 1);
+    public void httpsClientWithFFDHE2048() throws Exception {
+        test(new HttpsClient(), NamedGroup.ffdhe2048, 1);
+    }
+
+    @Test
+    public void anotherHttpsClientWithSecp256r1() throws Exception {
+        test(new AnotherHttpsClient(), NamedGroup.secp256r1, 1);
+    }
+
+    @Test
+    public void anotherHttpsClientWithFFDHE2048() throws Exception {
+        test(new AnotherHttpsClient(), NamedGroup.ffdhe2048, 1);
     }
 
     @Test
     public void manyGroupsInClientHello() throws Exception {
         // we use only 3000 groups here because a higher number results to multiple TLSPlaintext
         // but the server currently can't assemble them
-        test(new ManyGroupsInClientHello().numberOfGroups(3000), 1);
+        test(new ManyGroupsInClientHello().numberOfGroups(3000), NamedGroup.secp256r1, 1);
     }
 
     @Test
     public void strictValidation() throws Exception {
-        test(new ECDHEStrictValidation().connections(10), 10);
+        test(new ECDHEStrictValidation().connections(10), NamedGroup.secp256r1, 10);
     }
 
-    private static void test(Client client, int n) throws Exception {
+    private static void test(Client client, NamedGroup group, int n) throws Exception {
         Output serverOutput = new Output("server");
         Output clientOutput = new Output("client");
 
@@ -60,6 +72,7 @@ public class BasicTest {
 
         SingleThreadServer server = new SingleThreadServer()
                 .set(new EngineFactoryImpl()
+                        .set(Negotiator.create(group, factory))
                         .set(serverConfig)
                         .set(serverOutput))
                 .set(serverConfig)
@@ -71,10 +84,13 @@ public class BasicTest {
             Thread.sleep(delay);
 
             Config clientConfig = SystemPropertiesConfig.load().port(server.port());
-            client.set(clientConfig).set(clientOutput);
+            client.set(Negotiator.create(group, factory))
+                    .set(clientConfig).set(clientOutput);
 
             try (client) {
-                client.connect().engine().apply(new NoAlertAnalyzer());
+                client.connect()
+                        .engine()
+                        .apply(new NoAlertAnalyzer());
             }
         }
 
@@ -186,10 +202,16 @@ public class BasicTest {
 
     private static class EngineFactoryImpl extends BaseEngineFactory {
 
+        private Negotiator negotiator;
         private Config config;
 
         public EngineFactoryImpl set(Config config) {
             this.config = config;
+            return this;
+        }
+
+        public EngineFactoryImpl set(Negotiator negotiator) {
+            this.negotiator = negotiator;
             return this;
         }
 
@@ -198,6 +220,8 @@ public class BasicTest {
             return Engine.init()
                     .set(structFactory)
                     .set(output)
+                    .set(negotiator)
+                    .set(negotiator.group())
 
                     .receive(new IncomingData())
 
@@ -213,7 +237,7 @@ public class BasicTest {
 
                     // send ServerHello
                     .run(new GeneratingServerHello()
-                            .supportedVersion(TLSv13_draft_26)
+                            .supportedVersion(TLSv13)
                             .group(secp256r1)
                             .signatureScheme(ecdsa_secp256r1_sha256)
                             .keyShareEntry(context -> context.negotiator.createKeyShareEntry()))
