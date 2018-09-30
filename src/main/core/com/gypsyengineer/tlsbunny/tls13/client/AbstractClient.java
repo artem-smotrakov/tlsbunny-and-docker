@@ -4,6 +4,8 @@ import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
 import com.gypsyengineer.tlsbunny.tls13.connection.Check;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Negotiator;
+import com.gypsyengineer.tlsbunny.tls13.handshake.NegotiatorException;
+import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
@@ -25,6 +27,14 @@ public abstract class AbstractClient implements Client, AutoCloseable {
     protected Analyzer analyzer;
     protected List<Engine> engines = new ArrayList<>();
     protected List<Check> checks = Collections.emptyList();
+
+    public AbstractClient() {
+        try {
+            negotiator = Negotiator.create(NamedGroup.secp256r1, StructFactory.getDefault());
+        } catch (NegotiatorException e) {
+            throw whatTheHell("could not create a negotiator!", e);
+        }
+    }
 
     @Override
     public Config config() {
