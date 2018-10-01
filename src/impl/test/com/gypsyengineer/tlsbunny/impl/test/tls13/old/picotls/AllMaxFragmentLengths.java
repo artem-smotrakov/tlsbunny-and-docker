@@ -1,8 +1,8 @@
 package com.gypsyengineer.tlsbunny.impl.test.tls13.old.picotls;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
-import com.gypsyengineer.tlsbunny.tls13.connection.FailureCheck;
-import com.gypsyengineer.tlsbunny.tls13.connection.SuccessCheck;
+import com.gypsyengineer.tlsbunny.tls13.connection.check.FailureCheck;
+import com.gypsyengineer.tlsbunny.tls13.connection.check.SuccessCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.struct.MaxFragmentLength;

@@ -4,7 +4,7 @@ import com.gypsyengineer.tlsbunny.tls.UInt16;
 import com.gypsyengineer.tlsbunny.tls.UInt24;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.EngineException;
-import com.gypsyengineer.tlsbunny.tls13.connection.SuccessCheck;
+import com.gypsyengineer.tlsbunny.tls13.connection.check.SuccessCheck;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.FuzzyStructFactory;
 import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
 import com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType;

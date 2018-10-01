@@ -1,4 +1,4 @@
-package com.gypsyengineer.tlsbunny.tls13.connection;
+package com.gypsyengineer.tlsbunny.tls13.connection.check;
 
 public class NoExceptionCheck extends AbstractCheck {
 

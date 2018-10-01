@@ -1,6 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls13.server;
 
-import com.gypsyengineer.tlsbunny.tls13.connection.Check;
+import com.gypsyengineer.tlsbunny.tls13.connection.check.Check;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.EngineFactory;
 import com.gypsyengineer.tlsbunny.utils.Config;

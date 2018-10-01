@@ -1,7 +1,7 @@
 package com.gypsyengineer.tlsbunny.tls13.connection.action;
 
-import com.gypsyengineer.tlsbunny.tls13.connection.AbstractCheck;
-import com.gypsyengineer.tlsbunny.tls13.connection.Check;
+import com.gypsyengineer.tlsbunny.tls13.connection.check.AbstractCheck;
+import com.gypsyengineer.tlsbunny.tls13.connection.check.Check;
 import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
 import com.gypsyengineer.tlsbunny.tls13.struct.ServerHello;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;

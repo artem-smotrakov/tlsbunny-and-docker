@@ -1,7 +1,7 @@
 package com.gypsyengineer.tlsbunny.tls13.client;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
-import com.gypsyengineer.tlsbunny.tls13.connection.Check;
+import com.gypsyengineer.tlsbunny.tls13.connection.check.Check;
 import com.gypsyengineer.tlsbunny.tls13.utils.FuzzerConfig;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.Output;
