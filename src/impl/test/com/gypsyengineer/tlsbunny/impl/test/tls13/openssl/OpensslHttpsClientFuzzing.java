@@ -10,7 +10,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static com.gypsyengineer.tlsbunny.impl.test.tls13.Utils.checkForASanFindings;
-import static com.gypsyengineer.tlsbunny.tls13.client.FuzzyClient.ccsConfigs;
+import static com.gypsyengineer.tlsbunny.tls13.client.FuzzyClient.*;
 
 public class OpensslHttpsClientFuzzing {
 
@@ -27,7 +27,80 @@ public class OpensslHttpsClientFuzzing {
     @Test
     public void ccs() throws Exception {
         new TestForServer()
-                .set(new FuzzyHttpsClient().set(ccsConfigs(mainConfig)))
+                .set(new FuzzyHttpsClient()
+                        .set(ccsConfigs(mainConfig)))
+                .set(server)
+                .run();
+    }
+
+    @Test
+    public void tlsPlaintext() throws Exception {
+        new TestForServer()
+                .set(new FuzzyHttpsClient()
+                        .set(tlsPlaintextConfigs(mainConfig)))
+                .set(server)
+                .run();
+    }
+
+    @Test
+    public void handshake() throws Exception {
+        new TestForServer()
+                .set(new FuzzyHttpsClient()
+                        .set(handshakeConfigs(mainConfig)))
+                .set(server)
+                .run();
+    }
+
+    @Test
+    public void clientHello() throws Exception {
+        new TestForServer()
+                .set(new FuzzyHttpsClient()
+                        .set(clientHelloConfigs(mainConfig)))
+                .set(server)
+                .run();
+    }
+
+    @Test
+    public void finished() throws Exception {
+        new TestForServer()
+                .set(new FuzzyHttpsClient()
+                        .set(finishedConfigs(mainConfig)))
+                .set(server)
+                .run();
+    }
+
+    @Test
+    public void cipherSuites() throws Exception {
+        new TestForServer()
+                .set(new FuzzyHttpsClient()
+                        .set(cipherSuitesConfigs(mainConfig)))
+                .set(server)
+                .run();
+    }
+
+    @Test
+    public void extensionVector() throws Exception {
+        new TestForServer()
+                .set(new FuzzyHttpsClient()
+                        .set(extensionVectorConfigs(mainConfig)))
+                .set(server)
+                .run();
+    }
+
+    @Test
+    public void legacyCompressionMethods() throws Exception {
+        new TestForServer()
+                .set(new FuzzyHttpsClient()
+                        .set(legacyCompressionMethodsConfigs(mainConfig)))
+                .set(server)
+                .run();
+    }
+
+    @Test
+    public void legacySessionId() throws Exception {
+        new TestForServer()
+                .set(new FuzzyHttpsClient()
+                        .set(legacySessionIdConfigs(mainConfig)))
                 .set(server)
                 .run();
     }
