@@ -7,6 +7,8 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import static com.gypsyengineer.tlsbunny.impl.test.tls13.Utils.checkForASanFindings;
+
 public class OpensslHttpsClientFuzzing {
 
     private static OpensslServer server;
@@ -24,10 +26,10 @@ public class OpensslHttpsClientFuzzing {
         // TODO
     }
 
-    // TODO: check server logs for ASan findings
     @AfterClass
     public static void tearDown() throws Exception {
         server.close();
         Utils.waitServerStop(server);
+        checkForASanFindings(server.output());
     }
 }

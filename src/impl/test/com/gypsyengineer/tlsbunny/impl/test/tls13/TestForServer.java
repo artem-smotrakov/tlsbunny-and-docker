@@ -52,8 +52,6 @@ public class TestForServer {
                 server.stop();
                 Utils.waitServerStop(server);
             }
-
-            checkForASanFindings(server.output());
         }
 
         return this;

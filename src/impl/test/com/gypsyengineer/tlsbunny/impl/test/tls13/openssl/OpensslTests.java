@@ -15,6 +15,8 @@ import org.junit.Test;
 import java.io.IOException;
 import java.net.SocketException;
 
+import static com.gypsyengineer.tlsbunny.impl.test.tls13.Utils.checkForASanFindings;
+
 public class OpensslTests {
 
     private static OpensslServer server;
@@ -150,10 +152,10 @@ public class OpensslTests {
                 .run();
     }
 
-    // TODO: check server logs for ASan findings
     @AfterClass
     public static void tearDown() throws Exception {
         server.close();
         Utils.waitServerStop(server);
+        checkForASanFindings(server.output());
     }
 }
