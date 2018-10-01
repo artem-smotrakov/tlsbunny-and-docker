@@ -1,7 +1,8 @@
 package com.gypsyengineer.tlsbunny.utils;
 
 /**
- * Your favorite exception.
+ * One of your favorite exceptions.
+ * It usually means that something unexpectedly went wrong.
  */
 public class WhatTheHell extends RuntimeException {
 

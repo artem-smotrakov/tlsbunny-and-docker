@@ -30,7 +30,9 @@ sourceSets {
         java {
             srcDirs 'src/test/core'
         }
-        compileClasspath += sourceSets.main.output + configurations.testRuntimeClasspath
+        compileClasspath += sourceSets.main.output
+        compileClasspath += sourceSets.test_impl.output
+        compileClasspath += configurations.testRuntimeClasspath
         runtimeClasspath += output + compileClasspath
     }
 

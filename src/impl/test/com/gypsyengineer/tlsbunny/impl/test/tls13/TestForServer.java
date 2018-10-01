@@ -4,6 +4,7 @@ import com.gypsyengineer.tlsbunny.tls13.client.Client;
 import com.gypsyengineer.tlsbunny.tls13.server.Server;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
+import static com.gypsyengineer.tlsbunny.impl.test.tls13.Utils.checkForASanFindings;
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public class TestForServer {
@@ -51,6 +52,8 @@ public class TestForServer {
                 server.stop();
                 Utils.waitServerStop(server);
             }
+
+            checkForASanFindings(server.output());
         }
 
         return this;
