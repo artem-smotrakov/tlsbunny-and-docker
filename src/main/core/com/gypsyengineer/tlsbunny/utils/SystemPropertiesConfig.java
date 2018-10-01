@@ -1,5 +1,7 @@
 package com.gypsyengineer.tlsbunny.utils;
 
+import java.util.Objects;
+
 public class SystemPropertiesConfig implements Config {
 
     public static final int DEFAULT_PARTS = 1;
@@ -33,6 +35,26 @@ public class SystemPropertiesConfig implements Config {
 
     private SystemPropertiesConfig() {
 
+    }
+
+    @Override
+    public SystemPropertiesConfig copy() {
+        SystemPropertiesConfig clone = new SystemPropertiesConfig();
+        clone.host = host;
+        clone.port = port;
+        clone.minRatio = minRatio;
+        clone.maxRatio = maxRatio;
+        clone.threads = threads;
+        clone.parts = parts;
+        clone.startTest = startTest;
+        clone.endTest = endTest;
+        clone.clientCertificate = clientCertificate;
+        clone.clientKey = clientKey;
+        clone.serverCertificate = serverCertificate;
+        clone.serverKey = serverKey;
+        clone.readTimeout = readTimeout;
+
+        return clone;
     }
 
     @Override
@@ -175,6 +197,38 @@ public class SystemPropertiesConfig implements Config {
     @Override
     public String targetFilter() {
         return System.getProperty("tlsbunny.target.filter", EMPTY_STRING).trim();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        SystemPropertiesConfig that = (SystemPropertiesConfig) o;
+        return port == that.port &&
+                Double.compare(that.minRatio, minRatio) == 0 &&
+                Double.compare(that.maxRatio, maxRatio) == 0 &&
+                threads == that.threads &&
+                parts == that.parts &&
+                startTest == that.startTest &&
+                endTest == that.endTest &&
+                readTimeout == that.readTimeout &&
+                Objects.equals(host, that.host) &&
+                Objects.equals(clientCertificate, that.clientCertificate) &&
+                Objects.equals(clientKey, that.clientKey) &&
+                Objects.equals(serverCertificate, that.serverCertificate) &&
+                Objects.equals(serverKey, that.serverKey);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(host, port, minRatio, maxRatio, threads, parts,
+                startTest, endTest, clientCertificate, clientKey,
+                serverCertificate, serverKey, readTimeout);
     }
 
     public static SystemPropertiesConfig load() {

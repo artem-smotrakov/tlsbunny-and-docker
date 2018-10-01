@@ -6,6 +6,9 @@ import com.gypsyengineer.tlsbunny.tls13.fuzzer.FuzzyStructFactory;
 import com.gypsyengineer.tlsbunny.tls13.client.Client;
 import com.gypsyengineer.tlsbunny.utils.Config;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 public class FuzzerConfig implements Config {
 
     private Config mainConfig;
@@ -14,12 +17,19 @@ public class FuzzerConfig implements Config {
     private FuzzyStructFactory factory;
     private Client client;
 
-    public FuzzerConfig() {
-
+    public FuzzerConfig(Config mainConfig) {
+        this.mainConfig = mainConfig.copy();
     }
 
-    public FuzzerConfig(Config mainConfig) {
-        this.mainConfig = mainConfig;
+    @Override
+    public FuzzerConfig copy() {
+        FuzzerConfig clone = new FuzzerConfig(mainConfig);
+        clone.analyzer = analyzer;
+        clone.checks = checks.clone();
+        clone.factory = factory;
+        clone.client = client;
+
+        return clone;
     }
 
     public FuzzerConfig set(Config mainConfig) {
@@ -187,10 +197,6 @@ public class FuzzerConfig implements Config {
         return this;
     }
 
-    public boolean hasChecks() {
-        return checks != null && checks.length != 0;
-    }
-
     public Check[] checks() {
         return checks;
     }
@@ -221,4 +227,28 @@ public class FuzzerConfig implements Config {
         return client;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        FuzzerConfig that = (FuzzerConfig) o;
+        return Objects.equals(mainConfig, that.mainConfig) &&
+                Objects.equals(analyzer, that.analyzer) &&
+                Arrays.equals(checks, that.checks) &&
+                Objects.equals(factory, that.factory) &&
+                Objects.equals(client, that.client);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(mainConfig, analyzer, factory, client);
+        result = 31 * result + Arrays.hashCode(checks);
+        return result;
+    }
 }

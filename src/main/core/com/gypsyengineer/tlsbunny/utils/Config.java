@@ -30,4 +30,9 @@ public interface Config {
     Config clientKey(String path);
     Config serverCertificate(String path);
     Config serverKey(String path);
+
+    /**
+     * @return a copy of the config
+     */
+    Config copy();
 }
