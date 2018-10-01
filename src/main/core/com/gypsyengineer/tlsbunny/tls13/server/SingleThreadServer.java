@@ -49,6 +49,11 @@ public class SingleThreadServer implements Server {
         this.serverSocket = serverSocket;
     }
 
+    @Override
+    public Output output() {
+        return output;
+    }
+
     public SingleThreadServer maxConnections(int n) {
         stopCondition = new NConnectionsReceived(n);
         return this;

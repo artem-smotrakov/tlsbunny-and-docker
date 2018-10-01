@@ -97,6 +97,11 @@ public class OpensslServer implements Server, AutoCloseable {
     }
 
     @Override
+    public Output output() {
+        return output;
+    }
+
+    @Override
     public int port() {
         return port;
     }

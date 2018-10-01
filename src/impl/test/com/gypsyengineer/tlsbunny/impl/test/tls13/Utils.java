@@ -10,6 +10,8 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import static com.gypsyengineer.tlsbunny.utils.Achtung.achtung;
+
 public class Utils {
 
     public static final int delay = 500; // in millis
@@ -137,5 +139,13 @@ public class Utils {
         output.flush();
 
         return process.exitValue();
+    }
+
+    public static void checkForASanFindings(Output output) {
+        for (String string : output.strings()) {
+            if (string.contains("AddressSanitizer")) {
+                throw achtung("hey, AddressSanitizer found something!");
+            }
+        }
     }
 }
