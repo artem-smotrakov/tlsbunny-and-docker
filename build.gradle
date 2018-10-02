@@ -26,6 +26,14 @@ sourceSets {
         }
     }
 
+    test_impl {
+        java {
+            srcDir 'src/impl/test'
+        }
+        compileClasspath += sourceSets.main.output + configurations.testRuntimeClasspath
+        runtimeClasspath += output + compileClasspath
+    }
+
     test {
         java {
             srcDirs 'src/test/core'
@@ -33,14 +41,6 @@ sourceSets {
         compileClasspath += sourceSets.main.output
         compileClasspath += sourceSets.test_impl.output
         compileClasspath += configurations.testRuntimeClasspath
-        runtimeClasspath += output + compileClasspath
-    }
-
-    test_impl {
-        java {
-            srcDir 'src/impl/test'
-        }
-        compileClasspath += sourceSets.main.output + configurations.testRuntimeClasspath
         runtimeClasspath += output + compileClasspath
     }
 }
