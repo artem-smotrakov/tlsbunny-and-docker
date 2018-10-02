@@ -66,7 +66,7 @@ public class FuzzyClientTest {
 
     @Test
     public void clientHello() throws Exception {
-        test(minimized(clientHelloConfigs()));
+        test(minimized(clientHelloConfigs(clientConfig)));
     }
 
     @Test

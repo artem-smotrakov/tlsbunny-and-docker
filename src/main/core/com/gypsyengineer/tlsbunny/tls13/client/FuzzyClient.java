@@ -51,305 +51,11 @@ public class FuzzyClient implements Runnable {
     private static final int max_attempts = 3;
     private static final int delay = 3000; // in millis
 
-    protected final Output output;
-    protected final FuzzerConfig fuzzerConfig;
+    private final Output output;
+    private final FuzzerConfig fuzzerConfig;
 
-    protected boolean strict = true;
-    protected boolean needSmokeTest = true;
-
-    public static FuzzerConfig[] tlsPlaintextConfigs() {
-        return tlsPlaintextConfigs(SystemPropertiesConfig.load());
-    }
-
-    public static FuzzerConfig[] tlsPlaintextConfigs(Config config) {
-        return new FuzzerConfig[] {
-                new FuzzerConfig(config)
-                        .factory(newMutatedStructFactory()
-                                .target(tls_plaintext)
-                                .fuzzer(newByteFlipFuzzer()
-                                        .minRatio(0.01)
-                                        .maxRatio(0.09)
-                                        .startIndex(0)
-                                        .endIndex(TLS_PLAINTEXT_HEADER_LENGTH)))
-                        .readTimeout(short_read_timeout)
-                        .endTest(200)
-                        .parts(2),
-                new FuzzerConfig(config)
-                        .factory(newMutatedStructFactory()
-                                .target(tls_plaintext)
-                                .fuzzer(newBitFlipFuzzer()
-                                        .minRatio(0.01)
-                                        .maxRatio(0.09)
-                                        .startIndex(0)
-                                        .endIndex(TLS_PLAINTEXT_HEADER_LENGTH)))
-                        .readTimeout(short_read_timeout)
-                        .endTest(200)
-                        .parts(2),
-        };
-    }
-
-    public static FuzzerConfig[] ccsConfigs() {
-        return ccsConfigs(SystemPropertiesConfig.load());
-    }
-
-    public static FuzzerConfig[] ccsConfigs(Config config) {
-        return new FuzzerConfig[] {
-                new FuzzerConfig(config)
-                        .factory(newMutatedStructFactory()
-                                .target(ccs)
-                                .fuzzer(newByteFlipFuzzer()
-                                        .minRatio(0.01)
-                                        .maxRatio(0.09)))
-                        .readTimeout(long_read_timeout)
-                        .endTest(20),
-                new FuzzerConfig(config)
-                        .factory(newMutatedStructFactory()
-                                .target(ccs)
-                                .fuzzer(newBitFlipFuzzer()
-                                        .minRatio(0.01)
-                                        .maxRatio(0.09)))
-                        .readTimeout(long_read_timeout)
-                        .endTest(20),
-        };
-    }
-
-    public static FuzzerConfig[] handshakeConfigs() {
-        return handshakeConfigs(SystemPropertiesConfig.load());
-    }
-
-    public static FuzzerConfig[] handshakeConfigs(Config config) {
-        return new FuzzerConfig[] {
-                new FuzzerConfig(config)
-                        .factory(newMutatedStructFactory()
-                                .target(handshake)
-                                .fuzzer(newByteFlipFuzzer()
-                                        .minRatio(0.01)
-                                        .maxRatio(0.09)
-                                        .startIndex(0)
-                                        .endIndex(HANDSHAKE_HEADER_LENGTH)))
-                        .readTimeout(short_read_timeout)
-                        .endTest(2000)
-                        .parts(5),
-                new FuzzerConfig(config)
-                        .factory(newMutatedStructFactory()
-                                .target(handshake)
-                                .fuzzer(newBitFlipFuzzer()
-                                        .minRatio(0.01)
-                                        .maxRatio(0.09)
-                                        .startIndex(0)
-                                        .endIndex(HANDSHAKE_HEADER_LENGTH)))
-                        .readTimeout(short_read_timeout)
-                        .endTest(2000)
-                        .parts(5),
-        };
-    }
-
-    public static FuzzerConfig[] clientHelloConfigs() {
-        return clientHelloConfigs(SystemPropertiesConfig.load());
-    }
-
-    public static FuzzerConfig[] clientHelloConfigs(Config config) {
-        return new FuzzerConfig[] {
-                new FuzzerConfig(config)
-                        .factory(newMutatedStructFactory()
-                                .target(client_hello)
-                                .fuzzer(newByteFlipFuzzer()
-                                        .minRatio(0.01)
-                                        .maxRatio(0.09)))
-                        .readTimeout(long_read_timeout)
-                        .endTest(2000)
-                        .parts(5),
-                new FuzzerConfig(config)
-                        .factory(newMutatedStructFactory()
-                                .target(client_hello)
-                                .fuzzer(newBitFlipFuzzer()
-                                        .minRatio(0.01)
-                                        .maxRatio(0.09)))
-                        .readTimeout(long_read_timeout)
-                        .endTest(2000)
-                        .parts(5),
-        };
-    }
-
-    public static FuzzerConfig[] certificateConfigs() {
-        return certificateConfigs(SystemPropertiesConfig.load());
-    }
-
-    public static FuzzerConfig[] certificateConfigs(Config config) {
-        return new FuzzerConfig[] {
-                new FuzzerConfig(config)
-                        .factory(newMutatedStructFactory()
-                                .target(certificate)
-                                .fuzzer(newByteFlipFuzzer()
-                                        .minRatio(0.01)
-                                        .maxRatio(0.09)))
-                        .readTimeout(long_read_timeout)
-                        .endTest(2000)
-                        .parts(5),
-                new FuzzerConfig(config)
-                        .factory(newMutatedStructFactory()
-                                .target(certificate)
-                                .fuzzer(newBitFlipFuzzer()
-                                        .minRatio(0.01)
-                                        .maxRatio(0.09)))
-                        .readTimeout(long_read_timeout)
-                        .endTest(2000)
-                        .parts(5),
-        };
-    }
-
-    public static FuzzerConfig[] certificateVerifyConfigs() {
-        return certificateVerifyConfigs(SystemPropertiesConfig.load());
-    }
-
-    public static FuzzerConfig[] certificateVerifyConfigs(Config config) {
-        return new FuzzerConfig[] {
-                new FuzzerConfig(config)
-                        .factory(newMutatedStructFactory()
-                                .target(certificate_verify)
-                                .fuzzer(newByteFlipFuzzer()
-                                        .minRatio(0.01)
-                                        .maxRatio(0.09)))
-                        .readTimeout(long_read_timeout)
-                        .endTest(2000)
-                        .parts(5),
-                new FuzzerConfig(config)
-                        .factory(newMutatedStructFactory()
-                                .target(certificate_verify)
-                                .fuzzer(newBitFlipFuzzer()
-                                        .minRatio(0.01)
-                                        .maxRatio(0.09)))
-                        .readTimeout(long_read_timeout)
-                        .endTest(2000)
-                        .parts(5),
-        };
-    }
-
-    public static FuzzerConfig[] finishedConfigs() {
-        return finishedConfigs(SystemPropertiesConfig.load());
-    }
-
-    public static FuzzerConfig[] finishedConfigs(Config config) {
-        return new FuzzerConfig[] {
-                new FuzzerConfig(config)
-                        .factory(newMutatedStructFactory()
-                                .target(finished)
-                                .fuzzer(newByteFlipFuzzer()
-                                        .minRatio(0.01)
-                                        .maxRatio(0.09)))
-                        .readTimeout(long_read_timeout)
-                        .endTest(2000)
-                        .parts(5),
-                new FuzzerConfig(config)
-                        .factory(newMutatedStructFactory()
-                                .target(finished)
-                                .fuzzer(newBitFlipFuzzer()
-                                        .minRatio(0.01)
-                                        .maxRatio(0.09)))
-                        .readTimeout(long_read_timeout)
-                        .endTest(2000)
-                        .parts(5),
-        };
-    }
-
-    public static FuzzerConfig[] cipherSuitesConfigs() {
-        return cipherSuitesConfigs(SystemPropertiesConfig.load());
-    }
-
-    public static FuzzerConfig[] cipherSuitesConfigs(Config config) {
-        return new FuzzerConfig[] {
-                new FuzzerConfig(config)
-                        .factory(cipherSuitesFuzzer()
-                                .target(client_hello)
-                                .fuzzer(simpleVectorFuzzer()))
-                        .readTimeout(long_read_timeout)
-        };
-    }
-
-    public static FuzzerConfig[] extensionVectorConfigs() {
-        return extensionVectorConfigs(SystemPropertiesConfig.load());
-    }
-
-    public static FuzzerConfig[] extensionVectorConfigs(Config config) {
-        return new FuzzerConfig[] {
-                new FuzzerConfig(config)
-                        .factory(newExtensionVectorFuzzer()
-                                .target(client_hello)
-                                .fuzzer(simpleVectorFuzzer()))
-                        .readTimeout(long_read_timeout)
-        };
-    }
-
-    public static FuzzerConfig[] legacySessionIdConfigs() {
-        return legacySessionIdConfigs(SystemPropertiesConfig.load());
-    }
-
-    public static FuzzerConfig[] legacySessionIdConfigs(Config config) {
-        return new FuzzerConfig[] {
-                new FuzzerConfig(config)
-                        .factory(newLegacySessionIdFuzzer()
-                                .target(client_hello)
-                                .fuzzer(simpleVectorFuzzer()))
-                        .readTimeout(long_read_timeout)
-        };
-    }
-
-    public static FuzzerConfig[] legacyCompressionMethodsConfigs() {
-        return legacyCompressionMethodsConfigs(SystemPropertiesConfig.load());
-    }
-
-    public static FuzzerConfig[] legacyCompressionMethodsConfigs(Config config) {
-        return new FuzzerConfig[] {
-                new FuzzerConfig(config)
-                        .factory(newLegacyCompressionMethodsFuzzer()
-                                .target(client_hello)
-                                .fuzzer(simpleVectorFuzzer()))
-                        .readTimeout(long_read_timeout)
-        };
-    }
-
-    public static FuzzerConfig[] noClientAuthConfigs() {
-        return noClientAuthConfigs(SystemPropertiesConfig.load());
-    }
-
-    public static FuzzerConfig[] noClientAuthConfigs(Config config) {
-        List<FuzzerConfig> configs = new ArrayList<>();
-        configs.addAll(Arrays.asList(tlsPlaintextConfigs(config)));
-        configs.addAll(Arrays.asList(ccsConfigs(config)));
-        configs.addAll(Arrays.asList(handshakeConfigs(config)));
-        configs.addAll(Arrays.asList(clientHelloConfigs(config)));
-        configs.addAll(Arrays.asList(finishedConfigs(config)));
-        configs.addAll(Arrays.asList(cipherSuitesConfigs(config)));
-        configs.addAll(Arrays.asList(extensionVectorConfigs(config)));
-        configs.addAll(Arrays.asList(legacySessionIdConfigs(config)));
-        configs.addAll(Arrays.asList(legacyCompressionMethodsConfigs(config)));
-
-        return configs.toArray(new FuzzerConfig[configs.size()]);
-    }
-
-    public static FuzzerConfig[] clientAuthConfigs() {
-        return clientAuthConfigs(SystemPropertiesConfig.load());
-    }
-
-    public static FuzzerConfig[] clientAuthConfigs(Config config) {
-        List<FuzzerConfig> configs = new ArrayList<>();
-        configs.addAll(Arrays.asList(certificateConfigs(config)));
-        configs.addAll(Arrays.asList(certificateVerifyConfigs(config)));
-
-        return configs.toArray(new FuzzerConfig[configs.size()]);
-    }
-
-    public static FuzzerConfig[] allConfigs() {
-        return allConfigs(SystemPropertiesConfig.load());
-    }
-
-    public static FuzzerConfig[] allConfigs(Config config) {
-        List<FuzzerConfig> configs = new ArrayList<>();
-        configs.addAll(Arrays.asList(noClientAuthConfigs(config)));
-        configs.addAll(Arrays.asList(clientAuthConfigs(config)));
-
-        return configs.toArray(new FuzzerConfig[configs.size()]);
-    }
+    private boolean strict = true;
+    private boolean needSmokeTest = true;
 
     public FuzzyClient(Output output, FuzzerConfig fuzzerConfig) {
         this.output = output;
@@ -444,7 +150,7 @@ public class FuzzyClient implements Runnable {
         }
     }
 
-    protected void reportError(String message, Throwable e) {
+    private void reportError(String message, Throwable e) {
         output.achtung(message, e);
         if (strict) {
             throw whatTheHell("we failed!", e);
@@ -456,12 +162,318 @@ public class FuzzyClient implements Runnable {
                 && fuzzyStructFactory.currentTest() <= fuzzerConfig.endTest();
     }
 
-    public static FuzzerConfig[] combine(FuzzerConfig[] configs, Client client) {
-        for (FuzzerConfig config : configs) {
-            config.client(client);
-        }
+    // fuzzing configurations
 
-        return configs;
+    public static FuzzerConfig[] tlsPlaintextConfigs(Config config) {
+        return new FuzzerConfig[] {
+                new FuzzerConfig(config)
+                        .factory(newMutatedStructFactory()
+                                .target(tls_plaintext)
+                                .fuzzer(newByteFlipFuzzer()
+                                        .minRatio(0.01)
+                                        .maxRatio(0.09)
+                                        .startIndex(0)
+                                        .endIndex(TLS_PLAINTEXT_HEADER_LENGTH)))
+                        .client(new HttpsClient())
+                        .readTimeout(short_read_timeout)
+                        .endTest(200)
+                        .parts(2),
+                new FuzzerConfig(config)
+                        .factory(newMutatedStructFactory()
+                                .target(tls_plaintext)
+                                .fuzzer(newBitFlipFuzzer()
+                                        .minRatio(0.01)
+                                        .maxRatio(0.09)
+                                        .startIndex(0)
+                                        .endIndex(TLS_PLAINTEXT_HEADER_LENGTH)))
+                        .client(new HttpsClient())
+                        .readTimeout(short_read_timeout)
+                        .endTest(200)
+                        .parts(2),
+        };
+    }
+
+    public static FuzzerConfig[] ccsConfigs(Config config) {
+        return new FuzzerConfig[] {
+                new FuzzerConfig(config)
+                        .factory(newMutatedStructFactory()
+                                .target(ccs)
+                                .fuzzer(newByteFlipFuzzer()
+                                        .minRatio(0.01)
+                                        .maxRatio(0.09)))
+                        .client(new HttpsClient())
+                        .readTimeout(long_read_timeout)
+                        .endTest(20),
+                new FuzzerConfig(config)
+                        .factory(newMutatedStructFactory()
+                                .target(ccs)
+                                .fuzzer(newBitFlipFuzzer()
+                                        .minRatio(0.01)
+                                        .maxRatio(0.09)))
+                        .client(new HttpsClient())
+                        .readTimeout(long_read_timeout)
+                        .endTest(20),
+        };
+    }
+
+    public static FuzzerConfig[] handshakeConfigs(Config config) {
+        return new FuzzerConfig[] {
+                new FuzzerConfig(config)
+                        .factory(newMutatedStructFactory()
+                                .target(handshake)
+                                .fuzzer(newByteFlipFuzzer()
+                                        .minRatio(0.01)
+                                        .maxRatio(0.09)
+                                        .startIndex(0)
+                                        .endIndex(HANDSHAKE_HEADER_LENGTH)))
+                        .client(new HttpsClient())
+                        .readTimeout(short_read_timeout)
+                        .endTest(2000)
+                        .parts(5),
+                new FuzzerConfig(config)
+                        .factory(newMutatedStructFactory()
+                                .target(handshake)
+                                .fuzzer(newBitFlipFuzzer()
+                                        .minRatio(0.01)
+                                        .maxRatio(0.09)
+                                        .startIndex(0)
+                                        .endIndex(HANDSHAKE_HEADER_LENGTH)))
+                        .client(new HttpsClient())
+                        .readTimeout(short_read_timeout)
+                        .endTest(2000)
+                        .parts(5),
+        };
+    }
+
+    public static FuzzerConfig[] clientHelloConfigs(Config config) {
+        return new FuzzerConfig[] {
+                new FuzzerConfig(config)
+                        .factory(newMutatedStructFactory()
+                                .target(client_hello)
+                                .fuzzer(newByteFlipFuzzer()
+                                        .minRatio(0.01)
+                                        .maxRatio(0.09)))
+                        .client(new HttpsClient())
+                        .readTimeout(long_read_timeout)
+                        .endTest(2000)
+                        .parts(5),
+                new FuzzerConfig(config)
+                        .factory(newMutatedStructFactory()
+                                .target(client_hello)
+                                .fuzzer(newBitFlipFuzzer()
+                                        .minRatio(0.01)
+                                        .maxRatio(0.09)))
+                        .client(new HttpsClient())
+                        .readTimeout(long_read_timeout)
+                        .endTest(2000)
+                        .parts(5),
+        };
+    }
+
+    public static FuzzerConfig[] certificateConfigs(Config config) {
+        return new FuzzerConfig[] {
+                new FuzzerConfig(config)
+                        .factory(newMutatedStructFactory()
+                                .target(certificate)
+                                .fuzzer(newByteFlipFuzzer()
+                                        .minRatio(0.01)
+                                        .maxRatio(0.09)))
+                        .client(new HttpsClientAuth())
+                        .readTimeout(long_read_timeout)
+                        .endTest(2000)
+                        .parts(5),
+                new FuzzerConfig(config)
+                        .factory(newMutatedStructFactory()
+                                .target(certificate)
+                                .fuzzer(newBitFlipFuzzer()
+                                        .minRatio(0.01)
+                                        .maxRatio(0.09)))
+                        .client(new HttpsClientAuth())
+                        .readTimeout(long_read_timeout)
+                        .endTest(2000)
+                        .parts(5),
+        };
+    }
+
+    public static FuzzerConfig[] certificateVerifyConfigs(Config config) {
+        return new FuzzerConfig[] {
+                new FuzzerConfig(config)
+                        .factory(newMutatedStructFactory()
+                                .target(certificate_verify)
+                                .fuzzer(newByteFlipFuzzer()
+                                        .minRatio(0.01)
+                                        .maxRatio(0.09)))
+                        .client(new HttpsClientAuth())
+                        .readTimeout(long_read_timeout)
+                        .endTest(2000)
+                        .parts(5),
+                new FuzzerConfig(config)
+                        .factory(newMutatedStructFactory()
+                                .target(certificate_verify)
+                                .fuzzer(newBitFlipFuzzer()
+                                        .minRatio(0.01)
+                                        .maxRatio(0.09)))
+                        .client(new HttpsClientAuth())
+                        .readTimeout(long_read_timeout)
+                        .endTest(2000)
+                        .parts(5),
+        };
+    }
+
+    public static FuzzerConfig[] finishedConfigs(Config config) {
+        return new FuzzerConfig[] {
+                new FuzzerConfig(config)
+                        .factory(newMutatedStructFactory()
+                                .target(finished)
+                                .fuzzer(newByteFlipFuzzer()
+                                        .minRatio(0.01)
+                                        .maxRatio(0.09)))
+                        .client(new HttpsClient())
+                        .readTimeout(long_read_timeout)
+                        .endTest(2000)
+                        .parts(5),
+                new FuzzerConfig(config)
+                        .factory(newMutatedStructFactory()
+                                .target(finished)
+                                .fuzzer(newBitFlipFuzzer()
+                                        .minRatio(0.01)
+                                        .maxRatio(0.09)))
+                        .client(new HttpsClient())
+                        .readTimeout(long_read_timeout)
+                        .endTest(2000)
+                        .parts(5),
+        };
+    }
+
+    public static FuzzerConfig[] cipherSuitesConfigs(Config config) {
+        return new FuzzerConfig[] {
+                new FuzzerConfig(config)
+                        .factory(cipherSuitesFuzzer()
+                                .target(client_hello)
+                                .fuzzer(simpleVectorFuzzer()))
+                        .client(new HttpsClient())
+                        .readTimeout(long_read_timeout)
+        };
+    }
+
+    public static FuzzerConfig[] extensionVectorConfigs(Config config) {
+        return new FuzzerConfig[] {
+                new FuzzerConfig(config)
+                        .factory(newExtensionVectorFuzzer()
+                                .target(client_hello)
+                                .fuzzer(simpleVectorFuzzer()))
+                        .client(new HttpsClient())
+                        .readTimeout(long_read_timeout)
+        };
+    }
+
+    public static FuzzerConfig[] legacySessionIdConfigs(Config config) {
+        return new FuzzerConfig[] {
+                new FuzzerConfig(config)
+                        .factory(newLegacySessionIdFuzzer()
+                                .target(client_hello)
+                                .fuzzer(simpleVectorFuzzer()))
+                        .client(new HttpsClient())
+                        .readTimeout(long_read_timeout)
+        };
+    }
+
+    public static FuzzerConfig[] legacyCompressionMethodsConfigs(Config config) {
+        return new FuzzerConfig[] {
+                new FuzzerConfig(config)
+                        .factory(newLegacyCompressionMethodsFuzzer()
+                                .target(client_hello)
+                                .fuzzer(simpleVectorFuzzer()))
+                        .client(new HttpsClient())
+                        .readTimeout(long_read_timeout)
+        };
+    }
+
+    public static FuzzerConfig[] noClientAuthConfigs(Config config) {
+        List<FuzzerConfig> configs = new ArrayList<>();
+        configs.addAll(Arrays.asList(tlsPlaintextConfigs(config)));
+        configs.addAll(Arrays.asList(ccsConfigs(config)));
+        configs.addAll(Arrays.asList(handshakeConfigs(config)));
+        configs.addAll(Arrays.asList(clientHelloConfigs(config)));
+        configs.addAll(Arrays.asList(finishedConfigs(config)));
+        configs.addAll(Arrays.asList(cipherSuitesConfigs(config)));
+        configs.addAll(Arrays.asList(extensionVectorConfigs(config)));
+        configs.addAll(Arrays.asList(legacySessionIdConfigs(config)));
+        configs.addAll(Arrays.asList(legacyCompressionMethodsConfigs(config)));
+
+        return configs.toArray(new FuzzerConfig[configs.size()]);
+    }
+
+    public static FuzzerConfig[] clientAuthConfigs(Config config) {
+        List<FuzzerConfig> configs = new ArrayList<>();
+        configs.addAll(Arrays.asList(certificateConfigs(config)));
+        configs.addAll(Arrays.asList(certificateVerifyConfigs(config)));
+
+        return configs.toArray(new FuzzerConfig[configs.size()]);
+    }
+
+    public static FuzzerConfig[] allConfigs(Config config) {
+        List<FuzzerConfig> configs = new ArrayList<>();
+        configs.addAll(Arrays.asList(noClientAuthConfigs(config)));
+        configs.addAll(Arrays.asList(clientAuthConfigs(config)));
+
+        return configs.toArray(new FuzzerConfig[configs.size()]);
+    }
+
+    public static FuzzerConfig[] allConfigs() {
+        return allConfigs(SystemPropertiesConfig.load());
+    }
+
+    public static FuzzerConfig[] noClientAuthConfigs() {
+        return noClientAuthConfigs(SystemPropertiesConfig.load());
+    }
+
+    public static FuzzerConfig[] clientAuthConfigs() {
+        return clientAuthConfigs(SystemPropertiesConfig.load());
+    }
+
+    public static FuzzerConfig[] ccsConfigs() {
+        return ccsConfigs(SystemPropertiesConfig.load());
+    }
+
+    public static FuzzerConfig[] tlsPlaintextConfigs() {
+        return tlsPlaintextConfigs(SystemPropertiesConfig.load());
+    }
+
+    public static FuzzerConfig[] handshakeConfigs() {
+        return handshakeConfigs(SystemPropertiesConfig.load());
+    }
+
+    public static FuzzerConfig[] clientHelloConfigs() {
+        return clientHelloConfigs(SystemPropertiesConfig.load());
+    }
+
+    public static FuzzerConfig[] certificateConfigs() {
+        return certificateConfigs(SystemPropertiesConfig.load());
+    }
+
+    public static FuzzerConfig[] certificateVerifyConfigs() {
+        return certificateVerifyConfigs(SystemPropertiesConfig.load());
+    }
+
+    public static FuzzerConfig[] finishedConfigs() {
+        return finishedConfigs(SystemPropertiesConfig.load());
+    }
+
+    public static FuzzerConfig[] cipherSuitesConfigs() {
+        return cipherSuitesConfigs(SystemPropertiesConfig.load());
+    }
+
+    public static FuzzerConfig[] extensionVectorConfigs() {
+        return extensionVectorConfigs(SystemPropertiesConfig.load());
+    }
+
+    public static FuzzerConfig[] legacySessionIdConfigs() {
+        return legacySessionIdConfigs(SystemPropertiesConfig.load());
+    }
+
+    public static FuzzerConfig[] legacyCompressionMethodsConfigs() {
+        return legacyCompressionMethodsConfigs(SystemPropertiesConfig.load());
     }
 
 }
