@@ -5,6 +5,9 @@ import com.gypsyengineer.tlsbunny.tls13.connection.action.Side;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.IncomingChangeCipherSpec;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.OutgoingChangeCipherSpec;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
+import com.gypsyengineer.tlsbunny.tls13.connection.check.AlertCheck;
+import com.gypsyengineer.tlsbunny.tls13.connection.check.Check;
+import com.gypsyengineer.tlsbunny.tls13.connection.check.FailureCheck;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.server.SingleThreadServer;
 import com.gypsyengineer.tlsbunny.tls13.struct.AlertDescription;
@@ -44,6 +47,8 @@ public class FuzzyClientTest {
     private static final int end = 15;
     private static final int parts = 1;
 
+    private Config clientConfig = SystemPropertiesConfig.load();
+
     private static final Check[] checks = {
             new AlertCheck(),
             new FailureCheck()
@@ -51,12 +56,12 @@ public class FuzzyClientTest {
 
     @Test
     public void tlsPlaintext() throws Exception {
-        test(minimized(tlsPlaintextConfigs()));
+        test(minimized(tlsPlaintextConfigs(clientConfig)));
     }
 
     @Test
     public void handshake() throws Exception {
-        test(minimized(handshakeConfigs()));
+        test(minimized(handshakeConfigs(clientConfig)));
     }
 
     @Test
@@ -66,32 +71,32 @@ public class FuzzyClientTest {
 
     @Test
     public void ccs() throws Exception {
-        test(minimized(ccsConfigs()));
+        test(minimized(ccsConfigs(clientConfig)));
     }
 
     @Test
     public void finished() throws Exception {
-        test(minimized(finishedConfigs()));
+        test(minimized(finishedConfigs(clientConfig)));
     }
 
     @Test
     public void cipherSuites() throws Exception {
-        test(minimized(cipherSuitesConfigs()));
+        test(minimized(cipherSuitesConfigs(clientConfig)));
     }
 
     @Test
     public void extensionVector() throws Exception {
-        test(minimized(extensionVectorConfigs()));
+        test(minimized(extensionVectorConfigs(clientConfig)));
     }
 
     @Test
     public void legacySessionId() throws Exception {
-        test(minimized(legacySessionIdConfigs()));
+        test(minimized(legacySessionIdConfigs(clientConfig)));
     }
 
     @Test
     public void legacyCompressionMethods() throws Exception {
-        test(minimized(legacyCompressionMethodsConfigs()));
+        test(minimized(legacyCompressionMethodsConfigs(clientConfig)));
     }
 
     public void test(FuzzerConfig[] configs) throws Exception {
@@ -114,7 +119,10 @@ public class FuzzyClientTest {
 
         try (fuzzyClient; server; clientOutput; serverOutput) {
             server.start();
-            Config clientConfig = SystemPropertiesConfig.load().port(server.port());
+
+            for (FuzzerConfig fuzzerConfig : configs) {
+                fuzzerConfig.port(server.port());
+            }
 
             fuzzyClient.set(configs)
                     .set(clientConfig)

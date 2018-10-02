@@ -1,4 +1,6 @@
-package com.gypsyengineer.tlsbunny.tls13.connection;
+package com.gypsyengineer.tlsbunny.tls13.connection.check;
+
+import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 
 public class SuccessCheck extends AbstractCheck {
 

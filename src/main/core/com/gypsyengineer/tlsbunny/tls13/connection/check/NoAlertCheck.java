@@ -1,4 +1,4 @@
-package com.gypsyengineer.tlsbunny.tls13.connection;
+package com.gypsyengineer.tlsbunny.tls13.connection.check;
 
 // the check fails if an alert with a error received
 public class NoAlertCheck extends AbstractCheck {

@@ -1,7 +1,7 @@
 package com.gypsyengineer.tlsbunny.tls13.client;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
-import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertCheck;
+import com.gypsyengineer.tlsbunny.tls13.connection.check.NoAlertCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Side;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.*;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;

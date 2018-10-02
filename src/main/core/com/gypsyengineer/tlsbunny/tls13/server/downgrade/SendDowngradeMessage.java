@@ -1,6 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls13.server.downgrade;
 
-import com.gypsyengineer.tlsbunny.tls13.connection.AlertCheck;
+import com.gypsyengineer.tlsbunny.tls13.connection.check.AlertCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.BaseEngineFactory;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Side;

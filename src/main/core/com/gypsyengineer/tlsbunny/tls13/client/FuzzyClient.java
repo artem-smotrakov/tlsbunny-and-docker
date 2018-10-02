@@ -4,7 +4,7 @@ import com.gypsyengineer.tlsbunny.tls.UInt16;
 import com.gypsyengineer.tlsbunny.tls.UInt24;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.EngineException;
-import com.gypsyengineer.tlsbunny.tls13.connection.SuccessCheck;
+import com.gypsyengineer.tlsbunny.tls13.connection.check.SuccessCheck;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.FuzzyStructFactory;
 import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
 import com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType;
@@ -396,7 +396,8 @@ public class FuzzyClient implements Runnable {
         }
 
         try {
-            while (fuzzyStructFactory.canFuzz()) {
+            fuzzyStructFactory.currentTest(fuzzerConfig.startTest());
+            while (shouldRun(fuzzyStructFactory)) {
                 output.info("test %d", fuzzyStructFactory.currentTest());
 
                 int attempt = 0;
@@ -448,6 +449,11 @@ public class FuzzyClient implements Runnable {
         if (strict) {
             throw whatTheHell("we failed!", e);
         }
+    }
+
+    private boolean shouldRun(FuzzyStructFactory fuzzyStructFactory) {
+        return fuzzyStructFactory.canFuzz()
+                && fuzzyStructFactory.currentTest() <= fuzzerConfig.endTest();
     }
 
     public static FuzzerConfig[] combine(FuzzerConfig[] configs, Client client) {

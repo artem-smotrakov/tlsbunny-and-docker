@@ -1,6 +1,6 @@
 package com.gypsyengineer.tlsbunny.impl.test.tls13.old.h2o;
 
-import com.gypsyengineer.tlsbunny.tls13.connection.AlertCheck;
+import com.gypsyengineer.tlsbunny.tls13.connection.check.AlertCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;

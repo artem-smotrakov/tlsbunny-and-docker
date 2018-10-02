@@ -1,14 +1,14 @@
 package com.gypsyengineer.tlsbunny.tls13.server;
 
-import com.gypsyengineer.tlsbunny.tls13.connection.Check;
+import com.gypsyengineer.tlsbunny.tls13.connection.check.Check;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.EngineFactory;
 import com.gypsyengineer.tlsbunny.utils.Config;
+import com.gypsyengineer.tlsbunny.utils.HasOutput;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
-public interface Server extends Runnable, AutoCloseable {
+public interface Server extends Runnable, AutoCloseable, HasOutput<Server> {
     Server set(Config config);
-    Server set(Output output);
     Server set(EngineFactory engineFactory);
     Server set(Check check);
 
@@ -50,4 +50,9 @@ public interface Server extends Runnable, AutoCloseable {
      * @return false if the check failed at least once, true otherwise
      */
     boolean failed();
+
+    /**
+     * @return server output
+     */
+    Output output();
 }

@@ -1,5 +1,7 @@
 package com.gypsyengineer.tlsbunny.utils;
 
+import java.util.Objects;
+
 public class SystemPropertiesConfig implements Config {
 
     public static final int DEFAULT_PARTS = 1;
@@ -36,129 +38,149 @@ public class SystemPropertiesConfig implements Config {
     }
 
     @Override
-    public Config host(String host) {
+    synchronized public SystemPropertiesConfig copy() {
+        SystemPropertiesConfig clone = new SystemPropertiesConfig();
+        clone.host = host;
+        clone.port = port;
+        clone.minRatio = minRatio;
+        clone.maxRatio = maxRatio;
+        clone.threads = threads;
+        clone.parts = parts;
+        clone.startTest = startTest;
+        clone.endTest = endTest;
+        clone.clientCertificate = clientCertificate;
+        clone.clientKey = clientKey;
+        clone.serverCertificate = serverCertificate;
+        clone.serverKey = serverKey;
+        clone.readTimeout = readTimeout;
+
+        return clone;
+    }
+
+    @Override
+    synchronized public Config host(String host) {
         this.host = host;
         return this;
     }
 
     @Override
-    public Config port(int port) {
+    synchronized public Config port(int port) {
         this.port = port;
         return this;
     }
 
     @Override
-    public Config minRatio(double minRatio) {
+    synchronized public Config minRatio(double minRatio) {
         this.minRatio = minRatio;
         return this;
     }
 
     @Override
-    public Config maxRatio(double maxRatio) {
+    synchronized public Config maxRatio(double maxRatio) {
         this.maxRatio = maxRatio;
         return this;
     }
 
     @Override
-    public Config parts(int parts) {
+    synchronized public Config parts(int parts) {
         this.parts = parts;
         return this;
     }
 
     @Override
-    public Config readTimeout(long timeout) {
+    synchronized public Config readTimeout(long timeout) {
         readTimeout = timeout;
         return this;
     }
 
     @Override
-    public Config clientCertificate(String path) {
+    synchronized public Config clientCertificate(String path) {
         clientCertificate = path;
         return this;
     }
 
     @Override
-    public Config clientKey(String path) {
+    synchronized public Config clientKey(String path) {
         clientKey = path;
         return this;
     }
 
     @Override
-    public Config serverCertificate(String path) {
+    synchronized public Config serverCertificate(String path) {
         serverCertificate = path;
         return this;
     }
 
     @Override
-    public Config serverKey(String path) {
+    synchronized public Config serverKey(String path) {
         serverKey = path;
         return this;
     }
 
     @Override
-    public Config startTest(long startTest) {
+    synchronized public Config startTest(long startTest) {
         this.startTest = startTest;
         return this;
     }
 
     @Override
-    public Config endTest(long endTest) {
+    synchronized public Config endTest(long endTest) {
         this.endTest = endTest;
         return this;
     }
 
     @Override
-    public String host() {
+    synchronized public String host() {
         return host;
     }
 
     @Override
-    public int port() {
+    synchronized public int port() {
         return port;
     }
 
     @Override
-    public double minRatio() {
+    synchronized public double minRatio() {
         return minRatio;
     }
 
     @Override
-    public double maxRatio() {
+    synchronized public double maxRatio() {
         return maxRatio;
     }
 
     @Override
-    public int threads() {
+    synchronized public int threads() {
         return threads;
     }
 
     @Override
-    public int parts() {
+    synchronized public int parts() {
         return parts;
     }
 
     @Override
-    public long startTest() {
+    synchronized public long startTest() {
         return startTest;
     }
 
     @Override
-    public long endTest() {
+    synchronized public long endTest() {
         return endTest;
     }
 
     @Override
-    public String clientCertificate() {
+    synchronized public String clientCertificate() {
         return clientCertificate;
     }
 
     @Override
-    public String clientKey() {
+    synchronized public String clientKey() {
         return clientKey;
     }
 
     @Override
-    public String serverCertificate() {
+    synchronized public String serverCertificate() {
         return serverCertificate;
     }
 
@@ -168,13 +190,45 @@ public class SystemPropertiesConfig implements Config {
     }
 
     @Override
-    public long readTimeout() {
+    synchronized public long readTimeout() {
         return readTimeout;
     }
 
     @Override
-    public String targetFilter() {
+    synchronized public String targetFilter() {
         return System.getProperty("tlsbunny.target.filter", EMPTY_STRING).trim();
+    }
+
+    @Override
+    synchronized public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        SystemPropertiesConfig that = (SystemPropertiesConfig) o;
+        return port == that.port &&
+                Double.compare(that.minRatio, minRatio) == 0 &&
+                Double.compare(that.maxRatio, maxRatio) == 0 &&
+                threads == that.threads &&
+                parts == that.parts &&
+                startTest == that.startTest &&
+                endTest == that.endTest &&
+                readTimeout == that.readTimeout &&
+                Objects.equals(host, that.host) &&
+                Objects.equals(clientCertificate, that.clientCertificate) &&
+                Objects.equals(clientKey, that.clientKey) &&
+                Objects.equals(serverCertificate, that.serverCertificate) &&
+                Objects.equals(serverKey, that.serverKey);
+    }
+
+    @Override
+    synchronized public int hashCode() {
+        return Objects.hash(host, port, minRatio, maxRatio, threads, parts,
+                startTest, endTest, clientCertificate, clientKey,
+                serverCertificate, serverKey, readTimeout);
     }
 
     public static SystemPropertiesConfig load() {

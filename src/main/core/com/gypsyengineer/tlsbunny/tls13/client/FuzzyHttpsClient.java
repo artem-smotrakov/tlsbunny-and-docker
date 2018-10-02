@@ -1,7 +1,7 @@
 package com.gypsyengineer.tlsbunny.tls13.client;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
-import com.gypsyengineer.tlsbunny.tls13.connection.Check;
+import com.gypsyengineer.tlsbunny.tls13.connection.check.Check;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Negotiator;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
@@ -59,10 +59,9 @@ public class FuzzyHttpsClient implements Client {
             client.set(output).set(mainConfig).set(no_checks);
 
             new Runner()
-                    .set(mainConfig)
-                    .set(output)
                     .set(FuzzyClient.fuzzerFactory)
                     .set(client)
+                    .set(output)
                     .set(fuzzerConfigs)
                     .set(checks)
                     .set(analyzer)

@@ -1,7 +1,7 @@
 package com.gypsyengineer.tlsbunny.impl.tls13.test.openssl.client;
 
 import com.gypsyengineer.tlsbunny.impl.test.tls13.old.openssl.OpensslHttpsClient;
-import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertCheck;
+import com.gypsyengineer.tlsbunny.tls13.connection.check.NoAlertCheck;
 import org.junit.Test;
 
 import static junit.framework.TestCase.fail;

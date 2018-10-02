@@ -3,9 +3,9 @@ package com.gypsyengineer.tlsbunny.impl.test.tls13.openssl;
 import com.gypsyengineer.tlsbunny.impl.test.tls13.TestForServer;
 import com.gypsyengineer.tlsbunny.impl.test.tls13.Utils;
 import com.gypsyengineer.tlsbunny.tls13.client.*;
-import com.gypsyengineer.tlsbunny.tls13.connection.AlertCheck;
-import com.gypsyengineer.tlsbunny.tls13.connection.AllFailedCheck;
-import com.gypsyengineer.tlsbunny.tls13.connection.ExceptionCheck;
+import com.gypsyengineer.tlsbunny.tls13.connection.check.AlertCheck;
+import com.gypsyengineer.tlsbunny.tls13.connection.check.AllFailedCheck;
+import com.gypsyengineer.tlsbunny.tls13.connection.check.ExceptionCheck;
 import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -14,6 +14,8 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.net.SocketException;
+
+import static com.gypsyengineer.tlsbunny.impl.test.tls13.Utils.checkForASanFindings;
 
 public class OpensslTests {
 
@@ -27,7 +29,7 @@ public class OpensslTests {
     }
 
     @Before
-    public void beforeTest() throws IOException, InterruptedException {
+    public void serverReady() throws IOException, InterruptedException {
         Utils.waitServerReady(server);
     }
 
@@ -150,10 +152,10 @@ public class OpensslTests {
                 .run();
     }
 
-    // TODO: check server logs for ASan findings
     @AfterClass
     public static void tearDown() throws Exception {
         server.close();
         Utils.waitServerStop(server);
+        checkForASanFindings(server.output());
     }
 }

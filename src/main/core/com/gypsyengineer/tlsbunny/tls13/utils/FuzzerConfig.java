@@ -1,10 +1,13 @@
 package com.gypsyengineer.tlsbunny.tls13.utils;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
-import com.gypsyengineer.tlsbunny.tls13.connection.Check;
+import com.gypsyengineer.tlsbunny.tls13.connection.check.Check;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.FuzzyStructFactory;
 import com.gypsyengineer.tlsbunny.tls13.client.Client;
 import com.gypsyengineer.tlsbunny.utils.Config;
+
+import java.util.Arrays;
+import java.util.Objects;
 
 public class FuzzerConfig implements Config {
 
@@ -14,211 +17,238 @@ public class FuzzerConfig implements Config {
     private FuzzyStructFactory factory;
     private Client client;
 
-    public FuzzerConfig() {
-
-    }
-
     public FuzzerConfig(Config mainConfig) {
-        this.mainConfig = mainConfig;
+        this.mainConfig = mainConfig.copy();
     }
 
-    public FuzzerConfig set(Config mainConfig) {
+    @Override
+    synchronized public FuzzerConfig copy() {
+        FuzzerConfig clone = new FuzzerConfig(mainConfig);
+        clone.analyzer = analyzer;
+        clone.checks = checks != null ? checks.clone() : null;
+        clone.factory = factory;
+        clone.client = client;
+
+        return clone;
+    }
+
+    synchronized public FuzzerConfig set(Config mainConfig) {
         this.mainConfig = mainConfig;
         return this;
     }
 
     @Override
-    public String host() {
+    synchronized public String host() {
         return mainConfig.host();
     }
 
     @Override
-    public int port() {
+    synchronized public int port() {
         return mainConfig.port();
     }
 
     @Override
-    public double minRatio() {
+    synchronized public double minRatio() {
         return mainConfig.minRatio();
     }
 
     @Override
-    public double maxRatio() {
+    synchronized public double maxRatio() {
         return mainConfig.maxRatio();
     }
 
     @Override
-    public int threads() {
+    synchronized public int threads() {
         return mainConfig.threads();
     }
 
     @Override
-    public int parts() {
+    synchronized public int parts() {
         return mainConfig.parts();
     }
 
     @Override
-    public long startTest() {
+    synchronized public long startTest() {
         return mainConfig.startTest();
     }
 
     @Override
-    public long endTest() {
+    synchronized public long endTest() {
         return mainConfig.endTest();
     }
 
     @Override
-    public String clientCertificate() {
+    synchronized public String clientCertificate() {
         return mainConfig.clientCertificate();
     }
 
     @Override
-    public String clientKey() {
+    synchronized public String clientKey() {
         return mainConfig.clientKey();
     }
 
     @Override
-    public String serverCertificate() {
+    synchronized public String serverCertificate() {
         return mainConfig.serverCertificate();
     }
 
     @Override
-    public String serverKey() {
+    synchronized public String serverKey() {
         return mainConfig.serverKey();
     }
 
     @Override
-    public String targetFilter() {
+    synchronized public String targetFilter() {
         return mainConfig.targetFilter();
     }
 
     @Override
-    public long readTimeout() {
+    synchronized public long readTimeout() {
         return mainConfig.readTimeout();
     }
 
     @Override
-    public Config host(String host) {
+    synchronized public Config host(String host) {
         mainConfig.host(host);
         return this;
     }
 
     @Override
-    public Config port(int port) {
+    synchronized public Config port(int port) {
         mainConfig.port(port);
         return this;
     }
 
     @Override
-    public FuzzerConfig minRatio(double minRatio) {
+    synchronized public FuzzerConfig minRatio(double minRatio) {
         mainConfig.minRatio(minRatio);
         return this;
     }
 
     @Override
-    public FuzzerConfig maxRatio(double maxRatio) {
+    synchronized public FuzzerConfig maxRatio(double maxRatio) {
         mainConfig.maxRatio(maxRatio);
         return this;
     }
 
     @Override
-    public FuzzerConfig startTest(long test) {
+    synchronized public FuzzerConfig startTest(long test) {
         mainConfig.startTest(test);
         return this;
     }
 
     @Override
-    public FuzzerConfig endTest(long test) {
+    synchronized public FuzzerConfig endTest(long test) {
         mainConfig.endTest(test);
         return this;
     }
 
     @Override
-    public FuzzerConfig parts(int parts) {
+    synchronized public FuzzerConfig parts(int parts) {
         mainConfig.parts(parts);
         return this;
     }
 
     @Override
-    public FuzzerConfig readTimeout(long timeout) {
+    synchronized public FuzzerConfig readTimeout(long timeout) {
         mainConfig.readTimeout(timeout);
         return this;
     }
 
     @Override
-    public Config clientCertificate(String path) {
+    synchronized public Config clientCertificate(String path) {
         mainConfig.clientCertificate(path);
         return this;
     }
 
     @Override
-    public Config clientKey(String path) {
+    synchronized public Config clientKey(String path) {
         mainConfig.clientKey(path);
         return this;
     }
 
     @Override
-    public Config serverCertificate(String path) {
+    synchronized public Config serverCertificate(String path) {
         mainConfig.serverCertificate(path);
         return this;
     }
 
     @Override
-    public Config serverKey(String path) {
+    synchronized public Config serverKey(String path) {
         mainConfig.serverKey(path);
         return this;
     }
 
-    public FuzzerConfig analyzer(Analyzer analyzer) {
+    synchronized public FuzzerConfig analyzer(Analyzer analyzer) {
         this.analyzer = analyzer;
         return this;
     }
 
-    public boolean hasAnalyzer() {
+    synchronized public boolean hasAnalyzer() {
         return analyzer != null;
     }
 
-    public Analyzer analyzer() {
+    synchronized public Analyzer analyzer() {
         return analyzer;
     }
 
-    public FuzzerConfig set(Check... checks) {
+    synchronized public FuzzerConfig set(Check... checks) {
         this.checks = checks;
         return this;
     }
 
-    public boolean hasChecks() {
-        return checks != null && checks.length != 0;
-    }
-
-    public Check[] checks() {
+    synchronized public Check[] checks() {
         return checks;
     }
 
-    public boolean noFactory() {
+    synchronized public boolean noFactory() {
         return factory == null;
     }
 
-    public FuzzerConfig factory(FuzzyStructFactory factory) {
+    synchronized public FuzzerConfig factory(FuzzyStructFactory factory) {
         this.factory = factory;
         return this;
     }
 
-    public FuzzyStructFactory factory() {
+    synchronized public FuzzyStructFactory factory() {
         return factory;
     }
 
-    public boolean noClient() {
+    synchronized public boolean noClient() {
         return client == null;
     }
 
-    public FuzzerConfig client(Client client) {
+    synchronized public FuzzerConfig client(Client client) {
         this.client = client;
         return this;
     }
 
-    public Client client() {
+    synchronized public Client client() {
         return client;
     }
 
+    @Override
+    synchronized public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        FuzzerConfig that = (FuzzerConfig) o;
+        return Objects.equals(mainConfig, that.mainConfig) &&
+                Objects.equals(analyzer, that.analyzer) &&
+                Arrays.equals(checks, that.checks) &&
+                Objects.equals(factory, that.factory) &&
+                Objects.equals(client, that.client);
+    }
+
+    @Override
+    synchronized public int hashCode() {
+        int result = Objects.hash(mainConfig, analyzer, factory, client);
+        result = 31 * result + Arrays.hashCode(checks);
+        return result;
+    }
 }
