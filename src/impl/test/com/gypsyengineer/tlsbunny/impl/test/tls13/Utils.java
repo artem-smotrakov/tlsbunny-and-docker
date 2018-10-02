@@ -16,8 +16,6 @@ public class Utils {
 
     public static final int delay = 500; // in millis
     public static final int no_timeout = -1;
-    public static final int default_server_start_timeout = 10 * 1000; // im millis
-    public static final int default_server_stop_timeout  = 10 * 1000; // im millis
 
     public static void delay(long millis) {
         try {

@@ -396,7 +396,8 @@ public class FuzzyClient implements Runnable {
         }
 
         try {
-            while (fuzzyStructFactory.canFuzz()) {
+            fuzzyStructFactory.currentTest(fuzzerConfig.startTest());
+            while (shouldRun(fuzzyStructFactory)) {
                 output.info("test %d", fuzzyStructFactory.currentTest());
 
                 int attempt = 0;
@@ -448,6 +449,11 @@ public class FuzzyClient implements Runnable {
         if (strict) {
             throw whatTheHell("we failed!", e);
         }
+    }
+
+    private boolean shouldRun(FuzzyStructFactory fuzzyStructFactory) {
+        return fuzzyStructFactory.canFuzz()
+                && fuzzyStructFactory.currentTest() <= fuzzerConfig.endTest();
     }
 
     public static FuzzerConfig[] combine(FuzzerConfig[] configs, Client client) {

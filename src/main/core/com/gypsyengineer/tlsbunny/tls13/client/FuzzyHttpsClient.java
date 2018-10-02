@@ -59,10 +59,9 @@ public class FuzzyHttpsClient implements Client {
             client.set(output).set(mainConfig).set(no_checks);
 
             new Runner()
-                    .set(mainConfig)
-                    .set(output)
                     .set(FuzzyClient.fuzzerFactory)
                     .set(client)
+                    .set(output)
                     .set(fuzzerConfigs)
                     .set(checks)
                     .set(analyzer)

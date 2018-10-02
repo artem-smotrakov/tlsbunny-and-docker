@@ -29,7 +29,7 @@ public class OpensslTests {
     }
 
     @Before
-    public void beforeTest() throws IOException, InterruptedException {
+    public void serverReady() throws IOException, InterruptedException {
         Utils.waitServerReady(server);
     }
 

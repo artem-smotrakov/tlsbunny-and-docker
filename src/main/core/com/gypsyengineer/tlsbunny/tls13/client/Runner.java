@@ -3,7 +3,6 @@ package com.gypsyengineer.tlsbunny.tls13.client;
 import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
 import com.gypsyengineer.tlsbunny.tls13.connection.check.Check;
 import com.gypsyengineer.tlsbunny.tls13.utils.FuzzerConfig;
-import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
 import java.util.concurrent.ExecutorService;
@@ -14,7 +13,6 @@ import static com.gypsyengineer.tlsbunny.utils.Utils.info;
 
 public class Runner {
 
-    private Config mainConfig;
     private FuzzerConfig[] fuzzerConfigs;
     private FuzzerFactory fuzzerFactory;
     private Client client;
@@ -22,11 +20,6 @@ public class Runner {
     private Check[] checks;
     private Analyzer analyzer;
     private int index;
-
-    public Runner set(Config mainConfig) {
-        this.mainConfig = mainConfig;
-        return this;
-    }
 
     public Runner set(FuzzerConfig... fuzzerConfigs) {
         this.fuzzerConfigs = fuzzerConfigs;
@@ -65,25 +58,12 @@ public class Runner {
                 threads = fuzzerConfig.threads();
             }
         }
-
         info("we are going to use %d threads", threads);
-
-        String targetFilter = mainConfig.targetFilter();
-        if (!targetFilter.isEmpty()) {
-            info("target filter: %s", targetFilter);
-        }
 
         ExecutorService executor = Executors.newFixedThreadPool(threads);
         try {
             index = 0;
             for (FuzzerConfig fuzzerConfig : fuzzerConfigs) {
-                if (skip(fuzzerConfig)) {
-                    info("skip config with target '%s'",
-                            fuzzerConfig.factory().target());
-                    continue;
-                }
-
-                fuzzerConfig.set(mainConfig);
                 fuzzerConfig.client(client);
 
                 if (analyzer != null) {
@@ -111,15 +91,6 @@ public class Runner {
         if (analyzer != null) {
             analyzer.set(output).run();
         }
-    }
-
-    private boolean skip(FuzzerConfig config) {
-        String targetFilter = mainConfig.targetFilter();
-        if (!targetFilter.isEmpty()) {
-            return !config.factory().target().toString().contains(targetFilter);
-        }
-
-        return false;
     }
 
     private FuzzerConfig[] split(FuzzerConfig config) {
