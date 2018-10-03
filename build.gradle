@@ -157,6 +157,31 @@ task runOpensslServer {
     }
 }
 
+task runOpensslTests(type: Test) {
+    description = 'Runs tests for OpenSSL'
+    group = 'openssl'
+    testClassesDirs = sourceSets.test_impl.output.classesDirs
+    classpath = sourceSets.test_impl.runtimeClasspath
+    testLogging.showStandardStreams = true
+    ignoreFailures = true
+    outputs.upToDateWhen { false }
+
+    include 'com/gypsyengineer/tlsbunny/impl/test/tls13/openssl/**/*Tests*'
+    exclude 'com/gypsyengineer/tlsbunny/impl/test/tls13/openssl/**/*Fuzzing*'
+}
+
+task runOpensslFuzzing(type: Test) {
+    description = 'Runs fuzzing for OpenSSL'
+    group = 'openssl'
+    testClassesDirs = sourceSets.test_impl.output.classesDirs
+    classpath = sourceSets.test_impl.runtimeClasspath
+    testLogging.showStandardStreams = true
+    ignoreFailures = true
+    outputs.upToDateWhen { false }
+
+    include 'com/gypsyengineer/tlsbunny/impl/test/tls13/openssl/**/*Fuzzing*'
+}
+
 // tasks for running tests for picotls
 
 task buildPicotlsDocker(type: Exec) {
