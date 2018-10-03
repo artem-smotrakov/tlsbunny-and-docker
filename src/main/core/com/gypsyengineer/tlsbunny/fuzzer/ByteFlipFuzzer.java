@@ -19,11 +19,13 @@ public class ByteFlipFuzzer extends AbstractFlipFuzzer implements Fuzzer<byte[]>
 
     @Override
     byte[] fuzzImpl(byte[] array) {
+        check(minRatio, maxRatio);
+
         byte[] fuzzed = array.clone();
         double ratio = getRatio();
         int start = getStartIndex();
         int end = getEndIndex(array);
-        int n = (int) Math.ceil((end - start) * ratio);
+        int n = (int) ((end - start) * ratio);
 
         // make sure what we fuzz at least one byte
         if (n == 0) {

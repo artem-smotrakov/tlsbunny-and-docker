@@ -6,8 +6,11 @@ import com.gypsyengineer.tlsbunny.tls13.client.FuzzyHttpsClient;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.io.IOException;
 
 import static com.gypsyengineer.tlsbunny.impl.test.tls13.Utils.checkForASanFindings;
 import static com.gypsyengineer.tlsbunny.tls13.client.FuzzyClient.*;
@@ -22,6 +25,11 @@ public class OpensslHttpsClientFuzzing {
         server = new OpensslServer();
         server.start();
         Utils.waitServerStart(server);
+    }
+
+    @Before
+    public void serverReady() throws IOException, InterruptedException {
+        Utils.waitServerReady(server);
     }
 
     @Test

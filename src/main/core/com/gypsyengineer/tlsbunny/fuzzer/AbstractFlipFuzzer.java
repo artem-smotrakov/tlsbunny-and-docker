@@ -16,8 +16,8 @@ public abstract class AbstractFlipFuzzer
     static final int FROM_THE_BEGINNING = 0;
     static final int NOT_SPECIFIED = -1;
 
-    private int startIndex;
-    private int endIndex;
+    protected int startIndex;
+    protected int endIndex;
 
     protected double minRatio;
     protected double maxRatio;
@@ -37,7 +37,7 @@ public abstract class AbstractFlipFuzzer
         this.maxRatio = maxRatio;
 
         if (endIndex == 0) {
-            throw whatTheHell("end index is None!");
+            throw whatTheHell("end index is zero!");
         }
 
         if (startIndex == endIndex && startIndex > 0) {
@@ -78,6 +78,9 @@ public abstract class AbstractFlipFuzzer
     }
 
     synchronized public AbstractFlipFuzzer endIndex(int index) {
+        if (index > 0 && index < startIndex) {
+            throw whatTheHell("start index is greater than end index!");
+        }
         endIndex = index;
         return this;
     }
@@ -123,6 +126,15 @@ public abstract class AbstractFlipFuzzer
         return output;
     }
 
+    @Override
+    public String toString() {
+        return String.format(
+                "%s (state = %d, min ratio = %.2f, max ratio = %.2f, " +
+                        "start index = %d, end index = %d)",
+                this.getClass().getSimpleName(), state, minRatio, maxRatio,
+                startIndex, endIndex);
+    }
+
     abstract byte[] fuzzImpl(byte[] array);
 
     protected int getStartIndex() {
@@ -153,11 +165,11 @@ public abstract class AbstractFlipFuzzer
         return ratio;
     }
 
-    private static void check(double minRatio, double maxRatio) {
+    protected static void check(double minRatio, double maxRatio) {
         check(minRatio);
         check(maxRatio);
         if (minRatio > maxRatio) {
-            throw whatTheHell("min ration should not be greater than max ratio!");
+            throw whatTheHell("min ratio should not be greater than max ratio!");
         }
     }
 

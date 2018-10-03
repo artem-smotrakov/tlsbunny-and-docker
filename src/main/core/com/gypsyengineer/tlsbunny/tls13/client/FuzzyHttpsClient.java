@@ -10,9 +10,12 @@ import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.Output;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 
+import static com.gypsyengineer.tlsbunny.tls13.client.FuzzyClient.noClientAuthConfigs;
+import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
+
 public class FuzzyHttpsClient implements Client {
 
-    private Config mainConfig;
+    private Config mainConfig = SystemPropertiesConfig.load();
     private FuzzerConfig[] fuzzerConfigs;
     private Output output;
     private Analyzer analyzer;
@@ -20,15 +23,13 @@ public class FuzzyHttpsClient implements Client {
 
     public static void main(String[] args) throws Exception {
         try (Output output = new Output()) {
+            Config config = SystemPropertiesConfig.load();
             new FuzzyHttpsClient()
+                    .set(noClientAuthConfigs(config))
+                    .set(config)
                     .set(output)
                     .connect();
         }
-    }
-
-    public FuzzyHttpsClient() {
-        mainConfig = SystemPropertiesConfig.load();
-        fuzzerConfigs = FuzzyClient.noClientAuthConfigs(mainConfig);
     }
 
     @Override
@@ -55,18 +56,21 @@ public class FuzzyHttpsClient implements Client {
 
     @Override
     public Client connect() throws Exception {
-        try (Client client = new HttpsClient()) {
-            client.set(output).set(mainConfig).set(no_checks);
-
-            new Runner()
-                    .set(FuzzyClient.fuzzerFactory)
-                    .set(client)
-                    .set(output)
-                    .set(fuzzerConfigs)
-                    .set(checks)
-                    .set(analyzer)
-                    .submit();
+        if (fuzzerConfigs == null) {
+            throw whatTheHell("no fuzzer configs! (null)");
         }
+
+        if (fuzzerConfigs.length == 0) {
+            throw whatTheHell("no fuzzer configs! (empty array)");
+        }
+
+        new Runner()
+                .set(FuzzyClient.fuzzerFactory)
+                .set(output)
+                .set(fuzzerConfigs)
+                .set(checks)
+                .set(analyzer)
+                .submit();
 
         return this;
     }

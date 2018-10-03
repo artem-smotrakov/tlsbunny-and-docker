@@ -15,7 +15,6 @@ public class Runner {
 
     private FuzzerConfig[] fuzzerConfigs;
     private FuzzerFactory fuzzerFactory;
-    private Client client;
     private Output output;
     private Check[] checks;
     private Analyzer analyzer;
@@ -28,11 +27,6 @@ public class Runner {
 
     public Runner set(FuzzerFactory fuzzerFactory) {
         this.fuzzerFactory = fuzzerFactory;
-        return this;
-    }
-
-    public Runner set(Client client) {
-        this.client = client;
         return this;
     }
 
@@ -64,8 +58,6 @@ public class Runner {
         try {
             index = 0;
             for (FuzzerConfig fuzzerConfig : fuzzerConfigs) {
-                fuzzerConfig.client(client);
-
                 if (analyzer != null) {
                     fuzzerConfig.analyzer(analyzer);
                 }
