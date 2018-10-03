@@ -37,6 +37,10 @@ public abstract class FuzzyStructFactory<T> implements StructFactory, Fuzzer<T> 
         return this;
     }
 
+    synchronized public Fuzzer<T> fuzzer() {
+        return fuzzer;
+    }
+
     // implement methods from Fuzzer
 
     @Override
