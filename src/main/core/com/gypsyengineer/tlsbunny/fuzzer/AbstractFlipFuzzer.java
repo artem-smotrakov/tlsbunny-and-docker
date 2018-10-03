@@ -16,8 +16,8 @@ public abstract class AbstractFlipFuzzer
     static final int FROM_THE_BEGINNING = 0;
     static final int NOT_SPECIFIED = -1;
 
-    private int startIndex;
-    private int endIndex;
+    protected int startIndex;
+    protected int endIndex;
 
     protected double minRatio;
     protected double maxRatio;
@@ -121,6 +121,15 @@ public abstract class AbstractFlipFuzzer
     @Override
     synchronized public Output output() {
         return output;
+    }
+
+    @Override
+    public String toString() {
+        return String.format(
+                "%s (state = %d, min ratio = %.2f, max ratio = %.2f, " +
+                        "start index = %d, end index = %d)",
+                this.getClass().getSimpleName(), state, minRatio, maxRatio,
+                startIndex, endIndex);
     }
 
     abstract byte[] fuzzImpl(byte[] array);
