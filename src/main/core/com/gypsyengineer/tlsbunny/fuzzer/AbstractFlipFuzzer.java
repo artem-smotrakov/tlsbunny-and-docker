@@ -37,7 +37,7 @@ public abstract class AbstractFlipFuzzer
         this.maxRatio = maxRatio;
 
         if (endIndex == 0) {
-            throw whatTheHell("end index is None!");
+            throw whatTheHell("end index is zero!");
         }
 
         if (startIndex == endIndex && startIndex > 0) {
@@ -78,6 +78,9 @@ public abstract class AbstractFlipFuzzer
     }
 
     synchronized public AbstractFlipFuzzer endIndex(int index) {
+        if (index > 0 && index < startIndex) {
+            throw whatTheHell("start index is greater than end index!");
+        }
         endIndex = index;
         return this;
     }
@@ -162,11 +165,11 @@ public abstract class AbstractFlipFuzzer
         return ratio;
     }
 
-    private static void check(double minRatio, double maxRatio) {
+    protected static void check(double minRatio, double maxRatio) {
         check(minRatio);
         check(maxRatio);
         if (minRatio > maxRatio) {
-            throw whatTheHell("min ration should not be greater than max ratio!");
+            throw whatTheHell("min ratio should not be greater than max ratio!");
         }
     }
 
