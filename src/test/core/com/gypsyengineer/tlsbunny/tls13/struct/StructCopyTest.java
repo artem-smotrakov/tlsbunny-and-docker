@@ -18,6 +18,7 @@ import com.gypsyengineer.tlsbunny.utils.Output;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +33,50 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.rsa_pkcs1_
 import static org.junit.Assert.*;
 
 public class StructCopyTest {
+
+    @Test
+    public void copyTlsPlaintext() throws IOException {
+        copyTest(StructFactory.getDefault().createTLSPlaintext(
+                ContentType.application_data, ProtocolVersion.TLSv13, new byte[16]));
+    }
+
+    @Test
+    public void copyTlsInnerPlaintext() throws IOException {
+        copyTest(StructFactory.getDefault().createTLSInnerPlaintext(
+                ContentType.application_data, new byte[16], new byte[8]));
+    }
+
+    @Test
+    public void copyAlert() throws IOException {
+        StructFactory factory = StructFactory.getDefault();
+        copyTest(factory.createAlert(
+                AlertLevel.fatal, AlertDescription.handshake_failure));
+        copyTest(factory.createAlert(
+                factory.createAlertLevel(200),
+                factory.createAlertDescription(100)));
+    }
+
+    @Test
+    public void copyCertificateStatusTypeImpl() throws IOException {
+        copyTest(StructFactory.getDefault().createCertificateStatusType(42));
+        copyTest(CertificateStatusType.ocsp);
+    }
+
+    @Test
+    public void copyCookie() throws IOException {
+        copyTest(StructFactory.getDefault().createCookie(new byte[32]));
+    }
+
+    @Test
+    public void copyHkdfLabel() throws IOException {
+        copyTest(StructFactory.getDefault().createHkdfLabel(10, new byte[15], new byte[32]));
+    }
+
+    @Test
+    public void copyMaxFragmentLength() throws IOException {
+        copyTest(StructFactory.getDefault().createMaxFragmentLength(42));
+        copyTest(MaxFragmentLength.two_pos_twelve);
+    }
 
     @Test
     public void handshakeAndCopy() throws Exception {
@@ -68,7 +113,7 @@ public class StructCopyTest {
         copyTest(client.engine().context());
     }
 
-    private static void copyTest(Context context) {
+    private static void copyTest(Context context) throws IOException {
         assertNotNull(context);
 
         Struct[] messages = messagesIn(context);
@@ -76,14 +121,23 @@ public class StructCopyTest {
         assertTrue(messages.length > 0);
 
         for (Struct object : messages) {
-            assertNotNull(object);
-
-            Struct clone = object.copy();
-            assertNotNull(clone);
-            assertFalse(clone == object);
-            assertEquals(clone, object);
-            assertEquals(clone.hashCode(), object.hashCode());
+            copyTest(object);
         }
+    }
+
+    private static void copyTest(Struct object) throws IOException {
+        assertNotNull(object);
+
+        Struct clone = object.copy();
+        assertNotNull(clone);
+        assertFalse(clone == object);
+        assertEquals(clone, object);
+        assertEquals(clone.hashCode(), object.hashCode());
+        assertNotNull(clone.toString());
+        assertNotNull(object.toString());
+
+        assertEquals(clone.encodingLength(), object.encodingLength());
+        assertArrayEquals(clone.encoding(), object.encoding());
     }
 
     // TODO: support HelloRetryRequest and EndOfEarlyData

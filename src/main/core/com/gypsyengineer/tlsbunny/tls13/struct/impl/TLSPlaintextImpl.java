@@ -89,11 +89,9 @@ public class TLSPlaintextImpl implements TLSPlaintext {
         if (this == o) {
             return true;
         }
-
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-
         TLSPlaintextImpl that = (TLSPlaintextImpl) o;
         return Objects.equals(type, that.type) &&
                 Objects.equals(legacy_record_version, that.legacy_record_version) &&
@@ -103,7 +101,6 @@ public class TLSPlaintextImpl implements TLSPlaintext {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(type, legacy_record_version, length, fragment);
     }
 }

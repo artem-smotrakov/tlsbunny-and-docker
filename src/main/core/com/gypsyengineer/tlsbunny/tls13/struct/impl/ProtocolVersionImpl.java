@@ -28,7 +28,7 @@ public class ProtocolVersionImpl implements ProtocolVersion {
 
     @Override
     public ProtocolVersionImpl copy() {
-        return new ProtocolVersionImpl(minor, major);
+        return new ProtocolVersionImpl(major, minor);
     }
 
     @Override
