@@ -6,6 +6,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType;
 import com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme;
 import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.io.IOException;
+import java.util.Objects;
 
 public class CertificateVerifyImpl implements CertificateVerify {
 
@@ -28,6 +29,13 @@ public class CertificateVerifyImpl implements CertificateVerify {
     }
 
     @Override
+    public CertificateVerifyImpl copy() {
+        return new CertificateVerifyImpl(
+                (SignatureScheme) algorithm.copy(),
+                (Vector<Byte>) signature.copy());
+    }
+
+    @Override
     public SignatureScheme getAlgorithm() {
         return algorithm;
     }
@@ -42,4 +50,21 @@ public class CertificateVerifyImpl implements CertificateVerify {
         return HandshakeTypeImpl.certificate_verify;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        CertificateVerifyImpl that = (CertificateVerifyImpl) o;
+        return Objects.equals(algorithm, that.algorithm) &&
+                Objects.equals(signature, that.signature);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(algorithm, signature);
+    }
 }

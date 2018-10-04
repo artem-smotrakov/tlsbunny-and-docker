@@ -28,6 +28,11 @@ public class CompressionMethodImpl implements CompressionMethod {
         return new byte[] { (byte) code };
     }
 
+    @Override
+    public CompressionMethodImpl copy() {
+        return new CompressionMethodImpl(code);
+    }
+
     private static void check(int code) {
         if (code < 0 || code > 255) {
             throw new IllegalArgumentException();

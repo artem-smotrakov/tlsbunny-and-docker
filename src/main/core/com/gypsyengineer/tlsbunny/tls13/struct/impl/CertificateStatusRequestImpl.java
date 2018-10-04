@@ -38,4 +38,11 @@ public class CertificateStatusRequestImpl implements CertificateStatusRequest {
     public byte[] encoding() throws IOException {
         return Utils.encoding(status_type, request);
     }
+
+    @Override
+    public CertificateStatusRequestImpl copy() {
+        return new CertificateStatusRequestImpl(
+                (CertificateStatusType) status_type.copy(),
+                (OCSPStatusRequest) request.copy());
+    }
 }

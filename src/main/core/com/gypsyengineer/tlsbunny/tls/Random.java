@@ -46,6 +46,11 @@ public class Random implements Struct {
         return ByteBuffer.allocate(LENGTH).put(bytes).array();
     }
 
+    @Override
+    public Random copy() {
+        return new Random(bytes.clone());
+    }
+
     public void setLastBytes(byte[] lastBytes) {
         if (lastBytes == null) {
             throw whatTheHell("bytes is null!");

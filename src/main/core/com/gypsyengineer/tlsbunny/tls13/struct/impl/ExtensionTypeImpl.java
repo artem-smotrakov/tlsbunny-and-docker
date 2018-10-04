@@ -1,6 +1,7 @@
 package com.gypsyengineer.tlsbunny.tls13.struct.impl;
 
 import java.io.IOException;
+
 import com.gypsyengineer.tlsbunny.tls13.struct.ExtensionType;
 import java.nio.ByteBuffer;
 
@@ -26,6 +27,11 @@ public class ExtensionTypeImpl implements ExtensionType {
     @Override
     public byte[] encoding() throws IOException {
         return ByteBuffer.allocate(ENCODING_LENGTH).putShort((short) code).array();
+    }
+
+    @Override
+    public ExtensionTypeImpl copy() {
+        return new ExtensionTypeImpl(code);
     }
 
     @Override

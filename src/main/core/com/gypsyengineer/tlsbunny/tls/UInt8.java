@@ -33,6 +33,11 @@ public class UInt8 implements Struct {
         return new byte[] { (byte) value };
     }
 
+    @Override
+    public UInt8 copy() {
+        return new UInt8(value);
+    }
+
     public static UInt8 parse(ByteBuffer data) {
         return new UInt8(data.get() & 0xFF);
     }

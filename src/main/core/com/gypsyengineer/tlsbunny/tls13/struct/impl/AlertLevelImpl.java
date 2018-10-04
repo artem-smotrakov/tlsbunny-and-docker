@@ -22,6 +22,11 @@ public class AlertLevelImpl implements AlertLevel {
     }
 
     @Override
+    public AlertLevelImpl copy() {
+        return new AlertLevelImpl(code);
+    }
+
+    @Override
     public byte getCode() {
         return (byte) code;
     }

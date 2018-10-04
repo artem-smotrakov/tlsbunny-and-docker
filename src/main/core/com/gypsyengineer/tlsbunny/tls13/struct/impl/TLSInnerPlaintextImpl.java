@@ -57,5 +57,11 @@ public class TLSInnerPlaintextImpl implements TLSInnerPlaintext {
     public byte[] encoding() throws IOException {
         return Utils.encoding(content, type, zeros);
     }
-    
+
+    @Override
+    public TLSInnerPlaintextImpl copy() {
+        return new TLSInnerPlaintextImpl(
+                content.copy(), (ContentType) type.copy(), zeros.copy());
+    }
+
 }

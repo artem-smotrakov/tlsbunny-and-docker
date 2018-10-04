@@ -32,6 +32,11 @@ public class ChangeCipherSpecImpl implements ChangeCipherSpec {
     }
 
     @Override
+    public ChangeCipherSpecImpl copy() {
+        return new ChangeCipherSpecImpl(value);
+    }
+
+    @Override
     public int hashCode() {
         int hash = 7;
         hash = 59 * hash + this.value;

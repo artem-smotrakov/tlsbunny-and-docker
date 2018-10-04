@@ -22,6 +22,11 @@ public class UInt32 implements Struct {
         return ByteBuffer.allocate(ENCODING_LENGTH).put(value).array();
     }
 
+    @Override
+    public UInt32 copy() {
+        return new UInt32(value);
+    }
+
     public static UInt32 parse(ByteBuffer data) {
         byte[] value = new byte[ENCODING_LENGTH];
         data.get(value);

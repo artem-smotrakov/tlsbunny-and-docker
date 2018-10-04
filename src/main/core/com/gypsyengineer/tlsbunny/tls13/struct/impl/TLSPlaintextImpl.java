@@ -36,6 +36,15 @@ public class TLSPlaintextImpl implements TLSPlaintext {
     }
 
     @Override
+    public TLSPlaintextImpl copy() {
+        return new TLSPlaintextImpl(
+                (ContentType) type.copy(),
+                (ProtocolVersion) legacy_record_version.copy(),
+                length.copy(),
+                fragment.copy());
+    }
+
+    @Override
     public ContentType getType() {
         return type;
     }

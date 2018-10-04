@@ -54,6 +54,11 @@ public class ContentTypeImpl implements ContentType {
     }
 
     @Override
+    public ContentTypeImpl copy() {
+        return new ContentTypeImpl(code);
+    }
+
+    @Override
     public int hashCode() {
         int hash = 7;
         hash = 59 * hash + this.code;

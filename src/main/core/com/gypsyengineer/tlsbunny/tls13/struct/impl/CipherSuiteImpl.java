@@ -3,6 +3,8 @@ package com.gypsyengineer.tlsbunny.tls13.struct.impl;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AEAD;
 import com.gypsyengineer.tlsbunny.tls13.struct.CipherSuite;
 
+import java.util.Objects;
+
 public class CipherSuiteImpl implements CipherSuite {
 
     private final int first;
@@ -135,31 +137,28 @@ public class CipherSuiteImpl implements CipherSuite {
     }
 
     @Override
-    public int hashCode() {
-        int hash = 5;
-        hash = 79 * hash + this.first;
-        hash = 79 * hash + this.second;
-        return hash;
+    public CipherSuiteImpl copy() {
+        return new CipherSuiteImpl(first, second);
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if (obj == null) {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final CipherSuiteImpl other = (CipherSuiteImpl) obj;
-        if (this.first != other.first) {
-            return false;
-        }
-        return this.second == other.second;
+        CipherSuiteImpl that = (CipherSuiteImpl) o;
+        return first == that.first &&
+                second == that.second;
     }
-    
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(first, second);
+    }
+
     private static void check(int value) {
         if (value < 0 || value > 255) {
             throw new IllegalArgumentException();

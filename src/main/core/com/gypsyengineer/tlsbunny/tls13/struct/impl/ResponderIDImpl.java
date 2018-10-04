@@ -27,4 +27,9 @@ public class ResponderIDImpl implements ResponderID {
     public byte[] encoding() throws IOException {
         return content.encoding();
     }
+
+    @Override
+    public ResponderIDImpl copy() {
+        return new ResponderIDImpl((Vector<Byte>) content.copy());
+    }
 }

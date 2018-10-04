@@ -1,5 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls13.struct.impl;
 
+import com.gypsyengineer.tlsbunny.tls.Struct;
 import com.gypsyengineer.tlsbunny.tls13.struct.Alert;
 import com.gypsyengineer.tlsbunny.tls13.struct.AlertDescription;
 import com.gypsyengineer.tlsbunny.tls13.struct.AlertLevel;
@@ -13,11 +14,7 @@ public class AlertImpl implements Alert {
     private final AlertLevel level;
     private final AlertDescription description;
 
-    AlertImpl() {
-        this(AlertLevel.fatal, AlertDescription.internal_error);
-    }
-
-    public AlertImpl(AlertLevel level, AlertDescription description) {
+    AlertImpl(AlertLevel level, AlertDescription description) {
         this.level = level;
         this.description = description;
     }
@@ -30,6 +27,13 @@ public class AlertImpl implements Alert {
     @Override
     public byte[] encoding() throws IOException {
         return new byte[] { level.getCode(), description.getCode() };
+    }
+
+    @Override
+    public Struct copy() {
+        return new AlertImpl(
+                (AlertLevel) level.copy(),
+                (AlertDescription) description.copy());
     }
 
     @Override

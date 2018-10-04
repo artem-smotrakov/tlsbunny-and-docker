@@ -1,6 +1,7 @@
 package com.gypsyengineer.tlsbunny.tls13.struct.impl;
 
 import java.nio.ByteBuffer;
+
 import com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType;
 
 public class HandshakeTypeImpl implements HandshakeType {
@@ -19,6 +20,11 @@ public class HandshakeTypeImpl implements HandshakeType {
     @Override
     public byte[] encoding() {
         return ByteBuffer.allocate(ENCODING_LENGTH).put((byte) value).array();
+    }
+
+    @Override
+    public HandshakeTypeImpl copy() {
+        return new HandshakeTypeImpl(value);
     }
 
     @Override

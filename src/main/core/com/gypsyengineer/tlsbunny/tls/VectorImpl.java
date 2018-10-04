@@ -128,15 +128,32 @@ public class VectorImpl<T> implements Vector<T> {
     }
 
     @Override
+    public Vector<T> copy() {
+        List objects = new ArrayList<>();
+        for (Object object : this.objects) {
+            Object clone;
+            if (object instanceof Struct) {
+                clone = ((Struct) object).copy();
+            } else if (object instanceof Byte) {
+                // Byte is immutable
+                clone = object;
+            } else {
+                throw new IllegalArgumentException();
+            }
+            objects.add(clone);
+        }
+
+        return new VectorImpl<T>(lengthBytes, objects);
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
         }
-
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-
         VectorImpl<?> vector = (VectorImpl<?>) o;
         return lengthBytes == vector.lengthBytes &&
                 maxEncodingLength == vector.maxEncodingLength &&

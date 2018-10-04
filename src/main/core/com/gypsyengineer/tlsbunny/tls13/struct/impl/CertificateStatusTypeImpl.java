@@ -29,6 +29,11 @@ public class CertificateStatusTypeImpl implements CertificateStatusType {
     }
 
     @Override
+    public CertificateStatusTypeImpl copy() {
+        return new CertificateStatusTypeImpl(code);
+    }
+
+    @Override
     public int hashCode() {
         int hash = 7;
         hash = 59 * hash + this.code;

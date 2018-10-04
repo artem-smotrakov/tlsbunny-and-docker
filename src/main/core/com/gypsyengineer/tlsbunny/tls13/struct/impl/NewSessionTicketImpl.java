@@ -7,6 +7,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.NewSessionTicket;
 import com.gypsyengineer.tlsbunny.utils.Utils;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class NewSessionTicketImpl implements NewSessionTicket {
 
@@ -16,7 +17,7 @@ public class NewSessionTicketImpl implements NewSessionTicket {
     private final Vector<Byte> ticket;
     private final Vector<Extension> extensions;
 
-    public NewSessionTicketImpl(UInt32 ticket_lifetime,
+    NewSessionTicketImpl(UInt32 ticket_lifetime,
                                 UInt32 ticket_age_add,
                                 Vector<Byte> ticket_nonce,
                                 Vector<Byte> ticket,
@@ -38,6 +39,38 @@ public class NewSessionTicketImpl implements NewSessionTicket {
     @Override
     public byte[] encoding() throws IOException {
         return Utils.encoding(
+                ticket_lifetime, ticket_age_add, ticket_nonce, ticket, extensions);
+    }
+
+    @Override
+    public NewSessionTicketImpl copy() {
+        return new NewSessionTicketImpl(
+                ticket_lifetime.copy(),
+                ticket_age_add.copy(),
+                (Vector<Byte>) ticket_nonce.copy(),
+                (Vector<Byte>) ticket.copy(),
+                (Vector<Extension>) extensions.copy());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        NewSessionTicketImpl that = (NewSessionTicketImpl) o;
+        return Objects.equals(ticket_lifetime, that.ticket_lifetime) &&
+                Objects.equals(ticket_age_add, that.ticket_age_add) &&
+                Objects.equals(ticket_nonce, that.ticket_nonce) &&
+                Objects.equals(ticket, that.ticket) &&
+                Objects.equals(extensions, that.extensions);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(
                 ticket_lifetime, ticket_age_add, ticket_nonce, ticket, extensions);
     }
 }

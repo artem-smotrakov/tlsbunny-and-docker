@@ -29,6 +29,11 @@ public class SignatureSchemeImpl implements SignatureScheme {
     }
 
     @Override
+    public SignatureSchemeImpl copy() {
+        return new SignatureSchemeImpl(code);
+    }
+
+    @Override
     public int hashCode() {
         int hash = 5;
         hash = 11 * hash + this.code;

@@ -27,4 +27,9 @@ public class CookieImpl implements Cookie {
     public byte[] encoding() throws IOException {
         return cookie.encoding();
     }
+
+    @Override
+    public CookieImpl copy() {
+        return new CookieImpl((Vector<Byte>) cookie.copy());
+    }
 }

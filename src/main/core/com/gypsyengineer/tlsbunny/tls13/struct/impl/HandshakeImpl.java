@@ -1,11 +1,13 @@
 package com.gypsyengineer.tlsbunny.tls13.struct.impl;
 
 import com.gypsyengineer.tlsbunny.tls.Bytes;
+import com.gypsyengineer.tlsbunny.tls.Struct;
 import com.gypsyengineer.tlsbunny.tls.UInt24;
 import com.gypsyengineer.tlsbunny.utils.Utils;
 import com.gypsyengineer.tlsbunny.tls13.struct.Handshake;
 import com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType;
 import java.io.IOException;
+import java.util.Objects;
 
 public class HandshakeImpl implements Handshake {
 
@@ -19,10 +21,6 @@ public class HandshakeImpl implements Handshake {
         this.body = body;
     }
 
-    public HandshakeImpl(HandshakeTypeImpl msg_type, int length, byte[] body) {
-        this(msg_type, new UInt24(length), new Bytes(body));
-    }
-
     @Override
     public int encodingLength() {
         return Utils.getEncodingLength(msg_type, length, body);
@@ -31,6 +29,14 @@ public class HandshakeImpl implements Handshake {
     @Override
     public byte[] encoding() throws IOException {
         return Utils.encoding(msg_type, length, body);
+    }
+
+    @Override
+    public Struct copy() {
+        return new HandshakeImpl(
+                (HandshakeType) msg_type.copy(),
+                length.copy(),
+                body.copy());
     }
 
     @Override
@@ -93,4 +99,22 @@ public class HandshakeImpl implements Handshake {
         return HandshakeTypeImpl.new_session_ticket.equals(msg_type);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        HandshakeImpl handshake = (HandshakeImpl) o;
+        return Objects.equals(msg_type, handshake.msg_type) &&
+                Objects.equals(length, handshake.length) &&
+                Objects.equals(body, handshake.body);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(msg_type, length, body);
+    }
 }

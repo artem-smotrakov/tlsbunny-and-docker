@@ -1,10 +1,12 @@
 package com.gypsyengineer.tlsbunny.tls13.struct.impl;
 
+import com.gypsyengineer.tlsbunny.tls.Struct;
 import com.gypsyengineer.tlsbunny.tls.Vector;
 import com.gypsyengineer.tlsbunny.tls13.struct.EncryptedExtensions;
 import com.gypsyengineer.tlsbunny.tls13.struct.Extension;
 import com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType;
 import java.io.IOException;
+import java.util.Objects;
 
 public class EncryptedExtensionsImpl implements EncryptedExtensions {
 
@@ -25,6 +27,11 @@ public class EncryptedExtensionsImpl implements EncryptedExtensions {
     }
 
     @Override
+    public Struct copy() {
+        return new EncryptedExtensionsImpl((Vector<Extension>) extensions.copy());
+    }
+
+    @Override
     public HandshakeType type() {
         return HandshakeTypeImpl.encrypted_extensions;
     }
@@ -34,4 +41,20 @@ public class EncryptedExtensionsImpl implements EncryptedExtensions {
         return extensions;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        EncryptedExtensionsImpl that = (EncryptedExtensionsImpl) o;
+        return Objects.equals(extensions, that.extensions);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(extensions);
+    }
 }

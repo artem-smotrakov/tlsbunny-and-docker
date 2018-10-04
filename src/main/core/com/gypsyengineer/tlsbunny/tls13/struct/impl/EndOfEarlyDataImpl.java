@@ -6,18 +6,19 @@ import java.io.IOException;
 
 public class EndOfEarlyDataImpl implements EndOfEarlyData {
 
-    EndOfEarlyDataImpl() {
-    
-    }
-
     @Override
     public int encodingLength() {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("no end of early data for you!");
     }
 
     @Override
     public byte[] encoding() throws IOException {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("no end of early data for you!");
+    }
+
+    @Override
+    public EndOfEarlyDataImpl copy() {
+        throw new UnsupportedOperationException("no end of early data for you!");
     }
 
     @Override

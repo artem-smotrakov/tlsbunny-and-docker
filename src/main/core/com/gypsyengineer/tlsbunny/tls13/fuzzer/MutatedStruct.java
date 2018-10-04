@@ -1,9 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls13.fuzzer;
 
-import com.gypsyengineer.tlsbunny.tls.Random;
-import com.gypsyengineer.tlsbunny.tls.UInt16;
-import com.gypsyengineer.tlsbunny.tls.UInt24;
-import com.gypsyengineer.tlsbunny.tls.Vector;
+import com.gypsyengineer.tlsbunny.tls.*;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
 
 import java.io.IOException;
@@ -43,6 +40,11 @@ public class MutatedStruct implements TLSPlaintext, Handshake, ChangeCipherSpec,
     @Override
     public byte[] encoding() throws IOException {
         return mutatedEncoding;
+    }
+
+    @Override
+    public Struct copy() {
+        throw new UnsupportedOperationException("I don't know how to do that!");
     }
 
     // TLSPlaintext

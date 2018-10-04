@@ -35,6 +35,11 @@ public class UInt16 implements Struct {
         return ByteBuffer.allocate(ENCODING_LENGTH).putShort((short) value).array();
     }
 
+    @Override
+    public UInt16 copy() {
+        return new UInt16(value);
+    }
+
     public static UInt16 parse(ByteBuffer data) {
         return new UInt16(data.getShort() & 0xFFFF);
     }
