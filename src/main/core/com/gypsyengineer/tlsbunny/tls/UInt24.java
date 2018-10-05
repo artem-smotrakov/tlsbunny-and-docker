@@ -2,6 +2,7 @@ package com.gypsyengineer.tlsbunny.tls;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.Objects;
 
 public class UInt24 implements Struct {
 
@@ -35,6 +36,28 @@ public class UInt24 implements Struct {
     public byte[] encoding() {
         byte[] array = ByteBuffer.allocate(4).putInt(value).array();
         return Arrays.copyOfRange(array, 1, array.length);
+    }
+
+    @Override
+    public UInt24 copy() {
+        return new UInt24(value);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        UInt24 uInt24 = (UInt24) o;
+        return value == uInt24.value;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value);
     }
 
     public static UInt24 parse(byte[] data) {

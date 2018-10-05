@@ -29,6 +29,11 @@ public class MaxFragmentLengthImpl implements MaxFragmentLength {
     }
 
     @Override
+    public MaxFragmentLengthImpl copy() {
+        return new MaxFragmentLengthImpl(code);
+    }
+
+    @Override
     public int hashCode() {
         int hash = 7;
         hash = 59 * hash + this.code;

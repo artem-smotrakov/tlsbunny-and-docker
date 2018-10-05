@@ -1,10 +1,12 @@
 package com.gypsyengineer.tlsbunny.tls13.struct.impl;
 
+import com.gypsyengineer.tlsbunny.tls.Struct;
 import com.gypsyengineer.tlsbunny.tls.Vector;
 import com.gypsyengineer.tlsbunny.tls.UInt16;
 import com.gypsyengineer.tlsbunny.tls13.struct.HkdfLabel;
 import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.io.IOException;
+import java.util.Objects;
 
 public class HkdfLabelImpl implements HkdfLabel {
 
@@ -43,4 +45,30 @@ public class HkdfLabelImpl implements HkdfLabel {
         return Utils.encoding(length, label, hash_value);
     }
 
+    @Override
+    public Struct copy() {
+        return new HkdfLabelImpl(
+                length.copy(),
+                (Vector<Byte>) label.copy(),
+                (Vector<Byte>) hash_value.copy());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        HkdfLabelImpl hkdfLabel = (HkdfLabelImpl) o;
+        return Objects.equals(length, hkdfLabel.length) &&
+                Objects.equals(label, hkdfLabel.label) &&
+                Objects.equals(hash_value, hkdfLabel.hash_value);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(length, label, hash_value);
+    }
 }

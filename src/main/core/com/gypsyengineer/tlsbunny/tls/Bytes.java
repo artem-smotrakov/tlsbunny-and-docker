@@ -22,7 +22,12 @@ public class Bytes implements Struct {
     public byte[] encoding() {
         return bytes;
     }
-    
+
+    @Override
+    public Bytes copy() {
+        return new Bytes(bytes.clone());
+    }
+
     public static Bytes parse(ByteBuffer buffer, int length) {
         byte[] body = new byte[length];
         buffer.get(body);

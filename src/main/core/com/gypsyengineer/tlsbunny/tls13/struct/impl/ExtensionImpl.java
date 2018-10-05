@@ -38,6 +38,13 @@ public class ExtensionImpl implements Extension {
     }
 
     @Override
+    public ExtensionImpl copy() {
+        return new ExtensionImpl(
+                (ExtensionType) extension_type.copy(),
+                (Vector<Byte>) extension_data.copy());
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;

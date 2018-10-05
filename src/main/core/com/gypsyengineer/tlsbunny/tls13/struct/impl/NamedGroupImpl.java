@@ -2,6 +2,8 @@ package com.gypsyengineer.tlsbunny.tls13.struct.impl;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Objects;
+
 import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
 
 public class NamedGroupImpl implements NamedGroup {
@@ -23,28 +25,25 @@ public class NamedGroupImpl implements NamedGroup {
     }
 
     @Override
-    public int hashCode() {
-        int hash = 3;
-        hash = 31 * hash + this.code;
-        return hash;
+    public NamedGroupImpl copy() {
+        return new NamedGroupImpl(code);
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        
-        if (obj == null) {
+        if (o == null || o instanceof NamedGroupImpl == false) {
             return false;
         }
-        
-        if (obj instanceof NamedGroupImpl == false) {
-            return false;
-        }
-        
-        NamedGroupImpl other = (NamedGroupImpl) obj;
-        return this.code == other.code;
+        NamedGroupImpl that = (NamedGroupImpl) o;
+        return code == that.code;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(code);
     }
 
     @Override
@@ -68,7 +67,8 @@ public class NamedGroupImpl implements NamedGroup {
 
         @Override
         public String toString() {
-            return String.format("named groups, ecdhe { code: %d, curve: %s }", code, curve);
+            return String.format("named groups, ecdhe { code: %d, curve: %s }",
+                    code, curve);
         }
 
     }

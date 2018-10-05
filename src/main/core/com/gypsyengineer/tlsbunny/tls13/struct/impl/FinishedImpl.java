@@ -1,8 +1,11 @@
 package com.gypsyengineer.tlsbunny.tls13.struct.impl;
 
 import com.gypsyengineer.tlsbunny.tls.Bytes;
+import com.gypsyengineer.tlsbunny.tls.Struct;
 import com.gypsyengineer.tlsbunny.tls13.struct.Finished;
 import com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType;
+
+import java.util.Objects;
 
 public class FinishedImpl implements Finished {
 
@@ -28,8 +31,29 @@ public class FinishedImpl implements Finished {
     }
 
     @Override
+    public Struct copy() {
+        return new FinishedImpl(verify_data.copy());
+    }
+
+    @Override
     public HandshakeType type() {
         return HandshakeType.finished;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        FinishedImpl finished = (FinishedImpl) o;
+        return Objects.equals(verify_data, finished.verify_data);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(verify_data);
+    }
 }

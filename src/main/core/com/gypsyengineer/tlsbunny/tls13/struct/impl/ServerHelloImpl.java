@@ -11,15 +11,16 @@ import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
 import com.gypsyengineer.tlsbunny.tls13.struct.ServerHello;
 import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.io.IOException;
+import java.util.Objects;
 
 public class ServerHelloImpl implements ServerHello {
 
-    private final ProtocolVersion version;
-    private final Random random;
-    private final Vector<Byte> legacy_session_id_echo;
-    private final CipherSuite cipher_suite;
-    private final CompressionMethod legacy_compression_method;
-    private final Vector<Extension> extensions;
+    protected final ProtocolVersion version;
+    protected final Random random;
+    protected final Vector<Byte> legacy_session_id_echo;
+    protected final CipherSuite cipher_suite;
+    protected final CompressionMethod legacy_compression_method;
+    protected final Vector<Extension> extensions;
 
     ServerHelloImpl(ProtocolVersion version, Random random,
             Vector<Byte> legacy_session_id_echo,
@@ -103,4 +104,37 @@ public class ServerHelloImpl implements ServerHello {
         return HandshakeType.server_hello;
     }
 
+    @Override
+    public ServerHelloImpl copy() {
+        return new ServerHelloImpl(
+                (ProtocolVersion) version.copy(),
+                random.copy(),
+                (Vector<Byte>) legacy_session_id_echo.copy(),
+                (CipherSuite) cipher_suite.copy(),
+                (CompressionMethod) legacy_compression_method.copy(),
+                (Vector<Extension>) extensions.copy());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ServerHelloImpl that = (ServerHelloImpl) o;
+        return Objects.equals(version, that.version) &&
+                Objects.equals(random, that.random) &&
+                Objects.equals(legacy_session_id_echo, that.legacy_session_id_echo) &&
+                Objects.equals(cipher_suite, that.cipher_suite) &&
+                Objects.equals(legacy_compression_method, that.legacy_compression_method) &&
+                Objects.equals(extensions, that.extensions);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(version, random, legacy_session_id_echo,
+                cipher_suite, legacy_compression_method, extensions);
+    }
 }

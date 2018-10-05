@@ -1,5 +1,6 @@
 package com.gypsyengineer.tlsbunny.fuzzer;
 
+import com.gypsyengineer.tlsbunny.tls.Struct;
 import com.gypsyengineer.tlsbunny.tls.Vector;
 import com.gypsyengineer.tlsbunny.utils.Converter;
 
@@ -88,6 +89,11 @@ public class FuzzedVector<T> implements Vector<T> {
                 .put(Converter.int2bytes(length, lengthBytes))
                 .put(content)
                 .array();
+    }
+
+    @Override
+    public Struct copy() {
+        throw new UnsupportedOperationException("what the hell? I can't do that!");
     }
 
     @Override

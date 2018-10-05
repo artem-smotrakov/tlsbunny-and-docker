@@ -5,6 +5,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.KeyShare;
 import com.gypsyengineer.tlsbunny.tls13.struct.KeyShareEntry;
 import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
 import java.io.IOException;
+import java.util.Objects;
 
 public abstract class KeyShareImpl implements KeyShare {
     
@@ -31,8 +32,30 @@ public abstract class KeyShareImpl implements KeyShare {
         }
 
         @Override
+        public ClientHelloImpl copy() {
+            return new ClientHelloImpl((Vector<KeyShareEntry>) client_shares.copy());
+        }
+
+        @Override
         public Vector<KeyShareEntry> getClientShares() {
             return client_shares;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+            ClientHelloImpl that = (ClientHelloImpl) o;
+            return Objects.equals(client_shares, that.client_shares);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(client_shares);
         }
     }
     
@@ -59,6 +82,27 @@ public abstract class KeyShareImpl implements KeyShare {
             return server_share.encoding();
         }
 
+        @Override
+        public ServerHelloImpl copy() {
+            return new ServerHelloImpl((KeyShareEntry) server_share.copy());
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+            ServerHelloImpl that = (ServerHelloImpl) o;
+            return Objects.equals(server_share, that.server_share);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(server_share);
+        }
     }
     
     public static class HelloRetryRequestImpl extends KeyShareImpl 
@@ -85,5 +129,26 @@ public abstract class KeyShareImpl implements KeyShare {
             return selected_group.encoding();
         }
 
+        @Override
+        public HelloRetryRequestImpl copy() {
+            return new HelloRetryRequestImpl((NamedGroup) selected_group.copy());
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+            HelloRetryRequestImpl that = (HelloRetryRequestImpl) o;
+            return Objects.equals(selected_group, that.selected_group);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(selected_group);
+        }
     }
 }

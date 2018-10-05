@@ -61,6 +61,18 @@ public class ClientHelloImpl implements ClientHello {
     }
 
     @Override
+    public ClientHelloImpl copy() {
+        return new ClientHelloImpl(
+                (ProtocolVersion) legacy_version.copy(),
+                (Random) random.copy(),
+                (Vector<Byte>) legacy_session_id.copy(),
+                (Vector<CipherSuite>) cipher_suites.copy(),
+                (Vector<CompressionMethod>) legacy_compression_methods.copy(),
+                (Vector<Extension>) extensions.copy()
+        );
+    }
+
+    @Override
     public Vector<Byte> getLegacySessionId() {
         return legacy_session_id;
     }
@@ -111,11 +123,9 @@ public class ClientHelloImpl implements ClientHello {
         if (this == o) {
             return true;
         }
-
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-
         ClientHelloImpl that = (ClientHelloImpl) o;
         return Objects.equals(legacy_version, that.legacy_version) &&
                 Objects.equals(random, that.random) &&
@@ -127,12 +137,7 @@ public class ClientHelloImpl implements ClientHello {
 
     @Override
     public int hashCode() {
-        return Objects.hash(
-                legacy_version,
-                random,
-                legacy_session_id,
-                cipher_suites,
-                legacy_compression_methods,
-                extensions);
+        return Objects.hash(legacy_version, random, legacy_session_id,
+                cipher_suites, legacy_compression_methods, extensions);
     }
 }

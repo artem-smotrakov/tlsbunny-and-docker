@@ -2,6 +2,7 @@ package com.gypsyengineer.tlsbunny.tls13.struct.impl;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+
 import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
 
 public class ProtocolVersionImpl implements ProtocolVersion {
@@ -23,6 +24,11 @@ public class ProtocolVersionImpl implements ProtocolVersion {
     @Override
     public byte[] encoding() throws IOException {
         return ByteBuffer.allocate(2).put((byte) major).put((byte) minor).array();
+    }
+
+    @Override
+    public ProtocolVersionImpl copy() {
+        return new ProtocolVersionImpl(major, minor);
     }
 
     @Override

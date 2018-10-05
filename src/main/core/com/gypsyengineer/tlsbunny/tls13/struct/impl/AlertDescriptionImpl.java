@@ -22,6 +22,11 @@ public class AlertDescriptionImpl implements AlertDescription {
     }
 
     @Override
+    public AlertDescriptionImpl copy() {
+        return new AlertDescriptionImpl(code);
+    }
+
+    @Override
     public byte getCode() {
         return (byte) code;
     }
