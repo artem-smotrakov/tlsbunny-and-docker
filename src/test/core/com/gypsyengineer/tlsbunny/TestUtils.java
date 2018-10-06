@@ -14,6 +14,15 @@ public class TestUtils {
         void run() throws Exception;
     }
 
+    public static void expectIllegalState(TestAction test) throws Exception {
+        try {
+            test.run();
+            fail("expected an exception");
+        } catch (IllegalStateException e) {
+            // good
+        }
+    }
+
     public static void expectWhatTheHell(TestAction test) throws Exception {
         try {
             test.run();

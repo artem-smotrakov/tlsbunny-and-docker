@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
+
 public class VectorImpl<T> implements Vector<T> {
 
     private final int lengthBytes;
@@ -36,7 +38,7 @@ public class VectorImpl<T> implements Vector<T> {
 
     @Override
     public T get(int index) {
-        return objects.get(index);
+        return objects.get(checkedRegular(index));
     }
 
     @Override
@@ -51,7 +53,7 @@ public class VectorImpl<T> implements Vector<T> {
 
     @Override
     public void set(int index, T object) {
-        objects.set(index, object);
+        objects.set(checkedRegular(index), object);
     }
 
     @Override
@@ -163,5 +165,66 @@ public class VectorImpl<T> implements Vector<T> {
     @Override
     public int hashCode() {
         return Objects.hash(lengthBytes, objects, maxEncodingLength);
+    }
+
+    @Override
+    public boolean composite() {
+        return onlyStructs();
+    }
+
+    @Override
+    public int total() {
+        if (!composite()) {
+            return 0;
+        }
+
+        return objects.size();
+    }
+
+    @Override
+    public Struct element(int index) {
+        if (!composite()) {
+            throw whatTheHell("the vector is not composite!");
+        }
+        return (Struct) objects.get(checkedComposite(index));
+    }
+
+    @Override
+    public void element(int index, Struct element) {
+        if (!composite()) {
+            throw whatTheHell("the vector is not composite!");
+        }
+        objects.set(checkedComposite(index), (T) element);
+    }
+
+    /**
+     * Checks if all objects in the vector are instances of Struct.
+     *
+     * @return true if all objects are instances of Struct, false otherwise
+     */
+    private boolean onlyStructs() {
+        for (Object object : objects) {
+            if (object instanceof Struct == false) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private int checkedComposite(int index) {
+        if (index >= 0 && index < total()) {
+            return index;
+        }
+
+        throw whatTheHell("invalid index: %d", index);
+    }
+
+    private int checkedRegular(int index) {
+        if (index >= 0 && index < objects.size()) {
+            return index;
+        }
+
+        throw whatTheHell("invalid index: %d", index);
     }
 }
