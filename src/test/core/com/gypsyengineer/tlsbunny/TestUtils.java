@@ -53,4 +53,9 @@ public class TestUtils {
                         ExtensionType.supported_versions,
                         new byte[64])));
     }
+
+    public static Extension createExtension() {
+        return StructFactory.getDefault().createExtension(
+                ExtensionType.supported_versions, new byte[42]);
+    }
 }
