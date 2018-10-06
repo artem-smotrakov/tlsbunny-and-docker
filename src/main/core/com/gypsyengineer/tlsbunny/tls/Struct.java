@@ -2,8 +2,6 @@ package com.gypsyengineer.tlsbunny.tls;
 
 import java.io.IOException;
 
-import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
-
 /**
  * TLS structure.
  */

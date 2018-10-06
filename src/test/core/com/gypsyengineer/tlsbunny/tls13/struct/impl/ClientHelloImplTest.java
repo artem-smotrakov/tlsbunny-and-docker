@@ -1,10 +1,7 @@
 package com.gypsyengineer.tlsbunny.tls13.struct.impl;
 
-import com.gypsyengineer.tlsbunny.tls.Random;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
 import org.junit.Test;
-
-import java.util.List;
 
 import static com.gypsyengineer.tlsbunny.TestUtils.createClientHello;
 import static com.gypsyengineer.tlsbunny.TestUtils.expectWhatTheHell;
