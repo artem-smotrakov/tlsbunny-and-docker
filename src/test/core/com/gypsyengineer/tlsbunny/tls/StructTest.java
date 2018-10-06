@@ -6,8 +6,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.impl.ProtocolVersionImpl;
 import com.gypsyengineer.tlsbunny.utils.WhatTheHell;
 import org.junit.Test;
 
-import java.io.IOException;
-
+import static com.gypsyengineer.tlsbunny.TestUtils.expectUnsupported;
 import static org.junit.Assert.*;
 
 public class StructTest {
@@ -35,25 +34,14 @@ public class StructTest {
     }
 
     @Test
-    public void defaultIterationMethods() {
+    public void defaultIterationMethods() throws Exception {
         Struct struct = new TestStruct();
 
         assertFalse(struct.composite());
         assertEquals(struct.total(), 0);
 
-        try {
-            struct.element(0);
-            fail("expected an exception");
-        } catch (UnsupportedOperationException e) {
-            // good
-        }
-
-        try {
-            struct.element(0, ProtocolVersion.TLSv13);
-            fail("expected an exception");
-        } catch (UnsupportedOperationException e) {
-            // good
-        }
+        expectUnsupported(() -> struct.element(0));
+        expectUnsupported(() -> struct.element(0, ProtocolVersion.TLSv13));
     }
 
     private static class TestStruct implements Struct {
