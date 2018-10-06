@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
+
 public class Utils {
 
     public static final long DEFAULT_SEED = 0;
@@ -173,4 +175,11 @@ public class Utils {
         }
     }
 
+    public static <T> T cast(Struct object, Class<T> clazz) {
+        if (!clazz.isAssignableFrom(object.getClass())) {
+            throw whatTheHell("expected %s but received %s",
+                    clazz.getSimpleName(), object.getClass().getSimpleName());
+        }
+        return (T) object;
+    }
 }

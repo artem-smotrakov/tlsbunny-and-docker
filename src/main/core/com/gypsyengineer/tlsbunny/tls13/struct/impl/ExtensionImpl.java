@@ -1,5 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls13.struct.impl;
 
+import com.gypsyengineer.tlsbunny.tls.Struct;
 import com.gypsyengineer.tlsbunny.tls.Vector;
 import com.gypsyengineer.tlsbunny.tls13.struct.Extension;
 import com.gypsyengineer.tlsbunny.tls13.struct.ExtensionType;
@@ -7,10 +8,13 @@ import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.io.IOException;
 import java.util.Objects;
 
+import static com.gypsyengineer.tlsbunny.utils.Utils.cast;
+import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
+
 public class ExtensionImpl implements Extension {
 
-    private final ExtensionType extension_type;
-    private final Vector<Byte> extension_data;
+    private ExtensionType extension_type;
+    private Vector<Byte> extension_data;
     
     ExtensionImpl(ExtensionType extension_type, Vector<Byte> extension_data) {
         this.extension_type = extension_type;
@@ -62,5 +66,44 @@ public class ExtensionImpl implements Extension {
     @Override
     public int hashCode() {
         return Objects.hash(extension_type, extension_data);
+    }
+
+    @Override
+    public boolean composite() {
+        return true;
+    }
+
+    @Override
+    public int total() {
+        return 2;
+    }
+
+    @Override
+    public Struct element(int index) {
+        switch (index) {
+            case 0:
+                return extension_type;
+            case 1:
+                return extension_data;
+            default:
+                throw whatTheHell("incorrect index %d!", index);
+        }
+    }
+
+    @Override
+    public void element(int index, Struct element) {
+        if (element == null) {
+            throw whatTheHell("element can't be null!");
+        }
+        switch (index) {
+            case 0:
+                extension_type = cast(element, ExtensionType.class);
+                break;
+            case 1:
+                extension_data = cast(element, Vector.class);
+                break;
+            default:
+                throw whatTheHell("incorrect index %d!", index);
+        }
     }
 }

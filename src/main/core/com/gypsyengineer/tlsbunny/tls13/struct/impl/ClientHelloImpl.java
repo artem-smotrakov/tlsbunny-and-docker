@@ -1,6 +1,7 @@
 package com.gypsyengineer.tlsbunny.tls13.struct.impl;
 
 import com.gypsyengineer.tlsbunny.tls.Random;
+import com.gypsyengineer.tlsbunny.tls.Struct;
 import com.gypsyengineer.tlsbunny.tls.Vector;
 import com.gypsyengineer.tlsbunny.tls13.struct.CipherSuite;
 import com.gypsyengineer.tlsbunny.tls13.struct.ClientHello;
@@ -13,14 +14,17 @@ import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.io.IOException;
 import java.util.Objects;
 
+import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
+import static com.gypsyengineer.tlsbunny.utils.Utils.cast;
+
 public class ClientHelloImpl implements ClientHello {
     
-    private final ProtocolVersion legacy_version;
-    private final Random random;
-    private final Vector<Byte> legacy_session_id;
-    private final Vector<CipherSuite> cipher_suites;
-    private final Vector<CompressionMethod> legacy_compression_methods;
-    private final Vector<Extension> extensions;
+    private ProtocolVersion legacy_version;
+    private Random random;
+    private Vector<Byte> legacy_session_id;
+    private Vector<CipherSuite> cipher_suites;
+    private Vector<CompressionMethod> legacy_compression_methods;
+    private Vector<Extension> extensions;
 
     ClientHelloImpl(
             ProtocolVersion legacy_version,
@@ -63,12 +67,12 @@ public class ClientHelloImpl implements ClientHello {
     @Override
     public ClientHelloImpl copy() {
         return new ClientHelloImpl(
-                (ProtocolVersion) legacy_version.copy(),
-                (Random) random.copy(),
-                (Vector<Byte>) legacy_session_id.copy(),
-                (Vector<CipherSuite>) cipher_suites.copy(),
-                (Vector<CompressionMethod>) legacy_compression_methods.copy(),
-                (Vector<Extension>) extensions.copy()
+                cast(legacy_version.copy(), ProtocolVersion.class),
+                random.copy(),
+                cast(legacy_session_id.copy(), Vector.class),
+                cast(cipher_suites.copy(), Vector.class),
+                cast(legacy_compression_methods.copy(), Vector.class),
+                cast(extensions.copy(), Vector.class)
         );
     }
 
@@ -140,4 +144,64 @@ public class ClientHelloImpl implements ClientHello {
         return Objects.hash(legacy_version, random, legacy_session_id,
                 cipher_suites, legacy_compression_methods, extensions);
     }
+
+    @Override
+    public boolean composite() {
+        return true;
+    }
+
+    @Override
+    public int total() {
+        return 6;
+    }
+
+    @Override
+    public Struct element(int index) {
+        switch (index) {
+            case 0:
+                return legacy_version;
+            case 1:
+                return random;
+            case 2:
+                return legacy_session_id;
+            case 3:
+                return cipher_suites;
+            case 4:
+                return legacy_compression_methods;
+            case 5:
+                return extensions;
+            default:
+                throw whatTheHell("incorrect index %d!", index);
+        }
+    }
+
+    @Override
+    public void element(int index, Struct element) {
+        if (element == null) {
+            throw whatTheHell("element can't be null!");
+        }
+        switch (index) {
+            case 0:
+                legacy_version = cast(element, ProtocolVersion.class);
+                break;
+            case 1:
+                random = cast(element, Random.class);
+                break;
+            case 2:
+                legacy_session_id = cast(element, Vector.class);
+                break;
+            case 3:
+                cipher_suites = cast(element, Vector.class);
+                break;
+            case 4:
+                legacy_compression_methods = cast(element, Vector.class);
+                break;
+            case 5:
+                extensions = cast(element, Vector.class);
+                break;
+            default:
+                throw whatTheHell("incorrect index %d!", index);
+        }
+    }
+
 }
