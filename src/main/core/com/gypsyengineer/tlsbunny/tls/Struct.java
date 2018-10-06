@@ -52,12 +52,4 @@ public interface Struct {
         throw new UnsupportedOperationException("no setting elements for you!");
     }
 
-    static <T> T cast(Struct object, Class<T> clazz) {
-        if (!clazz.isAssignableFrom(object.getClass())) {
-            throw whatTheHell("expected %s but received %s",
-                    clazz.getSimpleName(), object.getClass().getSimpleName());
-        }
-        return (T) object;
-    }
-
 }

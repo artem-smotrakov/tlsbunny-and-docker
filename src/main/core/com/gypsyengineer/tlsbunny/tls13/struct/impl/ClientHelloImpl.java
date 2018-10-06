@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.util.Objects;
 
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
-import static com.gypsyengineer.tlsbunny.tls.Struct.cast;
+import static com.gypsyengineer.tlsbunny.utils.Utils.cast;
 
 public class ClientHelloImpl implements ClientHello {
     

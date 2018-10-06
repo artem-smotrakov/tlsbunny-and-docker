@@ -3,6 +3,7 @@ package com.gypsyengineer.tlsbunny.tls;
 import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
 import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
 import com.gypsyengineer.tlsbunny.tls13.struct.impl.ProtocolVersionImpl;
+import com.gypsyengineer.tlsbunny.utils.Utils;
 import com.gypsyengineer.tlsbunny.utils.WhatTheHell;
 import org.junit.Test;
 
@@ -13,20 +14,20 @@ public class StructTest {
 
     @Test
     public void cast() {
-        Object object = Struct.cast(ProtocolVersion.TLSv13, ProtocolVersionImpl.class);
+        Object object = Utils.cast(ProtocolVersion.TLSv13, ProtocolVersionImpl.class);
         assertTrue(object instanceof ProtocolVersion);
         assertEquals(object, ProtocolVersion.TLSv13);
 
-        object = Struct.cast(ProtocolVersion.TLSv13, ProtocolVersion.class);
+        object = Utils.cast(ProtocolVersion.TLSv13, ProtocolVersion.class);
         assertTrue(object instanceof ProtocolVersion);
         assertEquals(object, ProtocolVersion.TLSv13);
 
-        object = Struct.cast(ProtocolVersion.TLSv13, Struct.class);
+        object = Utils.cast(ProtocolVersion.TLSv13, Struct.class);
         assertTrue(object instanceof ProtocolVersion);
         assertEquals(object, ProtocolVersion.TLSv13);
 
         try {
-            Struct.cast(ProtocolVersion.TLSv13, ContentType.class);
+            Utils.cast(ProtocolVersion.TLSv13, ContentType.class);
             fail("expected an exception");
         } catch (WhatTheHell e) {
             // good
