@@ -46,6 +46,10 @@ public class HandshakeDeepFuzzer extends FuzzyStructFactory<HandshakeMessage> {
             throw whatTheHell("can't start fuzzing in mode '%s'", mode);
         }
 
+        if (recorded.isEmpty()) {
+            throw whatTheHell("can't start fuzzing since no messages were recorded!");
+        }
+
         // TODO: fuzz
         return message;
     }

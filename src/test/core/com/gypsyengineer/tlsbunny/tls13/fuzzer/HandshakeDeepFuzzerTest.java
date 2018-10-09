@@ -20,6 +20,7 @@ import org.junit.Test;
 
 import java.util.List;
 
+import static com.gypsyengineer.tlsbunny.TestUtils.expectWhatTheHell;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.HandshakeDeepFuzzer.handshakeDeepFuzzer;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.application_data;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
@@ -97,6 +98,20 @@ public class HandshakeDeepFuzzerTest {
 
     private static Finished createFinished(StructFactory factory) {
         return factory.createFinished(new byte[32]);
+    }
+
+    @Test
+    public void noFuzzing() throws Exception {
+        HandshakeDeepFuzzer fuzzer = handshakeDeepFuzzer();
+
+        // fuzzing mode is not enabled
+        expectWhatTheHell(() -> fuzzer.fuzz(createFinished(StructFactory.getDefault())));
+        fuzzer.recording();
+        expectWhatTheHell(() -> fuzzer.fuzz(createFinished(StructFactory.getDefault())));
+
+        // no message has been recorded
+        fuzzer.fuzzing();
+        expectWhatTheHell(() -> fuzzer.fuzz(createFinished(StructFactory.getDefault())));
     }
 
     @Test
