@@ -16,7 +16,7 @@ public class HandshakeDeepFuzzer extends FuzzyStructFactory<HandshakeMessage> {
 
     private Mode mode;
 
-    private List<HandshakeType> targeted = new ArrayList<>();
+    private final List<HandshakeMessage> recorded = new ArrayList<>();
     private int index = 0;
     private int round = 0;
 
@@ -29,21 +29,28 @@ public class HandshakeDeepFuzzer extends FuzzyStructFactory<HandshakeMessage> {
     }
 
     public HandshakeType[] targeted() {
-        return targeted.toArray(new HandshakeType[targeted.size()]);
+        HandshakeType[] targeted = new HandshakeType[recorded.size()];
+
+        int i = 0;
+        for (HandshakeMessage message : recorded) {
+            targeted[i++] = message.type();
+        }
+
+        return targeted;
     }
 
     private boolean shouldFuzz(HandshakeMessage message) {
-        if (mode != Mode.fuzzing || targeted.isEmpty()) {
+        if (mode != Mode.fuzzing || recorded.isEmpty()) {
             return false;
         }
 
-        return targeted.get(index).equals(message.type());
+        return recorded.get(index).type().equals(message.type());
     }
 
     // switch to recording mode
     public HandshakeDeepFuzzer recording() {
         mode = Mode.recording;
-        targeted = new ArrayList<>();
+        recorded.clear();
         return this;
     }
 
@@ -99,11 +106,11 @@ public class HandshakeDeepFuzzer extends FuzzyStructFactory<HandshakeMessage> {
             throw whatTheHell("can't start fuzzing in mode '%s'", mode);
         }
 
-        if (targeted.isEmpty()) {
+        if (recorded.isEmpty()) {
             throw whatTheHell("can't start fuzzing since no messages were targeted!");
         }
 
-        if (!targeted.get(index).equals(message.type())) {
+        if (!recorded.get(index).type().equals(message.type())) {
             return message;
         }
 
@@ -129,11 +136,11 @@ public class HandshakeDeepFuzzer extends FuzzyStructFactory<HandshakeMessage> {
 
     private void nextTarget() {
         index++;
-        index %= targeted.size();
+        index %= recorded.size();
     }
 
     private HandshakeDeepFuzzer record(HandshakeMessage message) {
-        targeted.add(message.type());
+        recorded.add(message);
         return this;
     }
 
