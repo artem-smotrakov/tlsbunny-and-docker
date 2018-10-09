@@ -28,7 +28,7 @@ public class HandshakeDeepFuzzer extends FuzzyStructFactory<HandshakeMessage> {
         super(factory, output);
     }
 
-    public HandshakeType[] targeted() {
+    public synchronized HandshakeType[] targeted() {
         HandshakeType[] targeted = new HandshakeType[recorded.size()];
 
         int i = 0;
@@ -48,14 +48,14 @@ public class HandshakeDeepFuzzer extends FuzzyStructFactory<HandshakeMessage> {
     }
 
     // switch to recording mode
-    public HandshakeDeepFuzzer recording() {
+    public synchronized HandshakeDeepFuzzer recording() {
         mode = Mode.recording;
         recorded.clear();
         return this;
     }
 
     // switch to fuzzing mode
-    public HandshakeDeepFuzzer fuzzing() {
+    public synchronized HandshakeDeepFuzzer fuzzing() {
         mode = Mode.fuzzing;
         return this;
     }
@@ -101,7 +101,7 @@ public class HandshakeDeepFuzzer extends FuzzyStructFactory<HandshakeMessage> {
     }
 
     @Override
-    public HandshakeMessage fuzz(HandshakeMessage message) {
+    public synchronized HandshakeMessage fuzz(HandshakeMessage message) {
         if (mode != Mode.fuzzing) {
             throw whatTheHell("can't start fuzzing in mode '%s'", mode);
         }
@@ -158,35 +158,35 @@ public class HandshakeDeepFuzzer extends FuzzyStructFactory<HandshakeMessage> {
     // override only methods for creating Handshake messages
 
     @Override
-    public Certificate createCertificate(Vector<Byte> certificate_request_context,
+    public synchronized Certificate createCertificate(Vector<Byte> certificate_request_context,
                                          Vector<CertificateEntry> certificate_list) {
 
         return handle(super.createCertificate(certificate_request_context, certificate_list));
     }
 
     @Override
-    public Certificate createCertificate(byte[] certificate_request_context,
+    public synchronized Certificate createCertificate(byte[] certificate_request_context,
                                          CertificateEntry... certificate_list) {
 
         return handle(super.createCertificate(certificate_request_context, certificate_list));
     }
 
     @Override
-    public CertificateRequest createCertificateRequest(byte[] certificate_request_context,
+    public synchronized CertificateRequest createCertificateRequest(byte[] certificate_request_context,
                                                        Vector<Extension> extensions) {
 
         return handle(super.createCertificateRequest(certificate_request_context, extensions));
     }
 
     @Override
-    public CertificateVerify createCertificateVerify(SignatureScheme algorithm,
+    public synchronized CertificateVerify createCertificateVerify(SignatureScheme algorithm,
                                                      byte[] signature) {
 
         return handle(super.createCertificateVerify(algorithm, signature));
     }
 
     @Override
-    public ClientHello createClientHello(ProtocolVersion legacy_version,
+    public synchronized ClientHello createClientHello(ProtocolVersion legacy_version,
                                          Random random,
                                          Vector<Byte> legacy_session_id,
                                          Vector<CipherSuite> cipher_suites,
@@ -198,27 +198,27 @@ public class HandshakeDeepFuzzer extends FuzzyStructFactory<HandshakeMessage> {
     }
 
     @Override
-    public EncryptedExtensions createEncryptedExtensions(Extension... extensions) {
+    public synchronized EncryptedExtensions createEncryptedExtensions(Extension... extensions) {
         return handle(super.createEncryptedExtensions(extensions));
     }
 
     @Override
-    public EndOfEarlyData createEndOfEarlyData() {
+    public synchronized EndOfEarlyData createEndOfEarlyData() {
         return handle(super.createEndOfEarlyData());
     }
 
     @Override
-    public Finished createFinished(byte[] verify_data) {
+    public synchronized Finished createFinished(byte[] verify_data) {
         return handle(super.createFinished(verify_data));
     }
 
     @Override
-    public HelloRetryRequest createHelloRetryRequest() {
+    public synchronized HelloRetryRequest createHelloRetryRequest() {
         return handle(super.createHelloRetryRequest());
     }
 
     @Override
-    public ServerHello createServerHello(ProtocolVersion version,
+    public synchronized ServerHello createServerHello(ProtocolVersion version,
                                          Random random,
                                          Vector<Byte> legacy_session_id_echo,
                                          CipherSuite cipher_suite,
