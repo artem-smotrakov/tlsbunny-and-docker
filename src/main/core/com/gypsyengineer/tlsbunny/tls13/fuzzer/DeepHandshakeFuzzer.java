@@ -12,12 +12,12 @@ import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public class DeepHandshakeFuzzer extends FuzzyStructFactory<HandshakeMessage> {
 
-    private static final int rounds_per_target = 10;
+    private static final int rounds_per_path = 10;
 
     private Mode mode;
 
     private final List<Holder> recorded = new ArrayList<>();
-    private int index = 0;
+    private int currentHolder = 0;
     private int round = 0;
 
     public static DeepHandshakeFuzzer deepHandshakeFuzzer() {
@@ -44,7 +44,11 @@ public class DeepHandshakeFuzzer extends FuzzyStructFactory<HandshakeMessage> {
             return false;
         }
 
-        return recorded.get(index).match(message);
+        return currentHolder().match(message);
+    }
+
+    private Holder currentHolder() {
+        return recorded.get(currentHolder);
     }
 
     // switch to recording mode
@@ -110,7 +114,7 @@ public class DeepHandshakeFuzzer extends FuzzyStructFactory<HandshakeMessage> {
             throw whatTheHell("can't start fuzzing since no messages were targeted!");
         }
 
-        if (!recorded.get(index).match(message)) {
+        if (!currentHolder().match(message)) {
             return message;
         }
 
@@ -125,7 +129,7 @@ public class DeepHandshakeFuzzer extends FuzzyStructFactory<HandshakeMessage> {
     }
 
     private boolean incrementRound() {
-        if (round == rounds_per_target - 1) {
+        if (round == rounds_per_path - 1) {
             round = 0;
             return true;
         }
@@ -135,8 +139,8 @@ public class DeepHandshakeFuzzer extends FuzzyStructFactory<HandshakeMessage> {
     }
 
     private void nextTarget() {
-        index++;
-        index %= recorded.size();
+        currentHolder++;
+        currentHolder %= recorded.size();
     }
 
     private DeepHandshakeFuzzer record(HandshakeMessage message) {
