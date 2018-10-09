@@ -12,8 +12,13 @@ import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public class HandshakeDeepFuzzer extends FuzzyStructFactory<HandshakeMessage> {
 
+    private static final int rounds_per_target = 10;
+
     private Mode mode;
-    private List<HandshakeType> recorded = new ArrayList<>();
+
+    private List<HandshakeType> targeted = new ArrayList<>();
+    private int index = 0;
+    private int round = 0;
 
     public static HandshakeDeepFuzzer handshakeDeepFuzzer() {
         return new HandshakeDeepFuzzer(StructFactory.getDefault(), new Output());
@@ -23,14 +28,22 @@ public class HandshakeDeepFuzzer extends FuzzyStructFactory<HandshakeMessage> {
         super(factory, output);
     }
 
-    public HandshakeType[] recorded() {
-        return recorded.toArray(new HandshakeType[recorded.size()]);
+    public HandshakeType[] targeted() {
+        return targeted.toArray(new HandshakeType[targeted.size()]);
+    }
+
+    private boolean shouldFuzz(HandshakeMessage message) {
+        if (mode != Mode.fuzzing || targeted.isEmpty()) {
+            return false;
+        }
+
+        return targeted.get(index).equals(message.type());
     }
 
     // switch to recording mode
     public HandshakeDeepFuzzer recording() {
         mode = Mode.recording;
-        recorded = new ArrayList<>();
+        targeted = new ArrayList<>();
         return this;
     }
 
@@ -40,22 +53,87 @@ public class HandshakeDeepFuzzer extends FuzzyStructFactory<HandshakeMessage> {
         return this;
     }
 
+    // override methods from FuzzyStructFactory
+    // setting targets are not currently supported
+
+    @Override
+    public synchronized FuzzyStructFactory target(Target target) {
+        throw new UnsupportedOperationException("no targets for you");
+    }
+
+    @Override
+    public synchronized FuzzyStructFactory target(String target) {
+        throw new UnsupportedOperationException("no targets for you");
+    }
+
+    @Override
+    public synchronized Target target() {
+        throw new UnsupportedOperationException("no targets for you");
+    }
+
+    // override methods for Fuzzer
+
+    @Override
+    public synchronized long currentTest() {
+        return super.currentTest();
+    }
+
+    @Override
+    public synchronized void currentTest(long test) {
+        super.currentTest(test);
+    }
+
+    @Override
+    public synchronized boolean canFuzz() {
+        return super.canFuzz();
+    }
+
+    @Override
+    public synchronized void moveOn() {
+        super.moveOn();
+    }
+
     @Override
     public HandshakeMessage fuzz(HandshakeMessage message) {
         if (mode != Mode.fuzzing) {
             throw whatTheHell("can't start fuzzing in mode '%s'", mode);
         }
 
-        if (recorded.isEmpty()) {
-            throw whatTheHell("can't start fuzzing since no messages were recorded!");
+        if (targeted.isEmpty()) {
+            throw whatTheHell("can't start fuzzing since no messages were targeted!");
         }
 
-        // TODO: fuzz
+        if (!targeted.get(index).equals(message.type())) {
+            return message;
+        }
+
+        // TODO: do fuzzing here
+
+        boolean finished = incrementRound();
+        if (finished) {
+            nextTarget();
+        }
+
         return message;
     }
 
+    private boolean incrementRound() {
+        if (round == rounds_per_target - 1) {
+            round = 0;
+            return true;
+        }
+
+        round++;
+        return false;
+    }
+
+    private void nextTarget() {
+        index++;
+        index %= targeted.size();
+    }
+
     private HandshakeDeepFuzzer record(HandshakeMessage message) {
-        recorded.add(message.type());
+        targeted.add(message.type());
         return this;
     }
 
@@ -159,7 +237,7 @@ public class HandshakeDeepFuzzer extends FuzzyStructFactory<HandshakeMessage> {
         }
 
         public MessageAction fuzz() {
-            if (fuzzer.mode == Mode.fuzzing) {
+            if (fuzzer.shouldFuzz(message)) {
                 message = fuzzer.fuzz(message);
             }
             return this;

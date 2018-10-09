@@ -41,48 +41,48 @@ public class HandshakeDeepFuzzerTest {
     @Test
     public void recording() {
         HandshakeDeepFuzzer fuzzer = handshakeDeepFuzzer();
-        assertTrue(fuzzer.recorded().length == 0);
+        assertTrue(fuzzer.targeted().length == 0);
 
         // check that recording is not enabled by default
         assertNotNull(createClientHello(fuzzer));
-        assertTrue(fuzzer.recorded().length == 0);
+        assertTrue(fuzzer.targeted().length == 0);
 
         // enable recording
         fuzzer.recording();
-        assertTrue(fuzzer.recorded().length == 0);
+        assertTrue(fuzzer.targeted().length == 0);
         assertNotNull(createClientHello(fuzzer));
-        assertTrue(fuzzer.recorded().length == 1);
+        assertTrue(fuzzer.targeted().length == 1);
         assertNotNull(createClientHello(fuzzer));
-        assertTrue(fuzzer.recorded().length == 2);
+        assertTrue(fuzzer.targeted().length == 2);
         assertNotNull(createFinished(fuzzer));
-        assertTrue(fuzzer.recorded().length == 3);
+        assertTrue(fuzzer.targeted().length == 3);
         assertArrayEquals(
-                fuzzer.recorded(),
+                fuzzer.targeted(),
                 new HandshakeType[] { client_hello, client_hello, finished });
 
         // disable recording
         fuzzer.fuzzing();
-        assertTrue(fuzzer.recorded().length == 3);
+        assertTrue(fuzzer.targeted().length == 3);
         assertArrayEquals(
-                fuzzer.recorded(),
+                fuzzer.targeted(),
                 new HandshakeType[] { client_hello, client_hello, finished});
         assertNotNull(createClientHello(fuzzer));
-        assertTrue(fuzzer.recorded().length == 3);
+        assertTrue(fuzzer.targeted().length == 3);
         assertArrayEquals(
-                fuzzer.recorded(),
+                fuzzer.targeted(),
                 new HandshakeType[] { client_hello, client_hello, finished });
 
         // enable recording again
         fuzzer.recording();
-        assertTrue(fuzzer.recorded().length == 0);
+        assertTrue(fuzzer.targeted().length == 0);
         assertNotNull(createClientHello(fuzzer));
-        assertTrue(fuzzer.recorded().length == 1);
+        assertTrue(fuzzer.targeted().length == 1);
         assertNotNull(createFinished(fuzzer));
-        assertTrue(fuzzer.recorded().length == 2);
+        assertTrue(fuzzer.targeted().length == 2);
         assertNotNull(createFinished(fuzzer));
-        assertTrue(fuzzer.recorded().length == 3);
+        assertTrue(fuzzer.targeted().length == 3);
         assertArrayEquals(
-                fuzzer.recorded(),
+                fuzzer.targeted(),
                 new HandshakeType[] { client_hello, finished, finished });
     }
 
@@ -109,7 +109,7 @@ public class HandshakeDeepFuzzerTest {
         fuzzer.recording();
         expectWhatTheHell(() -> fuzzer.fuzz(createFinished(StructFactory.getDefault())));
 
-        // no message has been recorded
+        // no message has been targeted
         fuzzer.fuzzing();
         expectWhatTheHell(() -> fuzzer.fuzz(createFinished(StructFactory.getDefault())));
     }
@@ -146,7 +146,7 @@ public class HandshakeDeepFuzzerTest {
         }
 
         assertArrayEquals(
-                fuzzer.recorded(),
+                fuzzer.targeted(),
                 new HandshakeType[] { client_hello, certificate, certificate_verify, finished });
     }
 
