@@ -16,7 +16,7 @@ public class HandshakeDeepFuzzer extends FuzzyStructFactory<HandshakeMessage> {
 
     private Mode mode;
 
-    private final List<HandshakeMessage> recorded = new ArrayList<>();
+    private final List<Holder> recorded = new ArrayList<>();
     private int index = 0;
     private int round = 0;
 
@@ -32,8 +32,8 @@ public class HandshakeDeepFuzzer extends FuzzyStructFactory<HandshakeMessage> {
         HandshakeType[] targeted = new HandshakeType[recorded.size()];
 
         int i = 0;
-        for (HandshakeMessage message : recorded) {
-            targeted[i++] = message.type();
+        for (Holder hodler : recorded) {
+            targeted[i++] = hodler.message.type();
         }
 
         return targeted;
@@ -44,7 +44,7 @@ public class HandshakeDeepFuzzer extends FuzzyStructFactory<HandshakeMessage> {
             return false;
         }
 
-        return recorded.get(index).type().equals(message.type());
+        return recorded.get(index).match(message);
     }
 
     // switch to recording mode
@@ -110,7 +110,7 @@ public class HandshakeDeepFuzzer extends FuzzyStructFactory<HandshakeMessage> {
             throw whatTheHell("can't start fuzzing since no messages were targeted!");
         }
 
-        if (!recorded.get(index).type().equals(message.type())) {
+        if (!recorded.get(index).match(message)) {
             return message;
         }
 
@@ -140,7 +140,7 @@ public class HandshakeDeepFuzzer extends FuzzyStructFactory<HandshakeMessage> {
     }
 
     private HandshakeDeepFuzzer record(HandshakeMessage message) {
-        recorded.add(message);
+        recorded.add(new Holder(message));
         return this;
     }
 
@@ -265,5 +265,35 @@ public class HandshakeDeepFuzzer extends FuzzyStructFactory<HandshakeMessage> {
             return (T) message;
         }
 
+    }
+
+    private static class Path {
+
+        private final HandshakeMessage message;
+        private final List<Integer> indexes;
+
+        private Path(HandshakeMessage message) {
+            this.message = message;
+            this.indexes = new ArrayList<>();
+        }
+    }
+
+    private static Path[] browse(HandshakeMessage message) {
+        throw new UnsupportedOperationException("no paths for you!");
+    }
+
+    private static class Holder {
+
+        private final HandshakeMessage message;
+        private final Path[] paths;
+
+        private Holder(HandshakeMessage message) {
+            this.message = message;
+            this.paths = browse(message);
+        }
+
+        boolean match(HandshakeMessage message) {
+            return this.message.type().equals(message.type());
+        }
     }
 }
