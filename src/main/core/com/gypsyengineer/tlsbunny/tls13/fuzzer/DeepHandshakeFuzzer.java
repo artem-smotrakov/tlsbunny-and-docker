@@ -10,7 +10,7 @@ import java.util.List;
 
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
-public class HandshakeDeepFuzzer extends FuzzyStructFactory<HandshakeMessage> {
+public class DeepHandshakeFuzzer extends FuzzyStructFactory<HandshakeMessage> {
 
     private static final int rounds_per_target = 10;
 
@@ -20,11 +20,11 @@ public class HandshakeDeepFuzzer extends FuzzyStructFactory<HandshakeMessage> {
     private int index = 0;
     private int round = 0;
 
-    public static HandshakeDeepFuzzer handshakeDeepFuzzer() {
-        return new HandshakeDeepFuzzer(StructFactory.getDefault(), new Output());
+    public static DeepHandshakeFuzzer deepHandshakeFuzzer() {
+        return new DeepHandshakeFuzzer(StructFactory.getDefault(), new Output());
     }
 
-    private HandshakeDeepFuzzer(StructFactory factory, Output output) {
+    private DeepHandshakeFuzzer(StructFactory factory, Output output) {
         super(factory, output);
     }
 
@@ -48,14 +48,14 @@ public class HandshakeDeepFuzzer extends FuzzyStructFactory<HandshakeMessage> {
     }
 
     // switch to recording mode
-    public synchronized HandshakeDeepFuzzer recording() {
+    public synchronized DeepHandshakeFuzzer recording() {
         mode = Mode.recording;
         recorded.clear();
         return this;
     }
 
     // switch to fuzzing mode
-    public synchronized HandshakeDeepFuzzer fuzzing() {
+    public synchronized DeepHandshakeFuzzer fuzzing() {
         mode = Mode.fuzzing;
         return this;
     }
@@ -139,7 +139,7 @@ public class HandshakeDeepFuzzer extends FuzzyStructFactory<HandshakeMessage> {
         index %= recorded.size();
     }
 
-    private HandshakeDeepFuzzer record(HandshakeMessage message) {
+    private DeepHandshakeFuzzer record(HandshakeMessage message) {
         recorded.add(new Holder(message));
         return this;
     }
@@ -233,11 +233,11 @@ public class HandshakeDeepFuzzer extends FuzzyStructFactory<HandshakeMessage> {
 
     private static class MessageAction {
 
-        private final HandshakeDeepFuzzer fuzzer;
+        private final DeepHandshakeFuzzer fuzzer;
         private final Class clazz;
         private HandshakeMessage message;
 
-        MessageAction(HandshakeDeepFuzzer fuzzer, HandshakeMessage message) {
+        MessageAction(DeepHandshakeFuzzer fuzzer, HandshakeMessage message) {
             this.fuzzer = fuzzer;
             this.message = message;
             this.clazz = message.getClass();

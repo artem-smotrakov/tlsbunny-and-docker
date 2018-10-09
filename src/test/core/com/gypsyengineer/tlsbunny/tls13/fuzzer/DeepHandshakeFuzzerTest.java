@@ -21,7 +21,7 @@ import org.junit.Test;
 import java.util.List;
 
 import static com.gypsyengineer.tlsbunny.TestUtils.expectWhatTheHell;
-import static com.gypsyengineer.tlsbunny.tls13.fuzzer.HandshakeDeepFuzzer.handshakeDeepFuzzer;
+import static com.gypsyengineer.tlsbunny.tls13.fuzzer.DeepHandshakeFuzzer.deepHandshakeFuzzer;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.application_data;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
 import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.*;
@@ -36,11 +36,11 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-public class HandshakeDeepFuzzerTest {
+public class DeepHandshakeFuzzerTest {
 
     @Test
     public void recording() {
-        HandshakeDeepFuzzer fuzzer = handshakeDeepFuzzer();
+        DeepHandshakeFuzzer fuzzer = deepHandshakeFuzzer();
         assertTrue(fuzzer.targeted().length == 0);
 
         // check that recording is not enabled by default
@@ -102,7 +102,7 @@ public class HandshakeDeepFuzzerTest {
 
     @Test
     public void noFuzzing() throws Exception {
-        HandshakeDeepFuzzer fuzzer = handshakeDeepFuzzer();
+        DeepHandshakeFuzzer fuzzer = deepHandshakeFuzzer();
 
         // fuzzing mode is not enabled
         expectWhatTheHell(() -> fuzzer.fuzz(createFinished(StructFactory.getDefault())));
@@ -130,7 +130,7 @@ public class HandshakeDeepFuzzerTest {
 
         HttpsClientAuth client = new HttpsClientAuth();
 
-        HandshakeDeepFuzzer fuzzer = handshakeDeepFuzzer();
+        DeepHandshakeFuzzer fuzzer = deepHandshakeFuzzer();
         fuzzer.recording();
 
         try (server; clientOutput; serverOutput) {
