@@ -1,6 +1,7 @@
 package com.gypsyengineer.tlsbunny.tls13.fuzzer;
 
 import com.gypsyengineer.tlsbunny.tls.Random;
+import com.gypsyengineer.tlsbunny.tls.Struct;
 import com.gypsyengineer.tlsbunny.tls.Vector;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
 import com.gypsyengineer.tlsbunny.utils.Output;
@@ -32,8 +33,8 @@ public class DeepHandshakeFuzzer extends FuzzyStructFactory<HandshakeMessage> {
         HandshakeType[] targeted = new HandshakeType[recorded.size()];
 
         int i = 0;
-        for (Holder hodler : recorded) {
-            targeted[i++] = hodler.message.type();
+        for (Holder holder : recorded) {
+            targeted[i++] = holder.message.type();
         }
 
         return targeted;
@@ -128,6 +129,10 @@ public class DeepHandshakeFuzzer extends FuzzyStructFactory<HandshakeMessage> {
         return message;
     }
 
+    List<Holder> recorded() {
+        return recorded;
+    }
+
     private boolean incrementRound() {
         if (round == rounds_per_path - 1) {
             round = 0;
@@ -163,39 +168,39 @@ public class DeepHandshakeFuzzer extends FuzzyStructFactory<HandshakeMessage> {
 
     @Override
     public synchronized Certificate createCertificate(Vector<Byte> certificate_request_context,
-                                         Vector<CertificateEntry> certificate_list) {
+                                                      Vector<CertificateEntry> certificate_list) {
 
         return handle(super.createCertificate(certificate_request_context, certificate_list));
     }
 
     @Override
     public synchronized Certificate createCertificate(byte[] certificate_request_context,
-                                         CertificateEntry... certificate_list) {
+                                                      CertificateEntry... certificate_list) {
 
         return handle(super.createCertificate(certificate_request_context, certificate_list));
     }
 
     @Override
-    public synchronized CertificateRequest createCertificateRequest(byte[] certificate_request_context,
-                                                       Vector<Extension> extensions) {
+    public synchronized CertificateRequest createCertificateRequest(
+            byte[] certificate_request_context, Vector<Extension> extensions) {
 
         return handle(super.createCertificateRequest(certificate_request_context, extensions));
     }
 
     @Override
     public synchronized CertificateVerify createCertificateVerify(SignatureScheme algorithm,
-                                                     byte[] signature) {
+                                                                  byte[] signature) {
 
         return handle(super.createCertificateVerify(algorithm, signature));
     }
 
     @Override
     public synchronized ClientHello createClientHello(ProtocolVersion legacy_version,
-                                         Random random,
-                                         Vector<Byte> legacy_session_id,
-                                         Vector<CipherSuite> cipher_suites,
-                                         Vector<CompressionMethod> legacy_compression_methods,
-                                         Vector<Extension> extensions) {
+                                                      Random random,
+                                                      Vector<Byte> legacy_session_id,
+                                                      Vector<CipherSuite> cipher_suites,
+                                                      Vector<CompressionMethod> legacy_compression_methods,
+                                                      Vector<Extension> extensions) {
 
         return handle(super.createClientHello(legacy_version, random,
                 legacy_session_id, cipher_suites, legacy_compression_methods, extensions));
@@ -223,11 +228,11 @@ public class DeepHandshakeFuzzer extends FuzzyStructFactory<HandshakeMessage> {
 
     @Override
     public synchronized ServerHello createServerHello(ProtocolVersion version,
-                                         Random random,
-                                         Vector<Byte> legacy_session_id_echo,
-                                         CipherSuite cipher_suite,
-                                         CompressionMethod legacy_compression_method,
-                                         Vector<Extension> extensions) {
+                                                      Random random,
+                                                      Vector<Byte> legacy_session_id_echo,
+                                                      CipherSuite cipher_suite,
+                                                      CompressionMethod legacy_compression_method,
+                                                      Vector<Extension> extensions) {
 
         return handle(super.createServerHello(version, random, legacy_session_id_echo,
                 cipher_suite, legacy_compression_method, extensions));
@@ -271,33 +276,65 @@ public class DeepHandshakeFuzzer extends FuzzyStructFactory<HandshakeMessage> {
 
     }
 
-    private static class Path {
+    static class Path {
 
-        private final HandshakeMessage message;
         private final List<Integer> indexes;
 
-        private Path(HandshakeMessage message) {
-            this.message = message;
+        private Path() {
             this.indexes = new ArrayList<>();
+        }
+
+        Path copy() {
+            Path clone = new Path();
+            for (int index : indexes) {
+                clone.indexes.add(index);
+            }
+            return clone;
+        }
+
+        Path add(int index) {
+            indexes.add(index);
+            return this;
+        }
+
+        Integer[] indexes() {
+            return indexes.toArray(new Integer[indexes.size()]);
         }
     }
 
     private static Path[] browse(HandshakeMessage message) {
-        throw new UnsupportedOperationException("no paths for you!");
+        List<Path> paths = new ArrayList<>();
+        browse(message, new Path(), paths);
+        return paths.toArray(new Path[paths.size()]);
     }
 
-    private static class Holder {
+    private static void browse(Struct struct, Path path, List<Path> paths) {
+        paths.add(path);
+        for (int index = 0; index < struct.total(); index++) {
+             browse(struct.element(index), path.copy().add(index), paths);
+        }
+    }
+
+    static class Holder {
 
         private final HandshakeMessage message;
         private final Path[] paths;
 
-        private Holder(HandshakeMessage message) {
+        Holder(HandshakeMessage message) {
             this.message = message;
             this.paths = browse(message);
         }
 
         boolean match(HandshakeMessage message) {
             return this.message.type().equals(message.type());
+        }
+
+        HandshakeMessage message() {
+            return message;
+        }
+
+        Path[] paths() {
+            return paths;
         }
     }
 }

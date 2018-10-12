@@ -21,7 +21,7 @@ import org.junit.Test;
 import java.util.List;
 
 import static com.gypsyengineer.tlsbunny.TestUtils.expectWhatTheHell;
-import static com.gypsyengineer.tlsbunny.tls13.fuzzer.DeepHandshakeFuzzer.deepHandshakeFuzzer;
+import static com.gypsyengineer.tlsbunny.tls13.fuzzer.DeepHandshakeFuzzer.*;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.application_data;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
 import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.*;
@@ -32,9 +32,7 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv12;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv13;
 import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp256r1_sha256;
 import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.rsa_pkcs1_sha256;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class DeepHandshakeFuzzerTest {
 
@@ -87,13 +85,19 @@ public class DeepHandshakeFuzzerTest {
     }
 
     private static ClientHello createClientHello(StructFactory factory) {
+        return createClientHello(factory, List.of());
+    }
+
+    private static ClientHello createClientHello(
+            StructFactory factory, List<Extension> extensions) {
+
         return factory.createClientHello(
                 TLSv13,
                 new Random(),
                 new byte[32],
                 List.of(CipherSuite.TLS_AES_128_GCM_SHA256),
                 List.of(CompressionMethod.None),
-                List.of());
+                extensions);
     }
 
     private static Finished createFinished(StructFactory factory) {
@@ -148,6 +152,85 @@ public class DeepHandshakeFuzzerTest {
         assertArrayEquals(
                 fuzzer.targeted(),
                 new HandshakeType[] { client_hello, certificate, certificate_verify, finished });
+
+        List<DeepHandshakeFuzzer.Holder> holders = fuzzer.recorded();
+        holders.get(0).message().type().equals(client_hello);
+        holders.get(1).message().type().equals(certificate);
+        holders.get(2).message().type().equals(certificate_verify);
+        holders.get(3).message().type().equals(finished);
+
+        assertEquals(
+                holders.get(0).paths().length,
+                1       // client_hello
+                        + 6     // structs in client hello
+                        + 1     // cipher_suite
+                        + 1     // compression_method
+                        + 4     // extensions
+                        + 8     // content of extensions
+        );
+
+        assertArrayEquals(
+                holders.get(0).paths()[0].indexes(),
+                new Integer[] {});
+        assertArrayEquals(
+                holders.get(0).paths()[1].indexes(),
+                new Integer[] { 0 });
+        assertArrayEquals(
+                holders.get(0).paths()[2].indexes(),
+                new Integer[] { 1 });
+        assertArrayEquals(
+                holders.get(0).paths()[3].indexes(),
+                new Integer[] { 2 });
+        assertArrayEquals(
+                holders.get(0).paths()[holders.get(0).paths().length - 1].indexes(),
+                new Integer[] { 5, 3, 1 });
+    }
+
+    @Test
+    public void browse() {
+        StructFactory factory = StructFactory.getDefault();
+        Holder holder = new Holder(createClientHello(
+                factory, List.of(factory.createExtension(
+                        ExtensionType.supported_versions, new byte[32]))));
+        Path[] paths = holder.paths();
+
+        assertEquals(paths.length, 12);
+        assertArrayEquals(
+                paths[0].indexes(),
+                new Integer[] {});
+        assertArrayEquals(
+                paths[1].indexes(),
+                new Integer[] { 0 });
+        assertArrayEquals(
+                paths[2].indexes(),
+                new Integer[] { 1 });
+        assertArrayEquals(
+                paths[3].indexes(),
+                new Integer[] { 2 });
+        assertArrayEquals(
+                paths[4].indexes(),
+                new Integer[] { 3 });
+        assertArrayEquals(
+                paths[5].indexes(),
+                new Integer[] { 3, 0 });
+        assertArrayEquals(
+                paths[6].indexes(),
+                new Integer[] { 4 });
+        assertArrayEquals(
+                paths[7].indexes(),
+                new Integer[] { 4, 0 });
+        assertArrayEquals(
+                paths[8].indexes(),
+                new Integer[] { 5 });
+        assertArrayEquals(
+                paths[9].indexes(),
+                new Integer[] { 5, 0 });
+        assertArrayEquals(
+                paths[10].indexes(),
+                new Integer[] { 5, 0, 0 });
+        assertArrayEquals(
+                paths[11].indexes(),
+                new Integer[] { 5, 0, 1 });
     }
 
     private static class EngineFactoryImpl extends BaseEngineFactory {
