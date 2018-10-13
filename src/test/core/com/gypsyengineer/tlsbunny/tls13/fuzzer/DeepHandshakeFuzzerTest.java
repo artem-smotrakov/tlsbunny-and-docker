@@ -21,6 +21,7 @@ import org.junit.Test;
 import java.util.List;
 
 import static com.gypsyengineer.tlsbunny.TestUtils.expectWhatTheHell;
+import static com.gypsyengineer.tlsbunny.fuzzer.ByteFlipFuzzer.newByteFlipFuzzer;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.DeepHandshakeFuzzer.*;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.application_data;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
@@ -38,7 +39,7 @@ public class DeepHandshakeFuzzerTest {
 
     @Test
     public void recording() {
-        DeepHandshakeFuzzer fuzzer = deepHandshakeFuzzer();
+        DeepHandshakeFuzzer fuzzer = deepHandshakeFuzzer().fuzzer(newByteFlipFuzzer());
         assertTrue(fuzzer.targeted().length == 0);
 
         // check that recording is not enabled by default
