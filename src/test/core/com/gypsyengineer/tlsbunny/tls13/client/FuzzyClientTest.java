@@ -43,8 +43,8 @@ import static org.junit.Assert.assertTrue;
  */
 public class FuzzyClientTest {
 
-    private static final int start = 10;
-    private static final int end = 15;
+    private static final int start = 21;
+    private static final int end = 23;
     private static final int parts = 1;
 
     private Config clientConfig = SystemPropertiesConfig.load();
