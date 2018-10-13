@@ -38,7 +38,7 @@ public class MutatedStruct implements TLSPlaintext, Handshake, ChangeCipherSpec,
     }
 
     @Override
-    public byte[] encoding() throws IOException {
+    public byte[] encoding() {
         return mutatedEncoding;
     }
 

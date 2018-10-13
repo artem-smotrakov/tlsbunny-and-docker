@@ -6,7 +6,6 @@ import com.gypsyengineer.tlsbunny.tls.Vector;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AEAD;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
 
-import java.io.IOException;
 import java.util.List;
 
 public class FuzzedStruct implements ClientHello, ServerHello, 
@@ -137,7 +136,7 @@ public class FuzzedStruct implements ClientHello, ServerHello,
 
     @Override
     public boolean isEmpty() {
-        return false;
+        throw new UnsupportedOperationException("I can't do that!");
     }
 
     @Override
@@ -176,8 +175,8 @@ public class FuzzedStruct implements ClientHello, ServerHello,
     }
 
     @Override
-    public byte[] bytes() throws IOException {
-        return new byte[0];
+    public byte[] bytes() {
+        throw new UnsupportedOperationException("I can't do that!");
     }
 
     @Override
