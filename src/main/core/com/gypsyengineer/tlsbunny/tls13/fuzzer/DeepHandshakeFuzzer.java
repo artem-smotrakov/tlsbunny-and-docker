@@ -280,13 +280,11 @@ public class DeepHandshakeFuzzer extends StructFactoryWrapper
     private static class MessageAction {
 
         private final DeepHandshakeFuzzer fuzzer;
-        private final Class clazz;
         private HandshakeMessage message;
 
         MessageAction(DeepHandshakeFuzzer fuzzer, HandshakeMessage message) {
             this.fuzzer = fuzzer;
             this.message = message;
-            this.clazz = message.getClass();
         }
 
         public MessageAction fuzz() {
@@ -304,9 +302,10 @@ public class DeepHandshakeFuzzer extends StructFactoryWrapper
         }
 
         public <T> T get() {
-            if (!clazz.isAssignableFrom(message.getClass())) {
+            if (!HandshakeMessage.class.isAssignableFrom(message.getClass())) {
                 throw whatTheHell("expected %s but received %s",
-                        clazz.getSimpleName(), message.getClass().getSimpleName());
+                        HandshakeMessage.class.getSimpleName(),
+                        message.getClass().getSimpleName());
             }
             return (T) message;
         }
