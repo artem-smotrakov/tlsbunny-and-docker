@@ -13,6 +13,8 @@ import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.io.IOException;
 import java.util.Objects;
 
+import static com.gypsyengineer.tlsbunny.utils.Utils.cast;
+
 public class ServerHelloImpl implements ServerHello {
 
     protected final ProtocolVersion version;
@@ -107,12 +109,12 @@ public class ServerHelloImpl implements ServerHello {
     @Override
     public ServerHelloImpl copy() {
         return new ServerHelloImpl(
-                (ProtocolVersion) version.copy(),
-                random.copy(),
-                (Vector<Byte>) legacy_session_id_echo.copy(),
-                (CipherSuite) cipher_suite.copy(),
-                (CompressionMethod) legacy_compression_method.copy(),
-                (Vector<Extension>) extensions.copy());
+                cast(version.copy(), ProtocolVersion.class),
+                cast(random.copy(), Random.class),
+                cast(legacy_session_id_echo.copy(), Vector.class),
+                cast(cipher_suite.copy(), CipherSuite.class),
+                cast(legacy_compression_method.copy(), CompressionMethod.class),
+                cast(extensions.copy(), Vector.class));
     }
 
     @Override

@@ -68,7 +68,7 @@ public class ClientHelloImpl implements ClientHello {
     public ClientHelloImpl copy() {
         return new ClientHelloImpl(
                 cast(legacy_version.copy(), ProtocolVersion.class),
-                random.copy(),
+                cast(random.copy(), Random.class),
                 cast(legacy_session_id.copy(), Vector.class),
                 cast(cipher_suites.copy(), Vector.class),
                 cast(legacy_compression_methods.copy(), Vector.class),

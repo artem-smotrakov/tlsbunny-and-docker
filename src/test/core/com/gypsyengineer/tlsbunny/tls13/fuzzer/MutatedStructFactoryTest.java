@@ -15,7 +15,7 @@ import java.util.Arrays;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertFalse;
 
-public class MutatedStructFactoryTests {
+public class MutatedStructFactoryTest {
 
     public static final double MIN_RATIO = 0.2;
     public static final double MAX_RATIO = 0.8;

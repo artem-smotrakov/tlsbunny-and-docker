@@ -102,7 +102,7 @@ public class CipherSuitesFuzzerTest {
             fuzzer.moveOn();
             ClientHello clientHelloOne = fuzzer.createClientHello(
                     ProtocolVersion.TLSv13,
-                    new Random(),
+                    Random.create(),
                     new byte[8],
                     List.of(CipherSuite.TLS_AES_128_GCM_SHA256),
                     List.of(CompressionMethod.None),
@@ -112,7 +112,7 @@ public class CipherSuitesFuzzerTest {
             fuzzer.moveOn();
             ClientHello clientHelloTwo = fuzzer.createClientHello(
                     ProtocolVersion.TLSv13,
-                    new Random(),
+                    Random.create(),
                     new byte[8],
                     List.of(CipherSuite.TLS_AES_128_GCM_SHA256),
                     List.of(CompressionMethod.None),
@@ -127,7 +127,7 @@ public class CipherSuitesFuzzerTest {
             fuzzer.moveOn();
             clientHelloOne = fuzzer.createClientHello(
                     ProtocolVersion.TLSv13,
-                    new Random(),
+                    Random.create(),
                     new byte[8],
                     List.of(CipherSuite.TLS_AES_128_GCM_SHA256),
                     List.of(CompressionMethod.None),
@@ -137,7 +137,7 @@ public class CipherSuitesFuzzerTest {
             fuzzer.moveOn();
             clientHelloTwo = fuzzer.createClientHello(
                     ProtocolVersion.TLSv13,
-                    new Random(),
+                    Random.create(),
                     new byte[8],
                     List.of(CipherSuite.TLS_AES_128_GCM_SHA256),
                     List.of(CompressionMethod.None),
@@ -152,7 +152,7 @@ public class CipherSuitesFuzzerTest {
             fuzzer.moveOn();
             clientHelloOne = fuzzer.createClientHello(
                     ProtocolVersion.TLSv13,
-                    new Random(),
+                    Random.create(),
                     new byte[8],
                     List.of(CipherSuite.TLS_AES_128_GCM_SHA256),
                     List.of(CompressionMethod.None),
@@ -162,7 +162,7 @@ public class CipherSuitesFuzzerTest {
             fuzzer.moveOn();
             clientHelloTwo = fuzzer.createClientHello(
                     ProtocolVersion.TLSv13,
-                    new Random(),
+                    Random.create(),
                     new byte[8],
                     List.of(CipherSuite.TLS_AES_128_GCM_SHA256),
                     List.of(CompressionMethod.None),
