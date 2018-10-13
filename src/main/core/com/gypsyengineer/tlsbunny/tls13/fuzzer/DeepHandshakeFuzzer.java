@@ -1,24 +1,36 @@
 package com.gypsyengineer.tlsbunny.tls13.fuzzer;
 
+import com.gypsyengineer.tlsbunny.fuzzer.Fuzzer;
 import com.gypsyengineer.tlsbunny.tls.Random;
 import com.gypsyengineer.tlsbunny.tls.Struct;
 import com.gypsyengineer.tlsbunny.tls.Vector;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
+import com.gypsyengineer.tlsbunny.utils.HasOutput;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import static com.gypsyengineer.tlsbunny.tls13.fuzzer.FuzzedHandshakeMessage.fuzzedHandshakeMessage;
+import static com.gypsyengineer.tlsbunny.utils.HexDump.printHexDiff;
+import static com.gypsyengineer.tlsbunny.utils.Utils.cast;
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
-public class DeepHandshakeFuzzer extends FuzzyStructFactory<HandshakeMessage> {
+public class DeepHandshakeFuzzer extends StructFactoryWrapper
+        implements HasOutput<DeepHandshakeFuzzer> {
 
     private static final int rounds_per_path = 10;
+
+    private Output output;
+    private Fuzzer<byte[]> fuzzer;
 
     private Mode mode;
 
     private final List<Holder> recorded = new ArrayList<>();
-    private int currentHolder = 0;
+    private int currentHolderIndex = 0;
+    private int currentPathIndex = 0;
     private int round = 0;
 
     public static DeepHandshakeFuzzer deepHandshakeFuzzer() {
@@ -26,7 +38,17 @@ public class DeepHandshakeFuzzer extends FuzzyStructFactory<HandshakeMessage> {
     }
 
     private DeepHandshakeFuzzer(StructFactory factory, Output output) {
-        super(factory, output);
+        super(factory);
+        this.output = output;
+    }
+
+    public Fuzzer<byte[]> fuzzer() {
+        return fuzzer;
+    }
+
+    public DeepHandshakeFuzzer fuzzer(Fuzzer<byte[]> fuzzer) {
+        this.fuzzer = fuzzer;
+        return this;
     }
 
     public synchronized HandshakeType[] targeted() {
@@ -49,7 +71,11 @@ public class DeepHandshakeFuzzer extends FuzzyStructFactory<HandshakeMessage> {
     }
 
     private Holder currentHolder() {
-        return recorded.get(currentHolder);
+        return recorded.get(currentHolderIndex);
+    }
+
+    private Path currentPath() {
+        return currentHolder().paths[currentPathIndex];
     }
 
     // switch to recording mode
@@ -65,48 +91,7 @@ public class DeepHandshakeFuzzer extends FuzzyStructFactory<HandshakeMessage> {
         return this;
     }
 
-    // override methods from FuzzyStructFactory
-    // setting targets are not currently supported
-
-    @Override
-    public synchronized FuzzyStructFactory target(Target target) {
-        throw new UnsupportedOperationException("no targets for you");
-    }
-
-    @Override
-    public synchronized FuzzyStructFactory target(String target) {
-        throw new UnsupportedOperationException("no targets for you");
-    }
-
-    @Override
-    public synchronized Target target() {
-        throw new UnsupportedOperationException("no targets for you");
-    }
-
-    // override methods for Fuzzer
-
-    @Override
-    public synchronized long currentTest() {
-        return super.currentTest();
-    }
-
-    @Override
-    public synchronized void currentTest(long test) {
-        super.currentTest(test);
-    }
-
-    @Override
-    public synchronized boolean canFuzz() {
-        return super.canFuzz();
-    }
-
-    @Override
-    public synchronized void moveOn() {
-        super.moveOn();
-    }
-
-    @Override
-    public synchronized HandshakeMessage fuzz(HandshakeMessage message) {
+    HandshakeMessage fuzz(HandshakeMessage message) {
         if (mode != Mode.fuzzing) {
             throw whatTheHell("can't start fuzzing in mode '%s'", mode);
         }
@@ -119,14 +104,45 @@ public class DeepHandshakeFuzzer extends FuzzyStructFactory<HandshakeMessage> {
             return message;
         }
 
-        // TODO: do fuzzing here
+        Path path = currentPath();
+        Struct target = get(message, path);
+
+        byte[] encoding;
+        try {
+             encoding = target.encoding();
+        } catch (IOException e) {
+            throw whatTheHell("could not encode", e);
+        }
+
+        byte[] fuzzed = fuzzer.fuzz(encoding);
+        HandshakeMessage fuzzedMessage = set(message, currentPath(), fuzzedHandshakeMessage(fuzzed));
+
+        explain(target.toString(), encoding, fuzzed);
 
         boolean finished = incrementRound();
         if (finished) {
-            nextTarget();
+            finished = incrementPath();
+            if (finished) {
+                nextTarget();
+            }
         }
 
-        return message;
+        return fuzzedMessage;
+    }
+
+    private void explain(String what, byte[] encoding, byte[] fuzzed) {
+        output.info("%s (original): %n", what);
+        output.increaseIndent();
+        output.info("%s%n", printHexDiff(encoding, fuzzed));
+        output.decreaseIndent();
+        output.info("%s (fuzzed): %n", what);
+        output.increaseIndent();
+        output.info("%s%n", printHexDiff(fuzzed, encoding));
+        output.decreaseIndent();
+
+        if (Arrays.equals(encoding, fuzzed)) {
+            output.achtung("nothing actually fuzzed");
+        }
     }
 
     List<Holder> recorded() {
@@ -143,9 +159,19 @@ public class DeepHandshakeFuzzer extends FuzzyStructFactory<HandshakeMessage> {
         return false;
     }
 
+    private boolean incrementPath() {
+        if (currentPathIndex == recorded.get(currentHolderIndex).paths.length - 1) {
+            currentPathIndex = 0;
+            return true;
+        }
+
+        currentPathIndex++;
+        return false;
+    }
+
     private void nextTarget() {
-        currentHolder++;
-        currentHolder %= recorded.size();
+        currentHolderIndex++;
+        currentHolderIndex %= recorded.size();
     }
 
     private DeepHandshakeFuzzer record(HandshakeMessage message) {
@@ -238,6 +264,17 @@ public class DeepHandshakeFuzzer extends FuzzyStructFactory<HandshakeMessage> {
                 cipher_suite, legacy_compression_method, extensions));
     }
 
+    @Override
+    public DeepHandshakeFuzzer set(Output output) {
+        this.output = output;
+        return this;
+    }
+
+    @Override
+    public Output output() {
+        return output;
+    }
+
     private enum Mode { recording, fuzzing }
 
     private static class MessageAction {
@@ -300,6 +337,24 @@ public class DeepHandshakeFuzzer extends FuzzyStructFactory<HandshakeMessage> {
         Integer[] indexes() {
             return indexes.toArray(new Integer[indexes.size()]);
         }
+
+        boolean empty() {
+            return indexes.isEmpty();
+        }
+
+        Path reduced() {
+            if (indexes.isEmpty()) {
+                throw whatTheHell("path is empty!");
+            }
+
+            Path reduced = copy();
+            reduced.indexes.remove(indexes.size() - 1);
+            return reduced;
+        }
+
+        int lastIndex() {
+            return indexes.get(indexes.size() - 1);
+        }
     }
 
     private static Path[] browse(HandshakeMessage message) {
@@ -313,6 +368,25 @@ public class DeepHandshakeFuzzer extends FuzzyStructFactory<HandshakeMessage> {
         for (int index = 0; index < struct.total(); index++) {
              browse(struct.element(index), path.copy().add(index), paths);
         }
+    }
+
+    private static Struct get(Struct message, Path path) {
+        for (int index : path.indexes) {
+            message = message.element(index);
+        }
+        return message;
+    }
+
+    private static HandshakeMessage set(
+            HandshakeMessage message, Path path, Struct replacement) {
+
+        if (path.empty()) {
+            return cast(replacement, HandshakeMessage.class);
+        }
+
+        Struct target = get(message, path.reduced());
+        target.element(path.lastIndex(), replacement);
+        return message;
     }
 
     static class Holder {

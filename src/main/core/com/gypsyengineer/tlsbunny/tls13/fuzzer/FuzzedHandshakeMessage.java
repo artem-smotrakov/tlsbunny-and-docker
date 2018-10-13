@@ -12,6 +12,10 @@ public class FuzzedHandshakeMessage implements ClientHello, ServerHello,
     private final int encodingLength;
     private final byte[] encoding;
 
+    public static FuzzedHandshakeMessage fuzzedHandshakeMessage(byte[] encoding) {
+        return new FuzzedHandshakeMessage(encoding.length, encoding);
+    }
+
     public static FuzzedHandshakeMessage fuzzedHandshakeMessage(
             int encodingLength, byte[] encoding) {
 
