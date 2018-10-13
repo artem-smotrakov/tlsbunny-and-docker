@@ -135,7 +135,7 @@ public abstract class AbstractFlipFuzzer
                 startIndex, endIndex);
     }
 
-    abstract byte[] fuzzImpl(byte[] array);
+    protected abstract byte[] fuzzImpl(byte[] array);
 
     protected int getStartIndex() {
         if (startIndex > 0) {

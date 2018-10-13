@@ -13,15 +13,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.gypsyengineer.tlsbunny.tls13.fuzzer.FuzzedHandshakeMessage.fuzzedHandshakeMessage;
+import static com.gypsyengineer.tlsbunny.tls13.fuzzer.FuzzedStruct.fuzzedHandshakeMessage;
 import static com.gypsyengineer.tlsbunny.utils.HexDump.printHexDiff;
 import static com.gypsyengineer.tlsbunny.utils.Utils.cast;
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public class DeepHandshakeFuzzer extends StructFactoryWrapper
         implements HasOutput<DeepHandshakeFuzzer> {
-
-    private static final int rounds_per_path = 10;
 
     private Output output;
     private Fuzzer<byte[]> fuzzer;
@@ -32,6 +30,7 @@ public class DeepHandshakeFuzzer extends StructFactoryWrapper
     private int currentHolderIndex = 0;
     private int currentPathIndex = 0;
     private int round = 0;
+    private int rounds = 10;
 
     public static DeepHandshakeFuzzer deepHandshakeFuzzer() {
         return new DeepHandshakeFuzzer(StructFactory.getDefault(), new Output());
@@ -92,6 +91,8 @@ public class DeepHandshakeFuzzer extends StructFactoryWrapper
     }
 
     HandshakeMessage fuzz(HandshakeMessage message) {
+        message = (HandshakeMessage) message.copy();
+
         if (mode != Mode.fuzzing) {
             throw whatTheHell("can't start fuzzing in mode '%s'", mode);
         }
@@ -149,8 +150,13 @@ public class DeepHandshakeFuzzer extends StructFactoryWrapper
         return recorded;
     }
 
+    DeepHandshakeFuzzer rounds(int rounds) {
+        this.rounds = rounds;
+        return this;
+    }
+
     private boolean incrementRound() {
-        if (round == rounds_per_path - 1) {
+        if (round == rounds - 1) {
             round = 0;
             return true;
         }
@@ -370,11 +376,10 @@ public class DeepHandshakeFuzzer extends StructFactoryWrapper
     }
 
     private static Struct get(Struct message, Path path) {
-        Struct result = message;
         for (int index : path.indexes) {
-            result = result.element(index);
+            message = message.element(index);
         }
-        return result;
+        return message;
     }
 
     private static HandshakeMessage set(

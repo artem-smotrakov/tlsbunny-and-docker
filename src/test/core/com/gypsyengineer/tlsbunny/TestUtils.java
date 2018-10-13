@@ -45,7 +45,7 @@ public class TestUtils {
         StructFactory factory = StructFactory.getDefault();
         return factory.createClientHello(
                 ProtocolVersion.TLSv13,
-                new Random(),
+                Random.create(),
                 new byte[32],
                 List.of(CipherSuite.TLS_AES_128_GCM_SHA256),
                 List.of(CompressionMethod.None),

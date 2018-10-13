@@ -21,7 +21,7 @@ public class BitFlipFuzzer extends AbstractFlipFuzzer {
     }
 
     @Override
-    byte[] fuzzImpl(byte[] array) {
+    protected byte[] fuzzImpl(byte[] array) {
         check(minRatio, maxRatio);
 
         BitSet bits = BitSet.valueOf(array);

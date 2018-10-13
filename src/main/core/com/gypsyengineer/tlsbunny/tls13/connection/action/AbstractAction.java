@@ -148,7 +148,7 @@ public abstract class AbstractAction<T extends AbstractAction> implements Action
         java.util.Random generator = new java.util.Random(SEED);
         byte[] random_bytes = new byte[Random.LENGTH];
         generator.nextBytes(random_bytes);
-        Random random = new Random();
+        Random random = Random.create();
         random.setBytes(random_bytes);
 
         return random;

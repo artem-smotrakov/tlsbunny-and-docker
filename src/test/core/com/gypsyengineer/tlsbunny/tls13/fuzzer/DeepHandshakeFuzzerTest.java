@@ -1,6 +1,8 @@
 package com.gypsyengineer.tlsbunny.tls13.fuzzer;
 
+import com.gypsyengineer.tlsbunny.fuzzer.AbstractFlipFuzzer;
 import com.gypsyengineer.tlsbunny.tls.Random;
+import com.gypsyengineer.tlsbunny.tls.Struct;
 import com.gypsyengineer.tlsbunny.tls13.client.HttpsClientAuth;
 import com.gypsyengineer.tlsbunny.tls13.connection.BaseEngineFactory;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
@@ -18,6 +20,8 @@ import com.gypsyengineer.tlsbunny.utils.Output;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 import org.junit.Test;
 
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import static com.gypsyengineer.tlsbunny.TestUtils.expectWhatTheHell;
@@ -33,9 +37,56 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv12;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv13;
 import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp256r1_sha256;
 import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.rsa_pkcs1_sha256;
+import static com.gypsyengineer.tlsbunny.utils.Utils.cast;
 import static org.junit.Assert.*;
 
 public class DeepHandshakeFuzzerTest {
+
+    @Test
+    public void fuzzing() throws IOException {
+        DeepHandshakeFuzzer fuzzer = deepHandshakeFuzzer().fuzzer(new ZeroFuzzer());
+        fuzzer.recording();
+        ClientHello hello = createClientHello(
+                fuzzer,
+                List.of(fuzzer.createExtension(
+                        ExtensionType.supported_versions, new byte[32])));
+
+        assertNotNull(hello);
+
+        byte[] encoding = hello.encoding();
+        assertFalse(Arrays.equals(encoding, new byte[encoding.length]));
+
+        fuzzer.rounds(1);
+        fuzzer.fuzzing();
+        Struct fuzzed = fuzzer.fuzz(hello);
+        assertNotEquals(hello, fuzzed);
+        assertZeroEncoding(fuzzed);
+
+        assertZeroEncoding(cast(fuzzer.fuzz(hello), ClientHello.class).element(0));
+        assertZeroEncoding(cast(fuzzer.fuzz(hello), ClientHello.class).element(1));
+        assertZeroEncoding(cast(fuzzer.fuzz(hello), ClientHello.class).element(2));
+        assertZeroEncoding(cast(fuzzer.fuzz(hello), ClientHello.class).element(3));
+        assertZeroEncoding(cast(fuzzer.fuzz(hello), ClientHello.class).element(3).element(0));
+        assertZeroEncoding(cast(fuzzer.fuzz(hello), ClientHello.class).element(4));
+        assertZeroEncoding(cast(fuzzer.fuzz(hello), ClientHello.class).element(4).element(0));
+        assertZeroEncoding(cast(fuzzer.fuzz(hello), ClientHello.class).element(5));
+        assertZeroEncoding(cast(fuzzer.fuzz(hello), ClientHello.class).element(5).element(0));
+        assertZeroEncoding(cast(fuzzer.fuzz(hello), ClientHello.class).element(5).element(0).element(0));
+        assertZeroEncoding(cast(fuzzer.fuzz(hello), ClientHello.class).element(5).element(0).element(1));
+
+        fuzzed = fuzzer.fuzz(hello);
+        assertNotEquals(hello, fuzzed);
+        assertZeroEncoding(fuzzed);
+    }
+
+    private static void assertZeroEncoding(Struct struct) throws IOException {
+        assertNotNull(struct);
+        assertArrayEquals(zeroes(struct.encodingLength()), struct.encoding());
+    }
+
+    private static byte[] zeroes(int n) {
+        return new byte[n];
+    }
 
     @Test
     public void recording() {
@@ -94,7 +145,7 @@ public class DeepHandshakeFuzzerTest {
 
         return factory.createClientHello(
                 TLSv13,
-                new Random(),
+                Random.create(),
                 new byte[32],
                 List.of(CipherSuite.TLS_AES_128_GCM_SHA256),
                 List.of(CompressionMethod.None),
@@ -366,5 +417,15 @@ public class DeepHandshakeFuzzerTest {
                     .run(new WrappingApplicationDataIntoTLSCiphertext())
                     .send(new OutgoingData());
         }
+    }
+
+    // the fuzzer just sets all bytes of encoding to zeroes
+    private static class ZeroFuzzer extends AbstractFlipFuzzer {
+
+        @Override
+        protected byte[] fuzzImpl(byte[] array) {
+            return new byte[array.length];
+        }
+
     }
 }
