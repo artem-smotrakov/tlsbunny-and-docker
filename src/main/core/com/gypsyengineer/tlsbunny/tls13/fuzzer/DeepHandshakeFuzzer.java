@@ -370,10 +370,11 @@ public class DeepHandshakeFuzzer extends StructFactoryWrapper
     }
 
     private static Struct get(Struct message, Path path) {
+        Struct result = message;
         for (int index : path.indexes) {
-            message = message.element(index);
+            result = result.element(index);
         }
-        return message;
+        return result;
     }
 
     private static HandshakeMessage set(
