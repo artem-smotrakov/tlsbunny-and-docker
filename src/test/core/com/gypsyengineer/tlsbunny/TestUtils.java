@@ -67,6 +67,14 @@ public class TestUtils {
             Object object, List<String> excluded) throws Exception {
 
         for (Method method : object.getClass().getDeclaredMethods()) {
+            if (method.getName().startsWith("$")) {
+                continue;
+            }
+
+            if (method.isSynthetic()) {
+                continue;
+            }
+
             if (method.getParameterCount() > 0) {
                 continue;
             }
