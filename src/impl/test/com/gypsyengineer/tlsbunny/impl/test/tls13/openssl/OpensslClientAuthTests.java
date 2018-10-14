@@ -19,7 +19,7 @@ public class OpensslClientAuthTests {
     @BeforeClass
     public static void setUp() throws Exception {
         server = new OpensslServer();
-        server.dockerEnv("OPTIONS", "-Verify 0 -CAfile certs/root_cert.pem");
+        server.dockerEnv("options", "-Verify 0 -CAfile certs/root_cert.pem");
         server.start();
         Utils.waitServerStart(server);
     }
