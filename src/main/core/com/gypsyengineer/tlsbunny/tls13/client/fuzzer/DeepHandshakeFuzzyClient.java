@@ -3,6 +3,7 @@ package com.gypsyengineer.tlsbunny.tls13.client.fuzzer;
 import com.gypsyengineer.tlsbunny.fuzzer.Ratio;
 import com.gypsyengineer.tlsbunny.tls13.client.Client;
 import com.gypsyengineer.tlsbunny.tls13.client.HttpsClient;
+import com.gypsyengineer.tlsbunny.tls13.client.HttpsClientAuth;
 import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.EngineException;
@@ -81,7 +82,7 @@ public class DeepHandshakeFuzzyClient implements Client, Runnable {
     }
 
     @Override
-    public Client set(Config config) {
+    public DeepHandshakeFuzzyClient set(Config config) {
         if (config instanceof FuzzerConfig == false) {
             throw whatTheHell("expected FuzzerConfig!");
         }
@@ -90,33 +91,34 @@ public class DeepHandshakeFuzzyClient implements Client, Runnable {
     }
 
     @Override
-    public Client set(StructFactory factory) {
+    public DeepHandshakeFuzzyClient set(StructFactory factory) {
         throw new UnsupportedOperationException("no factories for you!");
     }
 
     @Override
-    public Client set(Negotiator negotiator) {
+    public DeepHandshakeFuzzyClient set(Negotiator negotiator) {
         throw new UnsupportedOperationException("no negotiators for you!");
     }
 
     @Override
-    public Client set(Output output) {
+    public DeepHandshakeFuzzyClient set(Output output) {
         this.output = output;
         return this;
     }
 
     @Override
-    public Client set(Check... checks) {
+    public DeepHandshakeFuzzyClient set(Check... checks) {
         throw new UnsupportedOperationException("no check for you!");
     }
 
     @Override
-    public Client set(Analyzer analyzer) {
-        throw new UnsupportedOperationException("no analyzers for you!");
+    public DeepHandshakeFuzzyClient set(Analyzer analyzer) {
+        fuzzerConfig.analyzer(analyzer);
+        return this;
     }
 
     @Override
-    public Client connect() {
+    public DeepHandshakeFuzzyClient connect() {
         run();
         return this;
     }
@@ -251,7 +253,7 @@ public class DeepHandshakeFuzzyClient implements Client, Runnable {
 
     // fuzzer configs
 
-    public static FuzzerConfig[] configs(Config config) {
+    public static FuzzerConfig[] noClientAuth(Config config) {
         return merge(
                 enumerateByteFlipRatios(
                         () -> deepHandshakeFuzzer(),
@@ -269,6 +271,24 @@ public class DeepHandshakeFuzzyClient implements Client, Runnable {
                                 .parts(5)));
     }
 
+    public static FuzzerConfig[] clientAuth(Config config) {
+        return merge(
+                enumerateByteFlipRatios(
+                        () -> deepHandshakeFuzzer(),
+                        new FuzzerConfig(config)
+                                .client(new HttpsClientAuth())
+                                .readTimeout(long_read_timeout)
+                                .endTest(2000)
+                                .parts(5)),
+                enumerateBitFlipRatios(
+                        () -> deepHandshakeFuzzer(),
+                        new FuzzerConfig(config)
+                                .client(new HttpsClientAuth())
+                                .readTimeout(long_read_timeout)
+                                .endTest(2000)
+                                .parts(5)));
+    }
+
     private static FuzzerConfig[] enumerateByteFlipRatios(
             FuzzyStructFactoryBuilder builder, FuzzerConfig... configs) {
 
@@ -276,18 +296,17 @@ public class DeepHandshakeFuzzyClient implements Client, Runnable {
         for (FuzzerConfig config : configs) {
             for (Ratio ratio : byte_flip_ratios) {
                 FuzzerConfig newConfig = config.copy();
-                DeepHandshakeFuzzer fuzzyStructFactory = builder.build();
-                fuzzyStructFactory.fuzzer(newByteFlipFuzzer()
+                DeepHandshakeFuzzer deepHandshakeFuzzer = builder.build();
+                deepHandshakeFuzzer.fuzzer(newByteFlipFuzzer()
                         .minRatio(ratio.min())
                         .maxRatio(ratio.max()));
-                newConfig.factory(fuzzyStructFactory);
+                newConfig.factory(deepHandshakeFuzzer);
 
                 generatedConfigs.add(newConfig);
             }
         }
 
-        return generatedConfigs.toArray(
-                new FuzzerConfig[generatedConfigs.size()]);
+        return generatedConfigs.toArray(new FuzzerConfig[0]);
     }
 
     private static FuzzerConfig[] enumerateBitFlipRatios(
@@ -297,18 +316,17 @@ public class DeepHandshakeFuzzyClient implements Client, Runnable {
         for (FuzzerConfig config : configs) {
             for (Ratio ratio : bit_flip_ratios) {
                 FuzzerConfig newConfig = config.copy();
-                DeepHandshakeFuzzer fuzzyStructFactory = builder.build();
-                fuzzyStructFactory.fuzzer(newBitFlipFuzzer()
+                DeepHandshakeFuzzer deepHandshakeFuzzer = builder.build();
+                deepHandshakeFuzzer.fuzzer(newBitFlipFuzzer()
                                 .minRatio(ratio.min())
                                 .maxRatio(ratio.max()));
-                newConfig.factory(fuzzyStructFactory);
+                newConfig.factory(deepHandshakeFuzzer);
 
                 generatedConfigs.add(newConfig);
             }
         }
 
-        return generatedConfigs.toArray(
-                new FuzzerConfig[generatedConfigs.size()]);
+        return generatedConfigs.toArray(new FuzzerConfig[0]);
     }
 
     private static FuzzerConfig[] merge(FuzzerConfig[]... lists) {
@@ -316,7 +334,7 @@ public class DeepHandshakeFuzzyClient implements Client, Runnable {
         for (FuzzerConfig[] configs : lists) {
             result.addAll(List.of(configs));
         }
-        return result.toArray(new FuzzerConfig[result.size()]);
+        return result.toArray(new FuzzerConfig[0]);
     }
 
     private interface FuzzyStructFactoryBuilder {

@@ -1,5 +1,6 @@
 package com.gypsyengineer.tlsbunny;
 
+import com.gypsyengineer.tlsbunny.fuzzer.AbstractFlipFuzzer;
 import com.gypsyengineer.tlsbunny.tls.Random;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
 import com.gypsyengineer.tlsbunny.utils.WhatTheHell;
@@ -102,5 +103,14 @@ public class TestUtils {
             Object object, String... excluded) throws Exception {
 
         expectUnsupportedMethods(object, List.of(excluded));
+    }
+
+    public static class FakeFlipFuzzer extends AbstractFlipFuzzer {
+
+        @Override
+        protected byte[] fuzzImpl(byte[] array) {
+            // do nothing
+            return array;
+        }
     }
 }

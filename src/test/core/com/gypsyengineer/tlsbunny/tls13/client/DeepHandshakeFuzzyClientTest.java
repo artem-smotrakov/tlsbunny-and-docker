@@ -2,13 +2,15 @@ package com.gypsyengineer.tlsbunny.tls13.client;
 
 import com.gypsyengineer.tlsbunny.TestUtils;
 import com.gypsyengineer.tlsbunny.fuzzer.AbstractFlipFuzzer;
-import com.gypsyengineer.tlsbunny.tls13.client.fuzzer.MutatedClient;
-import com.gypsyengineer.tlsbunny.tls13.connection.*;
+import com.gypsyengineer.tlsbunny.tls13.client.fuzzer.DeepHandshakeFuzzyClient;
+import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
+import com.gypsyengineer.tlsbunny.tls13.connection.BaseEngineFactory;
+import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Side;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.IncomingChangeCipherSpec;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.OutgoingChangeCipherSpec;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
-import com.gypsyengineer.tlsbunny.tls13.fuzzer.MutatedStructFactory;
+import com.gypsyengineer.tlsbunny.tls13.fuzzer.DeepHandshakeFuzzer;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.server.SingleThreadServer;
 import com.gypsyengineer.tlsbunny.tls13.utils.FuzzerConfig;
@@ -20,12 +22,9 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.gypsyengineer.tlsbunny.tls13.client.fuzzer.MutatedClient.*;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.application_data;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
 import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.*;
-import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.certificate_verify;
-import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.finished;
 import static com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup.secp256r1;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv12;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv13;
@@ -33,7 +32,7 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
-public class MutatedClientTest {
+public class DeepHandshakeFuzzyClientTest {
 
     private static final int start = 21;
     private static final int end = 22;
@@ -42,48 +41,13 @@ public class MutatedClientTest {
     private Config clientConfig = SystemPropertiesConfig.load();
 
     @Test
-    public void tlsPlaintext() throws Exception {
-        test(minimized(tlsPlaintextConfigs(clientConfig)));
+    public void noClientAuth() throws Exception {
+        test(minimized(DeepHandshakeFuzzyClient.noClientAuth(clientConfig)));
     }
 
     @Test
-    public void handshake() throws Exception {
-        test(minimized(handshakeConfigs(clientConfig)));
-    }
-
-    @Test
-    public void clientHello() throws Exception {
-        test(minimized(clientHelloConfigs(clientConfig)));
-    }
-
-    @Test
-    public void ccs() throws Exception {
-        test(minimized(ccsConfigs(clientConfig)));
-    }
-
-    @Test
-    public void finished() throws Exception {
-        test(minimized(finishedConfigs(clientConfig)));
-    }
-
-    @Test
-    public void cipherSuites() throws Exception {
-        test(minimized(cipherSuitesConfigs(clientConfig)));
-    }
-
-    @Test
-    public void extensionVector() throws Exception {
-        test(minimized(extensionVectorConfigs(clientConfig)));
-    }
-
-    @Test
-    public void legacySessionId() throws Exception {
-        test(minimized(legacySessionIdConfigs(clientConfig)));
-    }
-
-    @Test
-    public void legacyCompressionMethods() throws Exception {
-        test(minimized(legacyCompressionMethodsConfigs(clientConfig)));
+    public void clientAuth() throws Exception {
+        test(minimized(DeepHandshakeFuzzyClient.clientAuth(clientConfig)));
     }
 
     public void test(FuzzerConfig[] configs) throws Exception {
@@ -105,17 +69,18 @@ public class MutatedClientTest {
                 .set(serverOutput)
                 .maxConnections(end - start + 2);
 
-        MutatedClient fuzzyClient = new MutatedClient(clientOutput, fuzzerConfig);
+        DeepHandshakeFuzzyClient deepHandshakeFuzzyClient =
+                new DeepHandshakeFuzzyClient(clientOutput, fuzzerConfig);
 
         TestAnalyzer analyzer = new TestAnalyzer();
         analyzer.set(clientOutput);
 
-        try (fuzzyClient; server; clientOutput; serverOutput) {
+        try (deepHandshakeFuzzyClient; server; clientOutput; serverOutput) {
             server.start();
 
             fuzzerConfig.port(server.port());
 
-            fuzzyClient
+            deepHandshakeFuzzyClient
                     .set(fuzzerConfig)
                     .set(clientOutput)
                     .set(analyzer)
@@ -272,7 +237,7 @@ public class MutatedClientTest {
             config.endTest(end);
             config.parts(parts);
 
-            MutatedStructFactory factory = (MutatedStructFactory) config.factory();
+            DeepHandshakeFuzzer factory = (DeepHandshakeFuzzer) config.factory();
             factory.fuzzer(new TestUtils.FakeFlipFuzzer());
         }
 
