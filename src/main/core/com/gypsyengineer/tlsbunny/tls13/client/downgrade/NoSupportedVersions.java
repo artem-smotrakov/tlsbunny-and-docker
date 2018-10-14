@@ -26,10 +26,6 @@ public class NoSupportedVersions extends SingleConnectionClient {
         }
     }
 
-    public NoSupportedVersions() {
-        //checks = List.of(new DowngradeMessageCheck().ifTLSv12());
-    }
-
     public static NoSupportedVersions run(Output output, Config config) throws Exception {
         NoSupportedVersions client = (NoSupportedVersions) new NoSupportedVersions()
                 .set(config)
