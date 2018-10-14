@@ -24,6 +24,7 @@ public class GeneratingClientHello extends AbstractAction<GeneratingClientHello>
     private KeyShareFactory[] keyShareFactories = new KeyShareFactory[0];
     private byte[] cookie = NO_COOKIE;
     private MaxFragmentLength maxFragmentLength = NO_MAX_FRAGMENT_LENGTH;
+    private CipherSuite[] cipherSuites = { CipherSuite.TLS_AES_128_GCM_SHA256 };
 
     @Override
     public String name() {
@@ -77,6 +78,11 @@ public class GeneratingClientHello extends AbstractAction<GeneratingClientHello>
         return this;
     }
 
+    public GeneratingClientHello cipherSuites(CipherSuite... cipherSuites) {
+        this.cipherSuites = cipherSuites;
+        return this;
+    }
+
     @Override
     public Action run() throws IOException, NegotiatorException {
         List<Extension> extensions = new ArrayList<>();
@@ -112,7 +118,7 @@ public class GeneratingClientHello extends AbstractAction<GeneratingClientHello>
                 legacyVersion,
                 createRandom(),
                 StructFactory.EMPTY_SESSION_ID,
-                List.of(CipherSuite.TLS_AES_128_GCM_SHA256),
+                List.of(cipherSuites),
                 List.of(CompressionMethod.None),
                 extensions);
 
