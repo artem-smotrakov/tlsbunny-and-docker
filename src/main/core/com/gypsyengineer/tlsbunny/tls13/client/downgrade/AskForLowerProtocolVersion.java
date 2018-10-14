@@ -3,16 +3,14 @@ package com.gypsyengineer.tlsbunny.tls13.client.downgrade;
 import com.gypsyengineer.tlsbunny.tls13.client.Client;
 import com.gypsyengineer.tlsbunny.tls13.client.SingleConnectionClient;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
-import com.gypsyengineer.tlsbunny.tls13.connection.action.DowngradeMessageCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
+import com.gypsyengineer.tlsbunny.tls13.struct.CipherSuite;
 import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.Output;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
-
-import java.util.List;
 
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.alert;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
@@ -36,20 +34,6 @@ public class AskForLowerProtocolVersion extends SingleConnectionClient {
         }
     }
 
-    public AskForLowerProtocolVersion() {
-        DowngradeMessageCheck check = new DowngradeMessageCheck();
-
-        if (TLSv13.equals(version)) {
-            check.ifNoDowngrade();
-        } else if (TLSv12.equals(version)) {
-            check.ifTLSv12();
-        } else {
-            check.ifBelowTLSv12();
-        }
-
-        checks = List.of(check);
-    }
-
     public static Client run(Output output, Config config, ProtocolVersion version) {
         return new AskForLowerProtocolVersion()
                         .set(version)
@@ -71,11 +55,15 @@ public class AskForLowerProtocolVersion extends SingleConnectionClient {
                 .set(factory)
                 .set(output)
 
-                // send ClientHello with a SupportedVersions extension
-                // which contains TLSv12
+                // send ClientHello
                 .run(new GeneratingClientHello()
                         .legacyVersion(TLSv12)
                         .groups(secp256r1)
+                        .cipherSuites(
+                                CipherSuite.TLS_AES_128_GCM_SHA256,
+                                factory.createCipherSuite(0x00, 0x2F),
+                                factory.createCipherSuite(0xC0, 0x09),
+                                factory.createCipherSuite(0xC0, 0x13))
                         .supportedVersions(version)
                         .signatureSchemes(ecdsa_secp256r1_sha256)
                         .keyShareEntries(context -> context.negotiator.createKeyShareEntry()))
@@ -96,7 +84,8 @@ public class AskForLowerProtocolVersion extends SingleConnectionClient {
                 .run(new ProcessingHandshake()
                         .expect(server_hello)
                         .updateContext(Context.Element.server_hello))
-                .run(new ProcessingServerHello())
+                .run(new CheckingDowngradeMessageInServerHello()
+                        .expect(TLSv12))
 
                 // send an alert
                 .run(new GeneratingAlert())
