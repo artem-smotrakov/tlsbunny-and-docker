@@ -20,7 +20,7 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup.secp256r1;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.*;
 import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp256r1_sha256;
 
-public class AskForLowerProtocolVersion extends SingleConnectionClient {
+public class CheckDowngradeMessage extends SingleConnectionClient {
 
     private ProtocolVersion version = TLSv12;
 
@@ -35,14 +35,14 @@ public class AskForLowerProtocolVersion extends SingleConnectionClient {
     }
 
     public static Client run(Output output, Config config, ProtocolVersion version) {
-        return new AskForLowerProtocolVersion()
-                        .set(version)
+        return new CheckDowngradeMessage()
+                        .expect(version)
                         .set(config)
                         .set(output)
                         .set(StructFactory.getDefault());
     }
 
-    public AskForLowerProtocolVersion set(ProtocolVersion version) {
+    public CheckDowngradeMessage expect(ProtocolVersion version) {
         this.version = version;
         return this;
     }
@@ -85,7 +85,7 @@ public class AskForLowerProtocolVersion extends SingleConnectionClient {
                         .expect(server_hello)
                         .updateContext(Context.Element.server_hello))
                 .run(new CheckingDowngradeMessageInServerHello()
-                        .expect(TLSv12))
+                        .expect(version))
 
                 // send an alert
                 .run(new GeneratingAlert())
