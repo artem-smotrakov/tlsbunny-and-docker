@@ -4,6 +4,7 @@ import com.gypsyengineer.tlsbunny.impl.test.tls13.TestForServer;
 import com.gypsyengineer.tlsbunny.impl.test.tls13.Utils;
 import com.gypsyengineer.tlsbunny.tls13.client.HttpsClient;
 import com.gypsyengineer.tlsbunny.tls13.client.downgrade.CheckDowngradeMessage;
+import com.gypsyengineer.tlsbunny.tls13.client.downgrade.NoSupportedVersions;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -72,6 +73,14 @@ public class OpensslDowngradeProtocolTests {
     public void noDowngradeMessage() throws Exception {
         new TestForServer()
                 .set(new CheckDowngradeMessage().expect(TLSv13))
+                .set(server)
+                .run();
+    }
+
+    @Test
+    public void noSupportedVersions() throws Exception {
+        new TestForServer()
+                .set(new NoSupportedVersions())
                 .set(server)
                 .run();
     }

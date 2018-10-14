@@ -61,9 +61,9 @@ public class CheckDowngradeMessage extends SingleConnectionClient {
                         .groups(secp256r1)
                         .cipherSuites(
                                 CipherSuite.TLS_AES_128_GCM_SHA256,
-                                factory.createCipherSuite(0x00, 0x2F),
-                                factory.createCipherSuite(0xC0, 0x09),
-                                factory.createCipherSuite(0xC0, 0x13))
+                                factory.createCipherSuite(0x00, 0x2F), // TLS_RSA_WITH_AES_128_CBC_SHA
+                                factory.createCipherSuite(0xC0, 0x09), // TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA
+                                factory.createCipherSuite(0xC0, 0x13)) // TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA
                         .supportedVersions(version)
                         .signatureSchemes(ecdsa_secp256r1_sha256)
                         .keyShareEntries(context -> context.negotiator.createKeyShareEntry()))
