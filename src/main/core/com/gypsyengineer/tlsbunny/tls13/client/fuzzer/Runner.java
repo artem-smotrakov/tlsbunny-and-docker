@@ -15,7 +15,7 @@ import static com.gypsyengineer.tlsbunny.utils.Utils.info;
 public class Runner {
 
     private FuzzerConfig[] fuzzerConfigs;
-    private FuzzerFactory fuzzerFactory;
+    private ClientFactory fuzzerFactory;
     private Output output;
     private Check[] checks;
     private Analyzer analyzer;
@@ -26,7 +26,7 @@ public class Runner {
         return this;
     }
 
-    public Runner set(FuzzerFactory fuzzerFactory) {
+    public Runner set(ClientFactory fuzzerFactory) {
         this.fuzzerFactory = fuzzerFactory;
         return this;
     }
@@ -101,7 +101,7 @@ public class Runner {
         return configs;
     }
 
-    public interface FuzzerFactory {
+    public interface ClientFactory {
         Runnable create(FuzzerConfig config, Output output);
     }
 

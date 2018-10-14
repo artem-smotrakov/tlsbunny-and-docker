@@ -5,7 +5,6 @@ import com.gypsyengineer.tlsbunny.tls.Random;
 import com.gypsyengineer.tlsbunny.tls.Struct;
 import com.gypsyengineer.tlsbunny.tls.Vector;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
-import com.gypsyengineer.tlsbunny.utils.HasOutput;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
 import java.io.IOException;
@@ -19,7 +18,7 @@ import static com.gypsyengineer.tlsbunny.utils.Utils.cast;
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public class DeepHandshakeFuzzer extends StructFactoryWrapper
-        implements HasOutput<DeepHandshakeFuzzer> {
+        implements Fuzzer<HandshakeMessage> {
 
     private Output output;
     private Fuzzer<byte[]> fuzzer;
@@ -33,7 +32,17 @@ public class DeepHandshakeFuzzer extends StructFactoryWrapper
     private int rounds = 10;
 
     public static DeepHandshakeFuzzer deepHandshakeFuzzer() {
-        return new DeepHandshakeFuzzer(StructFactory.getDefault(), new Output());
+        return deepHandshakeFuzzer(StructFactory.getDefault(), new Output());
+    }
+
+    public static DeepHandshakeFuzzer deepHandshakeFuzzer(Output output) {
+        return deepHandshakeFuzzer(StructFactory.getDefault(), output);
+    }
+
+    public static DeepHandshakeFuzzer deepHandshakeFuzzer(
+            StructFactory factory, Output output) {
+
+        return new DeepHandshakeFuzzer(factory, output);
     }
 
     private DeepHandshakeFuzzer(StructFactory factory, Output output) {
@@ -90,15 +99,18 @@ public class DeepHandshakeFuzzer extends StructFactoryWrapper
         return this;
     }
 
-    HandshakeMessage fuzz(HandshakeMessage message) {
+    @Override
+    public HandshakeMessage fuzz(HandshakeMessage message) {
         message = (HandshakeMessage) message.copy();
 
         if (mode != Mode.fuzzing) {
-            throw whatTheHell("can't start fuzzing in mode '%s'", mode);
+            throw whatTheHell(
+                    "could not start fuzzing in mode '%s'", mode);
         }
 
         if (recorded.isEmpty()) {
-            throw whatTheHell("can't start fuzzing since no messages were targeted!");
+            throw whatTheHell(
+                    "could not start fuzzing since no messages were targeted!");
         }
 
         if (!currentHolder().match(message)) {
@@ -116,10 +128,21 @@ public class DeepHandshakeFuzzer extends StructFactoryWrapper
         }
 
         byte[] fuzzed = fuzzer.fuzz(encoding);
-        HandshakeMessage fuzzedMessage = set(message, currentPath(), fuzzedHandshakeMessage(fuzzed));
+        HandshakeMessage fuzzedMessage = set(
+                message, currentPath(), fuzzedHandshakeMessage(fuzzed));
 
         explain(target.toString(), encoding, fuzzed);
 
+        return fuzzedMessage;
+    }
+
+    @Override
+    public boolean canFuzz() {
+        return fuzzer.canFuzz();
+    }
+
+    @Override
+    public void moveOn() {
         boolean finished = incrementRound();
         if (finished) {
             finished = incrementPath();
@@ -128,7 +151,19 @@ public class DeepHandshakeFuzzer extends StructFactoryWrapper
             }
         }
 
-        return fuzzedMessage;
+        fuzzer.moveOn();
+    }
+
+    @Override
+    public long currentTest() {
+        // TODO: it should not just return fuzzer.currentTest()
+        return fuzzer.currentTest();
+    }
+
+    @Override
+    public void currentTest(long test) {
+        // TODO: it should not just use fuzzer.currentTest()
+        fuzzer.currentTest(test);
     }
 
     private void explain(String what, byte[] encoding, byte[] fuzzed) {

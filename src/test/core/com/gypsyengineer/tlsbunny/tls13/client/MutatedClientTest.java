@@ -1,6 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls13.client;
 
-import com.gypsyengineer.tlsbunny.tls13.client.fuzzer.FuzzyHttpsClient;
+import com.gypsyengineer.tlsbunny.tls13.client.fuzzer.MutatedClient;
 import com.gypsyengineer.tlsbunny.tls13.connection.*;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Side;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.IncomingChangeCipherSpec;
@@ -8,7 +8,6 @@ import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.OutgoingChan
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.connection.check.AlertCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.check.Check;
-import com.gypsyengineer.tlsbunny.tls13.connection.check.FailureCheck;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.server.SingleThreadServer;
 import com.gypsyengineer.tlsbunny.tls13.struct.AlertDescription;
@@ -22,7 +21,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.gypsyengineer.tlsbunny.tls13.client.fuzzer.FuzzyClient.*;
+import static com.gypsyengineer.tlsbunny.tls13.client.fuzzer.MutatedClient.*;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.alert;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.application_data;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
@@ -37,22 +36,23 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
- * This is just a smoke test for the fuzzy https client
+ * This is just a smoke test for MutatedClient
  * because the server sends an alert immediately,
  * so that the fuzzer may not be able to fuzz a message
  * if it goes later in the handshake process (for example, Finished message).
+ *
+ * TODO: use a fake byte array fuzzer which does noting
  */
-public class FuzzyClientTest {
+public class MutatedClientTest {
 
     private static final int start = 21;
-    private static final int end = 23;
+    private static final int end = 22;
     private static final int parts = 1;
 
     private Config clientConfig = SystemPropertiesConfig.load();
 
     private static final Check[] checks = {
-            new AlertCheck(),
-            new FailureCheck()
+            new AlertCheck()
     };
 
     @Test
@@ -101,6 +101,12 @@ public class FuzzyClientTest {
     }
 
     public void test(FuzzerConfig[] configs) throws Exception {
+        for (FuzzerConfig config : configs) {
+            test(config);
+        }
+    }
+
+    public void test(FuzzerConfig fuzzerConfig) throws Exception {
         Output serverOutput = new Output("server");
         Output clientOutput = new Output("client");
 
@@ -113,7 +119,7 @@ public class FuzzyClientTest {
                 .set(serverOutput)
                 .maxConnections(end - start + 2);
 
-        FuzzyHttpsClient fuzzyClient = new FuzzyHttpsClient();
+        MutatedClient fuzzyClient = new MutatedClient(clientOutput, fuzzerConfig);
 
         TestAnalyzer analyzer = new TestAnalyzer();
         analyzer.set(clientOutput);
@@ -121,12 +127,10 @@ public class FuzzyClientTest {
         try (fuzzyClient; server; clientOutput; serverOutput) {
             server.start();
 
-            for (FuzzerConfig fuzzerConfig : configs) {
-                fuzzerConfig.port(server.port());
-            }
+            fuzzerConfig.port(server.port());
 
-            fuzzyClient.set(configs)
-                    .set(clientConfig)
+            fuzzyClient
+                    .set(fuzzerConfig)
                     .set(clientOutput)
                     .set(analyzer)
                     .connect();

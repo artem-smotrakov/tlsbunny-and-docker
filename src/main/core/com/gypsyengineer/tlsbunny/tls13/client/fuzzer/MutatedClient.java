@@ -1,14 +1,18 @@
 package com.gypsyengineer.tlsbunny.tls13.client.fuzzer;
 
+import com.gypsyengineer.tlsbunny.fuzzer.Ratio;
 import com.gypsyengineer.tlsbunny.tls.UInt16;
 import com.gypsyengineer.tlsbunny.tls.UInt24;
 import com.gypsyengineer.tlsbunny.tls13.client.Client;
 import com.gypsyengineer.tlsbunny.tls13.client.HttpsClient;
 import com.gypsyengineer.tlsbunny.tls13.client.HttpsClientAuth;
+import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.EngineException;
+import com.gypsyengineer.tlsbunny.tls13.connection.check.Check;
 import com.gypsyengineer.tlsbunny.tls13.connection.check.SuccessCheck;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.FuzzyStructFactory;
+import com.gypsyengineer.tlsbunny.tls13.handshake.Negotiator;
 import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
 import com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType;
 import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
@@ -35,10 +39,7 @@ import static com.gypsyengineer.tlsbunny.tls13.fuzzer.SimpleVectorFuzzer.simpleV
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Target.*;
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
-public class FuzzyClient implements Runnable {
-
-    public static Runner.FuzzerFactory fuzzerFactory =
-            (config, output) -> new FuzzyClient(output, config);
+public class MutatedClient implements Client, Runnable {
 
     public static final int TLS_PLAINTEXT_HEADER_LENGTH =
             ContentType.ENCODING_LENGTH + ProtocolVersion.ENCODING_LENGTH
@@ -85,20 +86,78 @@ public class FuzzyClient implements Runnable {
             new Ratio(0.08, 0.09),
     };
 
-    private final Output output;
-    private final FuzzerConfig fuzzerConfig;
+    private Output output;
+    private FuzzerConfig fuzzerConfig;
 
     private boolean strict = true;
-    private boolean needSmokeTest = true;
 
-    public FuzzyClient(Output output, FuzzerConfig fuzzerConfig) {
+    public MutatedClient(Output output, FuzzerConfig fuzzerConfig) {
         this.output = output;
         this.fuzzerConfig = fuzzerConfig;
     }
 
-    public FuzzyClient noSmokeTest() {
-        needSmokeTest = false;
+    @Override
+    public Config config() {
+        return fuzzerConfig;
+    }
+
+    @Override
+    public MutatedClient set(Config config) {
+        if (config instanceof FuzzerConfig == false) {
+            throw whatTheHell("expected FuzzerConfig!");
+        }
+        this.fuzzerConfig = (FuzzerConfig) config;
         return this;
+    }
+
+    @Override
+    public MutatedClient set(StructFactory factory) {
+        throw new UnsupportedOperationException("no factories for you!");
+    }
+
+    @Override
+    public MutatedClient set(Negotiator negotiator) {
+        throw new UnsupportedOperationException("no negotiators for you!");
+    }
+
+    @Override
+    public MutatedClient set(Output output) {
+        this.output = output;
+        return this;
+    }
+
+    @Override
+    public MutatedClient set(Check... checks) {
+        throw new UnsupportedOperationException("no check for you!");
+    }
+
+    @Override
+    public MutatedClient set(Analyzer analyzer) {
+        fuzzerConfig.analyzer(analyzer);
+        return this;
+    }
+
+    @Override
+    public MutatedClient connect() {
+        run();
+        return this;
+    }
+
+    @Override
+    public Engine engine() {
+        throw new UnsupportedOperationException("no engines for you!");
+    }
+
+    @Override
+    public Engine[] engines() {
+        throw new UnsupportedOperationException("no engines for you!");
+    }
+
+    @Override
+    public void close() {
+        if (output != null) {
+            output.flush();
+        }
     }
 
     @Override
@@ -106,7 +165,13 @@ public class FuzzyClient implements Runnable {
         if (fuzzerConfig.noFactory()) {
             throw whatTheHell("no fuzzy set specified!");
         }
-        FuzzyStructFactory fuzzyStructFactory = fuzzerConfig.factory();
+
+        StructFactory factory = fuzzerConfig.factory();
+        if (factory instanceof FuzzyStructFactory == false) {
+            throw whatTheHell("expected FuzzyStructFactory!");
+        }
+
+        FuzzyStructFactory fuzzyStructFactory = (FuzzyStructFactory) factory;
         fuzzyStructFactory.set(output);
 
         if (fuzzerConfig.noClient()) {
@@ -114,26 +179,21 @@ public class FuzzyClient implements Runnable {
         }
         Client client = fuzzerConfig.client();
 
-        if (needSmokeTest) {
-            try {
-                output.info("run a smoke test before fuzzing");
-                client.set(StructFactory.getDefault())
-                        .set(fuzzerConfig)
-                        .set(output)
-                        .connect()
-                        .engine()
-                        .run(new SuccessCheck());
-            } catch (Exception e) {
-                reportError("smoke test failed", e);
-                output.achtung("skip fuzzing");
-                return;
-            } finally {
-                output.flush();
-            }
-            output.info("smoke test passed, start fuzzing");
-        } else {
-            output.info("don't run smoke test, start fuzzing");
+        try {
+            output.info("run a smoke test before fuzzing");
+            client.set(StructFactory.getDefault())
+                    .set(fuzzerConfig)
+                    .set(output)
+                    .set(new SuccessCheck())
+                    .connect();
+        } catch (Exception e) {
+            reportError("smoke test failed", e);
+            output.achtung("skip fuzzing");
+            return;
+        } finally {
+            output.flush();
         }
+        output.info("smoke test passed, start fuzzing");
 
         output.info("run fuzzer config:");
         output.info("\ttarget     = %s", fuzzyStructFactory.target());
@@ -491,6 +551,8 @@ public class FuzzyClient implements Runnable {
         return legacyCompressionMethodsConfigs(SystemPropertiesConfig.load());
     }
 
+    // helper methods
+
     private static FuzzerConfig[] enumerateByteFlipRatios(
             FuzzyStructFactoryBuilder builder, FuzzerConfig... configs) {
 
@@ -500,8 +562,8 @@ public class FuzzyClient implements Runnable {
                 FuzzerConfig newConfig = config.copy();
                 FuzzyStructFactory fuzzyStructFactory = builder.build();
                 fuzzyStructFactory.fuzzer(newByteFlipFuzzer()
-                        .minRatio(ratio.min)
-                        .maxRatio(ratio.max));
+                        .minRatio(ratio.min())
+                        .maxRatio(ratio.max()));
                 newConfig.factory(fuzzyStructFactory);
 
                 generatedConfigs.add(newConfig);
@@ -521,8 +583,8 @@ public class FuzzyClient implements Runnable {
                 FuzzerConfig newConfig = config.copy();
                 FuzzyStructFactory fuzzyStructFactory = builder.build();
                 fuzzyStructFactory.fuzzer(newBitFlipFuzzer()
-                                .minRatio(ratio.min)
-                                .maxRatio(ratio.max));
+                                .minRatio(ratio.min())
+                                .maxRatio(ratio.max()));
                 newConfig.factory(fuzzyStructFactory);
 
                 generatedConfigs.add(newConfig);
@@ -539,16 +601,6 @@ public class FuzzyClient implements Runnable {
             result.addAll(List.of(configs));
         }
         return result.toArray(new FuzzerConfig[result.size()]);
-    }
-
-    private static class Ratio {
-        private final double min;
-        private final double max;
-
-        private Ratio(double min, double max) {
-            this.min = min;
-            this.max = max;
-        }
     }
 
     private interface FuzzyStructFactoryBuilder {
