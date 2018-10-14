@@ -139,7 +139,7 @@ public class Utils {
         }
 
         ByteBuffer buffer = ByteBuffer.allocate(total);
-        encodings.forEach(endoding -> buffer.put(endoding));
+        encodings.forEach(encoding -> buffer.put(encoding));
 
         return buffer.array();
     }
@@ -181,5 +181,17 @@ public class Utils {
                     clazz.getSimpleName(), object.getClass().getSimpleName());
         }
         return (T) object;
+    }
+
+    public static boolean lastBytesEquals(byte[] bytes, byte[] message) {
+        int i = bytes.length - message.length;
+        int j = 0;
+        while (j < message.length) {
+            if (bytes[i++] != message[j++]) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
