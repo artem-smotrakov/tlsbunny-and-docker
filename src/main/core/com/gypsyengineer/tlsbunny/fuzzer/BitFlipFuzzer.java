@@ -1,6 +1,6 @@
 package com.gypsyengineer.tlsbunny.fuzzer;
 
-import java.util.BitSet;
+import java.util.*;
 
 public class BitFlipFuzzer extends AbstractFlipFuzzer {
 
@@ -9,7 +9,7 @@ public class BitFlipFuzzer extends AbstractFlipFuzzer {
     }
 
     public BitFlipFuzzer() {
-        super();
+        this(DEFAULT_MIN_RATIO, DEFAULT_MAX_RATIO);
     }
 
     public BitFlipFuzzer(double minRatio, double maxRatio) {
@@ -37,24 +37,17 @@ public class BitFlipFuzzer extends AbstractFlipFuzzer {
             n = 1;
         }
 
-        int[] processed = new int[n];
+        Set<Integer> processed = new HashSet<>();
         int i = 0;
         while (i < n) {
             int pos = startBit + random.nextInt(endBit - startBit);
 
-            boolean found = false;
-            for (int k = 0; k < n; k++) {
-                if (processed[k] == pos) {
-                    found = true;
-                    break;
-                }
-            }
-
-            if (found) {
+            if (processed.contains(pos)) {
                 continue;
             }
 
             bits.flip(pos);
+            processed.add(pos);
             i++;
         }
 
