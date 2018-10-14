@@ -1,13 +1,13 @@
 #!/bin/bash
 
 openssl_src=${1}
+options=${options:-"-tls1_3"}
 
 lcov --zerocounters --directory ${openssl_src}
 lcov --no-external --capture --initial --directory ${openssl_src} --output-file base.info
 
 openssl s_server -key certs/server_key.pem -cert certs/server_cert.der \
-	-certform der -accept 10101 -www -tls1_3 \
-	${OPTIONS}
+	-certform der -accept 10101 -www ${options}
 
 timestamp=$(date +%s)
 cc_report="/var/reports/cc_report.${timestamp}"

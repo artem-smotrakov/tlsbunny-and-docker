@@ -146,7 +146,7 @@ public class OpensslServer implements Server, AutoCloseable {
         }
 
         // note: -debug and -tlsextdebug options enable more output
-        //       (they need to be passed to s_server via OPTIONS variable)
+        //       (they need to be passed to s_server via "options" variable)
 
         command.add("--name");
         command.add(containerName);

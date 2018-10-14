@@ -15,7 +15,7 @@ import static com.gypsyengineer.tlsbunny.utils.Achtung.achtung;
 public class Utils {
 
     public static final int delay = 500; // in millis
-    public static final int no_timeout = -1;
+    public static final int default_timeout = 3 * 60 * 1000; // 3 minutes, in millis
 
     public static void delay(long millis) {
         try {
@@ -54,7 +54,7 @@ public class Utils {
     public static void waitServerStart(Server server)
             throws IOException, InterruptedException {
 
-        waitServerStart(server, no_timeout);
+        waitServerStart(server, default_timeout);
     }
 
     public static void waitServerStart(Server server, long timeout)
@@ -73,7 +73,7 @@ public class Utils {
     public static void waitServerStop(Server server)
             throws IOException, InterruptedException {
 
-        waitServerStop(server, no_timeout);
+        waitServerStop(server, default_timeout);
     }
 
     public static void waitServerStop(Server server, long timeout)
@@ -92,7 +92,7 @@ public class Utils {
     public static void waitServerReady(OpensslServer server)
             throws IOException, InterruptedException {
 
-        waitServerReady(server, no_timeout);
+        waitServerReady(server, default_timeout);
     }
 
     public static void waitServerReady(OpensslServer server, long timeout)

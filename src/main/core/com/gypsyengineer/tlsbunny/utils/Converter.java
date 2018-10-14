@@ -28,7 +28,7 @@ public class Converter {
     public static int bytes2int(byte[] bytes) {
         //int n = 0;
         //for (int i = 0; i < bytes.length; i++) {
-        //    n += bytes[i] * ((int) Math.pow(255, i));
+        //    n |= (bytes[i] & 0xFF) << (8 * (bytes.length - i - 1));
         //}
         //return n;
         return ByteBuffer.wrap(leftPadding(bytes, INTEGER_ENCODING_LENGTH)).getInt();
