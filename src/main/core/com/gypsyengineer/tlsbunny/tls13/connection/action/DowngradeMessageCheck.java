@@ -6,6 +6,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
 import com.gypsyengineer.tlsbunny.tls13.struct.ServerHello;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 
+import static com.gypsyengineer.tlsbunny.utils.Utils.lastBytesEquals;
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public class DowngradeMessageCheck extends AbstractCheck {
@@ -74,17 +75,5 @@ public class DowngradeMessageCheck extends AbstractCheck {
     @Override
     public String name() {
         return "downgrade message in ServerHello.random";
-    }
-
-    private static boolean lastBytesEquals(byte[] bytes, byte[] message) {
-        int i = bytes.length - message.length;
-        int j = 0;
-        while (j < message.length) {
-            if (bytes[i++] != message[j++]) {
-                return false;
-            }
-        }
-
-        return true;
     }
 }
