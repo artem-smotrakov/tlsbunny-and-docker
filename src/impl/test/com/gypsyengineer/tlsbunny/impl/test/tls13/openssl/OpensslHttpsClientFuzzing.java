@@ -2,7 +2,7 @@ package com.gypsyengineer.tlsbunny.impl.test.tls13.openssl;
 
 import com.gypsyengineer.tlsbunny.impl.test.tls13.TestForServer;
 import com.gypsyengineer.tlsbunny.impl.test.tls13.Utils;
-import com.gypsyengineer.tlsbunny.tls13.client.FuzzyHttpsClient;
+import com.gypsyengineer.tlsbunny.tls13.client.fuzzer.FuzzyHttpsClient;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 import org.junit.AfterClass;
@@ -13,7 +13,7 @@ import org.junit.Test;
 import java.io.IOException;
 
 import static com.gypsyengineer.tlsbunny.impl.test.tls13.Utils.checkForASanFindings;
-import static com.gypsyengineer.tlsbunny.tls13.client.FuzzyClient.*;
+import static com.gypsyengineer.tlsbunny.tls13.client.fuzzer.FuzzyClient.*;
 
 public class OpensslHttpsClientFuzzing {
 

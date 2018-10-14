@@ -1,5 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls13.client;
 
+import com.gypsyengineer.tlsbunny.tls13.client.ccs.CCSAfterHandshake;
 import com.gypsyengineer.tlsbunny.tls13.connection.*;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.ActionFailed;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Side;

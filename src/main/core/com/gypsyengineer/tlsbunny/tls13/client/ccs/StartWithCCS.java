@@ -1,10 +1,12 @@
-package com.gypsyengineer.tlsbunny.tls13.client;
+package com.gypsyengineer.tlsbunny.tls13.client.ccs;
 
-import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
-import com.gypsyengineer.tlsbunny.tls13.connection.check.NoAlertCheck;
+import com.gypsyengineer.tlsbunny.tls13.client.SingleConnectionClient;
+import com.gypsyengineer.tlsbunny.tls13.connection.*;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Side;
-import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.*;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.IncomingMessages;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.OutgoingChangeCipherSpec;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
+import com.gypsyengineer.tlsbunny.tls13.connection.check.AlertCheck;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
@@ -18,20 +20,18 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv12;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv13;
 import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp256r1_sha256;
 
-public class MultipleCCS extends SingleConnectionClient {
-
-    public static final int number_of_ccs = 10;
+public class StartWithCCS extends SingleConnectionClient {
 
     public static void main(String[] args) throws Exception {
         try (Output output = new Output()) {
-            new MultipleCCS()
+            new StartWithCCS()
                     .set(output)
                     .connect();
         }
     }
 
-    public MultipleCCS() {
-        checks = List.of(new NoAlertCheck());
+    public StartWithCCS() {
+        checks = List.of(new AlertCheck());
     }
 
     @Override
@@ -41,6 +41,8 @@ public class MultipleCCS extends SingleConnectionClient {
                 .target(config.port())
                 .set(factory)
                 .set(output)
+
+                .send(new OutgoingChangeCipherSpec())
 
                 // send ClientHello
                 .run(new GeneratingClientHello()
@@ -56,15 +58,11 @@ public class MultipleCCS extends SingleConnectionClient {
                         .version(TLSv12))
                 .send(new OutgoingData())
 
-                .send(number_of_ccs, () -> new OutgoingChangeCipherSpec())
-
                 // receive a ServerHello, EncryptedExtensions, Certificate,
                 // CertificateVerify and Finished messages
                 // TODO: how can we make it more readable?
                 .loop(context -> !context.hasServerFinished() && !context.hasAlert())
-                .receive(() -> new IncomingMessages(Side.client))
-
-                .send(number_of_ccs, () -> new OutgoingChangeCipherSpec())
+                    .receive(() -> new IncomingMessages(Side.client))
 
                 // send Finished
                 .run(new GeneratingFinished())
@@ -81,7 +79,7 @@ public class MultipleCCS extends SingleConnectionClient {
 
                 // receive session tickets and application data
                 .loop(context -> !context.receivedApplicationData() && !context.hasAlert())
-                .receive(() -> new IncomingMessages(Side.client));
+                    .receive(() -> new IncomingMessages(Side.client));
     }
 
 }

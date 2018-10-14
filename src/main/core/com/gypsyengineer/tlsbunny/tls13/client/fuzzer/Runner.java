@@ -1,5 +1,6 @@
-package com.gypsyengineer.tlsbunny.tls13.client;
+package com.gypsyengineer.tlsbunny.tls13.client.fuzzer;
 
+import com.gypsyengineer.tlsbunny.tls13.utils.SplittedFuzzerConfig;
 import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
 import com.gypsyengineer.tlsbunny.tls13.connection.check.Check;
 import com.gypsyengineer.tlsbunny.tls13.utils.FuzzerConfig;

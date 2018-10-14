@@ -1,5 +1,6 @@
-package com.gypsyengineer.tlsbunny.tls13.client;
+package com.gypsyengineer.tlsbunny.tls13.client.fuzzer;
 
+import com.gypsyengineer.tlsbunny.tls13.client.Client;
 import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
 import com.gypsyengineer.tlsbunny.tls13.connection.check.Check;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
@@ -10,7 +11,7 @@ import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.Output;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 
-import static com.gypsyengineer.tlsbunny.tls13.client.FuzzyClient.noClientAuthConfigs;
+import static com.gypsyengineer.tlsbunny.tls13.client.fuzzer.FuzzyClient.noClientAuthConfigs;
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public class FuzzyHttpsClient implements Client {

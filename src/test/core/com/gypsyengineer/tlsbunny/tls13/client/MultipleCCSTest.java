@@ -1,5 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls13.client;
 
+import com.gypsyengineer.tlsbunny.tls13.client.ccs.MultipleCCS;
 import com.gypsyengineer.tlsbunny.tls13.connection.*;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Side;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.IncomingChangeCipherSpec;
