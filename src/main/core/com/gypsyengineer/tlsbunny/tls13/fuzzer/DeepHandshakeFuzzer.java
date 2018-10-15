@@ -131,7 +131,7 @@ public class DeepHandshakeFuzzer extends StructFactoryWrapper
         HandshakeMessage fuzzedMessage = set(
                 message, currentPath(), fuzzedHandshakeMessage(fuzzed));
 
-        explain(target.toString(), encoding, fuzzed);
+        explain(target.getClass().getSimpleName(), encoding, fuzzed);
 
         return fuzzedMessage;
     }
