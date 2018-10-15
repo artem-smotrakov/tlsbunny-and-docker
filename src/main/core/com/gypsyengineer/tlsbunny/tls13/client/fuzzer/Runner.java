@@ -1,5 +1,8 @@
 package com.gypsyengineer.tlsbunny.tls13.client.fuzzer;
 
+import com.gypsyengineer.tlsbunny.tls13.fuzzer.DeepHandshakeFuzzer;
+import com.gypsyengineer.tlsbunny.tls13.fuzzer.FuzzyStructFactory;
+import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.tls13.utils.SplittedFuzzerConfig;
 import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
 import com.gypsyengineer.tlsbunny.tls13.connection.check.Check;
@@ -54,6 +57,8 @@ public class Runner {
 
         ExecutorService executor = Executors.newFixedThreadPool(threads);
         try {
+            printConfigs();
+
             int index = 0;
             for (FuzzerConfig fuzzerConfig : fuzzerConfigs) {
                 if (analyzer != null) {
@@ -96,6 +101,29 @@ public class Runner {
         }
 
         return configs;
+    }
+
+    private void printConfigs() {
+        output.info("we're going to submit the following configs");
+        int i = 1;
+        for (FuzzerConfig config : fuzzerConfigs) {
+            output.info("fuzzer config (%d):", i);
+            StructFactory factory = config.factory();
+            output.info("\tfactory    = %s", factory.getClass().getSimpleName());
+            if (factory instanceof FuzzyStructFactory) {
+                FuzzyStructFactory fuzzyStructFactory = (FuzzyStructFactory) factory;
+                output.info("\tfuzzer     = %s", fuzzyStructFactory.fuzzer());
+            }
+            if (factory instanceof DeepHandshakeFuzzer) {
+                DeepHandshakeFuzzer deepHandshakeFuzzer = (DeepHandshakeFuzzer) factory;
+                output.info("\tfuzzer     = %s", deepHandshakeFuzzer.fuzzer());
+            }
+            output.info("\tclient     = %s", config.client().getClass().getSimpleName());
+            output.info("\tstart test = %d", config.startTest());
+            output.info("\tend test   = %d", config.endTest());
+            output.info("\tparts      = %d", config.parts());
+            i++;
+        }
     }
 
     public interface ClientFactory {
