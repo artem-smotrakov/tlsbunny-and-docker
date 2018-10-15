@@ -22,8 +22,7 @@ public class LegacySessionIdFuzzer extends FuzzyStructFactory<Vector<Byte>> {
         this(StructFactory.getDefault(), new Output());
     }
 
-    public LegacySessionIdFuzzer(StructFactory factory,
-                                 Output output) {
+    public LegacySessionIdFuzzer(StructFactory factory, Output output) {
         super(factory, output);
         target(DEFAULT_TARGET);
     }

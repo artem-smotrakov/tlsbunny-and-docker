@@ -7,7 +7,7 @@ import com.gypsyengineer.tlsbunny.tls13.connection.action.Side;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.IncomingChangeCipherSpec;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.OutgoingChangeCipherSpec;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
-import com.gypsyengineer.tlsbunny.tls13.fuzzer.MutatedStructFactory;
+import com.gypsyengineer.tlsbunny.tls13.fuzzer.*;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.server.SingleThreadServer;
 import com.gypsyengineer.tlsbunny.tls13.utils.FuzzerConfig;
@@ -271,8 +271,30 @@ public class MutatedClientTest {
             config.endTest(end);
             config.parts(parts);
 
-            MutatedStructFactory factory = (MutatedStructFactory) config.factory();
-            factory.fuzzer(new TestUtils.FakeFlipFuzzer());
+            if (config.factory() instanceof MutatedStructFactory) {
+                MutatedStructFactory factory = (MutatedStructFactory) config.factory();
+                factory.fuzzer(new TestUtils.FakeFlipFuzzer());
+            }
+
+            if (config.factory() instanceof LegacySessionIdFuzzer) {
+                LegacySessionIdFuzzer factory = (LegacySessionIdFuzzer) config.factory();
+                factory.fuzzer(new TestUtils.FakeVectorFuzzer());
+            }
+
+            if (config.factory() instanceof LegacyCompressionMethodsFuzzer) {
+                LegacyCompressionMethodsFuzzer factory = (LegacyCompressionMethodsFuzzer) config.factory();
+                factory.fuzzer(new TestUtils.FakeCompressionMethodFuzzer());
+            }
+
+            if (config.factory() instanceof CipherSuitesFuzzer) {
+                CipherSuitesFuzzer factory = (CipherSuitesFuzzer) config.factory();
+                factory.fuzzer(new TestUtils.FakeCipherSuitesFuzzer());
+            }
+
+            if (config.factory() instanceof ExtensionVectorFuzzer) {
+                ExtensionVectorFuzzer factory = (ExtensionVectorFuzzer) config.factory();
+                factory.fuzzer(new TestUtils.FakeExtensionVectorFuzzer());
+            }
         }
 
         return configs;
