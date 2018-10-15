@@ -1,34 +1,61 @@
 package com.gypsyengineer.tlsbunny.tls13.client;
 
-import com.gypsyengineer.tlsbunny.tls13.client.ccs.MultipleCCS;
-import com.gypsyengineer.tlsbunny.tls13.connection.*;
+import com.gypsyengineer.tlsbunny.TestUtils;
+import com.gypsyengineer.tlsbunny.tls13.client.fuzzer.DeepHandshakeFuzzyClient;
+import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
+import com.gypsyengineer.tlsbunny.tls13.connection.BaseEngineFactory;
+import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Side;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.IncomingChangeCipherSpec;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.OutgoingChangeCipherSpec;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
+import com.gypsyengineer.tlsbunny.tls13.fuzzer.DeepHandshakeFuzzer;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
-import com.gypsyengineer.tlsbunny.tls13.server.OneConnectionReceived;
 import com.gypsyengineer.tlsbunny.tls13.server.SingleThreadServer;
+import com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType;
+import com.gypsyengineer.tlsbunny.tls13.utils.FuzzerConfig;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.Output;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.application_data;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
 import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.*;
 import static com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup.secp256r1;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv12;
-import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv13_draft_26;
+import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv13;
 import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp256r1_sha256;
 import static org.junit.Assert.*;
 
-public class MultipleCCSTest {
+public class DeepHandshakeFuzzyClientTest {
+
+    private static final int start = 21;
+    private static final int end = 22;
+    private static final int parts = 1;
+
+    private Config clientConfig = SystemPropertiesConfig.load();
 
     @Test
-    public void test() throws Exception {
+    public void noClientAuth() throws Exception {
+        test(minimized(DeepHandshakeFuzzyClient.noClientAuth(clientConfig)));
+    }
+
+    public void test(FuzzerConfig[] configs) throws Exception {
+        for (FuzzerConfig config : configs) {
+            test(config);
+        }
+    }
+
+    public void test(FuzzerConfig fuzzerConfig) throws Exception {
         Output serverOutput = new Output("server");
         Output clientOutput = new Output("client");
+
+        assertTrue(fuzzerConfig.factory() instanceof DeepHandshakeFuzzer);
+        DeepHandshakeFuzzer deepHandshakeFuzzer = (DeepHandshakeFuzzer) fuzzerConfig.factory();
 
         Config serverConfig = SystemPropertiesConfig.load();
         SingleThreadServer server = new SingleThreadServer()
@@ -37,26 +64,38 @@ public class MultipleCCSTest {
                         .set(serverOutput))
                 .set(serverConfig)
                 .set(serverOutput)
-                .stopWhen(new OneConnectionReceived());
+                .maxConnections(end - start + 2);
 
-        MultipleCCS client = new MultipleCCS();
-        try (server; clientOutput; serverOutput) {
+        DeepHandshakeFuzzyClient deepHandshakeFuzzyClient =
+                new DeepHandshakeFuzzyClient(fuzzerConfig, clientOutput);
+
+        TestAnalyzer analyzer = new TestAnalyzer();
+        analyzer.set(clientOutput);
+
+        try (deepHandshakeFuzzyClient; server; clientOutput; serverOutput) {
             server.start();
 
-            Config clientConfig = SystemPropertiesConfig.load().port(server.port());
-            client.set(clientConfig).set(clientOutput);
+            fuzzerConfig.port(server.port());
 
-            try (client) {
-                client.connect();
-            }
+            deepHandshakeFuzzyClient
+                    .set(fuzzerConfig)
+                    .set(clientOutput)
+                    .set(analyzer)
+                    .connect();
         }
 
-        assertNull(client.engine().context().getAlert());
+        assertArrayEquals(
+                deepHandshakeFuzzer.targeted(),
+                new HandshakeType[] { client_hello, finished });
+
+        analyzer.run();
+        assertEquals(end - start + 1, analyzer.engines().length);
+        for (Engine engine : analyzer.engines()) {
+            assertFalse(engine.context().hasAlert());
+        }
     }
 
     private static class EngineFactoryImpl extends BaseEngineFactory {
-
-        private Config config;
 
         public EngineFactoryImpl set(Config config) {
             this.config = config;
@@ -80,19 +119,10 @@ public class MultipleCCSTest {
                     .run(new ProcessingClientHello())
 
                     .receive(new IncomingChangeCipherSpec())
-                    .receive(new IncomingChangeCipherSpec())
-                    .receive(new IncomingChangeCipherSpec())
-                    .receive(new IncomingChangeCipherSpec())
-                    .receive(new IncomingChangeCipherSpec())
-                    .receive(new IncomingChangeCipherSpec())
-                    .receive(new IncomingChangeCipherSpec())
-                    .receive(new IncomingChangeCipherSpec())
-                    .receive(new IncomingChangeCipherSpec())
-                    .receive(new IncomingChangeCipherSpec())
 
                     // send ServerHello
                     .run(new GeneratingServerHello()
-                            .supportedVersion(TLSv13_draft_26)
+                            .supportedVersion(TLSv13)
                             .group(secp256r1)
                             .signatureScheme(ecdsa_secp256r1_sha256)
                             .keyShareEntry(context -> context.negotiator.createKeyShareEntry()))
@@ -149,19 +179,8 @@ public class MultipleCCSTest {
                     .restore()
                     .send(new OutgoingData())
 
-                    .receive(new IncomingChangeCipherSpec())
-                    .receive(new IncomingChangeCipherSpec())
-                    .receive(new IncomingChangeCipherSpec())
-                    .receive(new IncomingChangeCipherSpec())
-                    .receive(new IncomingChangeCipherSpec())
-                    .receive(new IncomingChangeCipherSpec())
-                    .receive(new IncomingChangeCipherSpec())
-                    .receive(new IncomingChangeCipherSpec())
-                    .receive(new IncomingChangeCipherSpec())
-                    .receive(new IncomingChangeCipherSpec())
-
-                    // receive Finished
                     .receive(new IncomingData())
+
                     .run(new ProcessingHandshakeTLSCiphertext()
                             .expect(handshake))
                     .run(new ProcessingHandshake()
@@ -182,5 +201,46 @@ public class MultipleCCSTest {
                     .run(new WrappingApplicationDataIntoTLSCiphertext())
                     .send(new OutgoingData());
         }
+    }
+
+    private static class TestAnalyzer implements Analyzer {
+
+        private Output output;
+        private final List<Engine> engines = new ArrayList<>();
+
+        @Override
+        public Analyzer set(Output output) {
+            this.output = output;
+            return this;
+        }
+
+        @Override
+        public Analyzer add(Engine... engines) {
+            this.engines.addAll(List.of(engines));
+            return this;
+        }
+
+        @Override
+        public Analyzer run() {
+            output.info("run analyzer");
+            return this;
+        }
+
+        @Override
+        public Engine[] engines() {
+            return engines.toArray(new Engine[engines.size()]);
+        }
+    }
+
+    private static FuzzerConfig[] minimized(FuzzerConfig[] configs) {
+        FuzzerConfig config = configs[0];
+        config.startTest(start);
+        config.endTest(end);
+        config.parts(parts);
+
+        DeepHandshakeFuzzer factory = (DeepHandshakeFuzzer) config.factory();
+        factory.fuzzer(new TestUtils.FakeFlipFuzzer());
+
+        return new FuzzerConfig[] { config };
     }
 }

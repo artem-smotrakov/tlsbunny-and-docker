@@ -2,8 +2,6 @@ package com.gypsyengineer.tlsbunny.utils;
 
 import com.gypsyengineer.tlsbunny.tls.Struct;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,9 +13,7 @@ public class Utils {
 
     public static final long DEFAULT_SEED = 0;
     public static final long SEED = Long.getLong("tlsbunny.seed", DEFAULT_SEED);
-
     public static final byte[] EMPTY_ARRAY = new byte[0];
-    public static final String PREFIX = "[tlsbunny]";
 
     public static List<Byte> toList(byte[] bytes) {
         List<Byte> objects = new ArrayList<>();
@@ -68,7 +64,7 @@ public class Utils {
 
     public static byte[] xor(byte[] bytes1, byte[] bytes2) {
         if (bytes1.length != bytes2.length) {
-            throw new IllegalArgumentException();
+            throw whatTheHell("array length are not equal!");
         }
 
         byte[] result = new byte[bytes1.length];
@@ -87,23 +83,8 @@ public class Utils {
         try {
             Thread.sleep(millis);
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            throw whatTheHell("could not sleep well!", e);
         }
-    }
-
-    // returns true if the object is found in the array
-    public static boolean contains(Object object, Object... array) {
-        if (array == null || array.length == 0) {
-            return false;
-        }
-
-        for (Object element : array) {
-            if (element.equals(object)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     // returns true if the integer is found in the array
@@ -120,7 +101,6 @@ public class Utils {
 
         return false;
     }
-
 
     public static int getEncodingLength(Struct... objects) {
         return Arrays.stream(objects)
@@ -142,37 +122,6 @@ public class Utils {
         encodings.forEach(encoding -> buffer.put(encoding));
 
         return buffer.array();
-    }
-
-    // synchronized output
-
-    public static void printf(String format, Object... params) {
-        synchronized (System.out) {
-            System.out.printf(format, params);
-        }
-    }
-
-    public static void println(String string) {
-        synchronized (System.out) {
-            System.out.println(string);
-        }
-    }
-
-    public static void info(String format, Object... values) {
-        printf("%s %s%n", PREFIX, String.format(format, values));
-    }
-
-    public static void achtung(String format, Object... values) {
-        printf("%s achtung: %s%n", PREFIX, String.format(format, values));
-    }
-
-    public static void achtung(String message, Throwable e) {
-        try (StringWriter sw = new StringWriter(); PrintWriter pw = new PrintWriter(sw)) {
-            e.printStackTrace(pw);
-            achtung("%s:%n%s", message, sw.toString());
-        } catch (IOException ioe) {
-            achtung("%s: (could not print stacktrace: %s)", message, ioe.getMessage());
-        }
     }
 
     public static <T> T cast(Struct object, Class<T> clazz) {

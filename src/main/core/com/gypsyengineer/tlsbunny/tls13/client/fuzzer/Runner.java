@@ -1,5 +1,9 @@
-package com.gypsyengineer.tlsbunny.tls13.client;
+package com.gypsyengineer.tlsbunny.tls13.client.fuzzer;
 
+import com.gypsyengineer.tlsbunny.tls13.fuzzer.DeepHandshakeFuzzer;
+import com.gypsyengineer.tlsbunny.tls13.fuzzer.FuzzyStructFactory;
+import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
+import com.gypsyengineer.tlsbunny.tls13.utils.SplittedFuzzerConfig;
 import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
 import com.gypsyengineer.tlsbunny.tls13.connection.check.Check;
 import com.gypsyengineer.tlsbunny.tls13.utils.FuzzerConfig;
@@ -9,23 +13,20 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import static com.gypsyengineer.tlsbunny.utils.Utils.info;
-
 public class Runner {
 
     private FuzzerConfig[] fuzzerConfigs;
-    private FuzzerFactory fuzzerFactory;
+    private ClientFactory fuzzerFactory;
     private Output output;
     private Check[] checks;
     private Analyzer analyzer;
-    private int index;
 
     public Runner set(FuzzerConfig... fuzzerConfigs) {
         this.fuzzerConfigs = fuzzerConfigs;
         return this;
     }
 
-    public Runner set(FuzzerFactory fuzzerFactory) {
+    public Runner set(ClientFactory fuzzerFactory) {
         this.fuzzerFactory = fuzzerFactory;
         return this;
     }
@@ -52,11 +53,13 @@ public class Runner {
                 threads = fuzzerConfig.threads();
             }
         }
-        info("we are going to use %d threads", threads);
+        output.info("we are going to use %d threads", threads);
 
         ExecutorService executor = Executors.newFixedThreadPool(threads);
         try {
-            index = 0;
+            printConfigs();
+
+            int index = 0;
             for (FuzzerConfig fuzzerConfig : fuzzerConfigs) {
                 if (analyzer != null) {
                     fuzzerConfig.analyzer(analyzer);
@@ -78,7 +81,7 @@ public class Runner {
         // we are so patient ...
         executor.awaitTermination(365, TimeUnit.DAYS);
 
-        info("phew, we are done!");
+        output.info("phew, we are done with fuzzing!");
 
         if (analyzer != null) {
             analyzer.set(output).run();
@@ -100,7 +103,30 @@ public class Runner {
         return configs;
     }
 
-    public interface FuzzerFactory {
+    private void printConfigs() {
+        output.info("we're going to submit the following configs");
+        int i = 1;
+        for (FuzzerConfig config : fuzzerConfigs) {
+            output.info("fuzzer config (%d):", i);
+            StructFactory factory = config.factory();
+            output.info("\tfactory    = %s", factory.getClass().getSimpleName());
+            if (factory instanceof FuzzyStructFactory) {
+                FuzzyStructFactory fuzzyStructFactory = (FuzzyStructFactory) factory;
+                output.info("\tfuzzer     = %s", fuzzyStructFactory.fuzzer());
+            }
+            if (factory instanceof DeepHandshakeFuzzer) {
+                DeepHandshakeFuzzer deepHandshakeFuzzer = (DeepHandshakeFuzzer) factory;
+                output.info("\tfuzzer     = %s", deepHandshakeFuzzer.fuzzer());
+            }
+            output.info("\tclient     = %s", config.client().getClass().getSimpleName());
+            output.info("\tstart test = %d", config.startTest());
+            output.info("\tend test   = %d", config.endTest());
+            output.info("\tparts      = %d", config.parts());
+            i++;
+        }
+    }
+
+    public interface ClientFactory {
         Runnable create(FuzzerConfig config, Output output);
     }
 

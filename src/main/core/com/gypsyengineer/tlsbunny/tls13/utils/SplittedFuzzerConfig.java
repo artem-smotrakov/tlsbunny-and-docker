@@ -1,8 +1,8 @@
-package com.gypsyengineer.tlsbunny.tls13.client;
+package com.gypsyengineer.tlsbunny.tls13.utils;
 
+import com.gypsyengineer.tlsbunny.tls13.client.Client;
 import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
-import com.gypsyengineer.tlsbunny.tls13.fuzzer.FuzzyStructFactory;
-import com.gypsyengineer.tlsbunny.tls13.utils.FuzzerConfig;
+import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.Config;
 
 public class SplittedFuzzerConfig extends FuzzerConfig {
@@ -121,12 +121,12 @@ public class SplittedFuzzerConfig extends FuzzerConfig {
     }
 
     @Override
-    public FuzzerConfig factory(FuzzyStructFactory factory) {
+    public FuzzerConfig factory(StructFactory factory) {
         return config.factory(factory);
     }
 
     @Override
-    public FuzzyStructFactory factory() {
+    public StructFactory factory() {
         return config.factory();
     }
 

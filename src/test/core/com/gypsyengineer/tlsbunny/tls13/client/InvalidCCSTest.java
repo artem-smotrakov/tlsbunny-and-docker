@@ -1,5 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls13.client;
 
+import com.gypsyengineer.tlsbunny.tls13.client.ccs.InvalidCCS;
 import com.gypsyengineer.tlsbunny.tls13.connection.BaseEngineFactory;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.IncomingChangeCipherSpec;

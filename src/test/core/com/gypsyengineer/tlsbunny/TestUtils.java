@@ -1,7 +1,11 @@
 package com.gypsyengineer.tlsbunny;
 
+import com.gypsyengineer.tlsbunny.fuzzer.AbstractFlipFuzzer;
+import com.gypsyengineer.tlsbunny.fuzzer.Fuzzer;
 import com.gypsyengineer.tlsbunny.tls.Random;
+import com.gypsyengineer.tlsbunny.tls.Vector;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
+import com.gypsyengineer.tlsbunny.utils.Output;
 import com.gypsyengineer.tlsbunny.utils.WhatTheHell;
 
 import java.lang.reflect.InvocationTargetException;
@@ -102,5 +106,166 @@ public class TestUtils {
             Object object, String... excluded) throws Exception {
 
         expectUnsupportedMethods(object, List.of(excluded));
+    }
+
+    public static class FakeFlipFuzzer extends AbstractFlipFuzzer {
+
+        @Override
+        protected byte[] fuzzImpl(byte[] array) {
+            // do nothing
+            return array;
+        }
+    }
+
+    public static class FakeVectorFuzzer implements Fuzzer<Vector<Byte>> {
+
+        @Override
+        public boolean canFuzz() {
+            return true;
+        }
+
+        @Override
+        public Vector fuzz(Vector object) {
+            return object;
+        }
+
+        @Override
+        public void moveOn() {
+            // do nothing
+        }
+
+        @Override
+        public long currentTest() {
+            return 0;
+        }
+
+        @Override
+        public void currentTest(long test) {
+            // do nothing
+        }
+
+        @Override
+        public FakeVectorFuzzer set(Output output) {
+            return this;
+        }
+
+        @Override
+        public Output output() {
+            return new Output();
+        }
+    }
+
+    public static class FakeCompressionMethodFuzzer implements Fuzzer<Vector<CompressionMethod>> {
+
+        @Override
+        public boolean canFuzz() {
+            return true;
+        }
+
+        @Override
+        public Vector<CompressionMethod> fuzz(Vector<CompressionMethod> object) {
+            return object;
+        }
+
+        @Override
+        public void moveOn() {
+            // do nothing
+        }
+
+        @Override
+        public long currentTest() {
+            return 0;
+        }
+
+        @Override
+        public void currentTest(long test) {
+            // do nothing
+        }
+
+        @Override
+        public FakeCompressionMethodFuzzer set(Output output) {
+            return this;
+        }
+
+        @Override
+        public Output output() {
+            return new Output();
+        }
+    }
+
+    public static class FakeCipherSuitesFuzzer implements Fuzzer<Vector<CipherSuite>> {
+
+        @Override
+        public boolean canFuzz() {
+            return true;
+        }
+
+        @Override
+        public Vector<CipherSuite> fuzz(Vector<CipherSuite> object) {
+            return object;
+        }
+
+        @Override
+        public void moveOn() {
+            // do nothing
+        }
+
+        @Override
+        public long currentTest() {
+            return 0;
+        }
+
+        @Override
+        public void currentTest(long test) {
+            // do nothing
+        }
+
+        @Override
+        public FakeCipherSuitesFuzzer set(Output output) {
+            return this;
+        }
+
+        @Override
+        public Output output() {
+            return new Output();
+        }
+    }
+
+    public static class FakeExtensionVectorFuzzer implements Fuzzer<Vector<Extension>> {
+
+        @Override
+        public boolean canFuzz() {
+            return true;
+        }
+
+        @Override
+        public Vector<Extension> fuzz(Vector<Extension> object) {
+            return object;
+        }
+
+        @Override
+        public void moveOn() {
+            // do nothing
+        }
+
+        @Override
+        public long currentTest() {
+            return 0;
+        }
+
+        @Override
+        public void currentTest(long test) {
+            // do nothing
+        }
+
+        @Override
+        public FakeExtensionVectorFuzzer set(Output output) {
+            return this;
+        }
+
+        @Override
+        public Output output() {
+            return new Output();
+        }
     }
 }

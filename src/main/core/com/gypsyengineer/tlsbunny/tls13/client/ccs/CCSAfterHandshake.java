@@ -1,14 +1,19 @@
-package com.gypsyengineer.tlsbunny.tls13.client;
+package com.gypsyengineer.tlsbunny.tls13.client.ccs;
 
+import com.gypsyengineer.tlsbunny.tls13.client.HttpsClient;
+import com.gypsyengineer.tlsbunny.tls13.client.SingleConnectionClient;
 import com.gypsyengineer.tlsbunny.tls13.connection.*;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Side;
-import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.IncomingMessages;
-import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.OutgoingChangeCipherSpec;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.*;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.connection.check.AlertCheck;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
+import com.gypsyengineer.tlsbunny.tls13.handshake.NegotiatorException;
+import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.Output;
+import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
@@ -19,29 +24,31 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv12;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv13;
 import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp256r1_sha256;
 
-public class StartWithCCS extends SingleConnectionClient {
+public class CCSAfterHandshake extends SingleConnectionClient {
 
     public static void main(String[] args) throws Exception {
         try (Output output = new Output()) {
-            new StartWithCCS()
+            new HttpsClient()
+                    .set(SystemPropertiesConfig.load())
+                    .set(StructFactory.getDefault())
                     .set(output)
                     .connect();
         }
     }
 
-    public StartWithCCS() {
+    public CCSAfterHandshake() {
         checks = List.of(new AlertCheck());
     }
 
     @Override
-    protected Engine createEngine() throws Exception {
+    protected Engine createEngine()
+            throws NegotiatorException, NoSuchAlgorithmException {
+
         return Engine.init()
                 .target(config.host())
                 .target(config.port())
                 .set(factory)
                 .set(output)
-
-                .send(new OutgoingChangeCipherSpec())
 
                 // send ClientHello
                 .run(new GeneratingClientHello()
@@ -57,9 +64,11 @@ public class StartWithCCS extends SingleConnectionClient {
                         .version(TLSv12))
                 .send(new OutgoingData())
 
+                // send an expected CCS
+                .send(new OutgoingChangeCipherSpec())
+
                 // receive a ServerHello, EncryptedExtensions, Certificate,
                 // CertificateVerify and Finished messages
-                // TODO: how can we make it more readable?
                 .loop(context -> !context.hasServerFinished() && !context.hasAlert())
                     .receive(() -> new IncomingMessages(Side.client))
 
@@ -70,6 +79,9 @@ public class StartWithCCS extends SingleConnectionClient {
                         .updateContext(Context.Element.client_finished))
                 .run(new WrappingHandshakeDataIntoTLSCiphertext())
                 .send(new OutgoingData())
+
+                // send an unexpected CCS
+                .send(new OutgoingChangeCipherSpec())
 
                 // send application data
                 .run(new PreparingHttpGetRequest())

@@ -1,14 +1,12 @@
 package com.gypsyengineer.tlsbunny.fuzzer;
 
-import com.gypsyengineer.tlsbunny.utils.HasOutput;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
 import java.util.Random;
 
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
-public abstract class AbstractFlipFuzzer
-        implements Fuzzer<byte[]>, HasOutput<Fuzzer<byte[]>> {
+public abstract class AbstractFlipFuzzer implements Fuzzer<byte[]> {
 
     public static final double DEFAULT_MIN_RATIO = 0.01;
     public static final double DEFAULT_MAX_RATIO = 0.05;

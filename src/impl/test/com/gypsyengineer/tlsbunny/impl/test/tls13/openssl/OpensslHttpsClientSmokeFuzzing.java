@@ -2,7 +2,7 @@ package com.gypsyengineer.tlsbunny.impl.test.tls13.openssl;
 
 import com.gypsyengineer.tlsbunny.impl.test.tls13.TestForServer;
 import com.gypsyengineer.tlsbunny.impl.test.tls13.Utils;
-import com.gypsyengineer.tlsbunny.tls13.client.FuzzyHttpsClient;
+import com.gypsyengineer.tlsbunny.tls13.client.fuzzer.MultiThreadedClient;
 import com.gypsyengineer.tlsbunny.tls13.utils.FuzzerConfig;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
@@ -14,7 +14,7 @@ import org.junit.Test;
 import java.io.IOException;
 
 import static com.gypsyengineer.tlsbunny.impl.test.tls13.Utils.checkForASanFindings;
-import static com.gypsyengineer.tlsbunny.tls13.client.FuzzyClient.*;
+import static com.gypsyengineer.tlsbunny.tls13.client.fuzzer.MutatedClient.*;
 
 public class OpensslHttpsClientSmokeFuzzing {
 
@@ -40,7 +40,7 @@ public class OpensslHttpsClientSmokeFuzzing {
     @Test
     public void ccs() throws Exception {
         new TestForServer()
-                .set(new FuzzyHttpsClient()
+                .set(new MultiThreadedClient()
                         .set(minimized(ccsConfigs(mainConfig))))
                 .set(server)
                 .run();
@@ -49,7 +49,7 @@ public class OpensslHttpsClientSmokeFuzzing {
     @Test
     public void tlsPlaintext() throws Exception {
         new TestForServer()
-                .set(new FuzzyHttpsClient()
+                .set(new MultiThreadedClient()
                         .set(minimized(tlsPlaintextConfigs(mainConfig))))
                 .set(server)
                 .run();
@@ -58,7 +58,7 @@ public class OpensslHttpsClientSmokeFuzzing {
     @Test
     public void handshake() throws Exception {
         new TestForServer()
-                .set(new FuzzyHttpsClient()
+                .set(new MultiThreadedClient()
                         .set(minimized(handshakeConfigs(mainConfig))))
                 .set(server)
                 .run();
@@ -67,7 +67,7 @@ public class OpensslHttpsClientSmokeFuzzing {
     @Test
     public void clientHello() throws Exception {
         new TestForServer()
-                .set(new FuzzyHttpsClient()
+                .set(new MultiThreadedClient()
                         .set(minimized(clientHelloConfigs(mainConfig))))
                 .set(server)
                 .run();
@@ -76,7 +76,7 @@ public class OpensslHttpsClientSmokeFuzzing {
     @Test
     public void finished() throws Exception {
         new TestForServer()
-                .set(new FuzzyHttpsClient()
+                .set(new MultiThreadedClient()
                         .set(minimized(finishedConfigs(mainConfig))))
                 .set(server)
                 .run();
@@ -85,7 +85,7 @@ public class OpensslHttpsClientSmokeFuzzing {
     @Test
     public void cipherSuites() throws Exception {
         new TestForServer()
-                .set(new FuzzyHttpsClient()
+                .set(new MultiThreadedClient()
                         .set(minimized(cipherSuitesConfigs(mainConfig))))
                 .set(server)
                 .run();
@@ -94,7 +94,7 @@ public class OpensslHttpsClientSmokeFuzzing {
     @Test
     public void extensionVector() throws Exception {
         new TestForServer()
-                .set(new FuzzyHttpsClient()
+                .set(new MultiThreadedClient()
                         .set(minimized(extensionVectorConfigs(mainConfig))))
                 .set(server)
                 .run();
@@ -103,7 +103,7 @@ public class OpensslHttpsClientSmokeFuzzing {
     @Test
     public void legacyCompressionMethods() throws Exception {
         new TestForServer()
-                .set(new FuzzyHttpsClient()
+                .set(new MultiThreadedClient()
                         .set(minimized(legacyCompressionMethodsConfigs(mainConfig))))
                 .set(server)
                 .run();
@@ -112,7 +112,7 @@ public class OpensslHttpsClientSmokeFuzzing {
     @Test
     public void legacySessionId() throws Exception {
         new TestForServer()
-                .set(new FuzzyHttpsClient()
+                .set(new MultiThreadedClient()
                         .set(minimized(legacySessionIdConfigs(mainConfig))))
                 .set(server)
                 .run();

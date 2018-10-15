@@ -1,20 +1,16 @@
-package com.gypsyengineer.tlsbunny.tls13.client;
+package com.gypsyengineer.tlsbunny.tls13.client.ccs;
 
-import com.gypsyengineer.tlsbunny.tls13.connection.*;
+import com.gypsyengineer.tlsbunny.tls13.client.SingleConnectionClient;
+import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
+import com.gypsyengineer.tlsbunny.tls13.connection.check.NoAlertCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Side;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.*;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
-import com.gypsyengineer.tlsbunny.tls13.connection.check.AlertCheck;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
-import com.gypsyengineer.tlsbunny.tls13.handshake.NegotiatorException;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
-import static com.gypsyengineer.tlsbunny.tls13.struct.ChangeCipherSpec.MAX;
-import static com.gypsyengineer.tlsbunny.tls13.struct.ChangeCipherSpec.MIN;
-import static com.gypsyengineer.tlsbunny.tls13.struct.ChangeCipherSpec.VALID_VALUE;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
 import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.client_hello;
 import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.finished;
@@ -22,64 +18,30 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup.secp256r1;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv12;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv13;
 import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp256r1_sha256;
-import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
-public class InvalidCCS extends AbstractClient {
+public class MultipleCCS extends SingleConnectionClient {
 
-    private int start = MIN;
-    private int end = MAX;
+    public static final int number_of_ccs = 10;
 
     public static void main(String[] args) throws Exception {
         try (Output output = new Output()) {
-            new InvalidCCS()
+            new MultipleCCS()
                     .set(output)
                     .connect();
         }
     }
 
-    public InvalidCCS() {
-        checks = List.of(new AlertCheck());
-    }
-
-    public InvalidCCS startWith(int ccsValue) {
-        start = check(ccsValue);
-        return this;
-    }
-
-    public InvalidCCS endWith(int ccsValue) {
-        end = check(ccsValue);
-        return this;
+    public MultipleCCS() {
+        checks = List.of(new NoAlertCheck());
     }
 
     @Override
-    public Client connect() throws Exception {
-        if (start > end) {
-            throw whatTheHell("starting ccs value (%d) is greater than end ccs value (%d)", start, end);
-        }
-
-        Analyzer analyzer = new NoAlertAnalyzer().set(output);
-        for (int ccsValue = start; ccsValue <= end; ccsValue++) {
-            if (ccsValue == VALID_VALUE) {
-                continue;
-            }
-            output.info("try CCS with %d", ccsValue);
-            recentEngine = createEngine(ccsValue).connect().run(checks).apply(analyzer);
-            engines.add(recentEngine);
-        }
-        analyzer.run();
-
-        return this;
-    }
-
-    private Engine createEngine(int ccsValue)
-            throws NegotiatorException, NoSuchAlgorithmException {
-
+    protected Engine createEngine() throws Exception {
         return Engine.init()
                 .target(config.host())
                 .target(config.port())
                 .set(factory)
                 .set(output)
-                .label(String.format("invalid_ccs:%d", ccsValue))
 
                 // send ClientHello
                 .run(new GeneratingClientHello()
@@ -95,14 +57,15 @@ public class InvalidCCS extends AbstractClient {
                         .version(TLSv12))
                 .send(new OutgoingData())
 
-                .send(new OutgoingChangeCipherSpec()
-                        .set(ccsValue))
+                .send(number_of_ccs, () -> new OutgoingChangeCipherSpec())
 
                 // receive a ServerHello, EncryptedExtensions, Certificate,
                 // CertificateVerify and Finished messages
                 // TODO: how can we make it more readable?
                 .loop(context -> !context.hasServerFinished() && !context.hasAlert())
-                    .receive(() -> new IncomingMessages(Side.client))
+                .receive(() -> new IncomingMessages(Side.client))
+
+                .send(number_of_ccs, () -> new OutgoingChangeCipherSpec())
 
                 // send Finished
                 .run(new GeneratingFinished())
@@ -119,15 +82,7 @@ public class InvalidCCS extends AbstractClient {
 
                 // receive session tickets and application data
                 .loop(context -> !context.receivedApplicationData() && !context.hasAlert())
-                    .receive(() -> new IncomingMessages(Side.client));
-    }
-
-    private static int check(int ccsValue) {
-        if (ccsValue < 0 || ccsValue > 255) {
-            throw whatTheHell("incorrect ccs value (%d)", ccsValue);
-        }
-
-        return ccsValue;
+                .receive(() -> new IncomingMessages(Side.client));
     }
 
 }

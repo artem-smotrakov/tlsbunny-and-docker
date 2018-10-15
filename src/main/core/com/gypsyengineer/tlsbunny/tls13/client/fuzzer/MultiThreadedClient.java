@@ -1,5 +1,6 @@
-package com.gypsyengineer.tlsbunny.tls13.client;
+package com.gypsyengineer.tlsbunny.tls13.client.fuzzer;
 
+import com.gypsyengineer.tlsbunny.tls13.client.Client;
 import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
 import com.gypsyengineer.tlsbunny.tls13.connection.check.Check;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
@@ -10,34 +11,28 @@ import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.Output;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 
-import static com.gypsyengineer.tlsbunny.tls13.client.FuzzyClient.noClientAuthConfigs;
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
-public class FuzzyHttpsClient implements Client {
+public class MultiThreadedClient implements Client {
 
     private Config mainConfig = SystemPropertiesConfig.load();
     private FuzzerConfig[] fuzzerConfigs;
     private Output output;
     private Analyzer analyzer;
     private Check[] checks;
-
-    public static void main(String[] args) throws Exception {
-        try (Output output = new Output()) {
-            Config config = SystemPropertiesConfig.load();
-            new FuzzyHttpsClient()
-                    .set(noClientAuthConfigs(config))
-                    .set(config)
-                    .set(output)
-                    .connect();
-        }
-    }
+    private Runner.ClientFactory clientFactory;
 
     @Override
     public Config config() {
         return mainConfig;
     }
 
-    public FuzzyHttpsClient set(FuzzerConfig... fuzzerConfigs) {
+    public MultiThreadedClient set(Runner.ClientFactory clientFactory) {
+        this.clientFactory = clientFactory;
+        return this;
+    }
+
+    public MultiThreadedClient set(FuzzerConfig... fuzzerConfigs) {
         this.fuzzerConfigs = fuzzerConfigs;
         return this;
     }
@@ -65,7 +60,7 @@ public class FuzzyHttpsClient implements Client {
         }
 
         new Runner()
-                .set(FuzzyClient.fuzzerFactory)
+                .set(clientFactory)
                 .set(output)
                 .set(fuzzerConfigs)
                 .set(checks)

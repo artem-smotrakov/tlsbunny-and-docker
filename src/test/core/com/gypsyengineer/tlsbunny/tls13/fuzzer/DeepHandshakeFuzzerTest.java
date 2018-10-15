@@ -62,18 +62,40 @@ public class DeepHandshakeFuzzerTest {
         assertNotEquals(hello, fuzzed);
         assertZeroEncoding(fuzzed);
 
+        fuzzer.moveOn();
         assertZeroEncoding(cast(fuzzer.fuzz(hello), ClientHello.class).element(0));
+
+        fuzzer.moveOn();
         assertZeroEncoding(cast(fuzzer.fuzz(hello), ClientHello.class).element(1));
+
+        fuzzer.moveOn();
         assertZeroEncoding(cast(fuzzer.fuzz(hello), ClientHello.class).element(2));
+
+        fuzzer.moveOn();
         assertZeroEncoding(cast(fuzzer.fuzz(hello), ClientHello.class).element(3));
+
+        fuzzer.moveOn();
         assertZeroEncoding(cast(fuzzer.fuzz(hello), ClientHello.class).element(3).element(0));
+
+        fuzzer.moveOn();
         assertZeroEncoding(cast(fuzzer.fuzz(hello), ClientHello.class).element(4));
+
+        fuzzer.moveOn();
         assertZeroEncoding(cast(fuzzer.fuzz(hello), ClientHello.class).element(4).element(0));
+
+        fuzzer.moveOn();
         assertZeroEncoding(cast(fuzzer.fuzz(hello), ClientHello.class).element(5));
+
+        fuzzer.moveOn();
         assertZeroEncoding(cast(fuzzer.fuzz(hello), ClientHello.class).element(5).element(0));
+
+        fuzzer.moveOn();
         assertZeroEncoding(cast(fuzzer.fuzz(hello), ClientHello.class).element(5).element(0).element(0));
+
+        fuzzer.moveOn();
         assertZeroEncoding(cast(fuzzer.fuzz(hello), ClientHello.class).element(5).element(0).element(1));
 
+        fuzzer.moveOn();
         fuzzed = fuzzer.fuzz(hello);
         assertNotEquals(hello, fuzzed);
         assertZeroEncoding(fuzzed);

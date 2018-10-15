@@ -4,7 +4,6 @@ import com.gypsyengineer.tlsbunny.fuzzer.Fuzzer;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
-// TODO: should it be an interface?
 public abstract class FuzzyStructFactory<T> extends StructFactoryWrapper
         implements StructFactory, Fuzzer<T> {
 
