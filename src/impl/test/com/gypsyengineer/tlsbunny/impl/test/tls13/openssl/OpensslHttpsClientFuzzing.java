@@ -2,6 +2,7 @@ package com.gypsyengineer.tlsbunny.impl.test.tls13.openssl;
 
 import com.gypsyengineer.tlsbunny.impl.test.tls13.TestForServer;
 import com.gypsyengineer.tlsbunny.impl.test.tls13.Utils;
+import com.gypsyengineer.tlsbunny.tls13.client.fuzzer.DeepHandshakeFuzzyClient;
 import com.gypsyengineer.tlsbunny.tls13.client.fuzzer.MultiThreadedClient;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
@@ -109,6 +110,16 @@ public class OpensslHttpsClientFuzzing {
         new TestForServer()
                 .set(new MultiThreadedClient()
                         .set(legacySessionIdConfigs(mainConfig)))
+                .set(server)
+                .run();
+    }
+
+    @Test
+    public void deepHandshakeFuzzer() throws Exception {
+        new TestForServer()
+                .set(new MultiThreadedClient()
+                        .set(DeepHandshakeFuzzyClient.client_factory)
+                        .set(DeepHandshakeFuzzyClient.noClientAuth(mainConfig)))
                 .set(server)
                 .run();
     }
