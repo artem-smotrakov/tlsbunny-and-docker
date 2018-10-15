@@ -10,6 +10,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 import com.gypsyengineer.tlsbunny.tls13.client.SingleConnectionClient;
 import com.gypsyengineer.tlsbunny.utils.Output;
+import com.gypsyengineer.tlsbunny.utils.Utils;
 
 import static com.gypsyengineer.tlsbunny.tls13.connection.action.simple.GeneratingClientHello.NO_MAX_FRAGMENT_LENGTH;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.application_data;
@@ -19,7 +20,6 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup.secp256r1;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv12;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv13_draft_26;
 import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp256r1_sha256;
-import static com.gypsyengineer.tlsbunny.utils.Utils.contains;
 
 public class AllMaxFragmentLengths {
 
@@ -43,7 +43,7 @@ public class AllMaxFragmentLengths {
             output.info("send invalid max_fragment_length extensions, " +
                     "expect connection failures");
             for (int code = 0; code < 256; code++) {
-                if (contains(code, MaxFragmentLength.codes())) {
+                if (Utils.contains(code, MaxFragmentLength.codes())) {
                     continue;
                 }
 

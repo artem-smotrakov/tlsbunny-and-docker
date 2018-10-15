@@ -64,7 +64,7 @@ public class Utils {
 
     public static byte[] xor(byte[] bytes1, byte[] bytes2) {
         if (bytes1.length != bytes2.length) {
-            throw new IllegalArgumentException();
+            throw whatTheHell("array length are not equal!");
         }
 
         byte[] result = new byte[bytes1.length];
@@ -83,23 +83,8 @@ public class Utils {
         try {
             Thread.sleep(millis);
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            throw whatTheHell("could not sleep well!", e);
         }
-    }
-
-    // returns true if the object is found in the array
-    public static boolean contains(Object object, Object... array) {
-        if (array == null || array.length == 0) {
-            return false;
-        }
-
-        for (Object element : array) {
-            if (element.equals(object)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     // returns true if the integer is found in the array
