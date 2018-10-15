@@ -266,37 +266,36 @@ public class MutatedClientTest {
     }
 
     private static FuzzerConfig[] minimized(FuzzerConfig[] configs) {
-        for (FuzzerConfig config : configs) {
-            config.startTest(start);
-            config.endTest(end);
-            config.parts(parts);
+        FuzzerConfig config = configs[0];
+        config.startTest(start);
+        config.endTest(end);
+        config.parts(parts);
 
-            if (config.factory() instanceof MutatedStructFactory) {
-                MutatedStructFactory factory = (MutatedStructFactory) config.factory();
-                factory.fuzzer(new TestUtils.FakeFlipFuzzer());
-            }
-
-            if (config.factory() instanceof LegacySessionIdFuzzer) {
-                LegacySessionIdFuzzer factory = (LegacySessionIdFuzzer) config.factory();
-                factory.fuzzer(new TestUtils.FakeVectorFuzzer());
-            }
-
-            if (config.factory() instanceof LegacyCompressionMethodsFuzzer) {
-                LegacyCompressionMethodsFuzzer factory = (LegacyCompressionMethodsFuzzer) config.factory();
-                factory.fuzzer(new TestUtils.FakeCompressionMethodFuzzer());
-            }
-
-            if (config.factory() instanceof CipherSuitesFuzzer) {
-                CipherSuitesFuzzer factory = (CipherSuitesFuzzer) config.factory();
-                factory.fuzzer(new TestUtils.FakeCipherSuitesFuzzer());
-            }
-
-            if (config.factory() instanceof ExtensionVectorFuzzer) {
-                ExtensionVectorFuzzer factory = (ExtensionVectorFuzzer) config.factory();
-                factory.fuzzer(new TestUtils.FakeExtensionVectorFuzzer());
-            }
+        if (config.factory() instanceof MutatedStructFactory) {
+            MutatedStructFactory factory = (MutatedStructFactory) config.factory();
+            factory.fuzzer(new TestUtils.FakeFlipFuzzer());
         }
 
-        return configs;
+        if (config.factory() instanceof LegacySessionIdFuzzer) {
+            LegacySessionIdFuzzer factory = (LegacySessionIdFuzzer) config.factory();
+            factory.fuzzer(new TestUtils.FakeVectorFuzzer());
+        }
+
+        if (config.factory() instanceof LegacyCompressionMethodsFuzzer) {
+            LegacyCompressionMethodsFuzzer factory = (LegacyCompressionMethodsFuzzer) config.factory();
+            factory.fuzzer(new TestUtils.FakeCompressionMethodFuzzer());
+        }
+
+        if (config.factory() instanceof CipherSuitesFuzzer) {
+            CipherSuitesFuzzer factory = (CipherSuitesFuzzer) config.factory();
+            factory.fuzzer(new TestUtils.FakeCipherSuitesFuzzer());
+        }
+
+        if (config.factory() instanceof ExtensionVectorFuzzer) {
+            ExtensionVectorFuzzer factory = (ExtensionVectorFuzzer) config.factory();
+            factory.fuzzer(new TestUtils.FakeExtensionVectorFuzzer());
+        }
+
+        return new FuzzerConfig[] { config };
     }
 }

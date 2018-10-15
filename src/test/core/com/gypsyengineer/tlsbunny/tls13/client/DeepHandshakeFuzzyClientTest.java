@@ -226,15 +226,14 @@ public class DeepHandshakeFuzzyClientTest {
     }
 
     private static FuzzerConfig[] minimized(FuzzerConfig[] configs) {
-        for (FuzzerConfig config : configs) {
-            config.startTest(start);
-            config.endTest(end);
-            config.parts(parts);
+        FuzzerConfig config = configs[0];
+        config.startTest(start);
+        config.endTest(end);
+        config.parts(parts);
 
-            DeepHandshakeFuzzer factory = (DeepHandshakeFuzzer) config.factory();
-            factory.fuzzer(new TestUtils.FakeFlipFuzzer());
-        }
+        DeepHandshakeFuzzer factory = (DeepHandshakeFuzzer) config.factory();
+        factory.fuzzer(new TestUtils.FakeFlipFuzzer());
 
-        return configs;
+        return new FuzzerConfig[] { config };
     }
 }
