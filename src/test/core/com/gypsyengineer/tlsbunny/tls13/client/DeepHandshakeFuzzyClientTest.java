@@ -12,6 +12,7 @@ import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.DeepHandshakeFuzzer;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.server.SingleThreadServer;
+import com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType;
 import com.gypsyengineer.tlsbunny.tls13.utils.FuzzerConfig;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.Output;
@@ -28,8 +29,7 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup.secp256r1;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv12;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv13;
 import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp256r1_sha256;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.*;
 
 public class DeepHandshakeFuzzyClientTest {
 
@@ -54,6 +54,9 @@ public class DeepHandshakeFuzzyClientTest {
         Output serverOutput = new Output("server");
         Output clientOutput = new Output("client");
 
+        assertTrue(fuzzerConfig.factory() instanceof DeepHandshakeFuzzer);
+        DeepHandshakeFuzzer deepHandshakeFuzzer = (DeepHandshakeFuzzer) fuzzerConfig.factory();
+
         Config serverConfig = SystemPropertiesConfig.load();
         SingleThreadServer server = new SingleThreadServer()
                 .set(new EngineFactoryImpl()
@@ -64,7 +67,7 @@ public class DeepHandshakeFuzzyClientTest {
                 .maxConnections(end - start + 2);
 
         DeepHandshakeFuzzyClient deepHandshakeFuzzyClient =
-                new DeepHandshakeFuzzyClient(clientOutput, fuzzerConfig);
+                new DeepHandshakeFuzzyClient(fuzzerConfig, clientOutput);
 
         TestAnalyzer analyzer = new TestAnalyzer();
         analyzer.set(clientOutput);
@@ -80,6 +83,10 @@ public class DeepHandshakeFuzzyClientTest {
                     .set(analyzer)
                     .connect();
         }
+
+        assertArrayEquals(
+                deepHandshakeFuzzer.targeted(),
+                new HandshakeType[] { client_hello, finished });
 
         analyzer.run();
         assertEquals(end - start + 1, analyzer.engines().length);

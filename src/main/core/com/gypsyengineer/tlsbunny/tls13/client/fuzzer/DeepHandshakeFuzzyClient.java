@@ -15,6 +15,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.tls13.utils.FuzzerConfig;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.Output;
+import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 import com.gypsyengineer.tlsbunny.utils.Utils;
 
 import java.io.IOException;
@@ -30,6 +31,9 @@ import static com.gypsyengineer.tlsbunny.tls13.fuzzer.DeepHandshakeFuzzer.deepHa
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public class DeepHandshakeFuzzyClient implements Client, Runnable {
+
+    public static final Runner.ClientFactory client_factory =
+            DeepHandshakeFuzzyClient::deepHandshakeFuzzyClient;
 
     private static final int max_attempts = 3;
     private static final int delay = 3000; // in millis
@@ -72,7 +76,13 @@ public class DeepHandshakeFuzzyClient implements Client, Runnable {
 
     private boolean strict = true;
 
-    public DeepHandshakeFuzzyClient(Output output, FuzzerConfig fuzzerConfig) {
+    public static DeepHandshakeFuzzyClient deepHandshakeFuzzyClient(
+            FuzzerConfig fuzzerConfig, Output output) {
+
+        return new DeepHandshakeFuzzyClient(fuzzerConfig, output);
+    }
+
+    public DeepHandshakeFuzzyClient(FuzzerConfig fuzzerConfig, Output output) {
         this.output = output;
         this.fuzzerConfig = fuzzerConfig;
     }
@@ -166,6 +176,7 @@ public class DeepHandshakeFuzzyClient implements Client, Runnable {
             client.set(StructFactory.getDefault())
                     .set(fuzzerConfig)
                     .set(output)
+                    .set(deepHandshakeFuzzer)
                     .connect()
                     .engine()
                     .run(new SuccessCheck());
