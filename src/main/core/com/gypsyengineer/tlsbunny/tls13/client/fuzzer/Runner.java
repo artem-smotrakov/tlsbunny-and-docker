@@ -10,8 +10,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import static com.gypsyengineer.tlsbunny.utils.Utils.info;
-
 public class Runner {
 
     private FuzzerConfig[] fuzzerConfigs;
@@ -53,7 +51,7 @@ public class Runner {
                 threads = fuzzerConfig.threads();
             }
         }
-        info("we are going to use %d threads", threads);
+        output.info("we are going to use %d threads", threads);
 
         ExecutorService executor = Executors.newFixedThreadPool(threads);
         try {
@@ -79,7 +77,7 @@ public class Runner {
         // we are so patient ...
         executor.awaitTermination(365, TimeUnit.DAYS);
 
-        info("phew, we are done!");
+        output.info("phew, we are done with fuzzing!");
 
         if (analyzer != null) {
             analyzer.set(output).run();

@@ -2,8 +2,6 @@ package com.gypsyengineer.tlsbunny.utils;
 
 import com.gypsyengineer.tlsbunny.tls.Struct;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,9 +13,7 @@ public class Utils {
 
     public static final long DEFAULT_SEED = 0;
     public static final long SEED = Long.getLong("tlsbunny.seed", DEFAULT_SEED);
-
     public static final byte[] EMPTY_ARRAY = new byte[0];
-    public static final String PREFIX = "[tlsbunny]";
 
     public static List<Byte> toList(byte[] bytes) {
         List<Byte> objects = new ArrayList<>();
@@ -121,7 +117,6 @@ public class Utils {
         return false;
     }
 
-
     public static int getEncodingLength(Struct... objects) {
         return Arrays.stream(objects)
                 .map(object -> object.encodingLength())
@@ -142,37 +137,6 @@ public class Utils {
         encodings.forEach(encoding -> buffer.put(encoding));
 
         return buffer.array();
-    }
-
-    // synchronized output
-
-    public static void printf(String format, Object... params) {
-        synchronized (System.out) {
-            System.out.printf(format, params);
-        }
-    }
-
-    public static void println(String string) {
-        synchronized (System.out) {
-            System.out.println(string);
-        }
-    }
-
-    public static void info(String format, Object... values) {
-        printf("%s %s%n", PREFIX, String.format(format, values));
-    }
-
-    public static void achtung(String format, Object... values) {
-        printf("%s achtung: %s%n", PREFIX, String.format(format, values));
-    }
-
-    public static void achtung(String message, Throwable e) {
-        try (StringWriter sw = new StringWriter(); PrintWriter pw = new PrintWriter(sw)) {
-            e.printStackTrace(pw);
-            achtung("%s:%n%s", message, sw.toString());
-        } catch (IOException ioe) {
-            achtung("%s: (could not print stacktrace: %s)", message, ioe.getMessage());
-        }
     }
 
     public static <T> T cast(Struct object, Class<T> clazz) {
