@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 import static com.gypsyengineer.tlsbunny.fuzzer.BitFlipFuzzer.newBitFlipFuzzer;
 import static com.gypsyengineer.tlsbunny.fuzzer.ByteFlipFuzzer.newByteFlipFuzzer;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.DeepHandshakeFuzzer.deepHandshakeFuzzer;
+import static com.gypsyengineer.tlsbunny.utils.Achtung.achtung;
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public class DeepHandshakeFuzzyClient implements Client, Runnable {
@@ -188,6 +189,10 @@ public class DeepHandshakeFuzzyClient implements Client, Runnable {
             output.flush();
         }
         output.info("smoke test passed, start fuzzing");
+
+        if (deepHandshakeFuzzer.targeted().length == 0) {
+            throw achtung("no targets found!");
+        }
 
         String targets = Arrays.stream(deepHandshakeFuzzer.targeted())
                 .map(type -> type.toString())
