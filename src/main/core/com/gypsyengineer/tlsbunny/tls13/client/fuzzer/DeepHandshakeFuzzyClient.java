@@ -15,6 +15,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.tls13.utils.FuzzerConfig;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.Output;
+import com.gypsyengineer.tlsbunny.utils.Utils;
 
 import java.io.IOException;
 import java.net.ConnectException;
@@ -199,16 +200,13 @@ public class DeepHandshakeFuzzyClient implements Client, Runnable {
                 int attempt = 0;
                 while (true) {
                     try {
-                        Engine engine = client.set(deepHandshakeFuzzer)
+                        client.set(deepHandshakeFuzzer)
                                 .set(fuzzerConfig)
                                 .set(output)
                                 .set(fuzzerConfig.checks())
                                 .connect()
-                                .engine();
-
-                        if (fuzzerConfig.hasAnalyzer()) {
-                            engine.apply(fuzzerConfig.analyzer());
-                        }
+                                .engine()
+                                .apply(fuzzerConfig.analyzer());
 
                         break;
                     } catch (EngineException e) {
@@ -224,9 +222,7 @@ public class DeepHandshakeFuzzyClient implements Client, Runnable {
 
                         output.info("connection failed: %s ", cause.getMessage());
                         output.info("let's wait a bit and try again (attempt %d)", attempt);
-                        Thread.sleep(delay);
-
-                        continue;
+                        Utils.sleep(delay);
                     }
                 }
 

@@ -325,7 +325,9 @@ public class Engine {
     }
 
     public Engine apply(Analyzer analyzer) {
-        analyzer.add(this);
+        if (analyzer != null) {
+            analyzer.add(this);
+        }
         return this;
     }
 

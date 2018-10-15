@@ -17,7 +17,6 @@ public class Runner {
     private Output output;
     private Check[] checks;
     private Analyzer analyzer;
-    private int index;
 
     public Runner set(FuzzerConfig... fuzzerConfigs) {
         this.fuzzerConfigs = fuzzerConfigs;
@@ -55,7 +54,7 @@ public class Runner {
 
         ExecutorService executor = Executors.newFixedThreadPool(threads);
         try {
-            index = 0;
+            int index = 0;
             for (FuzzerConfig fuzzerConfig : fuzzerConfigs) {
                 if (analyzer != null) {
                     fuzzerConfig.analyzer(analyzer);
