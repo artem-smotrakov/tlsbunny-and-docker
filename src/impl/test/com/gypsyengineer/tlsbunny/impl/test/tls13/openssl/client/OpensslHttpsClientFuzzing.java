@@ -1,9 +1,9 @@
-package com.gypsyengineer.tlsbunny.impl.test.tls13.openssl;
+package com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.client;
 
 import com.gypsyengineer.tlsbunny.impl.test.tls13.TestForServer;
 import com.gypsyengineer.tlsbunny.impl.test.tls13.Utils;
+import com.gypsyengineer.tlsbunny.tls13.client.fuzzer.DeepHandshakeFuzzyClient;
 import com.gypsyengineer.tlsbunny.tls13.client.fuzzer.MultiThreadedClient;
-import com.gypsyengineer.tlsbunny.tls13.utils.FuzzerConfig;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 import org.junit.AfterClass;
@@ -16,11 +16,7 @@ import java.io.IOException;
 import static com.gypsyengineer.tlsbunny.impl.test.tls13.Utils.checkForASanFindings;
 import static com.gypsyengineer.tlsbunny.tls13.client.fuzzer.MutatedClient.*;
 
-public class OpensslHttpsClientSmokeFuzzing {
-
-    private static final int start = 10;
-    private static final int end = 15;
-    private static final int parts = 1;
+public class OpensslHttpsClientFuzzing {
 
     private static OpensslServer server;
     private static Config mainConfig = SystemPropertiesConfig.load();
@@ -41,7 +37,7 @@ public class OpensslHttpsClientSmokeFuzzing {
     public void ccs() throws Exception {
         new TestForServer()
                 .set(new MultiThreadedClient()
-                        .set(minimized(ccsConfigs(mainConfig))))
+                        .set(ccsConfigs(mainConfig)))
                 .set(server)
                 .run();
     }
@@ -50,7 +46,7 @@ public class OpensslHttpsClientSmokeFuzzing {
     public void tlsPlaintext() throws Exception {
         new TestForServer()
                 .set(new MultiThreadedClient()
-                        .set(minimized(tlsPlaintextConfigs(mainConfig))))
+                        .set(tlsPlaintextConfigs(mainConfig)))
                 .set(server)
                 .run();
     }
@@ -59,7 +55,7 @@ public class OpensslHttpsClientSmokeFuzzing {
     public void handshake() throws Exception {
         new TestForServer()
                 .set(new MultiThreadedClient()
-                        .set(minimized(handshakeConfigs(mainConfig))))
+                        .set(handshakeConfigs(mainConfig)))
                 .set(server)
                 .run();
     }
@@ -68,7 +64,7 @@ public class OpensslHttpsClientSmokeFuzzing {
     public void clientHello() throws Exception {
         new TestForServer()
                 .set(new MultiThreadedClient()
-                        .set(minimized(clientHelloConfigs(mainConfig))))
+                        .set(clientHelloConfigs(mainConfig)))
                 .set(server)
                 .run();
     }
@@ -77,7 +73,7 @@ public class OpensslHttpsClientSmokeFuzzing {
     public void finished() throws Exception {
         new TestForServer()
                 .set(new MultiThreadedClient()
-                        .set(minimized(finishedConfigs(mainConfig))))
+                        .set(finishedConfigs(mainConfig)))
                 .set(server)
                 .run();
     }
@@ -86,7 +82,7 @@ public class OpensslHttpsClientSmokeFuzzing {
     public void cipherSuites() throws Exception {
         new TestForServer()
                 .set(new MultiThreadedClient()
-                        .set(minimized(cipherSuitesConfigs(mainConfig))))
+                        .set(cipherSuitesConfigs(mainConfig)))
                 .set(server)
                 .run();
     }
@@ -95,7 +91,7 @@ public class OpensslHttpsClientSmokeFuzzing {
     public void extensionVector() throws Exception {
         new TestForServer()
                 .set(new MultiThreadedClient()
-                        .set(minimized(extensionVectorConfigs(mainConfig))))
+                        .set(extensionVectorConfigs(mainConfig)))
                 .set(server)
                 .run();
     }
@@ -104,7 +100,7 @@ public class OpensslHttpsClientSmokeFuzzing {
     public void legacyCompressionMethods() throws Exception {
         new TestForServer()
                 .set(new MultiThreadedClient()
-                        .set(minimized(legacyCompressionMethodsConfigs(mainConfig))))
+                        .set(legacyCompressionMethodsConfigs(mainConfig)))
                 .set(server)
                 .run();
     }
@@ -113,7 +109,17 @@ public class OpensslHttpsClientSmokeFuzzing {
     public void legacySessionId() throws Exception {
         new TestForServer()
                 .set(new MultiThreadedClient()
-                        .set(minimized(legacySessionIdConfigs(mainConfig))))
+                        .set(legacySessionIdConfigs(mainConfig)))
+                .set(server)
+                .run();
+    }
+
+    @Test
+    public void deepHandshakeFuzzer() throws Exception {
+        new TestForServer()
+                .set(new MultiThreadedClient()
+                        .set(DeepHandshakeFuzzyClient.client_factory)
+                        .set(DeepHandshakeFuzzyClient.noClientAuth(mainConfig)))
                 .set(server)
                 .run();
     }
@@ -123,15 +129,5 @@ public class OpensslHttpsClientSmokeFuzzing {
         server.close();
         Utils.waitServerStop(server);
         checkForASanFindings(server.output());
-    }
-
-    private static FuzzerConfig[] minimized(FuzzerConfig[] configs) {
-        for (FuzzerConfig config : configs) {
-            config.startTest(start);
-            config.endTest(end);
-            config.parts(parts);
-        }
-
-        return configs;
     }
 }

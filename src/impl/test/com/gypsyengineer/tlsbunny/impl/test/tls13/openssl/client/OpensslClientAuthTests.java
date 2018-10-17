@@ -1,4 +1,4 @@
-package com.gypsyengineer.tlsbunny.impl.test.tls13.openssl;
+package com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.client;
 
 import com.gypsyengineer.tlsbunny.impl.test.tls13.TestForServer;
 import com.gypsyengineer.tlsbunny.impl.test.tls13.Utils;

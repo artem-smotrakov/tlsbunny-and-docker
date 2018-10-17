@@ -1,6 +1,6 @@
 package com.gypsyengineer.tlsbunny.impl.test.tls13;
 
-import com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.OpensslServer;
+import com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.client.OpensslServer;
 import com.gypsyengineer.tlsbunny.tls13.server.Server;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
@@ -17,7 +17,7 @@ public class Utils {
     public static final int delay = 500; // in millis
     public static final int default_timeout = 3 * 60 * 1000; // 3 minutes, in millis
 
-    public static void delay(long millis) {
+    public static void sleep(long millis) {
         try {
             Thread.sleep(millis);
         } catch (InterruptedException e) {
