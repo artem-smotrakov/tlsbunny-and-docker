@@ -26,7 +26,7 @@ public class OpensslDowngradeProtocolTests {
                 "options",
                 "-min_protocol TLSv1 -max_protocol TLSv1.3 -debug -tlsextdebug");
         server.start();
-        Utils.waitServerStart(server);
+        Utils.waitStart(server);
     }
 
     @Before
@@ -88,7 +88,7 @@ public class OpensslDowngradeProtocolTests {
     @AfterClass
     public static void tearDown() throws Exception {
         server.close();
-        Utils.waitServerStop(server);
+        Utils.waitStop(server);
         checkForASanFindings(server.output());
     }
 }

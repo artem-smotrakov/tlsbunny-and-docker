@@ -35,4 +35,29 @@ public interface Client extends AutoCloseable, Runnable, HasOutput<Client> {
             throw whatTheHell("exception on client side", e);
         }
     }
+
+    /**
+     * Starts the client in a new thread.
+     *
+     * @return the thread where the client is running
+     */
+    default Thread start() {
+        Thread thread = new Thread(this);
+        thread.start();
+        return thread;
+    }
+
+    /**
+     * Stops the client.
+     */
+    default Client stop() {
+        throw new UnsupportedOperationException("no stopping for you!");
+    }
+
+    /**
+     * @return true if the client is running, false otherwise
+     */
+    default boolean running() {
+        throw new UnsupportedOperationException("no running for you!");
+    }
 }

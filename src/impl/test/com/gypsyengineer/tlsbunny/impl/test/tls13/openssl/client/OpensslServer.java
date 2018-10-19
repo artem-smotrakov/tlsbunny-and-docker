@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.gypsyengineer.tlsbunny.impl.test.tls13.Utils.waitServerStop;
+import static com.gypsyengineer.tlsbunny.impl.test.tls13.Utils.waitStop;
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public class OpensslServer implements Server, AutoCloseable {
@@ -210,7 +210,7 @@ public class OpensslServer implements Server, AutoCloseable {
     public void close() throws Exception {
         stop();
 
-        waitServerStop(this);
+        Utils.waitStop(this);
         output.info("server stopped");
 
         if (containerName != null) {

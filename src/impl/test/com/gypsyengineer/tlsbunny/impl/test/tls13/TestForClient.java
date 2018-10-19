@@ -39,57 +39,44 @@ public class TestForClient {
             // start the server
             server.set(serverOutput);
             Thread serverThread = server.start();
-            Utils.waitServerStart(server);
+            Utils.waitStart(server);
 
             // configure and run the client
-            // TODO: consider adding Client.start() method
-            //       which starts the client in a new thread
             client.config().port(server.port());
             client.set(clientOutput);
-            Thread clientThread = new Thread(new ClientRunner(client, clientOutput));
-            clientThread.start();
+            Thread clientThread = client.start();
 
             // wait for client or server to finish
             while (true) {
                 if (!server.running()) {
                     // server stopped, stop the client and exit
-                    // TODO: implement - should we add Client.stop() method?
+                    client.stop();
+                    Utils.waitStop(client);
+                    break;
                 }
 
-                // TODO: check if client is not running, and if so, then stop the server and exit
-                //       should we add Client.running() method?
+                if (!client.running()) {
+                    // client stopped, stop the server and exit
+                    server.stop();
+                    Utils.waitStop(server);
+                    break;
+                }
 
                 Utils.sleep(delay);
             }
 
-            // TODO: check if neither client or server is still running,
-            //       and throw an exception if so
-
-            //checkForASanFindings(clientOutput);
-        }
-
-        //return this;
-    }
-
-    private static class ClientRunner implements Runnable {
-
-        private final Client client;
-        private final Output output;
-
-        // TODO: should Client extend HasOutput?
-        private ClientRunner(Client client, Output output) {
-            this.client = client;
-            this.output = output;
-        }
-
-        @Override
-        public void run() {
-            try (client) {
-                client.connect();
-            } catch (Exception e) {
-                output.achtung("exception on client side", e);
+            if (clientThread.isAlive()) {
+                throw whatTheHell("client thread is still running!");
             }
+
+            if (serverThread.isAlive()) {
+                throw whatTheHell("server thread is still running!");
+            }
+
+            checkForASanFindings(clientOutput);
         }
+
+        return this;
     }
 
 }

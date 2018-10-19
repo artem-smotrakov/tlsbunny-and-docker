@@ -39,7 +39,7 @@ public class TestForServer {
             if (!server.running()) {
                 server.set(serverOutput);
                 serverThread = server.start();
-                Utils.waitServerStart(server);
+                Utils.waitStart(server);
             }
 
             // configure and run the client
@@ -50,7 +50,7 @@ public class TestForServer {
             // stop the server if we started it in the test
             if (serverThread != null) {
                 server.stop();
-                Utils.waitServerStop(server);
+                Utils.waitStop(server);
             }
 
             checkForASanFindings(server.output());

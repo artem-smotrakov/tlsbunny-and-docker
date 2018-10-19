@@ -21,7 +21,7 @@ public class OpensslClientAuthTests {
         server = new OpensslServer();
         server.dockerEnv("options", "-Verify 0 -CAfile certs/root_cert.pem");
         server.start();
-        Utils.waitServerStart(server);
+        Utils.waitStart(server);
     }
 
     @Before
@@ -40,7 +40,7 @@ public class OpensslClientAuthTests {
     @AfterClass
     public static void tearDown() throws Exception {
         server.close();
-        Utils.waitServerStop(server);
+        Utils.waitStop(server);
         checkForASanFindings(server.output());
     }
 }

@@ -25,7 +25,7 @@ public class OpensslHttpsClientFuzzing {
     public static void setUp() throws Exception {
         server = new OpensslServer();
         server.start();
-        Utils.waitServerStart(server);
+        Utils.waitStart(server);
     }
 
     @Before
@@ -127,7 +127,7 @@ public class OpensslHttpsClientFuzzing {
     @AfterClass
     public static void tearDown() throws Exception {
         server.close();
-        Utils.waitServerStop(server);
+        Utils.waitStop(server);
         checkForASanFindings(server.output());
     }
 }

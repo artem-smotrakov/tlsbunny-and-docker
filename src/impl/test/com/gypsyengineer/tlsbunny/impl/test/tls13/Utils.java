@@ -1,6 +1,7 @@
 package com.gypsyengineer.tlsbunny.impl.test.tls13;
 
 import com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.client.OpensslServer;
+import com.gypsyengineer.tlsbunny.tls13.client.Client;
 import com.gypsyengineer.tlsbunny.tls13.server.Server;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
@@ -51,13 +52,32 @@ public class Utils {
         return pb.start();
     }
 
-    public static void waitServerStart(Server server)
+    public static void waitStart(Client client)
             throws IOException, InterruptedException {
 
-        waitServerStart(server, default_timeout);
+        waitStart(client, default_timeout);
     }
 
-    public static void waitServerStart(Server server, long timeout)
+    public static void waitStart(Client client, long timeout)
+            throws IOException, InterruptedException {
+
+        long start = System.currentTimeMillis();
+        do {
+            Thread.sleep(delay);
+            if (timeout > 0 && System.currentTimeMillis() - start > timeout) {
+                throw new IOException(
+                        "timeout reached while waiting for the client to start");
+            }
+        } while (!client.running());
+    }
+
+    public static void waitStart(Server server)
+            throws IOException, InterruptedException {
+
+        waitStart(server, default_timeout);
+    }
+
+    public static void waitStart(Server server, long timeout)
             throws IOException, InterruptedException {
 
         long start = System.currentTimeMillis();
@@ -70,13 +90,32 @@ public class Utils {
         } while (!server.running());
     }
 
-    public static void waitServerStop(Server server)
+    public static void waitStop(Client client)
             throws IOException, InterruptedException {
 
-        waitServerStop(server, default_timeout);
+        waitStop(client, default_timeout);
     }
 
-    public static void waitServerStop(Server server, long timeout)
+    public static void waitStop(Client client, long timeout)
+            throws InterruptedException, IOException {
+
+        long start = System.currentTimeMillis();
+        do {
+            Thread.sleep(delay);
+            if (timeout > 0 && System.currentTimeMillis() - start > timeout) {
+                throw new IOException(
+                        "timeout reached while waiting for the client to stop");
+            }
+        } while (client.running());
+    }
+
+    public static void waitStop(Server server)
+            throws IOException, InterruptedException {
+
+        waitStop(server, default_timeout);
+    }
+
+    public static void waitStop(Server server, long timeout)
             throws InterruptedException, IOException {
 
         long start = System.currentTimeMillis();
