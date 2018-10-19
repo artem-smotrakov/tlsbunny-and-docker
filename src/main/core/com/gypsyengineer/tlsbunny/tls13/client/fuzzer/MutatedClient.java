@@ -39,7 +39,7 @@ import static com.gypsyengineer.tlsbunny.tls13.fuzzer.SimpleVectorFuzzer.simpleV
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Target.*;
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
-public class MutatedClient implements Client, Runnable {
+public class MutatedClient implements Client {
 
     public static final int TLS_PLAINTEXT_HEADER_LENGTH =
             ContentType.ENCODING_LENGTH + ProtocolVersion.ENCODING_LENGTH
@@ -94,6 +94,11 @@ public class MutatedClient implements Client, Runnable {
     public MutatedClient(Output output, FuzzerConfig fuzzerConfig) {
         this.output = output;
         this.fuzzerConfig = fuzzerConfig;
+    }
+
+    @Override
+    public Output output() {
+        return output;
     }
 
     @Override

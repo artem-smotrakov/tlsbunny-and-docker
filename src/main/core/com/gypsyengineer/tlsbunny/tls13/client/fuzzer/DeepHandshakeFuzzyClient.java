@@ -15,7 +15,6 @@ import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.tls13.utils.FuzzerConfig;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.Output;
-import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 import com.gypsyengineer.tlsbunny.utils.Utils;
 
 import java.io.IOException;
@@ -31,7 +30,7 @@ import static com.gypsyengineer.tlsbunny.tls13.fuzzer.DeepHandshakeFuzzer.deepHa
 import static com.gypsyengineer.tlsbunny.utils.Achtung.achtung;
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
-public class DeepHandshakeFuzzyClient implements Client, Runnable {
+public class DeepHandshakeFuzzyClient implements Client {
 
     public static final Runner.ClientFactory client_factory =
             DeepHandshakeFuzzyClient::deepHandshakeFuzzyClient;
@@ -86,6 +85,11 @@ public class DeepHandshakeFuzzyClient implements Client, Runnable {
     public DeepHandshakeFuzzyClient(FuzzerConfig fuzzerConfig, Output output) {
         this.output = output;
         this.fuzzerConfig = fuzzerConfig;
+    }
+
+    @Override
+    public Output output() {
+        return output;
     }
 
     @Override

@@ -37,6 +37,11 @@ public abstract class AbstractClient implements Client, AutoCloseable {
     }
 
     @Override
+    public Output output() {
+        return output;
+    }
+
+    @Override
     public Config config() {
         return config;
     }
