@@ -28,12 +28,37 @@ public abstract class AbstractClient implements Client, AutoCloseable {
     protected List<Engine> engines = new ArrayList<>();
     protected List<Check> checks = Collections.emptyList();
 
+    private boolean running = false;
+
     public AbstractClient() {
         try {
             negotiator = Negotiator.create(NamedGroup.secp256r1, StructFactory.getDefault());
         } catch (NegotiatorException e) {
             throw whatTheHell("could not create a negotiator!", e);
         }
+    }
+
+    @Override
+    // TODO should it run checks and analyzers? should they be private?
+    //      if so, connectImpl should probably return engines
+    public final Client connect() throws Exception {
+        synchronized (this) {
+            running = true;
+        }
+        try {
+            return connectImpl();
+        } finally {
+            synchronized (this) {
+                running = false;
+            }
+        }
+    }
+
+    protected abstract Client connectImpl() throws Exception;
+
+    @Override
+    synchronized public boolean running() {
+        return running;
     }
 
     @Override

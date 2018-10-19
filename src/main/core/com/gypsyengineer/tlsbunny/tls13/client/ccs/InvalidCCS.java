@@ -54,7 +54,7 @@ public class InvalidCCS extends AbstractClient {
     }
 
     @Override
-    public Client connect() throws Exception {
+    public Client connectImpl() throws Exception {
         if (start > end) {
             throw whatTheHell("starting ccs value (%d) is greater than end ccs value (%d)", start, end);
         }

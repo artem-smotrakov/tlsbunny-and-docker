@@ -1,6 +1,6 @@
 package com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.client;
 
-import com.gypsyengineer.tlsbunny.impl.test.tls13.TestForServer;
+import com.gypsyengineer.tlsbunny.impl.test.tls13.ImplTest;
 import com.gypsyengineer.tlsbunny.impl.test.tls13.Utils;
 import com.gypsyengineer.tlsbunny.tls13.client.fuzzer.MultiThreadedClient;
 import com.gypsyengineer.tlsbunny.utils.Config;
@@ -36,7 +36,7 @@ public class OpensslHttpsClientAuthFuzzing {
 
     @Test
     public void certificate() throws Exception {
-        new TestForServer()
+        new ImplTest()
                 .set(new MultiThreadedClient()
                         .set(certificateConfigs(mainConfig)))
                 .set(server)
@@ -45,7 +45,7 @@ public class OpensslHttpsClientAuthFuzzing {
 
     @Test
     public void certificateVerify() throws Exception {
-        new TestForServer()
+        new ImplTest()
                 .set(new MultiThreadedClient()
                         .set(certificateVerifyConfigs(mainConfig)))
                 .set(server)

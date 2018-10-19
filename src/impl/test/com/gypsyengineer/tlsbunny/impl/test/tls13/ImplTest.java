@@ -46,13 +46,14 @@ public class ImplTest {
                 Utils.waitStart(server);
             }
 
-            // configure and run the client if it's not running
-            if (!client.running()) {
-                client.config().port(server.port());
-                client.set(clientOutput);
-                clientThread = client.start();
-                Utils.waitStart(client);
+            // configure and run the client
+            if (client.running()) {
+                throw whatTheHell("client is already running!");
             }
+
+            client.config().port(server.port());
+            client.set(clientOutput);
+            clientThread = client.start();
 
             // wait for client or server to finish
             while (true) {
