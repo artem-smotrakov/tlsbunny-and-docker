@@ -1,6 +1,6 @@
-package com.gypsyengineer.tlsbunny.impl.test.tls13.openssl;
+package com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.client;
 
-import com.gypsyengineer.tlsbunny.impl.test.tls13.TestForServer;
+import com.gypsyengineer.tlsbunny.impl.test.tls13.ImplTest;
 import com.gypsyengineer.tlsbunny.impl.test.tls13.Utils;
 import com.gypsyengineer.tlsbunny.tls13.client.*;
 import org.junit.AfterClass;
@@ -21,7 +21,7 @@ public class OpensslClientAuthTests {
         server = new OpensslServer();
         server.dockerEnv("options", "-Verify 0 -CAfile certs/root_cert.pem");
         server.start();
-        Utils.waitServerStart(server);
+        Utils.waitStart(server);
     }
 
     @Before
@@ -31,7 +31,7 @@ public class OpensslClientAuthTests {
 
     @Test
     public void httpsClientAuth() throws Exception {
-        new TestForServer()
+        new ImplTest()
                 .set(new HttpsClientAuth())
                 .set(server)
                 .run();
@@ -40,7 +40,7 @@ public class OpensslClientAuthTests {
     @AfterClass
     public static void tearDown() throws Exception {
         server.close();
-        Utils.waitServerStop(server);
+        Utils.waitStop(server);
         checkForASanFindings(server.output());
     }
 }

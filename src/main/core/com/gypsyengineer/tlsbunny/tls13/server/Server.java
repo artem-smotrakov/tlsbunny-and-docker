@@ -5,7 +5,6 @@ import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.EngineFactory;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.HasOutput;
-import com.gypsyengineer.tlsbunny.utils.Output;
 
 public interface Server extends Runnable, AutoCloseable, HasOutput<Server> {
     Server set(Config config);
@@ -27,6 +26,11 @@ public interface Server extends Runnable, AutoCloseable, HasOutput<Server> {
     Server stop();
 
     /**
+     * @return true if the server is running, false otherwise
+     */
+    boolean running();
+
+    /**
      * @return the port number on which the server is running
      */
     int port();
@@ -42,17 +46,7 @@ public interface Server extends Runnable, AutoCloseable, HasOutput<Server> {
     Engine[] engines();
 
     /**
-     * @return true if the server is running, false otherwise
-     */
-    boolean running();
-
-    /**
      * @return false if the check failed at least once, true otherwise
      */
     boolean failed();
-
-    /**
-     * @return server output
-     */
-    Output output();
 }

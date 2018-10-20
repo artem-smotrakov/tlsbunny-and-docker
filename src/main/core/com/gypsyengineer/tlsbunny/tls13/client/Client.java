@@ -6,9 +6,12 @@ import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Negotiator;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.Config;
+import com.gypsyengineer.tlsbunny.utils.HasOutput;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
-public interface Client extends AutoCloseable {
+import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
+
+public interface Client extends AutoCloseable, Runnable, HasOutput<Client> {
 
     Check[] no_checks = new Check[0];
 
@@ -24,4 +27,37 @@ public interface Client extends AutoCloseable {
     // TODO: should engine() be removed? or renamed ot lastEngine/recentEngine?
     Engine engine();
     Engine[] engines();
+
+    default void run() {
+        try {
+            connect();
+        } catch (Exception e) {
+            throw whatTheHell("exception on client side", e);
+        }
+    }
+
+    /**
+     * Starts the client in a new thread.
+     *
+     * @return the thread where the client is running
+     */
+    default Thread start() {
+        Thread thread = new Thread(this);
+        thread.start();
+        return thread;
+    }
+
+    /**
+     * Stops the client.
+     */
+    default Client stop() {
+        throw new UnsupportedOperationException("no stopping for you!");
+    }
+
+    /**
+     * @return true if the client is running, false otherwise
+     */
+    default boolean running() {
+        throw new UnsupportedOperationException("no running for you!");
+    }
 }

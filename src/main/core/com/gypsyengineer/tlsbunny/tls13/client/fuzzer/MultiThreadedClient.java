@@ -23,6 +23,11 @@ public class MultiThreadedClient implements Client {
     private Runner.ClientFactory clientFactory;
 
     @Override
+    public Output output() {
+        return output;
+    }
+
+    @Override
     public Config config() {
         return mainConfig;
     }
