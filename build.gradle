@@ -4,6 +4,7 @@ plugins {
     id 'application'
     id 'jacoco'
     id 'com.github.kt3k.coveralls' version '2.6.3'
+    id 'org.sonarqube' version '2.6.2'
 }
 
 version '1.0-SNAPSHOT'
@@ -25,19 +26,25 @@ jacoco {
 sourceSets {
     main {
         java {
-            srcDirs 'src/main/java'
+            srcDirs 'src/main/core'
         }
+    }
+
+    test_impl {
+        java {
+            srcDir 'src/impl/test'
+        }
+        compileClasspath += sourceSets.main.output + configurations.testRuntimeClasspath
+        runtimeClasspath += output + compileClasspath
     }
 
     test {
         java {
-            srcDirs 'src/test/java'
+            srcDirs 'src/test/core'
         }
-    }
-
-    interoperability {
-        java.srcDir file('src/test/interoperability')
-        compileClasspath += sourceSets.main.output + configurations.testRuntimeClasspath
+        compileClasspath += sourceSets.main.output
+        compileClasspath += sourceSets.test_impl.output
+        compileClasspath += configurations.testRuntimeClasspath
         runtimeClasspath += output + compileClasspath
     }
 }
@@ -49,15 +56,35 @@ jacocoTestReport {
     }
 }
 
-// test tasks
+// build all docker images
+task buildAllDocker() {
+    dependsOn 'buildGnutlsDocker'
+    dependsOn 'buildPicotlsDocker'
+    dependsOn 'buildOpensslDocker'
+    dependsOn 'buildH2ODocker'
+    dependsOn 'buildNssDocker'
+    dependsOn 'buildWolfSSLDocker'
+}
 
-// run the interoperability tests against third-party TLS implementations
-// make sure that the servers are running before running the task
-task interoperability(type: Test) {
-    description = 'Runs the interoperability tests'
-    testClassesDirs = sourceSets.interoperability.output.classesDirs
-    classpath += sourceSets.interoperability.runtimeClasspath
-    classpath += sourceSets.main.runtimeClasspath
+// run all servers
+task runAllServers() {
+    dependsOn 'runNssServer'
+    dependsOn 'runH2OServer'
+    dependsOn 'runOpensslServer'
+    dependsOn 'runGnutlsServer'
+    dependsOn 'runPicotlsServer'
+    dependsOn 'runWolfsslServer'
+}
+
+// check for crashes
+task checkCrashes(type: Exec) {
+    commandLine 'bash', 'scripts/check_logs_for_crashes.sh',
+            'gnutls_server_tls13',
+            'nss_server_tls13',
+            'h2o_server_tls13',
+            'picotls_server_tls13',
+            'openssl_server_tls13',
+            'wolfssl_server_tls13'
 }
 
 // tasks for running tests for GnuTLS
@@ -97,45 +124,13 @@ task runGnutlsServer {
     }
 }
 
-task killGnutlsDockerContainer(type: Exec) {
-    ignoreExitValue = true
-    commandLine 'docker', 'container', 'kill', 'gnutls_server_tls13'
-}
-
-task removeGnutlsDockerContainer(type: Exec) {
-    ignoreExitValue = true
-    commandLine 'docker', 'rm', 'gnutls_server_tls13'
-}
-
-task gnutlsClient(type: JavaExec) {
-    classpath sourceSets.main.runtimeClasspath
-    applicationDefaultJvmArgs = ["-Dtlsbunny.port=50101"]
-    main = "com.gypsyengineer.tlsbunny.tls13.test.gnutls.client.HttpsClient"
-}
-
-task gnutlsFuzzyClient(type: JavaExec) {
-    classpath sourceSets.main.runtimeClasspath
-    systemProperty 'tlsbunny.port', '50101'
-    systemProperty 'tlsbunny.threads', '1'
-    main = "com.gypsyengineer.tlsbunny.tls13.test.gnutls.client.FuzzyClient"
-}
-
-// run a local server in a docker container and start fuzzing
-task runGnutlsFuzzing {
-    dependsOn 'runGnutlsServer'
-    dependsOn 'gnutlsFuzzyClient'
-
-    // run fuzzing
-    tasks.findByName('gnutlsFuzzyClient').mustRunAfter('runGnutlsServer')
-}
-
 // tasks for running tests for OpenSSL
 
 task buildOpensslDocker(type: Exec) {
     commandLine 'docker',
             'build',
             '--no-cache',
-            '--file', 'src/main/docker/openssl/Dockerfile',
+            '--file', 'src/impl/docker/openssl/Dockerfile',
             '--tag',  'openssl/server/tls13',
             '.'
 }
@@ -166,46 +161,29 @@ task runOpensslServer {
     }
 }
 
-task killOpensslDockerContainer(type: Exec) {
-    ignoreExitValue = true
-    commandLine 'docker', 'container', 'kill', 'openssl_server_tls13'
+task runOpensslTests(type: Test) {
+    description = 'Runs tests for OpenSSL'
+    group = 'openssl'
+    testClassesDirs = sourceSets.test_impl.output.classesDirs
+    classpath = sourceSets.test_impl.runtimeClasspath
+    testLogging.showStandardStreams = true
+    ignoreFailures = true
+    outputs.upToDateWhen { false }
+
+    include 'com/gypsyengineer/tlsbunny/impl/test/tls13/openssl/**/*Tests*'
+    exclude 'com/gypsyengineer/tlsbunny/impl/test/tls13/openssl/**/*Fuzzing*'
 }
 
-task removeOpensslDockerContainer(type: Exec) {
-    ignoreExitValue = true
-    commandLine 'docker', 'rm', 'openssl_server_tls13'
-}
+task runOpensslFuzzing(type: Test) {
+    description = 'Runs fuzzing for OpenSSL'
+    group = 'openssl'
+    testClassesDirs = sourceSets.test_impl.output.classesDirs
+    classpath = sourceSets.test_impl.runtimeClasspath
+    testLogging.showStandardStreams = true
+    ignoreFailures = true
+    outputs.upToDateWhen { false }
 
-task opensslHttpsClient(type: JavaExec) {
-    classpath sourceSets.main.runtimeClasspath
-    systemProperty 'tlsbunny.port', '10101'
-    main = "com.gypsyengineer.tlsbunny.tls13.test.openssl.client.HttpsClient"
-}
-
-task opensslFuzzyClient(type: JavaExec) {
-    classpath sourceSets.main.runtimeClasspath
-    systemProperty 'tlsbunny.port', '10101'
-    systemProperty 'tlsbunny.threads', '1'
-    main = "com.gypsyengineer.tlsbunny.tls13.test.openssl.client.FuzzyClient"
-}
-
-task opensslClientAuth(type: JavaExec) {
-    classpath sourceSets.main.runtimeClasspath
-    main = "com.gypsyengineer.tlsbunny.tls13.test.openssl.client.ClientAuth"
-}
-
-task opensslFuzzyClientAuth(type: JavaExec) {
-    classpath sourceSets.main.runtimeClasspath
-    main = "com.gypsyengineer.tlsbunny.tls13.test.openssl.client.FuzzyClientAuth"
-}
-
-// run a local server in a docker container and start fuzzing
-task runOpensslFuzzing {
-    dependsOn 'runOpensslServer'
-    dependsOn 'opensslFuzzyClient'
-
-    // run fuzzing
-    tasks.findByName('opensslFuzzyClient').mustRunAfter('runOpensslServer')
+    include 'com/gypsyengineer/tlsbunny/impl/test/tls13/openssl/**/*Fuzzing*'
 }
 
 // tasks for running tests for picotls
@@ -245,38 +223,6 @@ task runPicotlsServer {
     }
 }
 
-task killPicotlsDockerContainer(type: Exec) {
-    ignoreExitValue = true
-    commandLine 'docker', 'container', 'kill', 'picotls_server_tls13'
-}
-
-task removePicotlsDockerContainer(type: Exec) {
-    ignoreExitValue = true
-    commandLine 'docker', 'rm', 'picotls_server_tls13'
-}
-
-task picotlsClient(type: JavaExec) {
-    classpath sourceSets.main.runtimeClasspath
-    applicationDefaultJvmArgs = ["-Dtlsbunny.port=20101"]
-    main = "com.gypsyengineer.tlsbunny.tls13.test.picotls.client.PicotlsClient"
-}
-
-task picotlsFuzzyClient(type: JavaExec) {
-    classpath sourceSets.main.runtimeClasspath
-    systemProperty 'tlsbunny.port', '20101'
-    systemProperty 'tlsbunny.threads', '1'
-    main = "com.gypsyengineer.tlsbunny.tls13.test.picotls.client.FuzzyClient"
-}
-
-// run a local server in a docker container and start fuzzing
-task runPicotlsFuzzing {
-    dependsOn 'runPicotlsServer'
-    dependsOn 'picotlsFuzzyClient'
-
-    // run fuzzing
-    tasks.findByName('picotlsFuzzyClient').mustRunAfter('runPicotlsServer')
-}
-
 // tasks for running tests for h2o + picotls
 
 task buildH2ODocker(type: Exec) {
@@ -312,38 +258,6 @@ task runH2OServer {
             commandLine 'sleep', '3'
         }
     }
-}
-
-task killH2ODockerContainer(type: Exec) {
-    ignoreExitValue = true
-    commandLine 'docker', 'container', 'kill', 'h2o_server_tls13'
-}
-
-task removeH2ODockerContainer(type: Exec) {
-    ignoreExitValue = true
-    commandLine 'docker', 'rm', 'h2o_server_tls13'
-}
-
-task h2oClient(type: JavaExec) {
-    classpath sourceSets.main.runtimeClasspath
-    applicationDefaultJvmArgs = ["-Dtlsbunny.port=30101"]
-    main = "com.gypsyengineer.tlsbunny.tls13.test.h2o.client.HttpsClient"
-}
-
-task h2oFuzzyClient(type: JavaExec) {
-    classpath sourceSets.main.runtimeClasspath
-    systemProperty 'tlsbunny.port', '30101'
-    systemProperty 'tlsbunny.threads', '3'
-    main = "com.gypsyengineer.tlsbunny.tls13.test.h2o.client.FuzzyClient"
-}
-
-// run a local server in a docker container and start fuzzing
-task runH2OFuzzing {
-    dependsOn 'runH2OServer'
-    dependsOn 'h2oFuzzyClient'
-
-    // run fuzzing
-    tasks.findByName('h2oFuzzyClient').mustRunAfter('runH2OServer')
 }
 
 // tasks for running tests for NSS
@@ -386,40 +300,6 @@ task runNssServer {
     }
 }
 
-// kill a docker container with NSS server
-task killNssDockerContainer(type: Exec) {
-    ignoreExitValue = true
-    commandLine 'docker', 'container', 'kill', 'nss_server_tls13'
-}
-
-// remove a docker container with NSS server
-task removeNssDockerContainer(type: Exec) {
-    ignoreExitValue = true
-    commandLine 'docker', 'rm', 'nss_server_tls13'
-}
-
-task nssClient(type: JavaExec) {
-    classpath sourceSets.main.runtimeClasspath
-    applicationDefaultJvmArgs = ["-Dtlsbunny.port=60101"]
-    main = "com.gypsyengineer.tlsbunny.tls13.test.nss.client.HttpsClient"
-}
-
-task nssFuzzyClient(type: JavaExec) {
-    classpath sourceSets.main.runtimeClasspath
-    systemProperty 'tlsbunny.port', '60101'
-    systemProperty 'tlsbunny.threads', '1'
-    main = "com.gypsyengineer.tlsbunny.tls13.test.nss.client.FuzzyClient"
-}
-
-// run a local server in a docker container and start fuzzing
-task runNssFuzzing {
-    dependsOn 'runNssServer'
-    dependsOn 'nssFuzzyClient'
-
-    // run fuzzing
-    tasks.findByName('nssFuzzyClient').mustRunAfter('runNssServer')
-}
-
 // tasks for running tests for WolfSSL
 
 // builds a Docker images with WolfSSL server
@@ -458,79 +338,4 @@ task runWolfsslServer {
             commandLine 'sleep', '3'    // in seconds
         }
     }
-}
-
-// kill a docker container with WolfSSL server
-task killWolfSSLDockerContainer(type: Exec) {
-    ignoreExitValue = true
-    commandLine 'docker', 'container', 'kill', 'wolfssl_server_tls13'
-}
-
-// remove a docker container with WolfSSL server
-task removeWolfSSLDockerContainer(type: Exec) {
-    ignoreExitValue = true
-    commandLine 'docker', 'rm', 'wolfssl_server_tls13'
-}
-
-task wolfsslClient(type: JavaExec) {
-    classpath sourceSets.main.runtimeClasspath
-    applicationDefaultJvmArgs = ["-Dtlsbunny.port=60101"]
-    main = "com.gypsyengineer.tlsbunny.tls13.test.wolfssl.client.HttpsClient"
-}
-
-task wolfsslFuzzyClient(type: JavaExec) {
-    classpath sourceSets.main.runtimeClasspath
-    systemProperty 'tlsbunny.port', '40101'
-    systemProperty 'tlsbunny.threads', '1'
-    main = "com.gypsyengineer.tlsbunny.tls13.test.wolfssl.client.FuzzyClient"
-}
-
-// run a local server in a docker container and start fuzzing
-task runWolfsslFuzzing {
-    dependsOn 'runWolfsslServer'
-    dependsOn 'wolfsslFuzzyClient'
-
-    // run fuzzing
-    tasks.findByName('wolfsslFuzzyClient').mustRunAfter('runWolfsslServer')
-}
-
-// build all docker images
-task buildAllDocker() {
-    dependsOn 'buildGnutlsDocker'
-    dependsOn 'buildPicotlsDocker'
-    dependsOn 'buildOpensslDocker'
-    dependsOn 'buildH2ODocker'
-    dependsOn 'buildNssDocker'
-    dependsOn 'buildWolfSSLDocker'
-}
-
-// run all servers
-task runAllServers() {
-    dependsOn 'runNssServer'
-    dependsOn 'runH2OServer'
-    dependsOn 'runOpensslServer'
-    dependsOn 'runGnutlsServer'
-    dependsOn 'runPicotlsServer'
-    dependsOn 'runWolfsslServer'
-}
-
-// run fuzzing for all targets
-task runAllFuzzing() {
-    dependsOn 'runH2OFuzzing'
-    dependsOn 'runPicotlsFuzzing'
-    dependsOn 'runOpensslFuzzing'
-    dependsOn 'runGnutlsFuzzing'
-    dependsOn 'runNssFuzzing'
-    dependsOn 'runWolfsslFuzzing'
-}
-
-// check for crashes
-task checkCrashes(type: Exec) {
-    commandLine 'bash', 'scripts/check_logs_for_crashes.sh',
-            'gnutls_server_tls13',
-            'nss_server_tls13',
-            'h2o_server_tls13', 
-            'picotls_server_tls13',
-            'openssl_server_tls13',
-            'wolfssl_server_tls13'
 }
