@@ -1,17 +1,13 @@
 language: java
 dist: trusty
 
-before_install:
-  - ./gradlew wrapper --gradle-version=4.10 --distribution-type=bin
-
 jdk:
   - openjdk9
   - openjdk10
   - openjdk11
-  - openjdk-ea
 
-script:
-  - ./gradlew test --debug --stacktrace
+before_install:
+  - ./gradlew wrapper --gradle-version 4.10.2
 
 after_success:
   - ./gradlew jacocoTestReport coveralls

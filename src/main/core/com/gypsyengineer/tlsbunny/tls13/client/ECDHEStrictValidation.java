@@ -49,7 +49,7 @@ public class ECDHEStrictValidation extends AbstractClient {
     }
 
     @Override
-    public ECDHEStrictValidation connect() throws Exception {
+    public ECDHEStrictValidation connectImpl() throws Exception {
         for (int i = 0; i < n; i++) {
             output.info("test %d", i);
             recentEngine = createEngine().connect().run(checks);
