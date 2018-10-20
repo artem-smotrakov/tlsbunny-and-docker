@@ -6,6 +6,9 @@ jdk:
   - openjdk10
   - openjdk11
 
+before_install:
+  - ./gradlew wrapper --gradle-version 4.10.2
+
 after_success:
   - ./gradlew jacocoTestReport coveralls
 
