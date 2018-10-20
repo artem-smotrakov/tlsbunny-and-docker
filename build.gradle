@@ -135,7 +135,7 @@ task buildOpensslDocker(type: Exec) {
             'build',
             '--no-cache',
             '--file', 'src/impl/docker/openssl/Dockerfile',
-            '--tag',  'openssl/server/tls13',
+            '--tag',  'openssl/tls13',
             '.'
 }
 
@@ -155,7 +155,7 @@ task runOpensslServer {
                     '--name', 'openssl_server_tls13',
                     '-d',
                     '-p', '10101:10101',
-                    'openssl/server/tls13'
+                    'openssl/tls13'
         }
 
         // a little delay to let the server start

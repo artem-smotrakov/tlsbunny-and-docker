@@ -9,6 +9,8 @@ import com.gypsyengineer.tlsbunny.utils.HasOutput;
 public interface Server extends Runnable, AutoCloseable, HasOutput<Server> {
     Server set(Config config);
     Server set(EngineFactory engineFactory);
+
+    // TODO it should accept multiple checks
     Server set(Check check);
 
     Server stopWhen(StopCondition condition);

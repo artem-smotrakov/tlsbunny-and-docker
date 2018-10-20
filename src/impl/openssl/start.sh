@@ -2,12 +2,22 @@
 
 openssl_src=${1}
 options=${options:-"-tls1_3"}
+mode=${mode:-"server"}
+port=${port:-"10101"}
 
 lcov --zerocounters --directory ${openssl_src}
 lcov --no-external --capture --initial --directory ${openssl_src} --output-file base.info
 
-openssl s_server -key certs/server_key.pem -cert certs/server_cert.der \
-	-certform der -accept 10101 -www ${options}
+if [ "${mode}" == "client" ]; then
+    touch stop.file
+    echo "note: remove `pwd`/stop.file to stop the client loop"
+    while [ -f stop.file ]; do
+        echo -e "GET / HTTP/1.0\r\n" | openssl s_client -connect 127.0.0.1:${port} -tls1_3 ${options}
+    done
+else
+    openssl s_server -key certs/server_key.pem -cert certs/server_cert.der \
+	    -certform der -accept ${port} -www ${options}
+fi
 
 timestamp=$(date +%s)
 cc_report="/var/reports/cc_report.${timestamp}"

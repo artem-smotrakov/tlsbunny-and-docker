@@ -46,4 +46,4 @@ WORKDIR /var/src/tlsbunny
 
 EXPOSE 10101
 
-CMD [ "bash", "src/impl/openssl/start_server.sh", "/var/src/openssl" ]
+CMD [ "bash", "src/impl/openssl/start.sh", "/var/src/openssl" ]

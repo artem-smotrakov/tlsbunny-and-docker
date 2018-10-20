@@ -1,6 +1,7 @@
 package com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.client;
 
 import com.gypsyengineer.tlsbunny.impl.test.tls13.Utils;
+import com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.OpensslDocker;
 import com.gypsyengineer.tlsbunny.tls13.connection.check.Check;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.EngineFactory;
@@ -10,39 +11,20 @@ import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.gypsyengineer.tlsbunny.impl.test.tls13.Utils.waitStop;
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
-public class OpensslServer implements Server, AutoCloseable {
+public class OpensslServer extends OpensslDocker implements Server {
 
     public static final int port = 10101;
-
-    private static final String remove_container_template =
-            "docker container rm %s";
-
-    private static final String host_report_directory = String.format(
-            "%s/openssl_report", System.getProperty("user.dir"));
-
-    private static final String container_report_directory = "/var/reports";
 
     // TODO: add synchronization
     private String containerName;
     private boolean failed = false;
-    private final Output output = new Output("openssl_server");
-    private Map<String, String> dockerEnvs = new HashMap<>();
     private int acceptCounter = 0;
-
-    public OpensslServer dockerEnv(String name, String value) {
-        dockerEnvs.put(name, value);
-        return this;
-    }
 
     public boolean ready() {
         List<String> strings = output.strings();
@@ -68,6 +50,7 @@ public class OpensslServer implements Server, AutoCloseable {
 
     @Override
     public OpensslServer set(Output output) {
+        output.achtung("you can't set output for me!");
         return this;
     }
 
@@ -150,7 +133,7 @@ public class OpensslServer implements Server, AutoCloseable {
 
         command.add("--name");
         command.add(containerName);
-        command.add("openssl/server/tls13");
+        command.add("openssl/tls13");
 
         try {
             int code = Utils.waitProcessFinish(output, command);
@@ -222,34 +205,6 @@ public class OpensslServer implements Server, AutoCloseable {
         }
 
         output.flush();
-    }
-
-    private boolean containerRunning() {
-        try {
-            List<String> command = List.of(
-                    "/bin/bash",
-                    "-c",
-                    String.format("docker container ps | grep %s", containerName)
-            );
-            return Utils.exec(output, command).waitFor() == 0;
-        } catch (InterruptedException | IOException e) {
-            failed = true;
-            throw new RuntimeException("unexpected exception occurred", e);
-        }
-    }
-
-    private void createReportDirectory() {
-        try {
-            Files.createDirectories(Paths.get(host_report_directory));
-        } catch (IOException e) {
-            throw whatTheHell("could not create a directory for reports!", e);
-        }
-    }
-
-    private static String generateContainerName() {
-        return String.format("%s_%d",
-                OpensslServer.class.getSimpleName().toLowerCase(),
-                System.currentTimeMillis());
     }
 
 }
