@@ -92,6 +92,14 @@ public class SimpleHttpsServer implements Runnable, AutoCloseable {
         output.info("server stopped");
     }
 
+    public void stop() {
+        try {
+            sslServerSocket.close();
+        } catch (IOException e) {
+            output.info("exception occurred while closing server socket:", e);
+        }
+    }
+
     public void await() {
         while (running) {
             try {
@@ -103,6 +111,10 @@ public class SimpleHttpsServer implements Runnable, AutoCloseable {
     }
 
     private boolean shouldRun() {
+        if (sslServerSocket.isClosed()) {
+            return false;
+        }
+
         connections++;
         if (maxConnections < 0) {
             return true;
