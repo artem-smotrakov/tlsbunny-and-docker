@@ -15,18 +15,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 class SecpParameters {
-    
-    public final ECGenParameterSpec ecGenParameterSpec;
-    public final ECParameterSpec ecParameterSpec;
-
-    public SecpParameters(String name, BigInteger p, BigInteger a, BigInteger b, 
-            ECPoint g, BigInteger n, int h) {
-        
-        ecGenParameterSpec = new ECGenParameterSpec(name);
-        ECField field = new ECFieldFp(p);
-        EllipticCurve curve = new EllipticCurve(field, a, b);
-        ecParameterSpec = new ECParameterSpec(curve, g, n, h);
-    }
 
     private static final BigInteger secp256r1_n = hex2int(
             "FFFFFFFF00000000FFFFFFFFFFFFFFFFBCE6FAADA7179E84F3B9CAC2FC632551");
@@ -60,6 +48,18 @@ class SecpParameters {
                         secp256r1_g,
                         secp256r1_n,
                         secp256r1_h));
+    }
+    
+    public final ECGenParameterSpec ecGenParameterSpec;
+    public final ECParameterSpec ecParameterSpec;
+
+    public SecpParameters(String name, BigInteger p, BigInteger a, BigInteger b, 
+            ECPoint g, BigInteger n, int h) {
+        
+        ecGenParameterSpec = new ECGenParameterSpec(name);
+        ECField field = new ECFieldFp(p);
+        EllipticCurve curve = new EllipticCurve(field, a, b);
+        ecParameterSpec = new ECParameterSpec(curve, g, n, h);
     }
 
     public static SecpParameters create(NamedGroup.Secp group) {

@@ -9,9 +9,6 @@ import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Negotiator;
 import com.gypsyengineer.tlsbunny.tls13.server.SingleThreadServer;
-import com.gypsyengineer.tlsbunny.tls13.struct.AlertDescription;
-import com.gypsyengineer.tlsbunny.tls13.struct.AlertLevel;
-import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
@@ -47,7 +44,7 @@ public class OpensslClientTests {
                         .set(new EngineFactoryImpl()
                                 .set(serverConfig)
                                 .set(Negotiator.create(
-                                        NamedGroup.secp256r1,
+                                        secp256r1,
                                         StructFactory.getDefault())))
                         .stopWhen(oneConnectionReceived()))
                 .run();

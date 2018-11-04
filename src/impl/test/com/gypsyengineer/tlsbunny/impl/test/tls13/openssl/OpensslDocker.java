@@ -54,7 +54,7 @@ public class OpensslDocker {
             );
             return Utils.exec(output, command).waitFor() == 0;
         } catch (InterruptedException | IOException e) {
-            throw new RuntimeException("unexpected exception occurred", e);
+            throw whatTheHell("unexpected exception", e);
         }
     }
 }

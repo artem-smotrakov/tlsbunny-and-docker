@@ -13,7 +13,7 @@ fi
 
 if [ "${mode}" == "client" ]; then
     touch stop.file
-    echo "note: remove `pwd`/stop.file to stop the client loop"
+    echo "note: remove $(pwd)/stop.file to stop the client loop"
     while [ -f stop.file ]; do
         echo -e "GET / HTTP/1.0\r\n\r\n" | openssl s_client ${options} -connect 127.0.0.1:${port}
     done
