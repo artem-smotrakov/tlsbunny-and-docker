@@ -139,6 +139,7 @@ public class SingleThreadServer implements Server {
                 output.info("done");
             } catch (Exception e) {
                 output.achtung("exception: ", e);
+                failed = true;
                 break;
             }
         }

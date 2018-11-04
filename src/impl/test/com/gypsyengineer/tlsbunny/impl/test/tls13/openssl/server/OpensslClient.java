@@ -1,14 +1,16 @@
-package com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.client;
+package com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.server;
 
 import com.gypsyengineer.tlsbunny.impl.test.tls13.Utils;
 import com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.OpensslDocker;
+import com.gypsyengineer.tlsbunny.tls13.client.Client;
+import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
 import com.gypsyengineer.tlsbunny.tls13.connection.check.Check;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
-import com.gypsyengineer.tlsbunny.tls13.connection.EngineFactory;
-import com.gypsyengineer.tlsbunny.tls13.server.Server;
-import com.gypsyengineer.tlsbunny.tls13.server.StopCondition;
+import com.gypsyengineer.tlsbunny.tls13.handshake.Negotiator;
+import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.Output;
+import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -17,60 +19,55 @@ import java.util.Map;
 
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
-public class OpensslServer extends OpensslDocker implements Server {
-
-    public static final int port = 10101;
+public class OpensslClient extends OpensslDocker implements Client {
 
     // TODO: add synchronization
-    private String containerName;
-    private boolean failed = false;
-    private int acceptCounter = 0;
+    private Config config = SystemPropertiesConfig.load();
 
-    public boolean ready() {
-        List<String> strings = output.strings();
-        int acceptCounter = 0;
-        for (String string : strings) {
-            if (string.contains("tlsbunny: accept")) {
-                acceptCounter++;
-            }
-        }
-
-        if (acceptCounter != this.acceptCounter) {
-            this.acceptCounter = acceptCounter;
-            return true;
-        }
-
-        return false;
+    public OpensslClient() {
+        dockerEnvs.put("mode", "client");
+        dockerEnvs.put("options", "-tls1_3 -CAfile certs/root_cert.pem -curves prime256v1 -security_debug");
     }
 
     @Override
-    public OpensslServer set(Config config) {
-        throw new UnsupportedOperationException("no configs for you!");
+    public Config config() {
+        return config;
     }
 
     @Override
-    public OpensslServer set(Output output) {
+    public OpensslClient set(StructFactory factory) {
+        throw new UnsupportedOperationException("no factories for you!");
+    }
+
+    @Override
+    public OpensslClient set(Negotiator negotiator) {
+        throw new UnsupportedOperationException("no negotiators for you!");
+    }
+
+    @Override
+    public OpensslClient set(Analyzer analyzer) {
+        throw new UnsupportedOperationException("no analyzers for you!");
+    }
+
+    @Override
+    public OpensslClient set(Config config) {
+        this.config = config;
+        return this;
+    }
+
+    @Override
+    public OpensslClient set(Output output) {
         output.achtung("you can't set output for me!");
         return this;
     }
 
     @Override
-    public OpensslServer set(EngineFactory engineFactory) {
-        throw new UnsupportedOperationException("no engine factories for you!");
-    }
-
-    @Override
-    public OpensslServer set(Check check) {
+    public OpensslClient set(Check... checks) {
         throw new UnsupportedOperationException("no checks for you!");
     }
 
     @Override
-    public OpensslServer stopWhen(StopCondition condition) {
-        throw new UnsupportedOperationException("no stop conditions for you!");
-    }
-
-    @Override
-    public Engine recentEngine() {
+    public Engine engine() {
         throw new UnsupportedOperationException("no engines for you!");
     }
 
@@ -85,19 +82,9 @@ public class OpensslServer extends OpensslDocker implements Server {
     }
 
     @Override
-    public int port() {
-        return port;
-    }
-
-    @Override
-    public boolean failed() {
-        return failed;
-    }
-
-    @Override
     public Thread start() {
         if (containerName != null) {
-            throw whatTheHell("the server has already been started!");
+            throw whatTheHell("the client has already been started!");
         }
 
         createReportDirectory();
@@ -109,27 +96,29 @@ public class OpensslServer extends OpensslDocker implements Server {
     }
 
     @Override
+    public OpensslClient connect() {
+        run();
+        return this;
+    }
+
+    @Override
     public void run() {
         containerName = generateContainerName();
 
         List<String> command = new ArrayList<>();
         command.add("docker");
         command.add("run");
-        command.add("-p");
-        command.add(String.format("%d:%d", port, port));
+        command.add("--network");
+        command.add("host");
         command.add("-v");
         command.add(String.format("%s:%s",
                 host_report_directory, container_report_directory));
 
-        if (!dockerEnvs.isEmpty()) {
-            for (Map.Entry entry : dockerEnvs.entrySet()) {
-                command.add("-e");
-                command.add(String.format("%s=%s", entry.getKey(), entry.getValue()));
-            }
+        dockerEnvs.put("port", String.valueOf(config.port()));
+        for (Map.Entry entry : dockerEnvs.entrySet()) {
+            command.add("-e");
+            command.add(String.format("%s=%s", entry.getKey(), entry.getValue()));
         }
-
-        // note: -debug and -tlsextdebug options enable more output
-        //       (they need to be passed to s_server via "options" variable)
 
         command.add("--name");
         command.add(containerName);
@@ -138,19 +127,17 @@ public class OpensslServer extends OpensslDocker implements Server {
         try {
             int code = Utils.waitProcessFinish(output, command);
             if (code != 0) {
-                output.achtung("the server exited with a non-zero exit code (%d)", code);
-                failed = true;
+                output.achtung("the client exited with a non-zero exit code (%d)", code);
             }
         } catch (InterruptedException | IOException e) {
             output.achtung("unexpected exception occurred", e);
-            failed = true;
         }
     }
 
     @Override
-    public OpensslServer stop() {
+    public OpensslClient stop() {
         if (containerName == null) {
-            throw whatTheHell("the server has not been started yet!");
+            throw whatTheHell("the client has not been started yet!");
         }
 
         try {
@@ -160,17 +147,15 @@ public class OpensslServer extends OpensslDocker implements Server {
                     containerName,
                     "bash",
                     "-c",
-                    "pidof openssl | xargs kill -SIGINT"
+                    "rm /var/src/tlsbunny/stop.file; pidof openssl | xargs kill -9"
             );
 
             int code = Utils.waitProcessFinish(output, command);
             if (code != 0) {
-                output.achtung("could not stop the server (exit code %d)", code);
-                failed = true;
+                output.achtung("could not stop the client (exit code %d)", code);
             }
         } catch (InterruptedException | IOException e) {
             output.achtung("unexpected exception occurred", e);
-            failed = true;
         }
 
         return this;
@@ -182,10 +167,6 @@ public class OpensslServer extends OpensslDocker implements Server {
             return false;
         }
 
-        if (!output.contains("ACCEPT")) {
-            return false;
-        }
-
         return containerRunning();
     }
 
@@ -194,13 +175,12 @@ public class OpensslServer extends OpensslDocker implements Server {
         stop();
 
         Utils.waitStop(this);
-        output.info("server stopped");
+        output.info("client stopped");
 
         if (containerName != null) {
             int code = Utils.waitProcessFinish(output, remove_container_template, containerName);
             if (code != 0) {
                 output.achtung("could not remove the container (exit code %d)", code);
-                failed = true;
             }
         }
 
