@@ -26,6 +26,7 @@ public class OpensslClient extends OpensslDocker implements Client {
 
     public OpensslClient() {
         dockerEnvs.put("mode", "client");
+        dockerEnvs.put("options", "-tls1_3 -CAfile certs/root_cert.pem -curves prime256v1 -security_debug");
     }
 
     @Override
@@ -119,9 +120,6 @@ public class OpensslClient extends OpensslDocker implements Client {
             command.add(String.format("%s=%s", entry.getKey(), entry.getValue()));
         }
 
-        // note: -debug and -tlsextdebug options enable more output
-        //       (they need to be passed to s_client via "options" variable)
-
         command.add("--name");
         command.add(containerName);
         command.add("openssl/tls13");
@@ -149,7 +147,7 @@ public class OpensslClient extends OpensslDocker implements Client {
                     containerName,
                     "bash",
                     "-c",
-                    "rm /var/src/tlsbunny/stop.file"
+                    "rm /var/src/tlsbunny/stop.file; pidof openssl | xargs kill -9"
             );
 
             int code = Utils.waitProcessFinish(output, command);
