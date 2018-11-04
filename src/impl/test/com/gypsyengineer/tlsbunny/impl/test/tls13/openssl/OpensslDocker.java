@@ -22,7 +22,8 @@ public class OpensslDocker {
 
     protected static final String container_report_directory = "/var/reports";
 
-    protected String containerName;
+    protected final String containerName = String.format("%s_%d",
+            this.getClass().getSimpleName().toLowerCase(), System.currentTimeMillis());
     protected final Output output = new Output(this.getClass().getSimpleName());
     protected Map<String, String> dockerEnvs = new HashMap<>();
 
@@ -37,12 +38,6 @@ public class OpensslDocker {
         } catch (IOException e) {
             throw whatTheHell("could not create a directory for reports!", e);
         }
-    }
-
-    protected String generateContainerName() {
-        return String.format("%s_%d",
-                this.getClass().getSimpleName().toLowerCase(),
-                System.currentTimeMillis());
     }
 
     protected boolean containerRunning() {

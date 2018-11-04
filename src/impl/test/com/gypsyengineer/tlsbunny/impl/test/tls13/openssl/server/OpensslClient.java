@@ -106,8 +106,6 @@ public class OpensslClient extends OpensslDocker implements Client {
 
     @Override
     public void run() {
-        containerName = generateContainerName();
-
         List<String> command = new ArrayList<>();
         command.add("docker");
         command.add("run");
@@ -139,10 +137,6 @@ public class OpensslClient extends OpensslDocker implements Client {
 
     @Override
     public OpensslClient stop() {
-        if (containerName == null) {
-            throw whatTheHell("the client has not been started yet!");
-        }
-
         try {
             List<String> command = List.of(
                     "docker",
@@ -166,10 +160,6 @@ public class OpensslClient extends OpensslDocker implements Client {
 
     @Override
     public boolean running() {
-        if (containerName == null) {
-            return false;
-        }
-
         return containerRunning();
     }
 
@@ -180,11 +170,9 @@ public class OpensslClient extends OpensslDocker implements Client {
         Utils.waitStop(this);
         output.info("client stopped");
 
-        if (containerName != null) {
-            int code = Utils.waitProcessFinish(output, remove_container_template, containerName);
-            if (code != 0) {
-                output.achtung("could not remove the container (exit code %d)", code);
-            }
+        int code = Utils.waitProcessFinish(output, remove_container_template, containerName);
+        if (code != 0) {
+            output.achtung("could not remove the container (exit code %d)", code);
         }
 
         output.flush();

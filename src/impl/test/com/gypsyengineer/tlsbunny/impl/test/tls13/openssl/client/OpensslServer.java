@@ -22,7 +22,6 @@ public class OpensslServer extends OpensslDocker implements Server {
     public static final int port = 10101;
 
     // TODO: add synchronization
-    private String containerName;
     private boolean failed = false;
     private int acceptCounter = 0;
 
@@ -96,7 +95,7 @@ public class OpensslServer extends OpensslDocker implements Server {
 
     @Override
     public Thread start() {
-        if (containerName != null) {
+        if (running()) {
             throw whatTheHell("the server has already been started!");
         }
 
@@ -110,8 +109,6 @@ public class OpensslServer extends OpensslDocker implements Server {
 
     @Override
     public void run() {
-        containerName = generateContainerName();
-
         List<String> command = new ArrayList<>();
         command.add("docker");
         command.add("run");
@@ -149,10 +146,6 @@ public class OpensslServer extends OpensslDocker implements Server {
 
     @Override
     public OpensslServer stop() {
-        if (containerName == null) {
-            throw whatTheHell("the server has not been started yet!");
-        }
-
         try {
             List<String> command = List.of(
                     "docker",
@@ -178,10 +171,6 @@ public class OpensslServer extends OpensslDocker implements Server {
 
     @Override
     public boolean running() {
-        if (containerName == null) {
-            return false;
-        }
-
         if (!output.contains("ACCEPT")) {
             return false;
         }
@@ -196,12 +185,10 @@ public class OpensslServer extends OpensslDocker implements Server {
         Utils.waitStop(this);
         output.info("server stopped");
 
-        if (containerName != null) {
-            int code = Utils.waitProcessFinish(output, remove_container_template, containerName);
-            if (code != 0) {
-                output.achtung("could not remove the container (exit code %d)", code);
-                failed = true;
-            }
+        int code = Utils.waitProcessFinish(output, remove_container_template, containerName);
+        if (code != 0) {
+            output.achtung("could not remove the container (exit code %d)", code);
+            failed = true;
         }
 
         output.flush();
