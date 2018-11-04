@@ -27,16 +27,19 @@ public class NegotiatingServerDHSecret extends AbstractAction<NegotiatingServerD
         // TODO: we look for only first key share, but there may be multiple key shares
         KeyShare.ClientHello keyShare = findKeyShare(context.factory, clientHello);
 
-        // TODO: we take the first key share entry but there may be multiple key share entries
-        KeyShareEntry keyShareEntry = keyShare.getClientShares().first();
-
-        if (!context.group.equals(keyShareEntry.getNamedGroup())) {
-            output.info("expected groups: %s", context.group);
-            output.info("received groups: %s", keyShareEntry.getNamedGroup());
-            throw new NegotiatorException("unexpected groups");
+        KeyShareEntry selectedKeyShareEntry = null;
+        for (KeyShareEntry keyShareEntry : keyShare.getClientShares().toList()) {
+            if (context.group.equals(keyShareEntry.getNamedGroup())) {
+                selectedKeyShareEntry = keyShareEntry;
+            }
         }
 
-        context.negotiator.processKeyShareEntry(keyShareEntry);
+        if (selectedKeyShareEntry == null) {
+            throw new NegotiatorException(
+                    String.format("could not find a key share with %s", context.group));
+        }
+
+        context.negotiator.processKeyShareEntry(selectedKeyShareEntry);
         context.dh_shared_secret = context.negotiator.generateSecret();
 
         return this;
