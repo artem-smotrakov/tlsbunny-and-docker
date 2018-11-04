@@ -99,7 +99,7 @@ public class GeneratingServerHello extends AbstractAction {
         byte[] legacy_session_id = new byte[0];
         Handshake handshake = context.getFirstClientHello();
         if (handshake != null) {
-            context.factory.parser().parseClientHello(
+            legacy_session_id = context.factory.parser().parseClientHello(
                     handshake.getBody()).getLegacySessionId().bytes();
         }
 
