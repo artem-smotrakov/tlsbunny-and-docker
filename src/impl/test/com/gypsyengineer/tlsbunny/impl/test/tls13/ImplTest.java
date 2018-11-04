@@ -5,13 +5,13 @@ import com.gypsyengineer.tlsbunny.tls13.server.Server;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
 import static com.gypsyengineer.tlsbunny.impl.test.tls13.Utils.checkForASanFindings;
+import static com.gypsyengineer.tlsbunny.impl.test.tls13.Utils.sleep;
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public class ImplTest {
 
     // in millis
     private static final long delay = 3 * 1000;
-    private static final long timeout = 5 * 1000;
 
     private Client client;
     private Server server;
@@ -56,7 +56,7 @@ public class ImplTest {
             client.config().port(server.port());
             client.set(clientOutput);
             clientThread = client.start();
-            Utils.waitStart(client);
+            sleep(delay);
 
             // wait for client or server to finish
             while (true) {
@@ -66,7 +66,7 @@ public class ImplTest {
                     // stop the client if we started it in this test
                     if (clientThread != null) {
                         client.stop();
-                        Utils.waitStop(client, timeout);
+                        Utils.waitStop(client);
                     }
 
                     // and exit
@@ -79,7 +79,7 @@ public class ImplTest {
                     // stop the server if we started in this test
                     if (serverThread != null) {
                         server.stop();
-                        Utils.waitStop(server, timeout);
+                        Utils.waitStop(server);
                     }
 
                     // and exit
