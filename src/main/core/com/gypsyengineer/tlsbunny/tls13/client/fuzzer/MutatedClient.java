@@ -149,11 +149,6 @@ public class MutatedClient implements Client {
     }
 
     @Override
-    public Engine engine() {
-        throw new UnsupportedOperationException("no engines for you!");
-    }
-
-    @Override
     public Engine[] engines() {
         throw new UnsupportedOperationException("no engines for you!");
     }
@@ -217,14 +212,14 @@ public class MutatedClient implements Client {
                 int attempt = 0;
                 while (true) {
                     try {
-                        Engine engine = client.set(fuzzyStructFactory)
+                        Engine[] engines = client.set(fuzzyStructFactory)
                                 .set(fuzzerConfig)
                                 .set(output)
                                 .set(fuzzerConfig.checks())
                                 .connect()
-                                .engine();
+                                .engines();
 
-                        if (fuzzerConfig.hasAnalyzer()) {
+                        for (Engine engine : engines) {
                             engine.apply(fuzzerConfig.analyzer());
                         }
 

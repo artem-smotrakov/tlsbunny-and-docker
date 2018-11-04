@@ -49,7 +49,7 @@ public class StartWithCCSTest {
             }
         }
 
-        assertNotNull(client.engine().context().getAlert());
+        assertNotNull(client.engines()[0].context().getAlert());
     }
 
     private static class EngineFactoryImpl extends BaseEngineFactory {

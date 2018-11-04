@@ -115,15 +115,6 @@ public abstract class AbstractClient implements Client, AutoCloseable {
     }
 
     @Override
-    public Engine engine() {
-        if (recentEngine == null) {
-            throw whatTheHell("recent engine not initialized! (null)");
-        }
-
-        return recentEngine;
-    }
-
-    @Override
     public Engine[] engines() {
         return engines.toArray(new Engine[engines.size()]);
     }

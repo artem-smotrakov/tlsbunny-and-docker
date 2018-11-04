@@ -140,11 +140,6 @@ public class DeepHandshakeFuzzyClient implements Client {
     }
 
     @Override
-    public Engine engine() {
-        throw new UnsupportedOperationException("no engines for you!");
-    }
-
-    @Override
     public Engine[] engines() {
         throw new UnsupportedOperationException("no engines for you!");
     }
@@ -178,13 +173,20 @@ public class DeepHandshakeFuzzyClient implements Client {
         deepHandshakeFuzzer.recording();
         try {
             output.info("run a smoke test before fuzzing");
-            client.set(StructFactory.getDefault())
+            Engine[] engines = client.set(StructFactory.getDefault())
                     .set(fuzzerConfig)
                     .set(output)
                     .set(deepHandshakeFuzzer)
                     .connect()
-                    .engine()
-                    .run(new SuccessCheck());
+                    .engines();
+
+            if (engines == null || engines.length == 0) {
+                throw whatTheHell("no engines!");
+            }
+
+            for (Engine engine : engines) {
+                engine.run(new SuccessCheck());
+            }
         } catch (Exception e) {
             reportError("smoke test failed", e);
             output.achtung("skip fuzzing");
@@ -220,13 +222,16 @@ public class DeepHandshakeFuzzyClient implements Client {
                 int attempt = 0;
                 while (true) {
                     try {
-                        client.set(deepHandshakeFuzzer)
+                        Engine[] engines = client.set(deepHandshakeFuzzer)
                                 .set(fuzzerConfig)
                                 .set(output)
                                 .set(fuzzerConfig.checks())
                                 .connect()
-                                .engine()
-                                .apply(fuzzerConfig.analyzer());
+                                .engines();
+
+                        for (Engine engine : engines) {
+                            engine.apply(fuzzerConfig.analyzer());
+                        }
 
                         break;
                     } catch (EngineException e) {

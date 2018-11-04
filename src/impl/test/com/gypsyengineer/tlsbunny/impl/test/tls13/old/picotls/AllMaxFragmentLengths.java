@@ -32,12 +32,18 @@ public class AllMaxFragmentLengths {
 
             output.info("send no max_fragment_length extension, " +
                     "expect a successful connection");
-            client.set(NO_MAX_FRAGMENT_LENGTH).connect().engine().run(new SuccessCheck());
+            Engine[] engines = client.set(NO_MAX_FRAGMENT_LENGTH).connect().engines();
+            for (Engine engine : engines) {
+                engine.run(new SuccessCheck());
+            }
 
             output.info("send valid max_fragment_length extensions, " +
                     "expect successful connections");
             for (MaxFragmentLength maxFragmentLength : MaxFragmentLength.values()) {
-                client.set(maxFragmentLength).connect().engine().run(new SuccessCheck());
+                engines = client.set(maxFragmentLength).connect().engines();
+                for (Engine engine : engines) {
+                    engine.run(new SuccessCheck());
+                }
             }
 
             output.info("send invalid max_fragment_length extensions, " +
@@ -47,7 +53,10 @@ public class AllMaxFragmentLengths {
                     continue;
                 }
 
-                client.maxFragmentLength(code).connect().engine().run(new FailureCheck());
+                engines = client.maxFragmentLength(code).connect().engines();
+                for (Engine engine : engines) {
+                    engine.run(new FailureCheck());
+                }
             }
         }
     }

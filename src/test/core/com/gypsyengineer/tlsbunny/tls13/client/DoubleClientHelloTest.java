@@ -49,7 +49,11 @@ public class DoubleClientHelloTest {
             client.set(clientConfig).set(clientOutput).connect();
         }
 
-        Alert alert = client.engine().context().getAlert();
+        Engine[] engines = client.engines();
+        assertNotNull(engines);
+        assertEquals(1, engines.length);
+
+        Alert alert = engines[0].context().getAlert();
         assertNotNull(alert);
         assertEquals(alert.getLevel(), AlertLevel.fatal);
         assertEquals(alert.getDescription(), AlertDescription.unexpected_message);
@@ -81,7 +85,11 @@ public class DoubleClientHelloTest {
             assertEquals("alert received check failed", e.getMessage());
         }
 
-        Alert alert = client.engine().context().getAlert();
+        Engine[] engines = client.engines();
+        assertNotNull(engines);
+        assertEquals(1, engines.length);
+
+        Alert alert = engines[0].context().getAlert();
         assertNull(alert);
     }
 

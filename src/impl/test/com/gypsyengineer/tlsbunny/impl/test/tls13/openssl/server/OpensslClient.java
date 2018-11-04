@@ -70,11 +70,6 @@ public class OpensslClient extends OpensslDocker implements Client {
     }
 
     @Override
-    public Engine engine() {
-        throw new UnsupportedOperationException("no engines for you!");
-    }
-
-    @Override
     public Engine[] engines() {
         throw new UnsupportedOperationException("no engines for you!");
     }

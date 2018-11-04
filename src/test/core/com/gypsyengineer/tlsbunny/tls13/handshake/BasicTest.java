@@ -89,13 +89,13 @@ public class BasicTest {
 
             try (client) {
                 client.connect()
-                        .engine()
+                        .engines()[0]
                         .apply(new NoAlertAnalyzer());
             }
         }
 
         boolean success = checkContexts(
-                client.engine().context(),
+                client.engines()[0].context(),
                 server.recentEngine().context(),
                 clientOutput);
 

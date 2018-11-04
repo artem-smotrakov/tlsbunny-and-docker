@@ -105,12 +105,12 @@ public class StructCopyTest {
             client.set(clientConfig).set(clientOutput);
 
             try (client) {
-                client.connect().engine().apply(new NoAlertAnalyzer());
+                client.connect().engines()[0].apply(new NoAlertAnalyzer());
             }
         }
 
         copyTest(server.recentEngine().context());
-        copyTest(client.engine().context());
+        copyTest(client.engines()[0].context());
     }
 
     private static void copyTest(Context context) throws IOException {
