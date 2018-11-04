@@ -17,23 +17,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
-
 /**
  * This TLS client is based on OpenSSL s_client.
  */
 public class OpensslClient extends OpensslDocker implements Client {
 
-    // TODO: add synchronization
-    private Config config = SystemPropertiesConfig.load();
+    private final Config config = SystemPropertiesConfig.load();
 
     public OpensslClient() {
-        dockerEnvs.put("mode", "client");
-        dockerEnvs.put("options", "-tls1_3 -CAfile certs/root_cert.pem -curves prime256v1");
+        dockerEnv.put("mode", "client");
+        dockerEnv.put("options", "-tls1_3 -CAfile certs/root_cert.pem -curves prime256v1");
     }
 
     @Override
-    public Config config() {
+    synchronized public Config config() {
         return config;
     }
 
@@ -54,8 +51,7 @@ public class OpensslClient extends OpensslDocker implements Client {
 
     @Override
     public OpensslClient set(Config config) {
-        this.config = config;
-        return this;
+        throw new UnsupportedOperationException("no configs for you!");
     }
 
     @Override
@@ -81,10 +77,6 @@ public class OpensslClient extends OpensslDocker implements Client {
 
     @Override
     public Thread start() {
-        if (containerName != null) {
-            throw whatTheHell("the client has already been started!");
-        }
-
         createReportDirectory();
 
         Thread thread = new Thread(this);
@@ -110,8 +102,8 @@ public class OpensslClient extends OpensslDocker implements Client {
         command.add(String.format("%s:%s",
                 host_report_directory, container_report_directory));
 
-        dockerEnvs.put("port", String.valueOf(config.port()));
-        for (Map.Entry entry : dockerEnvs.entrySet()) {
+        dockerEnv.put("port", String.valueOf(config.port()));
+        for (Map.Entry entry : dockerEnv.entrySet()) {
             command.add("-e");
             command.add(String.format("%s=%s", entry.getKey(), entry.getValue()));
         }

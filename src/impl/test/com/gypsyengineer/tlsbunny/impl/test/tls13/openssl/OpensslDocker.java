@@ -6,6 +6,7 @@ import com.gypsyengineer.tlsbunny.utils.Output;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,10 +26,10 @@ public class OpensslDocker {
     protected final String containerName = String.format("%s_%d",
             this.getClass().getSimpleName().toLowerCase(), System.currentTimeMillis());
     protected final Output output = new Output(this.getClass().getSimpleName());
-    protected Map<String, String> dockerEnvs = new HashMap<>();
+    protected Map<String, String> dockerEnv = Collections.synchronizedMap(new HashMap<>());
 
     public OpensslDocker dockerEnv(String name, String value) {
-        dockerEnvs.put(name, value);
+        dockerEnv.put(name, value);
         return this;
     }
 
