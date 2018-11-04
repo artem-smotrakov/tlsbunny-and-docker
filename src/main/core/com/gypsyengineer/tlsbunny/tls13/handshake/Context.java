@@ -66,7 +66,10 @@ public class Context {
 
     public StructFactory factory;
     public SignatureScheme scheme;
+
+    // TODO: group doesn't look necessary, we can rely on negotiator
     public NamedGroup group;
+
     public CipherSuite suite;
     public Negotiator negotiator;
     public HKDF hkdf;

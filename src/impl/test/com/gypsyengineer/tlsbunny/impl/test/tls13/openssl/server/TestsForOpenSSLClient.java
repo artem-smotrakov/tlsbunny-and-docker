@@ -29,7 +29,7 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp
 /**
  * Tests for OpenSSL s_client.
  */
-public class OpensslClientTests {
+public class TestsForOpenSSLClient {
 
     @Test
     public void successfulHandshake() throws Exception {

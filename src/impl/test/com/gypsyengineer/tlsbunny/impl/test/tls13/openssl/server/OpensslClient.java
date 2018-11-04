@@ -19,6 +19,9 @@ import java.util.Map;
 
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
+/**
+ * This TLS client is based on OpenSSL s_client.
+ */
 public class OpensslClient extends OpensslDocker implements Client {
 
     // TODO: add synchronization
@@ -26,7 +29,7 @@ public class OpensslClient extends OpensslDocker implements Client {
 
     public OpensslClient() {
         dockerEnvs.put("mode", "client");
-        dockerEnvs.put("options", "-tls1_3 -CAfile certs/root_cert.pem -curves prime256v1 -security_debug");
+        dockerEnvs.put("options", "-tls1_3 -CAfile certs/root_cert.pem -curves prime256v1");
     }
 
     @Override
