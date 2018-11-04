@@ -11,7 +11,6 @@ if [ "${enable_coverage}" == "yes" ]; then
     lcov --no-external --capture --initial --directory ${openssl_src} --output-file base.info
 fi
 
-set -x
 if [ "${mode}" == "client" ]; then
     touch stop.file
     echo "note: remove `pwd`/stop.file to stop the client loop"
@@ -22,7 +21,6 @@ else
     openssl s_server -key certs/server_key.pem -cert certs/server_cert.der \
 	    -certform der -accept ${port} -www ${options}
 fi
-set +x
 
 if [ "${enable_coverage}" == "yes" ]; then
     timestamp=$(date +%s)
