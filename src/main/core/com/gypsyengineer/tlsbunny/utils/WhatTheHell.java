@@ -25,4 +25,8 @@ public class WhatTheHell extends RuntimeException {
     public static WhatTheHell whatTheHell(Throwable e, String template, Object... objects) {
         return new WhatTheHell(String.format(template, objects), e);
     }
+
+    public static WhatTheHell whatTheHell(String message, Throwable e) {
+        return new WhatTheHell(message, e);
+    }
 }
