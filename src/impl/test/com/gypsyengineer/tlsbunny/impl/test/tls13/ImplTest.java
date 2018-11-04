@@ -97,6 +97,10 @@ public class ImplTest {
                 throw whatTheHell("server thread is still running!");
             }
 
+            if (server.failed()) {
+                throw whatTheHell("server failed!");
+            }
+
             checkForASanFindings(client.output());
             checkForASanFindings(server.output());
         }

@@ -15,8 +15,6 @@ import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 import org.junit.Test;
 
 import static com.gypsyengineer.tlsbunny.tls13.server.OneConnectionReceived.oneConnectionReceived;
-import static com.gypsyengineer.tlsbunny.tls13.struct.AlertDescription.close_notify;
-import static com.gypsyengineer.tlsbunny.tls13.struct.AlertLevel.fatal;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.application_data;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.change_cipher_spec;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
@@ -34,7 +32,7 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp
 public class OpensslClientTests {
 
     @Test
-    public void httpsServer() throws Exception {
+    public void successfulHandshake() throws Exception {
         Config serverConfig = SystemPropertiesConfig.load();
 
         new ImplTest()
@@ -50,7 +48,6 @@ public class OpensslClientTests {
                 .run();
     }
 
-    // TODO: create a separate server
     private static class EngineFactoryImpl extends BaseEngineFactory {
 
         private Negotiator negotiator;
@@ -165,12 +162,6 @@ public class OpensslClientTests {
 
                     // send application data
                     .run(new PreparingHttpResponse())
-                    .run(new WrappingApplicationDataIntoTLSCiphertext())
-                    .send(new OutgoingData())
-
-                    .run(new GeneratingAlert()
-                            .level(fatal)
-                            .description(close_notify))
                     .run(new WrappingApplicationDataIntoTLSCiphertext())
                     .send(new OutgoingData());
         }
