@@ -9,6 +9,7 @@ public interface Negotiator {
 
     NamedGroup group();
     Negotiator set(Output output);
+    Negotiator set(StructFactory factory);
     KeyShareEntry createKeyShareEntry() throws NegotiatorException;
     void processKeyShareEntry(KeyShareEntry entry) throws NegotiatorException;
     byte[] generateSecret() throws NegotiatorException;

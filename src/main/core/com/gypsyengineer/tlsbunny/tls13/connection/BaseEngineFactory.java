@@ -27,6 +27,10 @@ public abstract class BaseEngineFactory implements EngineFactory {
         return this;
     }
 
+    public StructFactory structFactory() {
+        return structFactory;
+    }
+
     @Override
     public final Engine create() throws EngineException {
         try {

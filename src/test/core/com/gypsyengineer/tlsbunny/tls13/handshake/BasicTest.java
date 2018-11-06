@@ -6,6 +6,7 @@ import com.gypsyengineer.tlsbunny.tls13.connection.action.Side;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.IncomingChangeCipherSpec;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.OutgoingChangeCipherSpec;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
+import com.gypsyengineer.tlsbunny.tls13.server.HttpsServer;
 import com.gypsyengineer.tlsbunny.tls13.server.SingleThreadServer;
 import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
@@ -14,6 +15,7 @@ import com.gypsyengineer.tlsbunny.utils.Output;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 import org.junit.Test;
 
+import static com.gypsyengineer.tlsbunny.tls13.server.HttpsServer.httpsServer;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.application_data;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
 import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.*;
@@ -69,6 +71,16 @@ public class BasicTest {
         Config serverConfig = SystemPropertiesConfig.load();
         serverConfig.serverCertificate(serverCertificatePath);
         serverConfig.serverKey(serverKeyPath);
+
+        /*
+        TODO use HttpsServer
+        HttpsServer server = httpsServer()
+                .set(factory)
+                .set(group)
+                .set(serverConfig)
+                .set(serverOutput)
+                .maxConnections(n);
+                */
 
         SingleThreadServer server = new SingleThreadServer()
                 .set(new EngineFactoryImpl()
