@@ -212,16 +212,11 @@ public class MutatedClient implements Client {
                 int attempt = 0;
                 while (true) {
                     try {
-                        Engine[] engines = client.set(fuzzyStructFactory)
+                        client.set(fuzzyStructFactory)
                                 .set(fuzzerConfig)
                                 .set(output)
                                 .set(fuzzerConfig.checks())
-                                .connect()
-                                .engines();
-
-                        for (Engine engine : engines) {
-                            engine.apply(fuzzerConfig.analyzer());
-                        }
+                                .connect();
 
                         break;
                     } catch (EngineException e) {
@@ -245,6 +240,10 @@ public class MutatedClient implements Client {
 
                 output.flush();
                 fuzzyStructFactory.moveOn();
+            }
+
+            for (Engine engine : client.engines()) {
+                engine.apply(fuzzerConfig.analyzer());
             }
         } catch (Exception e) {
             output.achtung("what the hell? unexpected exception", e);
