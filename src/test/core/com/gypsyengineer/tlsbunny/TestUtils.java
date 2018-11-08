@@ -119,6 +119,8 @@ public class TestUtils {
 
     public static class FakeVectorFuzzer implements Fuzzer<Vector<Byte>> {
 
+        private long test = 0;
+
         @Override
         public boolean canFuzz() {
             return true;
@@ -131,17 +133,17 @@ public class TestUtils {
 
         @Override
         public void moveOn() {
-            // do nothing
+            test++;
         }
 
         @Override
         public long currentTest() {
-            return 0;
+            return test;
         }
 
         @Override
         public void currentTest(long test) {
-            // do nothing
+            this.test = test;
         }
 
         @Override
@@ -157,6 +159,8 @@ public class TestUtils {
 
     public static class FakeCompressionMethodFuzzer implements Fuzzer<Vector<CompressionMethod>> {
 
+        private long test = 0;
+
         @Override
         public boolean canFuzz() {
             return true;
@@ -169,17 +173,17 @@ public class TestUtils {
 
         @Override
         public void moveOn() {
-            // do nothing
+            test++;
         }
 
         @Override
         public long currentTest() {
-            return 0;
+            return test;
         }
 
         @Override
         public void currentTest(long test) {
-            // do nothing
+            this.test = test;
         }
 
         @Override
@@ -195,6 +199,8 @@ public class TestUtils {
 
     public static class FakeCipherSuitesFuzzer implements Fuzzer<Vector<CipherSuite>> {
 
+        private long test = 0;
+
         @Override
         public boolean canFuzz() {
             return true;
@@ -207,17 +213,17 @@ public class TestUtils {
 
         @Override
         public void moveOn() {
-            // do nothing
+            test++;
         }
 
         @Override
         public long currentTest() {
-            return 0;
+            return test;
         }
 
         @Override
         public void currentTest(long test) {
-            // do nothing
+            this.test = test;
         }
 
         @Override
@@ -233,6 +239,8 @@ public class TestUtils {
 
     public static class FakeExtensionVectorFuzzer implements Fuzzer<Vector<Extension>> {
 
+        private long test = 0;
+
         @Override
         public boolean canFuzz() {
             return true;
@@ -245,17 +253,17 @@ public class TestUtils {
 
         @Override
         public void moveOn() {
-            // do nothing
+            test++;
         }
 
         @Override
         public long currentTest() {
-            return 0;
+            return test;
         }
 
         @Override
         public void currentTest(long test) {
-            // do nothing
+            this.test = test;
         }
 
         @Override

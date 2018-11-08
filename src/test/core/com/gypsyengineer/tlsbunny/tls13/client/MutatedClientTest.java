@@ -34,9 +34,12 @@ import static org.junit.Assert.assertFalse;
 
 public class MutatedClientTest {
 
-    private static final int start = 21;
-    private static final int end = 22;
+    private static final int start = 2;
+    private static final int end = 3;
     private static final int parts = 1;
+
+    // number of connections during fuzzing (we don't forget a smoke test)
+    private static final int n = end - start + 2;
 
     private Config clientConfig = SystemPropertiesConfig.load();
 
@@ -102,7 +105,7 @@ public class MutatedClientTest {
                         .set(serverOutput))
                 .set(serverConfig)
                 .set(serverOutput)
-                .maxConnections(end - start + 2);
+                .maxConnections(n);
 
         MutatedClient fuzzyClient = new MutatedClient(clientOutput, fuzzerConfig);
 
@@ -122,7 +125,7 @@ public class MutatedClientTest {
         }
 
         analyzer.run();
-        assertEquals(end - start + 1, analyzer.engines().length);
+        assertEquals(n, analyzer.engines().length);
         for (Engine engine : analyzer.engines()) {
             assertFalse(engine.context().hasAlert());
         }
@@ -261,7 +264,7 @@ public class MutatedClientTest {
 
         @Override
         public Engine[] engines() {
-            return engines.toArray(new Engine[engines.size()]);
+            return engines.toArray(new Engine[0]);
         }
     }
 
