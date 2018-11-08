@@ -72,7 +72,7 @@ public class ProcessingFinished extends AbstractAction<ProcessingFinished> {
 
         boolean success = Arrays.equals(verify_data, finished.getVerifyData());
         if (!success) {
-            throw new RuntimeException("verification of Finished failed");
+            throw new ActionFailed("verification of Finished failed");
         }
 
         switch (side) {

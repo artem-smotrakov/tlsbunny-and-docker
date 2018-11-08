@@ -136,11 +136,27 @@ public class IncomingMessages extends AbstractAction<IncomingMessages> {
     }
 
     private boolean expectEncryptedHandshakeData() {
-        return context.hasServerHello() && !context.hasServerFinished();
+        if (side == Side.client) {
+            return context.hasServerHello() && !context.receivedServerFinished();
+        }
+
+        if (side == Side.server) {
+            return context.hasFirstClientHello() && !context.receivedClientFinished();
+        }
+
+        throw whatTheHell("unexpected side: %s", side);
     }
 
     private boolean expectEncryptedApplicationData() {
-        return context.hasServerFinished();
+        if (side == Side.client) {
+            return context.receivedServerFinished();
+        }
+
+        if (side == Side.server) {
+            return context.receivedClientFinished();
+        }
+
+        throw whatTheHell("unexpected side: %s", side);
     }
 
     private boolean canDecryptApplicationData() {
@@ -330,9 +346,11 @@ public class IncomingMessages extends AbstractAction<IncomingMessages> {
     private void processFinished(Handshake handshake)
             throws IOException, ActionFailed, AEADException {
 
-        context.setServerFinished(handshake);
+        if (side == Side.client) {
+            context.setServerFinished(handshake);
+        }
 
-        new ProcessingFinished()
+        new ProcessingFinished(side)
                 .set(output)
                 .set(context)
                 .in(handshake.getBody())
@@ -343,6 +361,14 @@ public class IncomingMessages extends AbstractAction<IncomingMessages> {
                 .set(context)
                 .side(side)
                 .run();
+
+        if (side == Side.server) {
+            context.setClientFinished(handshake);
+        }
+
+        if (side == Side.client) {
+            context.setServerFinished(handshake);
+        }
     }
 
     private void processNewSessionTicket(Handshake handshake) throws IOException {

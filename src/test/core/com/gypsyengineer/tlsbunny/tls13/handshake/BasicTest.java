@@ -2,11 +2,7 @@ package com.gypsyengineer.tlsbunny.tls13.handshake;
 
 import com.gypsyengineer.tlsbunny.tls13.client.*;
 import com.gypsyengineer.tlsbunny.tls13.connection.*;
-import com.gypsyengineer.tlsbunny.tls13.connection.action.Side;
-import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.IncomingChangeCipherSpec;
-import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.OutgoingMainServerFlight;
-import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
-import com.gypsyengineer.tlsbunny.tls13.server.SingleThreadServer;
+import com.gypsyengineer.tlsbunny.tls13.server.HttpsServer;
 import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.Config;
@@ -14,9 +10,7 @@ import com.gypsyengineer.tlsbunny.utils.Output;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 import org.junit.Test;
 
-import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.application_data;
-import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
-import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.*;
+import static com.gypsyengineer.tlsbunny.tls13.server.HttpsServer.httpsServer;
 import static org.junit.Assert.*;
 
 public class BasicTest {
@@ -66,21 +60,9 @@ public class BasicTest {
         serverConfig.serverCertificate(serverCertificatePath);
         serverConfig.serverKey(serverKeyPath);
 
-        /*
-        TODO use HttpsServer
         HttpsServer server = httpsServer()
                 .set(factory)
                 .set(group)
-                .set(serverConfig)
-                .set(serverOutput)
-                .maxConnections(n);
-                */
-
-        SingleThreadServer server = new SingleThreadServer()
-                .set(new EngineFactoryImpl()
-                        .set(Negotiator.create(group, factory))
-                        .set(serverConfig)
-                        .set(serverOutput))
                 .set(serverConfig)
                 .set(serverOutput)
                 .maxConnections(n);
@@ -220,68 +202,5 @@ public class BasicTest {
                 serverContext.server_application_write_iv);
 
         return true;
-    }
-
-    private static class EngineFactoryImpl extends BaseEngineFactory {
-
-        private Negotiator negotiator;
-        private Config config;
-
-        public EngineFactoryImpl set(Config config) {
-            this.config = config;
-            return this;
-        }
-
-        public EngineFactoryImpl set(Negotiator negotiator) {
-            this.negotiator = negotiator;
-            return this;
-        }
-
-        @Override
-        protected Engine createImpl() throws Exception {
-            return Engine.init()
-                    .set(structFactory)
-                    .set(output)
-                    .set(negotiator)
-                    .set(negotiator.group())
-
-                    // receive ClientHello
-                    .receive(new IncomingData())
-                    .run(new ProcessingTLSPlaintext()
-                            .expect(handshake))
-                    .run(new ProcessingHandshake()
-                            .expect(client_hello)
-                            .updateContext(Context.Element.first_client_hello))
-                    .run(new ProcessingClientHello())
-
-                    // receive CCS
-                    .receive(new IncomingChangeCipherSpec())
-
-                    // send messages
-                    .send(new OutgoingMainServerFlight()
-                            .apply(config))
-
-                    // receive Finished
-                    .receive(new IncomingData())
-                    .run(new ProcessingHandshakeTLSCiphertext()
-                            .expect(handshake))
-                    .run(new ProcessingHandshake()
-                            .expect(finished))
-                    .run(new ProcessingFinished(Side.server))
-
-                    .run(new ComputingApplicationTrafficKeys()
-                            .server())
-
-                    // receive application data
-                    .receive(new IncomingData())
-                    .run(new ProcessingApplicationDataTLSCiphertext()
-                            .expect(application_data))
-                    .run(new PrintingData())
-
-                    // send application data
-                    .run(new PreparingHttpResponse())
-                    .run(new WrappingApplicationDataIntoTLSCiphertext())
-                    .send(new OutgoingData());
-        }
     }
 }

@@ -255,9 +255,12 @@ public class Context {
         this.serverFinished = serverFinished;
     }
 
-    // TODO: use receivedXXX() pattern instead of hasXXX()
-    public boolean hasServerFinished() {
+    public boolean receivedServerFinished() {
         return serverFinished != null;
+    }
+
+    public boolean receivedClientFinished() {
+        return clientFinished != null;
     }
 
     public void verifyClientFinished() {
