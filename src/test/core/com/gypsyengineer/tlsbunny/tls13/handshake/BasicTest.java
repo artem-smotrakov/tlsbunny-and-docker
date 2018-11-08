@@ -4,10 +4,8 @@ import com.gypsyengineer.tlsbunny.tls13.client.*;
 import com.gypsyengineer.tlsbunny.tls13.connection.*;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Side;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.IncomingChangeCipherSpec;
-import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.OutgoingChangeCipherSpec;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.OutgoingMainServerFlight;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
-import com.gypsyengineer.tlsbunny.tls13.server.HttpsServer;
 import com.gypsyengineer.tlsbunny.tls13.server.SingleThreadServer;
 import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
@@ -16,14 +14,9 @@ import com.gypsyengineer.tlsbunny.utils.Output;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 import org.junit.Test;
 
-import static com.gypsyengineer.tlsbunny.tls13.server.HttpsServer.httpsServer;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.application_data;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
 import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.*;
-import static com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup.secp256r1;
-import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv12;
-import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv13;
-import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp256r1_sha256;
 import static org.junit.Assert.*;
 
 public class BasicTest {
@@ -92,7 +85,7 @@ public class BasicTest {
                 .set(serverOutput)
                 .maxConnections(n);
 
-        try (server; clientOutput; serverOutput) {
+        try (server; client; clientOutput; serverOutput) {
             new Thread(server).start();
             Thread.sleep(delay);
 
@@ -100,19 +93,33 @@ public class BasicTest {
             client.set(Negotiator.create(group, factory))
                     .set(clientConfig).set(clientOutput);
 
-            try (client) {
-                client.connect()
-                        .engines()[0]
-                        .apply(new NoAlertAnalyzer());
-            }
+            client.connect();
         }
 
-        boolean success = checkContexts(
-                client.engines()[0].context(),
-                server.recentEngine().context(),
-                clientOutput);
+        Engine[] clientEngines = client.engines();
+        assertEquals(n, clientEngines.length);
 
-        assertTrue("something went wrong!", success);
+        Analyzer clientAnalyzer = new NoAlertAnalyzer();
+        for (Engine engine : clientEngines) {
+            engine.apply(clientAnalyzer);
+        }
+
+        Engine[] serverEngines = server.engines();
+        assertEquals(n, serverEngines.length);
+
+        Analyzer serverAnalyzer = new NoAlertAnalyzer();
+        for (Engine engine : serverEngines) {
+            engine.apply(serverAnalyzer);
+        }
+
+        for (int i = 0; i < n; i++) {
+            boolean success = checkContexts(
+                    clientEngines[i].context(),
+                    serverEngines[i].context(),
+                    clientOutput);
+
+            assertTrue("something went wrong!", success);
+        }
     }
 
     private static boolean checkContexts(
