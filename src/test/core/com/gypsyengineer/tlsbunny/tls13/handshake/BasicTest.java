@@ -99,18 +99,20 @@ public class BasicTest {
         Engine[] clientEngines = client.engines();
         assertEquals(n, clientEngines.length);
 
-        Analyzer clientAnalyzer = new NoAlertAnalyzer();
+        Analyzer clientAnalyzer = new NoAlertAnalyzer().set(clientOutput);
         for (Engine engine : clientEngines) {
             engine.apply(clientAnalyzer);
         }
+        clientAnalyzer.run();
 
         Engine[] serverEngines = server.engines();
         assertEquals(n, serverEngines.length);
 
-        Analyzer serverAnalyzer = new NoAlertAnalyzer();
+        Analyzer serverAnalyzer = new NoAlertAnalyzer().set(serverOutput);
         for (Engine engine : serverEngines) {
             engine.apply(serverAnalyzer);
         }
+        serverAnalyzer.run();
 
         for (int i = 0; i < n; i++) {
             boolean success = checkContexts(
