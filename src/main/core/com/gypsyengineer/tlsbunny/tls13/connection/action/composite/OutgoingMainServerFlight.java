@@ -21,17 +21,25 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup.secp256r1;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv12;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv13;
 import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp256r1_sha256;
+import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.rsa_pkcs1_sha256;
 
 public class OutgoingMainServerFlight extends AbstractAction<OutgoingMainServerFlight> {
 
     private String serverCertificate;
     private String serverKey;
 
-    private ByteArrayOutputStream baos;
+    private boolean clientAuthEnabled = false;
+
+    private ByteArrayOutputStream os;
 
     public OutgoingMainServerFlight apply(Config config) {
         serverCertificate = config.serverCertificate();
         serverKey = config.serverKey();
+        return this;
+    }
+
+    public OutgoingMainServerFlight clientAuth() {
+        clientAuthEnabled = true;
         return this;
     }
 
@@ -41,7 +49,7 @@ public class OutgoingMainServerFlight extends AbstractAction<OutgoingMainServerF
     }
 
     @Override
-    public Action run() throws ActionFailed, AEADException,
+    public OutgoingMainServerFlight run() throws ActionFailed, AEADException,
             NegotiatorException, IOException {
 
         try {
@@ -56,14 +64,14 @@ public class OutgoingMainServerFlight extends AbstractAction<OutgoingMainServerF
     private void store(ByteBuffer buffer) throws IOException {
         byte[] bytes = new byte[buffer.remaining()];
         buffer.get(bytes);
-        baos.write(bytes);
+        os.write(bytes);
     }
 
     private void runImpl()
             throws ActionFailed, IOException, AEADException, NegotiatorException {
 
         ByteBuffer buffer;
-        baos = new ByteArrayOutputStream();
+        os = new ByteArrayOutputStream();
 
         buffer = new GeneratingServerHello()
                 .supportedVersion(TLSv13)
@@ -131,6 +139,30 @@ public class OutgoingMainServerFlight extends AbstractAction<OutgoingMainServerF
                 .out();
         store(buffer);
 
+        if (clientAuthEnabled) {
+            buffer = new GeneratingCertificateRequest()
+                    .signatures(rsa_pkcs1_sha256)
+                    .set(output)
+                    .set(context)
+                    .run()
+                    .out();
+            buffer = new WrappingIntoHandshake()
+                    .type(certificate_request)
+                    .updateContext(Context.Element.server_certificate_request)
+                    .set(output)
+                    .set(context)
+                    .in(buffer)
+                    .run()
+                    .out();
+            buffer = new WrappingHandshakeDataIntoTLSCiphertext()
+                    .set(output)
+                    .set(context)
+                    .in(buffer)
+                    .run()
+                    .out();
+            store(buffer);
+        }
+
         buffer = new GeneratingCertificate()
                 .certificate(serverCertificate)
                 .set(output)
@@ -197,6 +229,6 @@ public class OutgoingMainServerFlight extends AbstractAction<OutgoingMainServerF
                 .out();
         store(buffer);
 
-        out = ByteBuffer.wrap(baos.toByteArray());
+        out = ByteBuffer.wrap(os.toByteArray());
     }
 }

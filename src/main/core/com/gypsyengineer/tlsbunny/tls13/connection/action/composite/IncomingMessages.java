@@ -330,7 +330,13 @@ public class IncomingMessages extends AbstractAction<IncomingMessages> {
                 .in(handshake.getBody())
                 .run();
 
-        context.setServerCertificate(handshake);
+        if (side == Side.client) {
+            context.setServerCertificate(handshake);
+        }
+
+        if (side == Side.server) {
+            context.setClientCertificate(handshake);
+        }
     }
 
     private void processCertificateVerify(Handshake handshake) {
@@ -340,7 +346,13 @@ public class IncomingMessages extends AbstractAction<IncomingMessages> {
                 .in(handshake.getBody())
                 .run();
 
-        context.setServerCertificateVerify(handshake);
+        if (side == Side.client) {
+            context.setServerCertificateVerify(handshake);
+        }
+
+        if (side == Side.server) {
+            context.setClientCertificateVerify(handshake);
+        }
     }
 
     private void processFinished(Handshake handshake)

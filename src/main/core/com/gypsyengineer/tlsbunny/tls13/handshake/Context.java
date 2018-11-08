@@ -349,8 +349,24 @@ public class Context {
         }
     }
 
+    public Handshake[] messagesForApplicationKeys() {
+        return noNulls(new Handshake[] {
+                firstClientHello,
+                helloRetryRequest,
+                secondClientHello,
+                serverHello,
+                encryptedExtensions,
+                serverCertificateRequest,
+                serverCertificate,
+                serverCertificateVerify,
+                serverFinishedVerified ? serverFinished : null,
+                endOfEarlyData,
+                clientFinishedVerified ? clientFinished : null,
+        });
+    }
+
     public Handshake[] allMessages() {
-        Handshake[] messages = new Handshake[] {
+        return noNulls(new Handshake[] {
                 firstClientHello,
                 helloRetryRequest,
                 secondClientHello,
@@ -364,16 +380,7 @@ public class Context {
                 clientCertificate,
                 clientCertificateVerify,
                 clientFinishedVerified ? clientFinished : null,
-        };
-
-        List<Handshake> list = new ArrayList<>();
-        for (Handshake message : messages) {
-            if (message != null) {
-                list.add(message);
-            }
-        }
-
-        return list.toArray(new Handshake[list.size()]);
+        });
     }
 
     public boolean hasAlert() {
@@ -394,6 +401,17 @@ public class Context {
 
     public boolean receivedApplicationData() {
         return !applicationData.isEmpty();
+    }
+
+    private static Handshake[] noNulls(Handshake[] messages) {
+        List<Handshake> list = new ArrayList<>();
+        for (Handshake message : messages) {
+            if (message != null) {
+                list.add(message);
+            }
+        }
+
+        return list.toArray(new Handshake[0]);
     }
 
 }
