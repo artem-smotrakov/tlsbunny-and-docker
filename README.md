@@ -52,19 +52,6 @@ Here is an example on HTTPS connection using TLS 1.3:
 - ecdsa_secp256r1_sha256 signatures
 - AES-GCM cipher with 128-bit key
 
-## Docker images
-
-The repository provides several Dockerfile for building and running TLS 1.3 servers for testing:
-
-- [OpenSSL](src/main/docker/openssl/Dockerfile): start `openssl s_server` on port 10101
-- [picotls](src/main/docker/picotls/Dockerfile): start `cli` on port 20101
-- [H2O + picotls](src/main/docker/h2o/Dockerfile): start `h2o` on port 30101
-- [wolfSSL](src/main/docker/wolfssl/Dockerfile): start `examples/server/server` on port 40101
-- [GnuTLS](src/main/docker/gnutls/Dockerfile): start `gnutls-serv` on port 50101
-- [NSS](src/main/docker/nss/Dockerfile): start `selfserv` on port 60101
-
-The libs above are built with enabled AddressSanitizer and debug/verbose output.
-
 ## Fuzzing
 
 tlsbunny provides several fuzzers for TLS 1.3 sturctures such as TLSPlaintext, Handshake, ClientHello and Finished.
