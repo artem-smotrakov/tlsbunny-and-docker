@@ -2,6 +2,7 @@ package com.gypsyengineer.tlsbunny.impl.test.tls13.old.jsse;
 
 import com.gypsyengineer.tlsbunny.tls13.client.Client;
 import com.gypsyengineer.tlsbunny.tls13.client.HttpsClient;
+import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertAnalyzer;
 import com.gypsyengineer.tlsbunny.tls13.connection.check.NoAlertCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.check.NoExceptionCheck;
@@ -43,11 +44,14 @@ public class HandshakeTest extends BaseTest {
             Config clientConfig = SystemPropertiesConfig.load().port(server.port());
             client.set(clientConfig).set(clientOutput);
 
-            client.connect().engine()
-                    .run(new NoAlertCheck())
-                    .run(new SuccessCheck())
-                    .run(new NoExceptionCheck())
-                    .apply(new NoAlertAnalyzer());
+            Engine[] engines = client.connect().engines();
+
+            for (Engine engine : engines) {
+                engine.run(new NoAlertCheck())
+                        .run(new SuccessCheck())
+                        .run(new NoExceptionCheck())
+                        .apply(new NoAlertAnalyzer());
+            }
 
             server.stop();
             //server.await();

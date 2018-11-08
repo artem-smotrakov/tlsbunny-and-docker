@@ -7,9 +7,10 @@ public abstract class SingleConnectionClient extends AbstractClient {
     @Override
     public final Client connectImpl() throws Exception {
         output.info("connect to %s:%d", config.host(), config.port());
-        recentEngine = createEngine();
-        recentEngine.connect();
-        recentEngine.run(checks);
+        Engine engine = createEngine();
+        engines.add(engine);
+        engine.connect();
+        engine.run(checks);
         return this;
     }
 

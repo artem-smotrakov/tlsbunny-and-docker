@@ -4,7 +4,7 @@ import com.gypsyengineer.tlsbunny.tls13.client.*;
 import com.gypsyengineer.tlsbunny.tls13.connection.*;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Side;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.IncomingChangeCipherSpec;
-import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.OutgoingChangeCipherSpec;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.OutgoingMainServerFlight;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.server.SingleThreadServer;
 import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
@@ -17,10 +17,6 @@ import org.junit.Test;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.application_data;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
 import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.*;
-import static com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup.secp256r1;
-import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv12;
-import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv13;
-import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp256r1_sha256;
 import static org.junit.Assert.*;
 
 public class BasicTest {
@@ -70,6 +66,16 @@ public class BasicTest {
         serverConfig.serverCertificate(serverCertificatePath);
         serverConfig.serverKey(serverKeyPath);
 
+        /*
+        TODO use HttpsServer
+        HttpsServer server = httpsServer()
+                .set(factory)
+                .set(group)
+                .set(serverConfig)
+                .set(serverOutput)
+                .maxConnections(n);
+                */
+
         SingleThreadServer server = new SingleThreadServer()
                 .set(new EngineFactoryImpl()
                         .set(Negotiator.create(group, factory))
@@ -79,7 +85,7 @@ public class BasicTest {
                 .set(serverOutput)
                 .maxConnections(n);
 
-        try (server; clientOutput; serverOutput) {
+        try (server; client; clientOutput; serverOutput) {
             new Thread(server).start();
             Thread.sleep(delay);
 
@@ -87,19 +93,35 @@ public class BasicTest {
             client.set(Negotiator.create(group, factory))
                     .set(clientConfig).set(clientOutput);
 
-            try (client) {
-                client.connect()
-                        .engine()
-                        .apply(new NoAlertAnalyzer());
-            }
+            client.connect();
         }
 
-        boolean success = checkContexts(
-                client.engine().context(),
-                server.recentEngine().context(),
-                clientOutput);
+        Engine[] clientEngines = client.engines();
+        assertEquals(n, clientEngines.length);
 
-        assertTrue("something went wrong!", success);
+        Analyzer clientAnalyzer = new NoAlertAnalyzer().set(clientOutput);
+        for (Engine engine : clientEngines) {
+            engine.apply(clientAnalyzer);
+        }
+        clientAnalyzer.run();
+
+        Engine[] serverEngines = server.engines();
+        assertEquals(n, serverEngines.length);
+
+        Analyzer serverAnalyzer = new NoAlertAnalyzer().set(serverOutput);
+        for (Engine engine : serverEngines) {
+            engine.apply(serverAnalyzer);
+        }
+        serverAnalyzer.run();
+
+        for (int i = 0; i < n; i++) {
+            boolean success = checkContexts(
+                    clientEngines[i].context(),
+                    serverEngines[i].context(),
+                    clientOutput);
+
+            assertTrue("something went wrong!", success);
+        }
     }
 
     private static boolean checkContexts(
@@ -223,9 +245,8 @@ public class BasicTest {
                     .set(negotiator)
                     .set(negotiator.group())
 
+                    // receive ClientHello
                     .receive(new IncomingData())
-
-                    // process ClientHello
                     .run(new ProcessingTLSPlaintext()
                             .expect(handshake))
                     .run(new ProcessingHandshake()
@@ -233,69 +254,15 @@ public class BasicTest {
                             .updateContext(Context.Element.first_client_hello))
                     .run(new ProcessingClientHello())
 
+                    // receive CCS
                     .receive(new IncomingChangeCipherSpec())
 
-                    // send ServerHello
-                    .run(new GeneratingServerHello()
-                            .supportedVersion(TLSv13)
-                            .group(secp256r1)
-                            .signatureScheme(ecdsa_secp256r1_sha256)
-                            .keyShareEntry(context -> context.negotiator.createKeyShareEntry()))
-                    .run(new WrappingIntoHandshake()
-                            .type(server_hello)
-                            .updateContext(Context.Element.server_hello))
-                    .run(new WrappingIntoTLSPlaintexts()
-                            .type(handshake)
-                            .version(TLSv12))
-                    .store()
+                    // send messages
+                    .send(new OutgoingMainServerFlight()
+                            .apply(config))
 
-                    .run(new OutgoingChangeCipherSpec())
-                    .store()
-
-                    .run(new NegotiatingServerDHSecret())
-
-                    .run(new ComputingHandshakeTrafficKeys()
-                            .server())
-
-                    // send EncryptedExtensions
-                    .run(new GeneratingEncryptedExtensions())
-                    .run(new WrappingIntoHandshake()
-                            .type(encrypted_extensions)
-                            .updateContext(Context.Element.encrypted_extensions))
-                    .run(new WrappingHandshakeDataIntoTLSCiphertext())
-                    .store()
-
-                    // send Certificate
-                    .run(new GeneratingCertificate()
-                            .certificate(config.serverCertificate()))
-                    .run(new WrappingIntoHandshake()
-                            .type(certificate)
-                            .updateContext(Context.Element.server_certificate))
-                    .run(new WrappingHandshakeDataIntoTLSCiphertext())
-                    .store()
-
-                    // send CertificateVerify
-                    .run(new GeneratingCertificateVerify()
-                            .server()
-                            .key(config.serverKey()))
-                    .run(new WrappingIntoHandshake()
-                            .type(certificate_verify)
-                            .updateContext(Context.Element.server_certificate_verify))
-                    .run(new WrappingHandshakeDataIntoTLSCiphertext())
-                    .store()
-
-                    .run(new GeneratingFinished(Side.server))
-                    .run(new WrappingIntoHandshake()
-                            .type(finished)
-                            .updateContext(Context.Element.server_finished))
-                    .run(new WrappingHandshakeDataIntoTLSCiphertext())
-                    .store()
-
-                    .restore()
-                    .send(new OutgoingData())
-
+                    // receive Finished
                     .receive(new IncomingData())
-
                     .run(new ProcessingHandshakeTLSCiphertext()
                             .expect(handshake))
                     .run(new ProcessingHandshake()

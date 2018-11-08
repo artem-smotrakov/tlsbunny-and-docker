@@ -9,7 +9,7 @@ abstract class AbstractNegotiator implements Negotiator {
     Output output;
 
     final NamedGroup group;
-    final StructFactory factory;
+    StructFactory factory;
 
     AbstractNegotiator(NamedGroup group, StructFactory factory) {
         this.group = group;
@@ -24,6 +24,12 @@ abstract class AbstractNegotiator implements Negotiator {
     @Override
     public Negotiator set(Output output) {
         this.output = output;
+        return this;
+    }
+
+    @Override
+    public Negotiator set(StructFactory factory) {
+        this.factory = factory;
         return this;
     }
 

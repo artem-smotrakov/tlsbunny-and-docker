@@ -24,8 +24,6 @@ public interface Client extends AutoCloseable, Runnable, HasOutput<Client> {
     Client set(Analyzer analyzer);
     Client connect() throws Exception;
 
-    // TODO: should engine() be removed? or renamed ot lastEngine/recentEngine?
-    Engine engine();
     Engine[] engines();
 
     default void run() {

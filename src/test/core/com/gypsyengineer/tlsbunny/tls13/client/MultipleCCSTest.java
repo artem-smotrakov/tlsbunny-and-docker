@@ -51,7 +51,7 @@ public class MultipleCCSTest {
             }
         }
 
-        assertNull(client.engine().context().getAlert());
+        assertNull(client.engines()[0].context().getAlert());
     }
 
     private static class EngineFactoryImpl extends BaseEngineFactory {

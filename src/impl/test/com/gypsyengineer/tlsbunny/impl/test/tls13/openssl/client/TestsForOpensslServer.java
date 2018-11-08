@@ -21,7 +21,7 @@ import java.net.SocketException;
 
 import static com.gypsyengineer.tlsbunny.impl.test.tls13.Utils.checkForASanFindings;
 
-public class OpensslTests {
+public class TestsForOpensslServer {
 
     private static OpensslServer server;
 

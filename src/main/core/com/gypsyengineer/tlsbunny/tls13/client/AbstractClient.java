@@ -23,7 +23,6 @@ public abstract class AbstractClient implements Client, AutoCloseable {
     protected StructFactory factory = StructFactory.getDefault();
     protected Negotiator negotiator;
     protected Output output = new Output();
-    protected Engine recentEngine;
     protected Analyzer analyzer;
     protected List<Engine> engines = new ArrayList<>();
     protected List<Check> checks = Collections.emptyList();
@@ -112,15 +111,6 @@ public abstract class AbstractClient implements Client, AutoCloseable {
         if (output != null) {
             output.flush();
         }
-    }
-
-    @Override
-    public Engine engine() {
-        if (recentEngine == null) {
-            throw whatTheHell("recent engine not initialized! (null)");
-        }
-
-        return recentEngine;
     }
 
     @Override

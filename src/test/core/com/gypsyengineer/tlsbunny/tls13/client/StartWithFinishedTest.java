@@ -16,6 +16,7 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.alert;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
 import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.finished;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv12;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class StartWithFinishedTest {
@@ -47,7 +48,10 @@ public class StartWithFinishedTest {
             }
         }
 
-        assertNotNull(client.engine().context().getAlert());
+        Engine[] engines = client.engines();
+        assertNotNull(engines);
+        assertEquals(1, engines.length);
+        assertNotNull(engines[0].context().getAlert());
     }
 
     private static class EngineFactoryImpl extends BaseEngineFactory {

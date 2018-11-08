@@ -52,7 +52,7 @@ public class CCSAfterHandshakeTest {
             client.set(clientConfig).set(clientOutput).connect();
         }
 
-        Alert alert = client.engine().context().getAlert();
+        Alert alert = client.engines()[0].context().getAlert();
         assertNotNull(alert);
         assertEquals(alert.getLevel(), AlertLevel.fatal);
         assertEquals(alert.getDescription(), AlertDescription.unexpected_message);
@@ -84,7 +84,7 @@ public class CCSAfterHandshakeTest {
             assertEquals("alert received check failed", e.getMessage());
         }
 
-        Alert alert = client.engine().context().getAlert();
+        Alert alert = client.engines()[0].context().getAlert();
         assertNull(alert);
     }
 

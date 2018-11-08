@@ -219,7 +219,7 @@ public class DeepHandshakeFuzzerTest {
             client.set(fuzzer).set(clientConfig).set(clientOutput);
 
             try (client) {
-                client.connect().engine().apply(new NoAlertAnalyzer());
+                client.connect().engines()[0].apply(new NoAlertAnalyzer());
             }
         }
 

@@ -51,12 +51,12 @@ public class ClientAuthTest {
             client.set(clientConfig).set(clientOutput);
 
             try (client) {
-                client.connect().engine().apply(new NoAlertAnalyzer());
+                client.connect().engines()[0].apply(new NoAlertAnalyzer());
             }
         }
 
         boolean success = checkContexts(
-                client.engine().context(),
+                client.engines()[0].context(),
                 server.recentEngine().context(),
                 clientOutput);
 

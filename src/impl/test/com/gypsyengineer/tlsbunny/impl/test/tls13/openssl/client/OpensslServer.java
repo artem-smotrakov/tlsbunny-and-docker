@@ -21,8 +21,6 @@ public class OpensslServer extends OpensslDocker implements Server {
 
     public static final int port = 10101;
 
-    // TODO: add synchronization
-    private String containerName;
     private boolean failed = false;
     private int acceptCounter = 0;
 
@@ -35,9 +33,11 @@ public class OpensslServer extends OpensslDocker implements Server {
             }
         }
 
-        if (acceptCounter != this.acceptCounter) {
-            this.acceptCounter = acceptCounter;
-            return true;
+        synchronized (this) {
+            if (acceptCounter != this.acceptCounter) {
+                this.acceptCounter = acceptCounter;
+                return true;
+            }
         }
 
         return false;
@@ -90,13 +90,13 @@ public class OpensslServer extends OpensslDocker implements Server {
     }
 
     @Override
-    public boolean failed() {
+    synchronized public boolean failed() {
         return failed;
     }
 
     @Override
     public Thread start() {
-        if (containerName != null) {
+        if (running()) {
             throw whatTheHell("the server has already been started!");
         }
 
@@ -110,8 +110,6 @@ public class OpensslServer extends OpensslDocker implements Server {
 
     @Override
     public void run() {
-        containerName = generateContainerName();
-
         List<String> command = new ArrayList<>();
         command.add("docker");
         command.add("run");
@@ -121,8 +119,8 @@ public class OpensslServer extends OpensslDocker implements Server {
         command.add(String.format("%s:%s",
                 host_report_directory, container_report_directory));
 
-        if (!dockerEnvs.isEmpty()) {
-            for (Map.Entry entry : dockerEnvs.entrySet()) {
+        if (!dockerEnv.isEmpty()) {
+            for (Map.Entry entry : dockerEnv.entrySet()) {
                 command.add("-e");
                 command.add(String.format("%s=%s", entry.getKey(), entry.getValue()));
             }
@@ -139,20 +137,22 @@ public class OpensslServer extends OpensslDocker implements Server {
             int code = Utils.waitProcessFinish(output, command);
             if (code != 0) {
                 output.achtung("the server exited with a non-zero exit code (%d)", code);
-                failed = true;
+
+                synchronized (this) {
+                    failed = true;
+                }
             }
         } catch (InterruptedException | IOException e) {
             output.achtung("unexpected exception occurred", e);
-            failed = true;
+
+            synchronized (this) {
+                failed = true;
+            }
         }
     }
 
     @Override
     public OpensslServer stop() {
-        if (containerName == null) {
-            throw whatTheHell("the server has not been started yet!");
-        }
-
         try {
             List<String> command = List.of(
                     "docker",
@@ -178,10 +178,6 @@ public class OpensslServer extends OpensslDocker implements Server {
 
     @Override
     public boolean running() {
-        if (containerName == null) {
-            return false;
-        }
-
         if (!output.contains("ACCEPT")) {
             return false;
         }
@@ -196,12 +192,10 @@ public class OpensslServer extends OpensslDocker implements Server {
         Utils.waitStop(this);
         output.info("server stopped");
 
-        if (containerName != null) {
-            int code = Utils.waitProcessFinish(output, remove_container_template, containerName);
-            if (code != 0) {
-                output.achtung("could not remove the container (exit code %d)", code);
-                failed = true;
-            }
+        int code = Utils.waitProcessFinish(output, remove_container_template, containerName);
+        if (code != 0) {
+            output.achtung("could not remove the container (exit code %d)", code);
+            failed = true;
         }
 
         output.flush();

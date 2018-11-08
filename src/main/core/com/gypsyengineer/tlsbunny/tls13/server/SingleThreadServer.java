@@ -17,7 +17,7 @@ import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public class SingleThreadServer implements Server {
 
-    private static final int free_port = 0;
+    public static final int free_port = 0;
     private static final int start_delay = 1000; // in millis
 
     private final ServerSocket serverSocket;
