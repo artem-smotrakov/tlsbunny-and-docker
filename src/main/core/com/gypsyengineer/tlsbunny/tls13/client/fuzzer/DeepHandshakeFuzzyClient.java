@@ -222,16 +222,11 @@ public class DeepHandshakeFuzzyClient implements Client {
                 int attempt = 0;
                 while (true) {
                     try {
-                        Engine[] engines = client.set(deepHandshakeFuzzer)
+                        client.set(deepHandshakeFuzzer)
                                 .set(fuzzerConfig)
                                 .set(output)
                                 .set(fuzzerConfig.checks())
-                                .connect()
-                                .engines();
-
-                        for (Engine engine : engines) {
-                            engine.apply(fuzzerConfig.analyzer());
-                        }
+                                .connect();
 
                         break;
                     } catch (EngineException e) {
@@ -253,6 +248,10 @@ public class DeepHandshakeFuzzyClient implements Client {
 
                 output.flush();
                 deepHandshakeFuzzer.moveOn();
+            }
+
+            for (Engine engine : client.engines()) {
+                engine.apply(fuzzerConfig.analyzer());
             }
         } catch (Exception e) {
             output.achtung("what the hell? unexpected exception", e);

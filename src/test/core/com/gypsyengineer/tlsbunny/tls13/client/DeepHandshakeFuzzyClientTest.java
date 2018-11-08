@@ -37,6 +37,9 @@ public class DeepHandshakeFuzzyClientTest {
     private static final int end = 22;
     private static final int parts = 1;
 
+    // number of connections during fuzzing (we don't forget a smoke test)
+    private static final int n = end - start + 2;
+
     private Config clientConfig = SystemPropertiesConfig.load();
 
     @Test
@@ -64,7 +67,7 @@ public class DeepHandshakeFuzzyClientTest {
                         .set(serverOutput))
                 .set(serverConfig)
                 .set(serverOutput)
-                .maxConnections(end - start + 2);
+                .maxConnections(n);
 
         DeepHandshakeFuzzyClient deepHandshakeFuzzyClient =
                 new DeepHandshakeFuzzyClient(fuzzerConfig, clientOutput);
@@ -89,7 +92,7 @@ public class DeepHandshakeFuzzyClientTest {
                 new HandshakeType[] { client_hello, finished });
 
         analyzer.run();
-        assertEquals(end - start + 1, analyzer.engines().length);
+        assertEquals(n, analyzer.engines().length);
         for (Engine engine : analyzer.engines()) {
             assertFalse(engine.context().hasAlert());
         }
