@@ -18,7 +18,6 @@ import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 public class SingleThreadServer implements Server {
 
     public static final int free_port = 0;
-    private static final int start_delay = 1000; // in millis
 
     private final ServerSocket serverSocket;
 
@@ -151,19 +150,6 @@ public class SingleThreadServer implements Server {
     @Override
     public boolean running() {
         return running;
-    }
-
-    public Thread start() {
-        Thread thread = new Thread(this);
-        thread.start();
-
-        try {
-            Thread.sleep(start_delay);
-        } catch (InterruptedException e) {
-            output.achtung("exception: ", e);
-        }
-
-        return thread;
     }
 
     @Override

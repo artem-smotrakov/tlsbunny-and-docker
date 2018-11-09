@@ -72,11 +72,6 @@ public class HttpsServer implements Server {
     }
 
     @Override
-    public Thread start() {
-        return server.start();
-    }
-
-    @Override
     public HttpsServer stop() {
         server.stop();
         return this;
