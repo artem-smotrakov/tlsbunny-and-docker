@@ -11,6 +11,7 @@ import com.gypsyengineer.tlsbunny.utils.Output;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
@@ -21,20 +22,16 @@ public class SingleThreadServer implements Server {
 
     private final ServerSocket serverSocket;
 
+    // TODO: add synchronization
     private Config config = SystemPropertiesConfig.load();
     private EngineFactory factory;
     private StopCondition stopCondition = new NonStop();
     private Output output = new Output("server");
     private Check check;
-
     private boolean failed = false;
-
-    // TODO: add synchronization
-    private Engine recentEngine;
-    private List<Engine> engines = new ArrayList<>();
-
-    // TODO: add synchronization
     private boolean running = false;
+
+    private List<Engine> engines = Collections.synchronizedList(new ArrayList<>());
 
     public SingleThreadServer() throws IOException {
         this(free_port);
@@ -94,13 +91,8 @@ public class SingleThreadServer implements Server {
     }
 
     @Override
-    public Engine recentEngine() {
-        return recentEngine;
-    }
-
-    @Override
     public Engine[] engines() {
-        return engines.toArray(new Engine[engines.size()]);
+        return engines.toArray(new Engine[0]);
     }
 
     @Override
@@ -120,17 +112,17 @@ public class SingleThreadServer implements Server {
             try (Connection connection = Connection.create(serverSocket.accept())) {
                 output.info("accepted");
 
-                recentEngine = factory.create();
-                engines.add(recentEngine);
+                Engine engine = factory.create();
+                engines.add(engine);
 
-                recentEngine.set(output);
-                recentEngine.set(connection);
-                recentEngine.connect(); // TODO: rename connect -> run
+                engine.set(output);
+                engine.set(connection);
+                engine.connect(); // TODO: rename connect -> run
 
                 if (check != null) {
                     output.info("run check: %s", check.name());
-                    check.set(recentEngine);
-                    check.set(recentEngine.context());
+                    check.set(engine);
+                    check.set(engine.context());
                     check.run();
                     failed &= check.failed();
                 }

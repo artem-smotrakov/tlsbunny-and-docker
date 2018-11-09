@@ -1,8 +1,8 @@
 package com.gypsyengineer.tlsbunny.tls13.struct;
 
 import com.gypsyengineer.tlsbunny.tls.Struct;
-import com.gypsyengineer.tlsbunny.tls13.client.Client;
 import com.gypsyengineer.tlsbunny.tls13.client.HttpsClientAuth;
+import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
 import com.gypsyengineer.tlsbunny.tls13.connection.BaseEngineFactory;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertAnalyzer;
@@ -97,20 +97,32 @@ public class StructCopyTest {
 
         HttpsClientAuth client = new HttpsClientAuth();
 
-        try (server; clientOutput; serverOutput) {
+        Analyzer analyzer = new NoAlertAnalyzer().set(clientOutput);
+
+        try (server; client; clientOutput; serverOutput) {
             server.start();
 
             Config clientConfig = SystemPropertiesConfig.load()
                     .port(server.port());
             client.set(clientConfig).set(clientOutput);
 
-            try (client) {
-                client.connect().engines()[0].apply(new NoAlertAnalyzer());
-            }
+            client.connect();
         }
 
-        copyTest(server.recentEngine().context());
-        copyTest(client.engines()[0].context());
+        // TODO check the number or engines on both sides
+        // TODO add a default method Client.apply(Analyzer)
+        for (Engine engine : client.engines()) {
+            engine.apply(analyzer);
+        }
+        analyzer.run();
+
+        for (Engine engine : server.engines()) {
+            copyTest(engine.context());
+        }
+
+        for (Engine engine : client.engines()) {
+            copyTest(engine.context());
+        }
     }
 
     private static void copyTest(Context context) throws IOException {

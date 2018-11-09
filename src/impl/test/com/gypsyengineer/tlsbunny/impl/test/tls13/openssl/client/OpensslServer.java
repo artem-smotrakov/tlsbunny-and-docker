@@ -70,11 +70,6 @@ public class OpensslServer extends OpensslDocker implements Server {
     }
 
     @Override
-    public Engine recentEngine() {
-        throw new UnsupportedOperationException("no engines for you!");
-    }
-
-    @Override
     public Engine[] engines() {
         throw new UnsupportedOperationException("no engines for you!");
     }

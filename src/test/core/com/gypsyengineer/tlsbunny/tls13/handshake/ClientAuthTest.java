@@ -42,9 +42,10 @@ public class ClientAuthTest {
             }
         }
 
+        // TODO get rid of [0]
         boolean success = checkContexts(
                 client.engines()[0].context(),
-                server.recentEngine().context(),
+                server.engines()[0].context(),
                 clientOutput);
 
         assertTrue("something went wrong!", success);

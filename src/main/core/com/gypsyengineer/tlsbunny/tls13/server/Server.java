@@ -34,12 +34,6 @@ public interface Server extends Runnable, AutoCloseable, HasOutput<Server> {
     int port();
 
     /**
-     * @return the recent Engine instance which was used to handel a connection
-     */
-    // TODO this method should be removed
-    Engine recentEngine();
-
-    /**
      * @return all Engine instances which were used to handle connections
      */
     Engine[] engines();

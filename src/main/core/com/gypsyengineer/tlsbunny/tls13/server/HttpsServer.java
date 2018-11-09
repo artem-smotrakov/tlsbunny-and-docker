@@ -88,11 +88,6 @@ public class HttpsServer implements Server {
     }
 
     @Override
-    public Engine recentEngine() {
-        return server.recentEngine();
-    }
-
-    @Override
     public Engine[] engines() {
         return server.engines();
     }
