@@ -4,10 +4,10 @@ import com.gypsyengineer.tlsbunny.tls13.connection.BaseEngineFactory;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.EngineFactory;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Side;
-import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.OutgoingChangeCipherSpec;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.IncomingMessages;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.OutgoingMainServerFlight;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.connection.check.Check;
-import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Negotiator;
 import com.gypsyengineer.tlsbunny.tls13.handshake.NegotiatorException;
 import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
@@ -17,16 +17,7 @@ import com.gypsyengineer.tlsbunny.utils.Output;
 
 import java.io.IOException;
 
-import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.application_data;
-import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.change_cipher_spec;
-import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
-import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.*;
-import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.certificate_verify;
-import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.finished;
 import static com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup.secp256r1;
-import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv12;
-import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv13;
-import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp256r1_sha256;
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public class HttpsServer implements Server {
@@ -180,91 +171,16 @@ public class HttpsServer implements Server {
                     .receive(new IncomingData())
 
                     // process ClientHello
-                    .run(new ProcessingTLSPlaintext()
-                            .expect(handshake))
-                    .run(new ProcessingHandshake()
-                            .expect(client_hello)
-                            .updateContext(Context.Element.first_client_hello))
-                    .run(new ProcessingClientHello())
+                    .loop(context -> !context.hasFirstClientHello() && !context.hasAlert())
+                        .receive(() -> new IncomingMessages(Side.server))
 
-                    // send ServerHello
-                    .run(new GeneratingServerHello()
-                            .supportedVersion(TLSv13)
-                            .group(secp256r1)
-                            .signatureScheme(ecdsa_secp256r1_sha256)
-                            .keyShareEntry(context -> context.negotiator.createKeyShareEntry()))
-                    .run(new WrappingIntoHandshake()
-                            .type(server_hello)
-                            .updateContext(Context.Element.server_hello))
-                    .run(new WrappingIntoTLSPlaintexts()
-                            .type(handshake)
-                            .version(TLSv12))
-                    .store()
+                    // send messages
+                    .send(new OutgoingMainServerFlight()
+                            .apply(config))
 
-                    .run(new OutgoingChangeCipherSpec())
-                    .store()
-
-                    .run(new NegotiatingServerDHSecret())
-
-                    .run(new ComputingHandshakeTrafficKeys()
-                            .server())
-
-                    // send EncryptedExtensions
-                    .run(new GeneratingEncryptedExtensions())
-                    .run(new WrappingIntoHandshake()
-                            .type(encrypted_extensions)
-                            .updateContext(Context.Element.encrypted_extensions))
-                    .run(new WrappingHandshakeDataIntoTLSCiphertext())
-                    .store()
-
-                    // send Certificate
-                    .run(new GeneratingCertificate()
-                            .certificate(config.serverCertificate()))
-                    .run(new WrappingIntoHandshake()
-                            .type(certificate)
-                            .updateContext(Context.Element.server_certificate))
-                    .run(new WrappingHandshakeDataIntoTLSCiphertext())
-                    .store()
-
-                    // send CertificateVerify
-                    .run(new GeneratingCertificateVerify()
-                            .server()
-                            .key(config.serverKey()))
-                    .run(new WrappingIntoHandshake()
-                            .type(certificate_verify)
-                            .updateContext(Context.Element.server_certificate_verify))
-                    .run(new WrappingHandshakeDataIntoTLSCiphertext())
-                    .store()
-
-                    .run(new GeneratingFinished(Side.server))
-                    .run(new WrappingIntoHandshake()
-                            .type(finished)
-                            .updateContext(Context.Element.server_finished))
-                    .run(new WrappingHandshakeDataIntoTLSCiphertext())
-                    .store()
-
-                    .restore()
-                    .send(new OutgoingData())
-
-                    .receive(new IncomingData())
-
-                    .run(new ProcessingTLSPlaintext().expect(change_cipher_spec))
-                    .run(new ProcessingChangeCipherSpec())
-
-                    .run(new ProcessingHandshakeTLSCiphertext()
-                            .expect(handshake))
-                    .run(new ProcessingHandshake()
-                            .expect(finished))
-                    .run(new ProcessingFinished(Side.server))
-
-                    .run(new ComputingApplicationTrafficKeys()
-                            .server())
-
-                    // receive application data
-                    .receive(new IncomingData())
-                    .run(new ProcessingApplicationDataTLSCiphertext()
-                            .expect(application_data))
-                    .run(new PrintingData())
+                    // receive Finished and application data
+                    .loop(context -> !context.receivedApplicationData() && !context.hasAlert())
+                        .receive(() -> new IncomingMessages(Side.server))
 
                     // send application data
                     .run(new PreparingHttpResponse())

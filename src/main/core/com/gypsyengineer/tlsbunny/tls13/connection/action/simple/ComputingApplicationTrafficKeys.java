@@ -5,6 +5,7 @@ import com.gypsyengineer.tlsbunny.tls13.connection.action.Side;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AEAD;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AEADException;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
+import com.gypsyengineer.tlsbunny.tls13.struct.Handshake;
 
 import java.io.IOException;
 
@@ -42,22 +43,24 @@ public class ComputingApplicationTrafficKeys
             throw whatTheHell("side not specified! (null)");
         }
 
+        Handshake[] messages = context.messagesForApplicationKeys();
+
         context.client_application_traffic_secret_0 = context.hkdf.deriveSecret(
                 context.master_secret,
                 context.c_ap_traffic,
-                context.allMessages());
+                messages);
         context.server_application_traffic_secret_0 = context.hkdf.deriveSecret(
                 context.master_secret,
                 context.s_ap_traffic,
-                context.allMessages());
+                messages);
         context.exporter_master_secret = context.hkdf.deriveSecret(
                 context.master_secret,
                 context.exp_master,
-                context.allMessages());
+                messages);
         context.resumption_master_secret = context.hkdf.deriveSecret(
                 context.master_secret,
                 Context.res_master,
-                context.allMessages());
+                messages);
         context.client_application_write_key = context.hkdf.expandLabel(
                 context.client_application_traffic_secret_0,
                 Context.key,

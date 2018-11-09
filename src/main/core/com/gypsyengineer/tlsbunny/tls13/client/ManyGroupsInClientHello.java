@@ -74,7 +74,7 @@ public class ManyGroupsInClientHello extends SingleConnectionClient {
                 // receive a ServerHello, EncryptedExtensions, Certificate,
                 // CertificateVerify and Finished messages
                 // TODO: how can we make it more readable?
-                .loop(context -> !context.hasServerFinished() && !context.hasAlert())
+                .loop(context -> !context.receivedServerFinished() && !context.hasAlert())
                     .receive(() -> new IncomingMessages(Side.client))
 
                 // send Finished

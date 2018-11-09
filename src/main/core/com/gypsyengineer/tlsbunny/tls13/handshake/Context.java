@@ -111,62 +111,6 @@ public class Context {
 
     public List<byte[]> applicationData = new ArrayList<>();
 
-    public void reset() {
-        firstClientHello = null;
-        helloRetryRequest = null;
-        secondClientHello = null;
-        serverHello = null;
-        encryptedExtensions = null;
-        serverCertificateRequest = null;
-        serverCertificate = null;
-        serverCertificateVerify = null;
-        serverFinished = null;
-        endOfEarlyData = null;
-        clientCertificate = null;
-        clientCertificateVerify = null;
-        clientFinished = null;
-
-        clientFinishedVerified = false;
-        serverFinishedVerified = false;
-
-        dh_shared_secret = null;
-        early_secret = null;
-        binder_key = null;
-        client_early_traffic_secret = null;
-        early_exporter_master_secret = null;
-        handshake_secret_salt = null;
-        handshake_secret = null;
-        client_handshake_traffic_secret = null;
-        server_handshake_traffic_secret = null;
-        master_secret = null;
-        client_application_traffic_secret_0 = null;
-        server_application_traffic_secret_0 = null;
-        exporter_master_secret = null;
-        resumption_master_secret = null;
-        client_handshake_write_key = null;
-        client_handshake_write_iv = null;
-        server_handshake_write_key = null;
-        server_handshake_write_iv = null;
-        finished_key = null;
-        client_application_write_key = null;
-        client_application_write_iv = null;
-        server_application_write_key = null;
-        server_application_write_iv = null;
-
-        certificate_request_context = null;
-
-        handshakeEncryptor = null;
-        handshakeDecryptor = null;
-        applicationDataDecryptor = null;
-        applicationDataEncryptor = null;
-
-        scheme = null;
-        group = null;
-        suite = null;
-        negotiator = null;
-        hkdf = null;
-    }
-
     public boolean hasFirstClientHello() {
         return firstClientHello != null;
     }
@@ -183,16 +127,8 @@ public class Context {
         this.firstClientHello = firstClientHello;
     }
 
-    public Handshake getHelloRetryRequest() {
-        return helloRetryRequest;
-    }
-
     public void setHelloRetryRequest(Handshake helloRetryRequest) {
         this.helloRetryRequest = helloRetryRequest;
-    }
-
-    public Handshake getSecondClientHello() {
-        return secondClientHello;
     }
 
     public void setSecondClientHello(Handshake secondClientHello) {
@@ -211,16 +147,8 @@ public class Context {
         return serverHello != null;
     }
 
-    public Handshake getEncryptedExtensions() {
-        return encryptedExtensions;
-    }
-
     public void setEncryptedExtensions(Handshake encryptedExtensions) {
         this.encryptedExtensions = encryptedExtensions;
-    }
-
-    public Handshake getServerCertificateRequest() {
-        return serverCertificateRequest;
     }
 
     public void setServerCertificateRequest(Handshake serverCertificateRequest) {
@@ -235,29 +163,20 @@ public class Context {
         this.serverCertificate = serverCertificate;
     }
 
-    public Handshake getServerCertificateVerify() {
-        return serverCertificateVerify;
-    }
-
     public void setServerCertificateVerify(Handshake serverCertificateVerify) {
         this.serverCertificateVerify = serverCertificateVerify;
-    }
-
-    public boolean receivedServerCertificateVerify() {
-        return serverCertificateVerify != null;
-    }
-
-    public Handshake getServerFinished() {
-        return serverFinished;
     }
 
     public void setServerFinished(Handshake serverFinished) {
         this.serverFinished = serverFinished;
     }
 
-    // TODO: use receivedXXX() pattern instead of hasXXX()
-    public boolean hasServerFinished() {
+    public boolean receivedServerFinished() {
         return serverFinished != null;
+    }
+
+    public boolean receivedClientFinished() {
+        return clientFinished != null;
     }
 
     public void verifyClientFinished() {
@@ -272,32 +191,16 @@ public class Context {
         this.endOfEarlyData = endOfEarlyData;
     }
 
-    public Handshake getClientCertificate() {
-        return clientCertificate;
-    }
-
     public void setClientCertificate(Handshake clientCertificate) {
         this.clientCertificate = clientCertificate;
-    }
-
-    public Handshake getClientCertificateVerify() {
-        return clientCertificateVerify;
     }
 
     public void setClientCertificateVerify(Handshake clientCertificateVerify) {
         this.clientCertificateVerify = clientCertificateVerify;
     }
 
-    public Handshake getClientFinished() {
-        return clientFinished;
-    }
-
     public void setClientFinished(Handshake clientFinished) {
         this.clientFinished = clientFinished;
-    }
-
-    public boolean receivedServerCertificateRequest() {
-        return serverCertificateRequest != null;
     }
 
     public void set(Element element, Handshake message) {
@@ -346,8 +249,24 @@ public class Context {
         }
     }
 
+    public Handshake[] messagesForApplicationKeys() {
+        return noNulls(new Handshake[] {
+                firstClientHello,
+                helloRetryRequest,
+                secondClientHello,
+                serverHello,
+                encryptedExtensions,
+                serverCertificateRequest,
+                serverCertificate,
+                serverCertificateVerify,
+                serverFinishedVerified ? serverFinished : null,
+                endOfEarlyData,
+                clientFinishedVerified ? clientFinished : null,
+        });
+    }
+
     public Handshake[] allMessages() {
-        Handshake[] messages = new Handshake[] {
+        return noNulls(new Handshake[] {
                 firstClientHello,
                 helloRetryRequest,
                 secondClientHello,
@@ -361,16 +280,7 @@ public class Context {
                 clientCertificate,
                 clientCertificateVerify,
                 clientFinishedVerified ? clientFinished : null,
-        };
-
-        List<Handshake> list = new ArrayList<>();
-        for (Handshake message : messages) {
-            if (message != null) {
-                list.add(message);
-            }
-        }
-
-        return list.toArray(new Handshake[list.size()]);
+        });
     }
 
     public boolean hasAlert() {
@@ -391,6 +301,17 @@ public class Context {
 
     public boolean receivedApplicationData() {
         return !applicationData.isEmpty();
+    }
+
+    private static Handshake[] noNulls(Handshake[] messages) {
+        List<Handshake> list = new ArrayList<>();
+        for (Handshake message : messages) {
+            if (message != null) {
+                list.add(message);
+            }
+        }
+
+        return list.toArray(new Handshake[0]);
     }
 
 }
