@@ -101,6 +101,11 @@ public class SingleThreadServer implements Server {
     }
 
     @Override
+    public EngineFactory engineFactory() {
+        return factory;
+    }
+
+    @Override
     public void run() {
         if (factory == null) {
             throw whatTheHell("engine factory is not set! (null)");

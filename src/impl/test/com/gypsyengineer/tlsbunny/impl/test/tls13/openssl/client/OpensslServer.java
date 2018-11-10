@@ -70,6 +70,11 @@ public class OpensslServer extends OpensslDocker implements Server {
     }
 
     @Override
+    public EngineFactory engineFactory() {
+        throw new UnsupportedOperationException("no engine factories for you!");
+    }
+
+    @Override
     public Engine[] engines() {
         throw new UnsupportedOperationException("no engines for you!");
     }

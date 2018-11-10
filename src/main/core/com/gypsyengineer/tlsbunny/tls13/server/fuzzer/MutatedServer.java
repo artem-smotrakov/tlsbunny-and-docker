@@ -9,6 +9,7 @@ import com.gypsyengineer.tlsbunny.tls13.utils.FuzzerConfig;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
+import static com.gypsyengineer.tlsbunny.tls13.fuzzer.MutatedStructFactory.newMutatedStructFactory;
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public class MutatedServer implements Server {
@@ -18,39 +19,44 @@ public class MutatedServer implements Server {
     private Output output;
     private FuzzerConfig fuzzerConfig;
 
-    public MutatedServer(Server server) {
+    public static MutatedServer mutatedServer(Server server) {
+        server.engineFactory().set(newMutatedStructFactory());
+        return new MutatedServer(server);
+    }
+
+    private MutatedServer(Server server) {
         this.server = server;
     }
 
     @Override
-    public Server set(Config config) {
+    public MutatedServer set(Config config) {
         if (config instanceof FuzzerConfig == false) {
             throw whatTheHell("expected FuzzerConfig!");
         }
         this.fuzzerConfig = (FuzzerConfig) config;
+        server.set(config);
         return this;
     }
 
     @Override
-    public Server set(EngineFactory engineFactory) {
-        server.set(engineFactory);
-        return this;
+    public MutatedServer set(EngineFactory engineFactory) {
+        throw whatTheHell("you can't set an engine factory for me!");
     }
 
     @Override
-    public Server set(Check check) {
+    public MutatedServer set(Check check) {
         server.set(check);
         return this;
     }
 
     @Override
-    public Server stopWhen(StopCondition condition) {
+    public MutatedServer stopWhen(StopCondition condition) {
         server.stopWhen(condition);
         return this;
     }
 
     @Override
-    public Server stop() {
+    public MutatedServer stop() {
         server.stop();
         return this;
     }
@@ -77,13 +83,19 @@ public class MutatedServer implements Server {
 
     @Override
     public Server set(Output output) {
+        this.output = output;
         server.set(output);
         return this;
     }
 
     @Override
     public Output output() {
-        return server.output();
+        return output;
+    }
+
+    @Override
+    public EngineFactory engineFactory() {
+        return server.engineFactory();
     }
 
     @Override

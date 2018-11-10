@@ -17,18 +17,26 @@ public abstract class BaseEngineFactory implements EngineFactory {
         return this;
     }
 
+    @Override
     public BaseEngineFactory set(StructFactory factory) {
         structFactory = factory;
         return this;
     }
 
+    @Override
     public BaseEngineFactory set(Output output) {
         this.output = output;
         return this;
     }
 
+    @Override
     public StructFactory structFactory() {
         return structFactory;
+    }
+
+    @Override
+    public Output output() {
+        return output;
     }
 
     @Override

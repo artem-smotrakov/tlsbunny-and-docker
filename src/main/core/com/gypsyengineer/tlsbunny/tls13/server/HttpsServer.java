@@ -98,6 +98,11 @@ public class HttpsServer implements Server {
     }
 
     @Override
+    public EngineFactory engineFactory() {
+        return engineFactory;
+    }
+
+    @Override
     public HttpsServer set(Output output) {
         engineFactory.set(output);
         server.set(output);

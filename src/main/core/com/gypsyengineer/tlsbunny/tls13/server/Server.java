@@ -1,6 +1,5 @@
 package com.gypsyengineer.tlsbunny.tls13.server;
 
-import com.gypsyengineer.tlsbunny.tls13.client.Client;
 import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
 import com.gypsyengineer.tlsbunny.tls13.connection.check.Check;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
@@ -19,6 +18,8 @@ public interface Server extends Runnable, AutoCloseable, HasOutput<Server> {
     Server set(Check check);
 
     Server stopWhen(StopCondition condition);
+
+    EngineFactory engineFactory();
 
     /**
      * Stops the server.
