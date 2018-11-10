@@ -1,6 +1,7 @@
 package com.gypsyengineer.tlsbunny.tls13.handshake;
 
 import com.gypsyengineer.tlsbunny.tls13.client.*;
+import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertAnalyzer;
 import com.gypsyengineer.tlsbunny.tls13.server.HttpsServer;
 import com.gypsyengineer.tlsbunny.tls13.server.OneConnectionReceived;
@@ -42,10 +43,15 @@ public class ClientAuthTest {
             }
         }
 
-        // TODO get rid of [0]
+        Engine[] clientEngines = client.engines();
+        Engine[] serverEngines = server.engines();
+
+        assertEquals(1, clientEngines.length);
+        assertEquals(1, serverEngines.length);
+
         boolean success = checkContexts(
-                client.engines()[0].context(),
-                server.engines()[0].context(),
+                clientEngines[0].context(),
+                serverEngines[0].context(),
                 clientOutput);
 
         assertTrue("something went wrong!", success);

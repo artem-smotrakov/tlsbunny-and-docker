@@ -109,18 +109,21 @@ public class StructCopyTest {
             client.connect();
         }
 
-        // TODO check the number or engines on both sides
-        // TODO add a default method Client.apply(Analyzer)
-        for (Engine engine : client.engines()) {
-            engine.apply(analyzer);
-        }
+        Engine[] clientEngines = client.engines();
+        Engine[] serverEngines = server.engines();
+
+        assertEquals(1, clientEngines.length);
+        assertEquals(1, serverEngines.length);
+
+        client.apply(analyzer);
+        server.apply(analyzer);
         analyzer.run();
 
-        for (Engine engine : server.engines()) {
+        for (Engine engine : clientEngines) {
             copyTest(engine.context());
         }
 
-        for (Engine engine : client.engines()) {
+        for (Engine engine : serverEngines) {
             copyTest(engine.context());
         }
     }

@@ -46,6 +46,17 @@ public interface Client extends AutoCloseable, Runnable, HasOutput<Client> {
     }
 
     /**
+     * Applies an analyzer to all engines in the client.
+     */
+    default Client apply(Analyzer analyzer) {
+        for (Engine engine : engines()) {
+            engine.apply(analyzer);
+        }
+
+        return this;
+    }
+
+    /**
      * Stops the client.
      */
     default Client stop() {

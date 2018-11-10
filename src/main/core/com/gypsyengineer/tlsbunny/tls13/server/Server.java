@@ -1,5 +1,7 @@
 package com.gypsyengineer.tlsbunny.tls13.server;
 
+import com.gypsyengineer.tlsbunny.tls13.client.Client;
+import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
 import com.gypsyengineer.tlsbunny.tls13.connection.check.Check;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.EngineFactory;
@@ -59,5 +61,16 @@ public interface Server extends Runnable, AutoCloseable, HasOutput<Server> {
         }
 
         return thread;
+    }
+
+    /**
+     * Applies an analyzer to all engines in the server.
+     */
+    default Server apply(Analyzer analyzer) {
+        for (Engine engine : engines()) {
+            engine.apply(analyzer);
+        }
+
+        return this;
     }
 }
