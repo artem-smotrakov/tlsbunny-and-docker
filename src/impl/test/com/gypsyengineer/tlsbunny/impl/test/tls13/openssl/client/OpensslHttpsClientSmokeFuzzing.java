@@ -14,7 +14,7 @@ import org.junit.Test;
 import java.io.IOException;
 
 import static com.gypsyengineer.tlsbunny.impl.test.tls13.Utils.checkForASanFindings;
-import static com.gypsyengineer.tlsbunny.tls13.fuzzer.MutatedClient.*;
+import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Configs.*;
 
 public class OpensslHttpsClientSmokeFuzzing {
 

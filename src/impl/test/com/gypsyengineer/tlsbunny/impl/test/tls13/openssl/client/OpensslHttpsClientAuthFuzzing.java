@@ -13,8 +13,8 @@ import org.junit.Test;
 import java.io.IOException;
 
 import static com.gypsyengineer.tlsbunny.impl.test.tls13.Utils.checkForASanFindings;
-import static com.gypsyengineer.tlsbunny.tls13.fuzzer.MutatedClient.certificateConfigs;
-import static com.gypsyengineer.tlsbunny.tls13.fuzzer.MutatedClient.certificateVerifyConfigs;
+import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Configs.certificateConfigs;
+import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Configs.certificateVerifyConfigs;
 
 public class OpensslHttpsClientAuthFuzzing {
 
