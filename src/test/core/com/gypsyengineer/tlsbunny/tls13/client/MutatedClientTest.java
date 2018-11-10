@@ -107,7 +107,8 @@ public class MutatedClientTest {
                 .set(serverOutput)
                 .maxConnections(n);
 
-        MutatedClient fuzzyClient = new MutatedClient(clientOutput, fuzzerConfig);
+        MutatedClient fuzzyClient = new MutatedClient(
+                new HttpsClient(), clientOutput, fuzzerConfig);
 
         TestAnalyzer analyzer = new TestAnalyzer();
         analyzer.set(clientOutput);

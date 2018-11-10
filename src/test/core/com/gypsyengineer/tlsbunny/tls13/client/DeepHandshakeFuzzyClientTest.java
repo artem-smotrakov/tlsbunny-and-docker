@@ -70,7 +70,7 @@ public class DeepHandshakeFuzzyClientTest {
                 .maxConnections(n);
 
         DeepHandshakeFuzzyClient deepHandshakeFuzzyClient =
-                new DeepHandshakeFuzzyClient(fuzzerConfig, clientOutput);
+                new DeepHandshakeFuzzyClient(new HttpsClient(), fuzzerConfig, clientOutput);
 
         TestAnalyzer analyzer = new TestAnalyzer();
         analyzer.set(clientOutput);

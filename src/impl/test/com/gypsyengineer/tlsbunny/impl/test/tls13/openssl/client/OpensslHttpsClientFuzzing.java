@@ -2,6 +2,7 @@ package com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.client;
 
 import com.gypsyengineer.tlsbunny.impl.test.tls13.ImplTest;
 import com.gypsyengineer.tlsbunny.impl.test.tls13.Utils;
+import com.gypsyengineer.tlsbunny.tls13.client.HttpsClient;
 import com.gypsyengineer.tlsbunny.tls13.client.fuzzer.DeepHandshakeFuzzyClient;
 import com.gypsyengineer.tlsbunny.tls13.client.fuzzer.MultiThreadedClient;
 import com.gypsyengineer.tlsbunny.utils.Config;
@@ -14,6 +15,7 @@ import org.junit.Test;
 import java.io.IOException;
 
 import static com.gypsyengineer.tlsbunny.impl.test.tls13.Utils.checkForASanFindings;
+import static com.gypsyengineer.tlsbunny.tls13.client.fuzzer.DeepHandshakeFuzzyClient.deepHandshakeFuzzyClient;
 import static com.gypsyengineer.tlsbunny.tls13.client.fuzzer.MutatedClient.*;
 
 public class OpensslHttpsClientFuzzing {
@@ -118,7 +120,7 @@ public class OpensslHttpsClientFuzzing {
     public void deepHandshakeFuzzer() throws Exception {
         new ImplTest()
                 .set(new MultiThreadedClient()
-                        .set(DeepHandshakeFuzzyClient.client_factory)
+                        .set((config, output) -> deepHandshakeFuzzyClient(new HttpsClient(), config, output))
                         .set(DeepHandshakeFuzzyClient.noClientAuth(mainConfig)))
                 .set(server)
                 .run();

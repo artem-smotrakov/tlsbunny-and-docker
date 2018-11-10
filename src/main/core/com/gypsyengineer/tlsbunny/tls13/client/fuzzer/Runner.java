@@ -118,7 +118,6 @@ public class Runner {
                 DeepHandshakeFuzzer deepHandshakeFuzzer = (DeepHandshakeFuzzer) factory;
                 output.info("\tfuzzer     = %s", deepHandshakeFuzzer.fuzzer());
             }
-            output.info("\tclient     = %s", config.client().getClass().getSimpleName());
             output.info("\tstart test = %d", config.startTest());
             output.info("\tend test   = %d", config.endTest());
             output.info("\tparts      = %d", config.parts());

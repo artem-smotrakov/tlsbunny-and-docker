@@ -32,9 +32,6 @@ import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public class DeepHandshakeFuzzyClient implements Client {
 
-    public static final Runner.ClientFactory client_factory =
-            DeepHandshakeFuzzyClient::deepHandshakeFuzzyClient;
-
     private static final int max_attempts = 3;
     private static final int delay = 3000; // in millis
 
@@ -71,18 +68,22 @@ public class DeepHandshakeFuzzyClient implements Client {
             new Ratio(0.08, 0.09),
     };
 
+    private Client client;
     private Output output;
     private FuzzerConfig fuzzerConfig;
 
     private boolean strict = true;
 
     public static DeepHandshakeFuzzyClient deepHandshakeFuzzyClient(
-            FuzzerConfig fuzzerConfig, Output output) {
+            Client client, FuzzerConfig fuzzerConfig, Output output) {
 
-        return new DeepHandshakeFuzzyClient(fuzzerConfig, output);
+        return new DeepHandshakeFuzzyClient(client, fuzzerConfig, output);
     }
 
-    public DeepHandshakeFuzzyClient(FuzzerConfig fuzzerConfig, Output output) {
+    public DeepHandshakeFuzzyClient(
+            Client client, FuzzerConfig fuzzerConfig, Output output) {
+
+        this.client = client;
         this.output = output;
         this.fuzzerConfig = fuzzerConfig;
     }
@@ -164,11 +165,6 @@ public class DeepHandshakeFuzzyClient implements Client {
 
         DeepHandshakeFuzzer deepHandshakeFuzzer = (DeepHandshakeFuzzer) factory;
         deepHandshakeFuzzer.set(output);
-
-        if (fuzzerConfig.noClient()) {
-            throw whatTheHell("no client provided!");
-        }
-        Client client = fuzzerConfig.client();
 
         deepHandshakeFuzzer.recording();
         try {
@@ -278,14 +274,12 @@ public class DeepHandshakeFuzzyClient implements Client {
                 enumerateByteFlipRatios(
                         () -> deepHandshakeFuzzer(),
                         new FuzzerConfig(config)
-                                .client(new HttpsClient())
                                 .readTimeout(long_read_timeout)
                                 .endTest(2000)
                                 .parts(5)),
                 enumerateBitFlipRatios(
                         () -> deepHandshakeFuzzer(),
                         new FuzzerConfig(config)
-                                .client(new HttpsClient())
                                 .readTimeout(long_read_timeout)
                                 .endTest(2000)
                                 .parts(5)));
@@ -296,14 +290,12 @@ public class DeepHandshakeFuzzyClient implements Client {
                 enumerateByteFlipRatios(
                         () -> deepHandshakeFuzzer(),
                         new FuzzerConfig(config)
-                                .client(new HttpsClientAuth())
                                 .readTimeout(long_read_timeout)
                                 .endTest(2000)
                                 .parts(5)),
                 enumerateBitFlipRatios(
                         () -> deepHandshakeFuzzer(),
                         new FuzzerConfig(config)
-                                .client(new HttpsClientAuth())
                                 .readTimeout(long_read_timeout)
                                 .endTest(2000)
                                 .parts(5)));

@@ -4,8 +4,6 @@ import com.gypsyengineer.tlsbunny.fuzzer.Ratio;
 import com.gypsyengineer.tlsbunny.tls.UInt16;
 import com.gypsyengineer.tlsbunny.tls.UInt24;
 import com.gypsyengineer.tlsbunny.tls13.client.Client;
-import com.gypsyengineer.tlsbunny.tls13.client.HttpsClient;
-import com.gypsyengineer.tlsbunny.tls13.client.HttpsClientAuth;
 import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.EngineException;
@@ -86,12 +84,14 @@ public class MutatedClient implements Client {
             new Ratio(0.08, 0.09),
     };
 
+    private Client client;
     private Output output;
     private FuzzerConfig fuzzerConfig;
 
     private boolean strict = true;
 
-    public MutatedClient(Output output, FuzzerConfig fuzzerConfig) {
+    public MutatedClient(Client client, Output output, FuzzerConfig fuzzerConfig) {
+        this.client = client;
         this.output = output;
         this.fuzzerConfig = fuzzerConfig;
     }
@@ -173,11 +173,6 @@ public class MutatedClient implements Client {
 
         FuzzyStructFactory fuzzyStructFactory = (FuzzyStructFactory) factory;
         fuzzyStructFactory.set(output);
-
-        if (fuzzerConfig.noClient()) {
-            throw whatTheHell("no client specified");
-        }
-        Client client = fuzzerConfig.client();
 
         try {
             output.info("run a smoke test before fuzzing");
@@ -276,7 +271,6 @@ public class MutatedClient implements Client {
                                         .maxRatio(0.09)
                                         .startIndex(0)
                                         .endIndex(TLS_PLAINTEXT_HEADER_LENGTH)))
-                        .client(new HttpsClient())
                         .readTimeout(short_read_timeout)
                         .endTest(200)
                         .parts(2),
@@ -288,7 +282,6 @@ public class MutatedClient implements Client {
                                         .maxRatio(0.09)
                                         .startIndex(0)
                                         .endIndex(TLS_PLAINTEXT_HEADER_LENGTH)))
-                        .client(new HttpsClient())
                         .readTimeout(short_read_timeout)
                         .endTest(200)
                         .parts(2),
@@ -303,7 +296,6 @@ public class MutatedClient implements Client {
                                 .fuzzer(newByteFlipFuzzer()
                                         .minRatio(0.01)
                                         .maxRatio(0.09)))
-                        .client(new HttpsClient())
                         .readTimeout(long_read_timeout)
                         .endTest(20),
                 new FuzzerConfig(config)
@@ -312,7 +304,6 @@ public class MutatedClient implements Client {
                                 .fuzzer(newBitFlipFuzzer()
                                         .minRatio(0.01)
                                         .maxRatio(0.09)))
-                        .client(new HttpsClient())
                         .readTimeout(long_read_timeout)
                         .endTest(20),
         };
@@ -328,7 +319,6 @@ public class MutatedClient implements Client {
                                         .maxRatio(0.09)
                                         .startIndex(0)
                                         .endIndex(HANDSHAKE_HEADER_LENGTH)))
-                        .client(new HttpsClient())
                         .readTimeout(short_read_timeout)
                         .endTest(2000)
                         .parts(5),
@@ -340,7 +330,6 @@ public class MutatedClient implements Client {
                                         .maxRatio(0.09)
                                         .startIndex(0)
                                         .endIndex(HANDSHAKE_HEADER_LENGTH)))
-                        .client(new HttpsClient())
                         .readTimeout(short_read_timeout)
                         .endTest(2000)
                         .parts(5),
@@ -352,14 +341,12 @@ public class MutatedClient implements Client {
                 enumerateByteFlipRatios(
                         () -> newMutatedStructFactory().target(client_hello),
                         new FuzzerConfig(config)
-                                .client(new HttpsClient())
                                 .readTimeout(long_read_timeout)
                                 .endTest(2000)
                                 .parts(5)),
                 enumerateBitFlipRatios(
                         () -> newMutatedStructFactory().target(client_hello),
                         new FuzzerConfig(config)
-                                .client(new HttpsClient())
                                 .readTimeout(long_read_timeout)
                                 .endTest(2000)
                                 .parts(5)));
@@ -370,14 +357,12 @@ public class MutatedClient implements Client {
                 enumerateByteFlipRatios(
                         () -> newMutatedStructFactory().target(certificate),
                         new FuzzerConfig(config)
-                                .client(new HttpsClientAuth())
                                 .readTimeout(long_read_timeout)
                                 .endTest(2000)
                                 .parts(5)),
                 enumerateBitFlipRatios(
                         () -> newMutatedStructFactory().target(certificate),
                         new FuzzerConfig(config)
-                                .client(new HttpsClientAuth())
                                 .readTimeout(long_read_timeout)
                                 .endTest(2000)
                                 .parts(5)));
@@ -388,14 +373,12 @@ public class MutatedClient implements Client {
                 enumerateByteFlipRatios(
                         () -> newMutatedStructFactory().target(certificate_verify),
                         new FuzzerConfig(config)
-                                .client(new HttpsClientAuth())
                                 .readTimeout(long_read_timeout)
                                 .endTest(2000)
                                 .parts(5)),
                 enumerateBitFlipRatios(
                         () -> newMutatedStructFactory().target(certificate_verify),
                         new FuzzerConfig(config)
-                                .client(new HttpsClientAuth())
                                 .readTimeout(long_read_timeout)
                                 .endTest(2000)
                                 .parts(5)));
@@ -406,14 +389,12 @@ public class MutatedClient implements Client {
                 enumerateByteFlipRatios(
                         () -> newMutatedStructFactory().target(finished),
                         new FuzzerConfig(config)
-                                .client(new HttpsClient())
                                 .readTimeout(long_read_timeout)
                                 .endTest(2000)
                                 .parts(5)),
                 enumerateBitFlipRatios(
                         () -> newMutatedStructFactory().target(finished),
                         new FuzzerConfig(config)
-                                .client(new HttpsClient())
                                 .readTimeout(long_read_timeout)
                                 .endTest(2000)
                                 .parts(5)));
@@ -425,7 +406,6 @@ public class MutatedClient implements Client {
                         .factory(cipherSuitesFuzzer()
                                 .target(client_hello)
                                 .fuzzer(simpleVectorFuzzer()))
-                        .client(new HttpsClient())
                         .readTimeout(long_read_timeout)
         };
     }
@@ -436,7 +416,6 @@ public class MutatedClient implements Client {
                         .factory(newExtensionVectorFuzzer()
                                 .target(client_hello)
                                 .fuzzer(simpleVectorFuzzer()))
-                        .client(new HttpsClient())
                         .readTimeout(long_read_timeout)
         };
     }
@@ -447,7 +426,6 @@ public class MutatedClient implements Client {
                         .factory(newLegacySessionIdFuzzer()
                                 .target(client_hello)
                                 .fuzzer(simpleVectorFuzzer()))
-                        .client(new HttpsClient())
                         .readTimeout(long_read_timeout)
         };
     }
@@ -458,7 +436,6 @@ public class MutatedClient implements Client {
                         .factory(newLegacyCompressionMethodsFuzzer()
                                 .target(client_hello)
                                 .fuzzer(simpleVectorFuzzer()))
-                        .client(new HttpsClient())
                         .readTimeout(long_read_timeout)
         };
     }

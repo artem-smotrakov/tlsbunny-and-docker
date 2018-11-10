@@ -2,7 +2,6 @@ package com.gypsyengineer.tlsbunny.tls13.utils;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
 import com.gypsyengineer.tlsbunny.tls13.connection.check.Check;
-import com.gypsyengineer.tlsbunny.tls13.client.Client;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.Config;
 
@@ -15,7 +14,6 @@ public class FuzzerConfig implements Config {
     private Analyzer analyzer;
     private Check[] checks;
     private StructFactory factory;
-    private Client client;
 
     public FuzzerConfig(Config mainConfig) {
         this.mainConfig = mainConfig.copy();
@@ -27,7 +25,6 @@ public class FuzzerConfig implements Config {
         clone.analyzer = analyzer;
         clone.checks = checks != null ? checks.clone() : null;
         clone.factory = factory;
-        clone.client = client;
 
         return clone;
     }
@@ -214,19 +211,6 @@ public class FuzzerConfig implements Config {
         return factory;
     }
 
-    synchronized public boolean noClient() {
-        return client == null;
-    }
-
-    synchronized public FuzzerConfig client(Client client) {
-        this.client = client;
-        return this;
-    }
-
-    synchronized public Client client() {
-        return client;
-    }
-
     @Override
     synchronized public boolean equals(Object o) {
         if (this == o) {
@@ -241,13 +225,12 @@ public class FuzzerConfig implements Config {
         return Objects.equals(mainConfig, that.mainConfig) &&
                 Objects.equals(analyzer, that.analyzer) &&
                 Arrays.equals(checks, that.checks) &&
-                Objects.equals(factory, that.factory) &&
-                Objects.equals(client, that.client);
+                Objects.equals(factory, that.factory);
     }
 
     @Override
     synchronized public int hashCode() {
-        int result = Objects.hash(mainConfig, analyzer, factory, client);
+        int result = Objects.hash(mainConfig, analyzer, factory);
         result = 31 * result + Arrays.hashCode(checks);
         return result;
     }
