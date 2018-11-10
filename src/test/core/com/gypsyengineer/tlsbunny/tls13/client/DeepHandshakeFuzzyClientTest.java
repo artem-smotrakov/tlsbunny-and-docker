@@ -1,7 +1,7 @@
 package com.gypsyengineer.tlsbunny.tls13.client;
 
 import com.gypsyengineer.tlsbunny.TestUtils;
-import com.gypsyengineer.tlsbunny.tls13.client.fuzzer.DeepHandshakeFuzzyClient;
+import com.gypsyengineer.tlsbunny.tls13.fuzzer.DeepHandshakeFuzzyClient;
 import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
 import com.gypsyengineer.tlsbunny.tls13.connection.BaseEngineFactory;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;

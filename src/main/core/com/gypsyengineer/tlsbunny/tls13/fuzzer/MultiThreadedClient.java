@@ -1,4 +1,4 @@
-package com.gypsyengineer.tlsbunny.tls13.client.fuzzer;
+package com.gypsyengineer.tlsbunny.tls13.fuzzer;
 
 import com.gypsyengineer.tlsbunny.tls13.client.Client;
 import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;

@@ -1,7 +1,7 @@
 package com.gypsyengineer.tlsbunny.tls13.client;
 
 import com.gypsyengineer.tlsbunny.TestUtils;
-import com.gypsyengineer.tlsbunny.tls13.client.fuzzer.MutatedClient;
+import com.gypsyengineer.tlsbunny.tls13.fuzzer.MutatedClient;
 import com.gypsyengineer.tlsbunny.tls13.connection.*;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Side;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.IncomingChangeCipherSpec;
@@ -19,7 +19,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.gypsyengineer.tlsbunny.tls13.client.fuzzer.MutatedClient.*;
+import static com.gypsyengineer.tlsbunny.tls13.fuzzer.MutatedClient.*;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.application_data;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
 import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.*;

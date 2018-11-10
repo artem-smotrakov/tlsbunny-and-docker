@@ -1,15 +1,12 @@
-package com.gypsyengineer.tlsbunny.tls13.client.fuzzer;
+package com.gypsyengineer.tlsbunny.tls13.fuzzer;
 
 import com.gypsyengineer.tlsbunny.fuzzer.Ratio;
 import com.gypsyengineer.tlsbunny.tls13.client.Client;
-import com.gypsyengineer.tlsbunny.tls13.client.HttpsClient;
-import com.gypsyengineer.tlsbunny.tls13.client.HttpsClientAuth;
 import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.EngineException;
 import com.gypsyengineer.tlsbunny.tls13.connection.check.Check;
 import com.gypsyengineer.tlsbunny.tls13.connection.check.SuccessCheck;
-import com.gypsyengineer.tlsbunny.tls13.fuzzer.DeepHandshakeFuzzer;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Negotiator;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.tls13.utils.FuzzerConfig;

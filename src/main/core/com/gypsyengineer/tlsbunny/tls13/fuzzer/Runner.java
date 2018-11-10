@@ -1,7 +1,5 @@
-package com.gypsyengineer.tlsbunny.tls13.client.fuzzer;
+package com.gypsyengineer.tlsbunny.tls13.fuzzer;
 
-import com.gypsyengineer.tlsbunny.tls13.fuzzer.DeepHandshakeFuzzer;
-import com.gypsyengineer.tlsbunny.tls13.fuzzer.FuzzyStructFactory;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.tls13.utils.SplittedFuzzerConfig;
 import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;

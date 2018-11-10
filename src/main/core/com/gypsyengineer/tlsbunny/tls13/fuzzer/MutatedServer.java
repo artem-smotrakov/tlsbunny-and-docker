@@ -1,4 +1,4 @@
-package com.gypsyengineer.tlsbunny.tls13.server.fuzzer;
+package com.gypsyengineer.tlsbunny.tls13.fuzzer;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.EngineFactory;
@@ -19,13 +19,16 @@ public class MutatedServer implements Server {
     private Output output;
     private FuzzerConfig fuzzerConfig;
 
-    public static MutatedServer mutatedServer(Server server) {
+    public static MutatedServer mutatedServer(
+            Server server, FuzzerConfig fuzzerConfig) {
+
         server.engineFactory().set(newMutatedStructFactory());
-        return new MutatedServer(server);
+        return new MutatedServer(server, fuzzerConfig);
     }
 
-    private MutatedServer(Server server) {
+    private MutatedServer(Server server, FuzzerConfig fuzzerConfig) {
         this.server = server;
+        this.fuzzerConfig = fuzzerConfig;
     }
 
     @Override
