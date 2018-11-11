@@ -17,14 +17,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static com.gypsyengineer.tlsbunny.tls13.fuzzer.MutatedStructFactory.newMutatedStructFactory;
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public class MutatedServer implements Server {
 
     public static final int free_port = 0;
 
-    private final ServerSocket serverSocket;
+    private final ServerSocket ssocket;
     private final Server server;
     private final List<Engine> engines = Collections.synchronizedList(new ArrayList<>());
 
@@ -40,12 +39,12 @@ public class MutatedServer implements Server {
         return new MutatedServer(new ServerSocket(free_port), server, fuzzerConfig);
     }
 
-    private MutatedServer(ServerSocket serverSocket,
+    private MutatedServer(ServerSocket ssocket,
                           Server server, FuzzerConfig fuzzerConfig) {
 
         this.server = server;
         this.fuzzerConfig = fuzzerConfig;
-        this.serverSocket = serverSocket;
+        this.ssocket = ssocket;
     }
 
     @Override
@@ -74,9 +73,9 @@ public class MutatedServer implements Server {
 
     @Override
     public MutatedServer stop() {
-        if (!serverSocket.isClosed()) {
+        if (!ssocket.isClosed()) {
             try {
-                serverSocket.close();
+                ssocket.close();
             } catch (IOException e) {
                 output.achtung("exception occurred while stopping the server", e);
             }
@@ -92,7 +91,7 @@ public class MutatedServer implements Server {
 
     @Override
     public int port() {
-        return serverSocket.getLocalPort();
+        return ssocket.getLocalPort();
     }
 
     @Override
@@ -122,7 +121,7 @@ public class MutatedServer implements Server {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         stop();
 
         if (output != null) {
@@ -134,38 +133,36 @@ public class MutatedServer implements Server {
     public void run() {
         StructFactory factory = fuzzerConfig.factory();
         if (factory instanceof MutatedStructFactory == false) {
-            throw whatTheHell("expected %s", MutatedStructFactory.class.getSimpleName());
+            throw whatTheHell("expected %s",
+                    MutatedStructFactory.class.getSimpleName());
         }
-        MutatedStructFactory mutatedStructFactory = (MutatedStructFactory) factory;
-        mutatedStructFactory.currentTest(fuzzerConfig.startTest());
+        MutatedStructFactory fuzzer = (MutatedStructFactory) factory;
+        fuzzer.currentTest(fuzzerConfig.startTest());
 
         EngineFactory engineFactory = server.engineFactory();
-        engineFactory.set(mutatedStructFactory);
-
-        output.info("started on port %d", port());
+        engineFactory.set(fuzzer);
 
         output.info("run fuzzer config:");
-        output.info("\ttarget     = %s", mutatedStructFactory.target());
+        output.info("\ttarget     = %s", fuzzer.target());
         output.info("\tfuzzer     = %s",
-                mutatedStructFactory.fuzzer() != null
-                        ? mutatedStructFactory.fuzzer().toString()
+                fuzzer.fuzzer() != null
+                        ? fuzzer.fuzzer().toString()
                         : "null");
         output.info("\tstart test = %d", fuzzerConfig.startTest());
         output.info("\tend test   = %d", fuzzerConfig.endTest());
 
         running = true;
-        while (shouldRun(mutatedStructFactory)) {
-            try (Connection connection = Connection.create(serverSocket.accept())) {
-                output.info("test %d (accepted)", mutatedStructFactory.currentTest());
+        output.info("started on port %d", port());
+        while (shouldRun(fuzzer)) {
+            try (Connection connection = Connection.create(ssocket.accept())) {
+                output.info("test %d (accepted)", fuzzer.currentTest());
 
-                Engine engine = engineFactory.create();
+                Engine engine = engineFactory.create()
+                        .set(output)
+                        .set(connection)
+                        .connect();
+
                 engines.add(engine);
-
-                engine.set(output);
-                engine.set(connection);
-                engine.connect();
-
-                output.info("done");
             } catch (Exception e) {
                 output.achtung("exception: ", e);
                 failed = true;
@@ -174,7 +171,7 @@ public class MutatedServer implements Server {
                 output.flush();
             }
 
-            mutatedStructFactory.moveOn();
+            fuzzer.moveOn();
         }
 
         for (Engine engine : engines) {
