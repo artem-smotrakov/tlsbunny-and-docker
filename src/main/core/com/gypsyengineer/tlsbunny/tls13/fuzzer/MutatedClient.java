@@ -136,20 +136,20 @@ public class MutatedClient implements Client {
         output.info("\tstart test = %d", fuzzerConfig.startTest());
         output.info("\tend test   = %d", fuzzerConfig.endTest());
 
+        client.set(fuzzyStructFactory)
+                .set(fuzzerConfig)
+                .set(output)
+                .set(fuzzerConfig.checks());
+
         try {
             fuzzyStructFactory.currentTest(fuzzerConfig.startTest());
             while (shouldRun(fuzzyStructFactory)) {
                 output.info("test %d", fuzzyStructFactory.currentTest());
 
                 int attempt = 0;
-                while (true) {
+                while (attempt <= max_attempts) {
                     try {
-                        client.set(fuzzyStructFactory)
-                                .set(fuzzerConfig)
-                                .set(output)
-                                .set(fuzzerConfig.checks())
-                                .connect();
-
+                        client.connect();
                         break;
                     } catch (EngineException e) {
                         Throwable cause = e.getCause();
@@ -165,12 +165,11 @@ public class MutatedClient implements Client {
                         output.info("connection failed: %s ", cause.getMessage());
                         output.info("let's wait a bit and try again (attempt %d)", attempt);
                         Thread.sleep(delay);
-
-                        continue;
+                    } finally {
+                        output.flush();
                     }
                 }
 
-                output.flush();
                 fuzzyStructFactory.moveOn();
             }
 
