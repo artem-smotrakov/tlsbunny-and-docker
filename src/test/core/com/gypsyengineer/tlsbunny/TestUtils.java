@@ -4,12 +4,15 @@ import com.gypsyengineer.tlsbunny.fuzzer.AbstractFlipFuzzer;
 import com.gypsyengineer.tlsbunny.fuzzer.Fuzzer;
 import com.gypsyengineer.tlsbunny.tls.Random;
 import com.gypsyengineer.tlsbunny.tls.Vector;
+import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
+import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
 import com.gypsyengineer.tlsbunny.utils.Output;
 import com.gypsyengineer.tlsbunny.utils.WhatTheHell;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.fail;
@@ -274,6 +277,45 @@ public class TestUtils {
         @Override
         public Output output() {
             return new Output();
+        }
+    }
+
+    // the fuzzer just sets all bytes of encoding to zeroes
+    public static class ZeroFuzzer extends AbstractFlipFuzzer {
+
+        @Override
+        protected byte[] fuzzImpl(byte[] array) {
+            return new byte[array.length];
+        }
+
+    }
+
+    public static class FakeTestAnalyzer implements Analyzer {
+
+        private Output output;
+        private final List<Engine> engines = new ArrayList<>();
+
+        @Override
+        public Analyzer set(Output output) {
+            this.output = output;
+            return this;
+        }
+
+        @Override
+        public Analyzer add(Engine... engines) {
+            this.engines.addAll(List.of(engines));
+            return this;
+        }
+
+        @Override
+        public Analyzer run() {
+            output.info("run analyzer");
+            return this;
+        }
+
+        @Override
+        public Engine[] engines() {
+            return engines.toArray(new Engine[0]);
         }
     }
 }
