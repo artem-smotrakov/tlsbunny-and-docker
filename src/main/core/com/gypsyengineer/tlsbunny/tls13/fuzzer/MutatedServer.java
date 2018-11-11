@@ -5,30 +5,47 @@ import com.gypsyengineer.tlsbunny.tls13.connection.EngineFactory;
 import com.gypsyengineer.tlsbunny.tls13.connection.check.Check;
 import com.gypsyengineer.tlsbunny.tls13.server.Server;
 import com.gypsyengineer.tlsbunny.tls13.server.StopCondition;
+import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.tls13.utils.FuzzerConfig;
 import com.gypsyengineer.tlsbunny.utils.Config;
+import com.gypsyengineer.tlsbunny.utils.Connection;
 import com.gypsyengineer.tlsbunny.utils.Output;
+
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.MutatedStructFactory.newMutatedStructFactory;
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public class MutatedServer implements Server {
 
-    private final Server server;
+    public static final int free_port = 0;
 
+    private final ServerSocket serverSocket;
+    private final Server server;
+    private final List<Engine> engines = Collections.synchronizedList(new ArrayList<>());
+
+    // TODO: synchronization
+    private boolean running = false;
+    private boolean failed = false;
     private Output output;
     private FuzzerConfig fuzzerConfig;
 
     public static MutatedServer mutatedServer(
-            Server server, FuzzerConfig fuzzerConfig) {
+            Server server, FuzzerConfig fuzzerConfig) throws IOException {
 
-        server.engineFactory().set(newMutatedStructFactory());
-        return new MutatedServer(server, fuzzerConfig);
+        return new MutatedServer(new ServerSocket(free_port), server, fuzzerConfig);
     }
 
-    private MutatedServer(Server server, FuzzerConfig fuzzerConfig) {
+    private MutatedServer(ServerSocket serverSocket,
+                          Server server, FuzzerConfig fuzzerConfig) {
+
         this.server = server;
         this.fuzzerConfig = fuzzerConfig;
+        this.serverSocket = serverSocket;
     }
 
     @Override
@@ -37,7 +54,6 @@ public class MutatedServer implements Server {
             throw whatTheHell("expected FuzzerConfig!");
         }
         this.fuzzerConfig = (FuzzerConfig) config;
-        server.set(config);
         return this;
     }
 
@@ -48,46 +64,50 @@ public class MutatedServer implements Server {
 
     @Override
     public MutatedServer set(Check check) {
-        server.set(check);
-        return this;
+        throw whatTheHell("you can't set a check for me!");
     }
 
     @Override
     public MutatedServer stopWhen(StopCondition condition) {
-        server.stopWhen(condition);
-        return this;
+        throw whatTheHell("I know when I should stop!");
     }
 
     @Override
     public MutatedServer stop() {
-        server.stop();
+        if (!serverSocket.isClosed()) {
+            try {
+                serverSocket.close();
+            } catch (IOException e) {
+                output.achtung("exception occurred while stopping the server", e);
+            }
+        }
+
         return this;
     }
 
     @Override
     public boolean running() {
-        return server.running();
+        return running;
     }
 
     @Override
     public int port() {
-        return server.port();
+        return serverSocket.getLocalPort();
     }
 
     @Override
     public Engine[] engines() {
-        return server.engines();
+        return engines.toArray(new Engine[0]);
     }
 
     @Override
     public boolean failed() {
-        return server.failed();
+        return failed;
     }
 
     @Override
     public Server set(Output output) {
         this.output = output;
-        server.set(output);
         return this;
     }
 
@@ -98,16 +118,75 @@ public class MutatedServer implements Server {
 
     @Override
     public EngineFactory engineFactory() {
-        return server.engineFactory();
+        throw whatTheHell("no engine factories for you!");
     }
 
     @Override
     public void close() throws Exception {
-        server.close();
+        stop();
+
+        if (output != null) {
+            output.flush();
+        }
     }
 
     @Override
     public void run() {
-        server.run();
+        StructFactory factory = fuzzerConfig.factory();
+        if (factory instanceof MutatedStructFactory == false) {
+            throw whatTheHell("expected %s", MutatedStructFactory.class.getSimpleName());
+        }
+        MutatedStructFactory mutatedStructFactory = (MutatedStructFactory) factory;
+        mutatedStructFactory.currentTest(fuzzerConfig.startTest());
+
+        EngineFactory engineFactory = server.engineFactory();
+        engineFactory.set(mutatedStructFactory);
+
+        output.info("started on port %d", port());
+
+        output.info("run fuzzer config:");
+        output.info("\ttarget     = %s", mutatedStructFactory.target());
+        output.info("\tfuzzer     = %s",
+                mutatedStructFactory.fuzzer() != null
+                        ? mutatedStructFactory.fuzzer().toString()
+                        : "null");
+        output.info("\tstart test = %d", fuzzerConfig.startTest());
+        output.info("\tend test   = %d", fuzzerConfig.endTest());
+
+        running = true;
+        while (shouldRun(mutatedStructFactory)) {
+            try (Connection connection = Connection.create(serverSocket.accept())) {
+                output.info("test %d (accepted)", mutatedStructFactory.currentTest());
+
+                Engine engine = engineFactory.create();
+                engines.add(engine);
+
+                engine.set(output);
+                engine.set(connection);
+                engine.connect();
+
+                output.info("done");
+            } catch (Exception e) {
+                output.achtung("exception: ", e);
+                failed = true;
+                break;
+            } finally {
+                output.flush();
+            }
+
+            mutatedStructFactory.moveOn();
+        }
+
+        for (Engine engine : engines) {
+            engine.apply(fuzzerConfig.analyzer());
+        }
+
+        running = false;
+        output.info("stopped");
+    }
+
+    private boolean shouldRun(MutatedStructFactory mutatedStructFactory) {
+        return mutatedStructFactory.canFuzz()
+                && mutatedStructFactory.currentTest() <= fuzzerConfig.endTest();
     }
 }
