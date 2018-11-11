@@ -132,24 +132,24 @@ public class MutatedServer implements Server {
     @Override
     public void run() {
         StructFactory factory = fuzzerConfig.factory();
-        if (factory instanceof MutatedStructFactory == false) {
+        if (factory instanceof FuzzyStructFactory == false) {
             throw whatTheHell("expected %s",
-                    MutatedStructFactory.class.getSimpleName());
+                    FuzzyStructFactory.class.getSimpleName());
         }
-        MutatedStructFactory fuzzer = (MutatedStructFactory) factory;
+        FuzzyStructFactory fuzzer = (FuzzyStructFactory) factory;
         fuzzer.currentTest(fuzzerConfig.startTest());
 
         EngineFactory engineFactory = server.engineFactory();
         engineFactory.set(fuzzer);
 
         output.info("run fuzzer config:");
-        output.info("\ttarget     = %s", fuzzer.target());
-        output.info("\tfuzzer     = %s",
+        output.info("  target     = %s", fuzzer.target());
+        output.info("  fuzzer     = %s",
                 fuzzer.fuzzer() != null
                         ? fuzzer.fuzzer().toString()
                         : "null");
-        output.info("\tstart test = %d", fuzzerConfig.startTest());
-        output.info("\tend test   = %d", fuzzerConfig.endTest());
+        output.info("  start test = %d", fuzzerConfig.startTest());
+        output.info("  end test   = %d", fuzzerConfig.endTest());
 
         running = true;
         output.info("started on port %d", port());
@@ -182,7 +182,7 @@ public class MutatedServer implements Server {
         output.info("stopped");
     }
 
-    private boolean shouldRun(MutatedStructFactory mutatedStructFactory) {
+    private boolean shouldRun(FuzzyStructFactory mutatedStructFactory) {
         return mutatedStructFactory.canFuzz()
                 && mutatedStructFactory.currentTest() <= fuzzerConfig.endTest();
     }
