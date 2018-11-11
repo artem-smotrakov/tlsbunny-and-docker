@@ -7,11 +7,11 @@ import com.gypsyengineer.tlsbunny.utils.Output;
 
 import java.io.IOException;
 
+import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Target.client_hello;
+import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Target.server_hello;
 import static com.gypsyengineer.tlsbunny.utils.HexDump.printHexDiff;
 
 public class CipherSuitesFuzzer extends FuzzyStructFactory<Vector<CipherSuite>> {
-
-    public static final Target DEFAULT_TARGET = Target.client_hello;
 
     public static CipherSuitesFuzzer cipherSuitesFuzzer() {
         return new CipherSuitesFuzzer();
@@ -23,7 +23,7 @@ public class CipherSuitesFuzzer extends FuzzyStructFactory<Vector<CipherSuite>> 
 
     public CipherSuitesFuzzer(StructFactory factory, Output output) {
         super(factory, output);
-        target(DEFAULT_TARGET);
+        targets(client_hello, server_hello);
     }
 
     @Override
@@ -34,7 +34,7 @@ public class CipherSuitesFuzzer extends FuzzyStructFactory<Vector<CipherSuite>> 
                                                       Vector<CompressionMethod> legacy_compression_methods,
                                                       Vector<Extension> extensions) {
 
-        if (target == Target.client_hello) {
+        if (targeted(client_hello)) {
             output.info("fuzz cipher suites in ClientHello");
             cipher_suites = fuzz(cipher_suites);
         }
@@ -55,11 +55,11 @@ public class CipherSuitesFuzzer extends FuzzyStructFactory<Vector<CipherSuite>> 
         try {
             byte[] encoding = cipherSuites.encoding();
             byte[] fuzzed = fuzzedCipherSuites.encoding();
-            output.info("cipher suites in %s (original): %n", target);
+            output.info("cipher suites (original): %n");
             output.increaseIndent();
             output.info("%s%n", printHexDiff(encoding, fuzzed));
             output.decreaseIndent();
-            output.info("cipher suites in %s (fuzzed): %n", target);
+            output.info("cipher suites (fuzzed): %n");
             output.increaseIndent();
             output.info("%s%n", printHexDiff(fuzzed, encoding));
             output.decreaseIndent();

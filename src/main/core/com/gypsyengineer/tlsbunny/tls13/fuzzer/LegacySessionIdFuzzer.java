@@ -8,13 +8,13 @@ import com.gypsyengineer.tlsbunny.utils.Output;
 import java.io.IOException;
 import java.util.List;
 
+import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Target.client_hello;
+import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Target.server_hello;
 import static com.gypsyengineer.tlsbunny.utils.HexDump.printHexDiff;
 
 public class LegacySessionIdFuzzer extends FuzzyStructFactory<Vector<Byte>> {
 
-    public static final Target DEFAULT_TARGET = Target.client_hello;
-
-    public static LegacySessionIdFuzzer newLegacySessionIdFuzzer() {
+    public static LegacySessionIdFuzzer legacySessionIdFuzzer() {
         return new LegacySessionIdFuzzer();
     }
 
@@ -24,7 +24,7 @@ public class LegacySessionIdFuzzer extends FuzzyStructFactory<Vector<Byte>> {
 
     public LegacySessionIdFuzzer(StructFactory factory, Output output) {
         super(factory, output);
-        target(DEFAULT_TARGET);
+        targets(client_hello, server_hello);
     }
 
     @Override
@@ -43,7 +43,7 @@ public class LegacySessionIdFuzzer extends FuzzyStructFactory<Vector<Byte>> {
                 legacy_compression_methods,
                 extensions);
 
-        if (target == Target.client_hello) {
+        if (targeted(client_hello)) {
             output.info("fuzz legacy session ID in ClientHello");
             hello = factory.createClientHello(
                     hello.getProtocolVersion(),
@@ -73,7 +73,7 @@ public class LegacySessionIdFuzzer extends FuzzyStructFactory<Vector<Byte>> {
                 legacy_compression_method,
                 extensions);
 
-        if (target == Target.server_hello) {
+        if (targeted(server_hello)) {
             output.info("fuzz legacy session ID echo in ServerHello");
             hello = factory.createServerHello(
                     hello.getProtocolVersion(),
@@ -94,11 +94,11 @@ public class LegacySessionIdFuzzer extends FuzzyStructFactory<Vector<Byte>> {
         try {
             byte[] encoding = sessionId.encoding();
             byte[] fuzzed = fuzzedSessionId.encoding();
-            output.info("legacy session ID in %s (original): %n", target);
+            output.info("legacy session ID (original): %n");
             output.increaseIndent();
             output.info("%s%n", printHexDiff(encoding, fuzzed));
             output.decreaseIndent();
-            output.info("legacy session ID in %s (fuzzed): %n", target);
+            output.info("legacy session ID (fuzzed): %n");
             output.increaseIndent();
             output.info("%s%n", printHexDiff(fuzzed, encoding));
             output.decreaseIndent();

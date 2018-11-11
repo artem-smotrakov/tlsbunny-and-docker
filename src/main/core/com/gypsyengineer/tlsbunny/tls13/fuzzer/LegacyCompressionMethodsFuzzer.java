@@ -8,14 +8,14 @@ import com.gypsyengineer.tlsbunny.utils.Output;
 import java.io.IOException;
 import java.util.List;
 
+import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Target.client_hello;
+import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Target.server_hello;
 import static com.gypsyengineer.tlsbunny.utils.HexDump.printHexDiff;
 
 public class LegacyCompressionMethodsFuzzer
         extends FuzzyStructFactory<Vector<CompressionMethod>> {
 
-    public static final Target DEFAULT_TARGET = Target.client_hello;
-
-    public static LegacyCompressionMethodsFuzzer newLegacyCompressionMethodsFuzzer() {
+    public static LegacyCompressionMethodsFuzzer legacyCompressionMethodsFuzzer() {
         return new LegacyCompressionMethodsFuzzer();
     }
 
@@ -26,7 +26,7 @@ public class LegacyCompressionMethodsFuzzer
     public LegacyCompressionMethodsFuzzer(StructFactory factory,
                                           Output output) {
         super(factory, output);
-        target(DEFAULT_TARGET);
+        targets(client_hello, server_hello);
     }
 
     @Override
@@ -45,7 +45,7 @@ public class LegacyCompressionMethodsFuzzer
                 legacy_compression_methods,
                 extensions);
 
-        if (target == Target.client_hello) {
+        if (targeted(client_hello)) {
             output.info("fuzz legacy compression methods in ClientHello");
             hello = factory.createClientHello(
                     hello.getProtocolVersion(),
@@ -68,11 +68,11 @@ public class LegacyCompressionMethodsFuzzer
         try {
             byte[] encoding = compressionMethods.encoding();
             byte[] fuzzed = fuzzedCompressionMethods.encoding();
-            output.info("legacy compression methods in %s (original): %n", target);
+            output.info("legacy compression methods (original): %n");
             output.increaseIndent();
             output.info("%s%n", printHexDiff(encoding, fuzzed));
             output.decreaseIndent();
-            output.info("legacy compression methods in %s (fuzzed): %n", target);
+            output.info("legacy compression methods (fuzzed): %n");
             output.increaseIndent();
             output.info("%s%n", printHexDiff(fuzzed, encoding));
             output.decreaseIndent();

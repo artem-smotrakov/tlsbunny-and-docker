@@ -13,6 +13,9 @@ import org.junit.Test;
 import java.util.List;
 
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.SimpleVectorFuzzer.simpleVectorFuzzer;
+import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Target.client_hello;
+import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Target.server_hello;
+import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Target.tls_plaintext;
 import static org.junit.Assert.*;
 
 public class CipherSuitesFuzzerTest {
@@ -23,8 +26,8 @@ public class CipherSuitesFuzzerTest {
             CipherSuitesFuzzer fuzzer = CipherSuitesFuzzer.cipherSuitesFuzzer();
             fuzzer.fuzzer(simpleVectorFuzzer());
 
-            fuzzer.target(Target.client_hello);
-            assertEquals(Target.client_hello, fuzzer.target());
+            fuzzer.targets(client_hello);
+            assertArrayEquals(new Target[] { client_hello }, fuzzer.targets());
 
             fuzzer.set(output);
             assertEquals(output, fuzzer.output());
@@ -58,14 +61,14 @@ public class CipherSuitesFuzzerTest {
         try (Output output = new Output()) {
             CipherSuitesFuzzer one = CipherSuitesFuzzer.cipherSuitesFuzzer();
             one.fuzzer(simpleVectorFuzzer());
-            one.target(Target.client_hello);
+            one.targets(client_hello);
             one.set(output);
             assertTrue(one.canFuzz());
 
 
             CipherSuitesFuzzer two = CipherSuitesFuzzer.cipherSuitesFuzzer();
             two.fuzzer(simpleVectorFuzzer());
-            two.target(Target.client_hello);
+            two.targets(client_hello);
             two.set(output);
             assertTrue(two.canFuzz());
 
@@ -97,7 +100,7 @@ public class CipherSuitesFuzzerTest {
             fuzzer.fuzzer(simpleVectorFuzzer());
             fuzzer.set(output);
 
-            assertEquals(Target.client_hello, fuzzer.target());
+            assertArrayEquals(new Target[] { client_hello, server_hello }, fuzzer.targets());
 
             fuzzer.moveOn();
             ClientHello clientHelloOne = fuzzer.createClientHello(
@@ -121,8 +124,8 @@ public class CipherSuitesFuzzerTest {
 
             assertNotEquals(clientHelloOne, clientHelloTwo);
 
-            fuzzer.target(Target.tls_plaintext);
-            assertEquals(Target.tls_plaintext, fuzzer.target());
+            fuzzer.targets(tls_plaintext);
+            assertArrayEquals(new Target[] { tls_plaintext }, fuzzer.targets());
 
             fuzzer.moveOn();
             clientHelloOne = fuzzer.createClientHello(
@@ -146,8 +149,8 @@ public class CipherSuitesFuzzerTest {
 
             assertEquals(clientHelloOne, clientHelloTwo);
 
-            fuzzer.target(Target.client_hello);
-            assertEquals(Target.client_hello, fuzzer.target());
+            fuzzer.targets(client_hello);
+            assertArrayEquals(new Target[] { client_hello }, fuzzer.targets());
 
             fuzzer.moveOn();
             clientHelloOne = fuzzer.createClientHello(

@@ -8,11 +8,11 @@ import com.gypsyengineer.tlsbunny.utils.Output;
 import java.io.IOException;
 import java.util.List;
 
+import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Target.client_hello;
+import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Target.server_hello;
 import static com.gypsyengineer.tlsbunny.utils.HexDump.printHexDiff;
 
 public class ExtensionVectorFuzzer extends FuzzyStructFactory<Vector<Extension>> {
-
-    public static final Target DEFAULT_TARGET = Target.client_hello;
 
     public static ExtensionVectorFuzzer newExtensionVectorFuzzer() {
         return new ExtensionVectorFuzzer();
@@ -25,7 +25,7 @@ public class ExtensionVectorFuzzer extends FuzzyStructFactory<Vector<Extension>>
     public ExtensionVectorFuzzer(StructFactory factory,
                                  Output output) {
         super(factory, output);
-        target(DEFAULT_TARGET);
+        targets(client_hello, server_hello);
     }
 
     @Override
@@ -44,7 +44,7 @@ public class ExtensionVectorFuzzer extends FuzzyStructFactory<Vector<Extension>>
                 legacy_compression_methods,
                 extensions);
 
-        if (target == Target.client_hello) {
+        if (targeted(client_hello)) {
             output.info("fuzz extension vector in ClientHello");
             hello = factory.createClientHello(
                     hello.getProtocolVersion(),
@@ -74,7 +74,7 @@ public class ExtensionVectorFuzzer extends FuzzyStructFactory<Vector<Extension>>
                 legacy_compression_method,
                 extensions);
 
-        if (target == Target.server_hello) {
+        if (targeted(server_hello)) {
             output.info("fuzz extensions in ServerHello");
             hello = factory.createServerHello(
                     hello.getProtocolVersion(),
@@ -95,11 +95,11 @@ public class ExtensionVectorFuzzer extends FuzzyStructFactory<Vector<Extension>>
         try {
             byte[] encoding = extensions.encoding();
             byte[] fuzzed = fuzzedExtensions.encoding();
-            output.info("extensions in %s (original): %n", target);
+            output.info("extensions (original): %n");
             output.increaseIndent();
             output.info("%s%n", printHexDiff(encoding, fuzzed));
             output.decreaseIndent();
-            output.info("extensions in %s (fuzzed): %n", target);
+            output.info("extensions (fuzzed): %n");
             output.increaseIndent();
             output.info("%s%n", printHexDiff(fuzzed, encoding));
             output.decreaseIndent();

@@ -83,7 +83,7 @@ public class MutatedServerTest {
 
     @Test
     public void legacyCompressionMethods() throws Exception {
-        test(minimized(legacyCompressionMethodsConfigs(serverConfig)), expected_fuzzed_compression_methods);
+        test(minimized(legacyCompressionMethodsConfigs(serverConfig)), no_message_fuzzed);
     }
 
     public void test(FuzzerConfig[] configs, int expectedFuzzedMessages)

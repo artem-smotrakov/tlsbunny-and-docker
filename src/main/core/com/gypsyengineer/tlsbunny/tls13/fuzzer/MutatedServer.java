@@ -143,7 +143,7 @@ public class MutatedServer implements Server {
         engineFactory.set(fuzzer);
 
         output.info("run fuzzer config:");
-        output.info("  target     = %s", fuzzer.target());
+        output.info("  targets    = %s", fuzzer.targets());
         output.info("  fuzzer     = %s",
                 fuzzer.fuzzer() != null
                         ? fuzzer.fuzzer().toString()
