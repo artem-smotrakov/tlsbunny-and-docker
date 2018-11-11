@@ -31,7 +31,7 @@ public class SingleThreadServer implements Server {
     private boolean failed = false;
     private boolean running = false;
 
-    private List<Engine> engines = Collections.synchronizedList(new ArrayList<>());
+    private final List<Engine> engines = Collections.synchronizedList(new ArrayList<>());
 
     public SingleThreadServer() throws IOException {
         this(free_port);
@@ -163,10 +163,8 @@ public class SingleThreadServer implements Server {
     }
 
     @Override
-    public void close() throws IOException {
-        if (!serverSocket.isClosed()) {
-            serverSocket.close();
-        }
+    public void close() {
+        stop();
 
         if (output != null) {
             output.flush();
