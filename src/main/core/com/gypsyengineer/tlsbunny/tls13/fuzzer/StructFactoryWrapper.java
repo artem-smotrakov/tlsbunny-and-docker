@@ -180,6 +180,11 @@ public class StructFactoryWrapper implements StructFactory {
     }
 
     @Override
+    public EncryptedExtensions createEncryptedExtensions(Vector<Extension> extensions) {
+        return factory.createEncryptedExtensions(extensions);
+    }
+
+    @Override
     public EndOfEarlyData createEndOfEarlyData() {
         return factory.createEndOfEarlyData();
     }

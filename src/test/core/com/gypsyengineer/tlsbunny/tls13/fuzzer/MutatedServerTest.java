@@ -2,11 +2,9 @@ package com.gypsyengineer.tlsbunny.tls13.fuzzer;
 
 import com.gypsyengineer.tlsbunny.TestUtils.*;
 import com.gypsyengineer.tlsbunny.fuzzer.Fuzzer;
-import com.gypsyengineer.tlsbunny.tls.Struct;
 import com.gypsyengineer.tlsbunny.tls13.client.Client;
 import com.gypsyengineer.tlsbunny.tls13.client.HttpsClient;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
-import com.gypsyengineer.tlsbunny.tls13.server.Server;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.tls13.utils.FuzzerConfig;
 import com.gypsyengineer.tlsbunny.utils.Config;
@@ -34,7 +32,8 @@ public class MutatedServerTest {
     private static final int expected_fuzzed_finished = 1;
     private static final int expected_fuzzed_extension_vector = 1;
     private static final int expected_fuzzed_legacy_session_id = 1;
-    private static final int expected_fuzzed_compression_methods = 1;
+    private static final int expected_fuzzed_server_hello = 1;
+    private static final int expected_fuzzed_encrypted_extensions = 1;
 
     // number of connections during fuzzing
     private static final int n = end - start + 1;
@@ -54,6 +53,16 @@ public class MutatedServerTest {
     @Test
     public void clientHello() throws Exception {
         test(minimized(clientHelloConfigs(serverConfig)), no_message_fuzzed);
+    }
+
+    @Test
+    public void serverHello() throws Exception {
+        test(minimized(serverHelloConfigs(serverConfig)), expected_fuzzed_server_hello);
+    }
+
+    @Test
+    public void encryptedExtensions() throws Exception {
+        test(minimized(encryptedExtensionsConfigs(serverConfig)), expected_fuzzed_encrypted_extensions);
     }
 
     @Test

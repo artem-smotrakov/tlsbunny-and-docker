@@ -20,11 +20,11 @@ import static com.gypsyengineer.tlsbunny.tls13.fuzzer.CipherSuitesFuzzer.cipherS
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.ExtensionVectorFuzzer.newExtensionVectorFuzzer;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.LegacyCompressionMethodsFuzzer.legacyCompressionMethodsFuzzer;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.LegacySessionIdFuzzer.legacySessionIdFuzzer;
-import static com.gypsyengineer.tlsbunny.tls13.fuzzer.MutatedStructFactory.newMutatedStructFactory;
+import static com.gypsyengineer.tlsbunny.tls13.fuzzer.MutatedStructFactory.mutatedStructFactory;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.SimpleVectorFuzzer.simpleVectorFuzzer;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Target.*;
-import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Target.client_hello;
 
+// TODO add a config for CertificateRequest
 public class Configs {
 
     public static final int TLS_PLAINTEXT_HEADER_LENGTH =
@@ -72,7 +72,7 @@ public class Configs {
     public static FuzzerConfig[] tlsPlaintextConfigs(Config config) {
         return new FuzzerConfig[] {
                 new FuzzerConfig(config)
-                        .factory(newMutatedStructFactory()
+                        .factory(mutatedStructFactory()
                                 .targets(tls_plaintext)
                                 .fuzzer(newByteFlipFuzzer()
                                         .minRatio(0.01)
@@ -83,7 +83,7 @@ public class Configs {
                         .endTest(200)
                         .parts(2),
                 new FuzzerConfig(config)
-                        .factory(newMutatedStructFactory()
+                        .factory(mutatedStructFactory()
                                 .targets(tls_plaintext)
                                 .fuzzer(newBitFlipFuzzer()
                                         .minRatio(0.01)
@@ -99,7 +99,7 @@ public class Configs {
     public static FuzzerConfig[] ccsConfigs(Config config) {
         return new FuzzerConfig[] {
                 new FuzzerConfig(config)
-                        .factory(newMutatedStructFactory()
+                        .factory(mutatedStructFactory()
                                 .targets(ccs)
                                 .fuzzer(newByteFlipFuzzer()
                                         .minRatio(0.01)
@@ -107,7 +107,7 @@ public class Configs {
                         .readTimeout(long_read_timeout)
                         .endTest(20),
                 new FuzzerConfig(config)
-                        .factory(newMutatedStructFactory()
+                        .factory(mutatedStructFactory()
                                 .targets(ccs)
                                 .fuzzer(newBitFlipFuzzer()
                                         .minRatio(0.01)
@@ -120,7 +120,7 @@ public class Configs {
     public static FuzzerConfig[] handshakeConfigs(Config config) {
         return new FuzzerConfig[] {
                 new FuzzerConfig(config)
-                        .factory(newMutatedStructFactory()
+                        .factory(mutatedStructFactory()
                                 .targets(handshake)
                                 .fuzzer(newByteFlipFuzzer()
                                         .minRatio(0.01)
@@ -131,7 +131,7 @@ public class Configs {
                         .endTest(2000)
                         .parts(5),
                 new FuzzerConfig(config)
-                        .factory(newMutatedStructFactory()
+                        .factory(mutatedStructFactory()
                                 .targets(handshake)
                                 .fuzzer(newBitFlipFuzzer()
                                         .minRatio(0.01)
@@ -147,13 +147,45 @@ public class Configs {
     public static FuzzerConfig[] clientHelloConfigs(Config config) {
         return merge(
                 enumerateByteFlipRatios(
-                        () -> newMutatedStructFactory().targets(client_hello),
+                        () -> mutatedStructFactory().targets(client_hello),
                         new FuzzerConfig(config)
                                 .readTimeout(long_read_timeout)
                                 .endTest(2000)
                                 .parts(5)),
                 enumerateBitFlipRatios(
-                        () -> newMutatedStructFactory().targets(client_hello),
+                        () -> mutatedStructFactory().targets(client_hello),
+                        new FuzzerConfig(config)
+                                .readTimeout(long_read_timeout)
+                                .endTest(2000)
+                                .parts(5)));
+    }
+
+    public static FuzzerConfig[] serverHelloConfigs(Config config) {
+        return merge(
+                enumerateByteFlipRatios(
+                        () -> mutatedStructFactory().targets(server_hello),
+                        new FuzzerConfig(config)
+                                .readTimeout(long_read_timeout)
+                                .endTest(2000)
+                                .parts(5)),
+                enumerateBitFlipRatios(
+                        () -> mutatedStructFactory().targets(server_hello),
+                        new FuzzerConfig(config)
+                                .readTimeout(long_read_timeout)
+                                .endTest(2000)
+                                .parts(5)));
+    }
+
+    public static FuzzerConfig[] encryptedExtensionsConfigs(Config config) {
+        return merge(
+                enumerateByteFlipRatios(
+                        () -> mutatedStructFactory().targets(encrypted_extensions),
+                        new FuzzerConfig(config)
+                                .readTimeout(long_read_timeout)
+                                .endTest(2000)
+                                .parts(5)),
+                enumerateBitFlipRatios(
+                        () -> mutatedStructFactory().targets(encrypted_extensions),
                         new FuzzerConfig(config)
                                 .readTimeout(long_read_timeout)
                                 .endTest(2000)
@@ -163,13 +195,13 @@ public class Configs {
     public static FuzzerConfig[] certificateConfigs(Config config) {
         return merge(
                 enumerateByteFlipRatios(
-                        () -> newMutatedStructFactory().targets(certificate),
+                        () -> mutatedStructFactory().targets(certificate),
                         new FuzzerConfig(config)
                                 .readTimeout(long_read_timeout)
                                 .endTest(2000)
                                 .parts(5)),
                 enumerateBitFlipRatios(
-                        () -> newMutatedStructFactory().targets(certificate),
+                        () -> mutatedStructFactory().targets(certificate),
                         new FuzzerConfig(config)
                                 .readTimeout(long_read_timeout)
                                 .endTest(2000)
@@ -179,13 +211,13 @@ public class Configs {
     public static FuzzerConfig[] certificateVerifyConfigs(Config config) {
         return merge(
                 enumerateByteFlipRatios(
-                        () -> newMutatedStructFactory().targets(certificate_verify),
+                        () -> mutatedStructFactory().targets(certificate_verify),
                         new FuzzerConfig(config)
                                 .readTimeout(long_read_timeout)
                                 .endTest(2000)
                                 .parts(5)),
                 enumerateBitFlipRatios(
-                        () -> newMutatedStructFactory().targets(certificate_verify),
+                        () -> mutatedStructFactory().targets(certificate_verify),
                         new FuzzerConfig(config)
                                 .readTimeout(long_read_timeout)
                                 .endTest(2000)
@@ -195,13 +227,13 @@ public class Configs {
     public static FuzzerConfig[] finishedConfigs(Config config) {
         return merge(
                 enumerateByteFlipRatios(
-                        () -> newMutatedStructFactory().targets(finished),
+                        () -> mutatedStructFactory().targets(finished),
                         new FuzzerConfig(config)
                                 .readTimeout(long_read_timeout)
                                 .endTest(2000)
                                 .parts(5)),
                 enumerateBitFlipRatios(
-                        () -> newMutatedStructFactory().targets(finished),
+                        () -> mutatedStructFactory().targets(finished),
                         new FuzzerConfig(config)
                                 .readTimeout(long_read_timeout)
                                 .endTest(2000)

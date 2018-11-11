@@ -10,6 +10,8 @@ public enum Target {
     server_hello,
     certificate,
     certificate_verify,
+    certificate_request,
+    encrypted_extensions,
     finished,
 
     // smaller targets

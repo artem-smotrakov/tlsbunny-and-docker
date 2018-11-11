@@ -106,10 +106,15 @@ public interface StructFactory {
                                   Vector<CipherSuite> cipher_suites,
                                   Vector<CompressionMethod> legacy_compression_methods,
                                   Vector<Extension> extensions);
-    EncryptedExtensions createEncryptedExtensions(Extension... extensions);
+    EncryptedExtensions createEncryptedExtensions(Vector<Extension> extensions);
     EndOfEarlyData createEndOfEarlyData();
     Finished createFinished(byte[] verify_data);
     HelloRetryRequest createHelloRetryRequest();
+
+    default EncryptedExtensions createEncryptedExtensions(Extension... extensions) {
+        return createEncryptedExtensions(
+                Vector.wrap(EncryptedExtensions.LENGTH_BYTES, extensions));
+    }
 
     default ServerHello createServerHello(ProtocolVersion version,
                                   Random random,

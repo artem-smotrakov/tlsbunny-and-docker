@@ -8,14 +8,12 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Target.certificate_verify;
-import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Target.client_hello;
-import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Target.tls_plaintext;
+import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Target.*;
 import static com.gypsyengineer.tlsbunny.utils.HexDump.printHexDiff;
 
 public class MutatedStructFactory extends FuzzyStructFactory<byte[]> {
 
-    public static MutatedStructFactory newMutatedStructFactory() {
+    public static MutatedStructFactory mutatedStructFactory() {
         return new MutatedStructFactory();
     }
 
@@ -111,6 +109,50 @@ public class MutatedStructFactory extends FuzzyStructFactory<byte[]> {
         }
 
         return clientHello;
+    }
+
+    @Override
+    public ServerHello createServerHello(ProtocolVersion version,
+                                         Random random,
+                                         byte[] legacy_session_id_echo,
+                                         CipherSuite cipher_suite,
+                                         CompressionMethod legacy_compression_method,
+                                         List<Extension> extensions) {
+
+        ServerHello serverHello = factory.createServerHello(
+                version, random, legacy_session_id_echo, cipher_suite,
+                legacy_compression_method, extensions);
+
+        if (targeted(server_hello)) {
+            output.info("fuzz ServerHello");
+            try {
+                byte[] fuzzed = fuzz(serverHello.encoding());
+                serverHello = new MutatedStruct(
+                        fuzzed.length, fuzzed, HandshakeType.server_hello);
+            } catch (IOException e) {
+                output.achtung("I couldn't fuzz ServerHello: %s", e.getMessage());
+            }
+        }
+
+        return serverHello;
+    }
+
+    @Override
+    public EncryptedExtensions createEncryptedExtensions(Extension... extensions) {
+        EncryptedExtensions encryptedExtensions = factory.createEncryptedExtensions(extensions);
+
+        if (targeted(encrypted_extensions)) {
+            output.info("fuzz EncryptedExtensions");
+            try {
+                byte[] fuzzed = fuzz(encryptedExtensions.encoding());
+                encryptedExtensions = new MutatedStruct(
+                        fuzzed.length, fuzzed, HandshakeType.encrypted_extensions);
+            } catch (IOException e) {
+                output.achtung("I couldn't fuzz EncryptedExtensions: %s", e.getMessage());
+            }
+        }
+
+        return encryptedExtensions;
     }
 
     @Override

@@ -6,7 +6,8 @@ import com.gypsyengineer.tlsbunny.tls13.struct.*;
 import java.io.IOException;
 
 public class MutatedStruct implements TLSPlaintext, Handshake, ChangeCipherSpec,
-        ClientHello, Finished, Certificate, CertificateVerify {
+        ClientHello, ServerHello, EncryptedExtensions, Finished, Certificate,
+        CertificateVerify {
 
     private static final HandshakeType NO_HANDSHAKE_TYPE = null;
 
@@ -186,6 +187,21 @@ public class MutatedStruct implements TLSPlaintext, Handshake, ChangeCipherSpec,
 
     @Override
     public Random getRandom() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Vector<Byte> getLegacySessionIdEcho() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public CipherSuite getCipherSuite() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public CompressionMethod getLegacyCompressionMethod() {
         throw new UnsupportedOperationException();
     }
 

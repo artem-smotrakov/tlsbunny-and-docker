@@ -77,6 +77,11 @@ public class StructFactoryImpl implements StructFactory {
     }
 
     @Override
+    public EncryptedExtensions createEncryptedExtensions(Vector<Extension> extensions) {
+        return new EncryptedExtensionsImpl(extensions);
+    }
+
+    @Override
     public ChangeCipherSpec createChangeCipherSpec(int value) {
         return new ChangeCipherSpecImpl(value);
     }
