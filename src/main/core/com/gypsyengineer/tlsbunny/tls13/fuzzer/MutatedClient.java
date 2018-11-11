@@ -128,13 +128,13 @@ public class MutatedClient implements Client {
         output.info("smoke test passed, start fuzzing");
 
         output.info("run fuzzer config:");
-        output.info("\ttarget     = %s", fuzzyStructFactory.target());
-        output.info("\tfuzzer     = %s",
+        output.info("  target     = %s", fuzzyStructFactory.target());
+        output.info("  fuzzer     = %s",
                 fuzzyStructFactory.fuzzer() != null
                         ? fuzzyStructFactory.fuzzer().toString()
                         : "null");
-        output.info("\tstart test = %d", fuzzerConfig.startTest());
-        output.info("\tend test   = %d", fuzzerConfig.endTest());
+        output.info("  start test = %d", fuzzerConfig.startTest());
+        output.info("  end test   = %d", fuzzerConfig.endTest());
 
         client.set(fuzzyStructFactory)
                 .set(fuzzerConfig)
