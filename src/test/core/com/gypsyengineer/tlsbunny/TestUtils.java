@@ -111,17 +111,30 @@ public class TestUtils {
         expectUnsupportedMethods(object, List.of(excluded));
     }
 
-    public static class FakeFlipFuzzer extends AbstractFlipFuzzer {
+    public interface FakeFuzzer {
+        int count();
+    }
+
+    public static class FakeFlipFuzzer extends AbstractFlipFuzzer implements FakeFuzzer {
+
+        private int count = 0;
 
         @Override
-        protected byte[] fuzzImpl(byte[] array) {
+        synchronized protected byte[] fuzzImpl(byte[] array) {
             // do nothing
+            count++;
             return array;
+        }
+
+        @Override
+        synchronized public int count() {
+            return count;
         }
     }
 
-    public static class FakeVectorFuzzer implements Fuzzer<Vector<Byte>> {
+    public static class FakeVectorFuzzer implements Fuzzer<Vector<Byte>>, FakeFuzzer {
 
+        private int count = 0;
         private long test = 0;
 
         @Override
@@ -130,7 +143,8 @@ public class TestUtils {
         }
 
         @Override
-        public Vector fuzz(Vector object) {
+        synchronized public Vector fuzz(Vector object) {
+            count++;
             return object;
         }
 
@@ -158,10 +172,17 @@ public class TestUtils {
         public Output output() {
             return new Output();
         }
+
+        @Override
+        synchronized public int count() {
+            return count;
+        }
     }
 
-    public static class FakeCompressionMethodFuzzer implements Fuzzer<Vector<CompressionMethod>> {
+    public static class FakeCompressionMethodFuzzer
+            implements Fuzzer<Vector<CompressionMethod>>, FakeFuzzer {
 
+        private int count = 0;
         private long test = 0;
 
         @Override
@@ -170,7 +191,8 @@ public class TestUtils {
         }
 
         @Override
-        public Vector<CompressionMethod> fuzz(Vector<CompressionMethod> object) {
+        synchronized public Vector<CompressionMethod> fuzz(Vector<CompressionMethod> object) {
+            count++;
             return object;
         }
 
@@ -198,10 +220,17 @@ public class TestUtils {
         public Output output() {
             return new Output();
         }
+
+        @Override
+        synchronized public int count() {
+            return count;
+        }
     }
 
-    public static class FakeCipherSuitesFuzzer implements Fuzzer<Vector<CipherSuite>> {
+    public static class FakeCipherSuitesFuzzer
+            implements Fuzzer<Vector<CipherSuite>>, FakeFuzzer {
 
+        private int count = 0;
         private long test = 0;
 
         @Override
@@ -210,7 +239,8 @@ public class TestUtils {
         }
 
         @Override
-        public Vector<CipherSuite> fuzz(Vector<CipherSuite> object) {
+        synchronized public Vector<CipherSuite> fuzz(Vector<CipherSuite> object) {
+            count++;
             return object;
         }
 
@@ -238,10 +268,17 @@ public class TestUtils {
         public Output output() {
             return new Output();
         }
+
+        @Override
+        synchronized public int count() {
+            return count;
+        }
     }
 
-    public static class FakeExtensionVectorFuzzer implements Fuzzer<Vector<Extension>> {
+    public static class FakeExtensionVectorFuzzer
+            implements Fuzzer<Vector<Extension>>, FakeFuzzer {
 
+        private int count = 0;
         private long test = 0;
 
         @Override
@@ -250,7 +287,8 @@ public class TestUtils {
         }
 
         @Override
-        public Vector<Extension> fuzz(Vector<Extension> object) {
+        synchronized public Vector<Extension> fuzz(Vector<Extension> object) {
+            count++;
             return object;
         }
 
@@ -278,14 +316,27 @@ public class TestUtils {
         public Output output() {
             return new Output();
         }
+
+        @Override
+        synchronized public int count() {
+            return count;
+        }
     }
 
     // the fuzzer just sets all bytes of encoding to zeroes
-    public static class ZeroFuzzer extends AbstractFlipFuzzer {
+    public static class ZeroFuzzer extends AbstractFlipFuzzer implements FakeFuzzer {
+
+        private int count = 0;
 
         @Override
-        protected byte[] fuzzImpl(byte[] array) {
+        synchronized protected byte[] fuzzImpl(byte[] array) {
+            count++;
             return new byte[array.length];
+        }
+
+        @Override
+        synchronized public int count() {
+            return count;
         }
 
     }

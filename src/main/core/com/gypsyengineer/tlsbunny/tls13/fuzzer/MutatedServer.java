@@ -105,7 +105,7 @@ public class MutatedServer implements Server {
     }
 
     @Override
-    public Server set(Output output) {
+    public MutatedServer set(Output output) {
         this.output = output;
         return this;
     }

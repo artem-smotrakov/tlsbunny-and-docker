@@ -1,10 +1,13 @@
 package com.gypsyengineer.tlsbunny.tls13.fuzzer;
 
 import com.gypsyengineer.tlsbunny.TestUtils.*;
+import com.gypsyengineer.tlsbunny.fuzzer.Fuzzer;
+import com.gypsyengineer.tlsbunny.tls.Struct;
 import com.gypsyengineer.tlsbunny.tls13.client.Client;
 import com.gypsyengineer.tlsbunny.tls13.client.HttpsClient;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.server.Server;
+import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.tls13.utils.FuzzerConfig;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.Output;
@@ -24,6 +27,15 @@ public class MutatedServerTest {
     private static final int end = 3;
     private static final int parts = 1;
 
+    private static final int no_message_fuzzed = 0;
+    private static final int expected_fuzzed_tls_plaintexts = 7;
+    private static final int expected_fuzzed_handshake = 5;
+    private static final int expected_fuzzed_ccs = 1;
+    private static final int expected_fuzzed_finished = 1;
+    private static final int expected_fuzzed_extension_vector = 1;
+    private static final int expected_fuzzed_legacy_session_id = 1;
+    private static final int expected_fuzzed_compression_methods = 1;
+
     // number of connections during fuzzing
     private static final int n = end - start + 1;
 
@@ -31,62 +43,66 @@ public class MutatedServerTest {
 
     @Test
     public void tlsPlaintext() throws Exception {
-        test(minimized(tlsPlaintextConfigs(serverConfig)));
+        test(minimized(tlsPlaintextConfigs(serverConfig)), expected_fuzzed_tls_plaintexts);
     }
 
     @Test
     public void handshake() throws Exception {
-        test(minimized(handshakeConfigs(serverConfig)));
+        test(minimized(handshakeConfigs(serverConfig)), expected_fuzzed_handshake);
     }
 
     @Test
     public void clientHello() throws Exception {
-        test(minimized(clientHelloConfigs(serverConfig)));
+        test(minimized(clientHelloConfigs(serverConfig)), no_message_fuzzed);
     }
 
     @Test
     public void ccs() throws Exception {
-        test(minimized(ccsConfigs(serverConfig)));
+        test(minimized(ccsConfigs(serverConfig)), expected_fuzzed_ccs);
     }
 
     @Test
     public void finished() throws Exception {
-        test(minimized(finishedConfigs(serverConfig)));
+        test(minimized(finishedConfigs(serverConfig)), expected_fuzzed_finished);
     }
 
     @Test
     public void cipherSuites() throws Exception {
-        test(minimized(cipherSuitesConfigs(serverConfig)));
+        test(minimized(cipherSuitesConfigs(serverConfig)), no_message_fuzzed);
     }
 
     @Test
     public void extensionVector() throws Exception {
-        test(minimized(extensionVectorConfigs(serverConfig)));
+        test(minimized(extensionVectorConfigs(serverConfig)), expected_fuzzed_extension_vector);
     }
 
     @Test
     public void legacySessionId() throws Exception {
-        test(minimized(legacySessionIdConfigs(serverConfig)));
+        test(minimized(legacySessionIdConfigs(serverConfig)), expected_fuzzed_legacy_session_id);
     }
 
     @Test
     public void legacyCompressionMethods() throws Exception {
-        test(minimized(legacyCompressionMethodsConfigs(serverConfig)));
+        test(minimized(legacyCompressionMethodsConfigs(serverConfig)), expected_fuzzed_compression_methods);
     }
 
-    public void test(FuzzerConfig[] configs) throws Exception {
+    public void test(FuzzerConfig[] configs, int expectedFuzzedMessages)
+            throws Exception {
+
         for (FuzzerConfig config : configs) {
-            test(config);
+            test(config, expectedFuzzedMessages);
         }
     }
 
-    public void test(FuzzerConfig fuzzerConfig) throws Exception {
+    public void test(FuzzerConfig fuzzerConfig, int expectedFuzzedMessages)
+            throws Exception {
+
         Output serverOutput = new Output("server");
         Output clientOutput = new Output("client");
 
         Config clientConfig = SystemPropertiesConfig.load();
 
-        Server server = mutatedServer(httpsServer(), fuzzerConfig).set(serverOutput);
+        MutatedServer server = mutatedServer(httpsServer(), fuzzerConfig).set(serverOutput);
 
         Client client = new HttpsClient()
                 .set(clientConfig)
@@ -111,6 +127,14 @@ public class MutatedServerTest {
         for (Engine engine : server.engines()) {
             assertFalse(engine.context().hasAlert());
         }
+
+        StructFactory structFactory = fuzzerConfig.factory();
+        assertTrue(structFactory instanceof FuzzyStructFactory);
+        FuzzyStructFactory fuzzyStructFactory = (FuzzyStructFactory) structFactory;
+        Fuzzer fuzzer = fuzzyStructFactory.fuzzer();
+        assertTrue(fuzzer instanceof FakeFuzzer);
+        FakeFuzzer fakeFuzzer = (FakeFuzzer) fuzzer;
+        assertEquals(n * expectedFuzzedMessages, fakeFuzzer.count());
     }
 
     private static FuzzerConfig[] minimized(FuzzerConfig[] configs) {
