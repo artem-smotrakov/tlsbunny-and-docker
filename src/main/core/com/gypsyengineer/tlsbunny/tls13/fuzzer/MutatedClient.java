@@ -162,8 +162,8 @@ public class MutatedClient implements Client {
                         }
                         attempt++;
 
-                        output.info("connection failed: %s ", cause.getMessage());
-                        output.info("let's wait a bit and try again (attempt %d)", attempt);
+                        output.achtung("connection failed: %s ", cause.getMessage());
+                        output.achtung("let's wait a bit and try again (attempt %d)", attempt);
                         Thread.sleep(delay);
                     } finally {
                         output.flush();
