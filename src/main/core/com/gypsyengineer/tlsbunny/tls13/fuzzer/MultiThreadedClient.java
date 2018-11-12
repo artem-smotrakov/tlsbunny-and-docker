@@ -21,6 +21,7 @@ public class MultiThreadedClient implements Client {
     private Analyzer analyzer;
     private Check[] checks;
     private Runner.ClientFactory clientFactory;
+    private boolean running = false;
 
     @Override
     public Output output() {
@@ -64,15 +65,25 @@ public class MultiThreadedClient implements Client {
             throw whatTheHell("no fuzzer configs! (empty array)");
         }
 
-        new Runner()
-                .set(clientFactory)
-                .set(output)
-                .set(fuzzerConfigs)
-                .set(checks)
-                .set(analyzer)
-                .submit();
+        running = true;
+        try {
+            new Runner()
+                    .set(clientFactory)
+                    .set(output)
+                    .set(fuzzerConfigs)
+                    .set(checks)
+                    .set(analyzer)
+                    .submit();
+        } finally {
+            running = false;
+        }
 
         return this;
+    }
+
+    @Override
+    public boolean running() {
+        return running;
     }
 
     @Override
