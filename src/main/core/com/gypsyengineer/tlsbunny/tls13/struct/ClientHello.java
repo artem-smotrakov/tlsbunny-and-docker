@@ -21,17 +21,22 @@ import com.gypsyengineer.tlsbunny.tls.Vector;
  */
 public interface ClientHello extends HandshakeMessage {
 
-    int CIPHER_SUITES_LENGTH_BYTES = 2;
-    int EXTENSIONS_LENGTH_BYTES = 2;
-    int LEGACY_COMPRESSION_METHODS_LENGTH_BYTES = 1;
-    int LEGACY_SESSION_ID_LENGTH_BYTES = 1;
+    int cipher_suites_length_bytes = 2;
+    int extensions_length_bytes = 2;
+    int legacy_compression_methods_length_bytes = 1;
+    int legacy_session_id_length_bytes = 1;
 
-    Extension findExtension(ExtensionType type);
-    Vector<CipherSuite> getCipherSuites();
-    Vector<Extension> getExtensions();
-    Vector<CompressionMethod> getLegacyCompressionMethods();
-    Vector<Byte> getLegacySessionId();
-    ProtocolVersion getProtocolVersion();
-    Random getRandom();
+    Extension find(ExtensionType type);
+    Vector<CipherSuite> cipherSuites();
+    Vector<Extension> extensions();
+    Vector<CompressionMethod> legacyCompressionMethods();
+    Vector<Byte> legacySessionId();
+    ProtocolVersion protocolVersion();
+    Random random();
+
+    ClientHello cipherSuites(Vector<CipherSuite> cipherSuites);
+    ClientHello extensions(Vector<Extension> extensions);
+    ClientHello legacyCompressionMethods(Vector<CompressionMethod> compressionMethods);
+    ClientHello legacySessionId(Vector<Byte> sessionId);
 }
 

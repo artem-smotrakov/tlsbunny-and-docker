@@ -45,13 +45,8 @@ public class LegacySessionIdFuzzer extends FuzzyStructFactory<Vector<Byte>> {
 
         if (targeted(client_hello)) {
             output.info("fuzz legacy session ID in ClientHello");
-            hello = factory.createClientHello(
-                    hello.getProtocolVersion(),
-                    hello.getRandom(),
-                    fuzz(hello.getLegacySessionId()),
-                    hello.getCipherSuites(),
-                    hello.getLegacyCompressionMethods(),
-                    hello.getExtensions());
+            Vector<Byte> fuzzed = fuzz(hello.legacySessionId());
+            hello.legacySessionId(fuzzed);
         }
 
         return hello;

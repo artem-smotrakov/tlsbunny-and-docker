@@ -46,13 +46,8 @@ public class ExtensionVectorFuzzer extends FuzzyStructFactory<Vector<Extension>>
 
         if (targeted(client_hello)) {
             output.info("fuzz extension vector in ClientHello");
-            hello = factory.createClientHello(
-                    hello.getProtocolVersion(),
-                    hello.getRandom(),
-                    hello.getLegacySessionId(),
-                    hello.getCipherSuites(),
-                    hello.getLegacyCompressionMethods(),
-                    fuzz(hello.getExtensions()));
+            Vector<Extension> fuzzed = fuzz(hello.extensions());
+            hello.extensions(fuzzed);
         }
 
         return hello;

@@ -110,7 +110,7 @@ public class CipherSuitesFuzzerTest {
                     List.of(CipherSuite.TLS_AES_128_GCM_SHA256),
                     List.of(CompressionMethod.None),
                     List.of());
-            assertTrue(clientHelloOne.getCipherSuites() instanceof FuzzedVector);
+            assertTrue(clientHelloOne.cipherSuites() instanceof FuzzedVector);
 
             fuzzer.moveOn();
             ClientHello clientHelloTwo = fuzzer.createClientHello(
@@ -120,7 +120,7 @@ public class CipherSuitesFuzzerTest {
                     List.of(CipherSuite.TLS_AES_128_GCM_SHA256),
                     List.of(CompressionMethod.None),
                     List.of());
-            assertTrue(clientHelloTwo.getCipherSuites() instanceof FuzzedVector);
+            assertTrue(clientHelloTwo.cipherSuites() instanceof FuzzedVector);
 
             assertNotEquals(clientHelloOne, clientHelloTwo);
 
@@ -135,7 +135,7 @@ public class CipherSuitesFuzzerTest {
                     List.of(CipherSuite.TLS_AES_128_GCM_SHA256),
                     List.of(CompressionMethod.None),
                     List.of());
-            assertFalse(clientHelloOne.getCipherSuites() instanceof FuzzedVector);
+            assertFalse(clientHelloOne.cipherSuites() instanceof FuzzedVector);
 
             fuzzer.moveOn();
             clientHelloTwo = fuzzer.createClientHello(
@@ -145,7 +145,7 @@ public class CipherSuitesFuzzerTest {
                     List.of(CipherSuite.TLS_AES_128_GCM_SHA256),
                     List.of(CompressionMethod.None),
                     List.of());
-            assertFalse(clientHelloTwo.getCipherSuites() instanceof FuzzedVector);
+            assertFalse(clientHelloTwo.cipherSuites() instanceof FuzzedVector);
 
             assertEquals(clientHelloOne, clientHelloTwo);
 
@@ -160,7 +160,7 @@ public class CipherSuitesFuzzerTest {
                     List.of(CipherSuite.TLS_AES_128_GCM_SHA256),
                     List.of(CompressionMethod.None),
                     List.of());
-            assertTrue(clientHelloOne.getCipherSuites() instanceof FuzzedVector);
+            assertTrue(clientHelloOne.cipherSuites() instanceof FuzzedVector);
 
             fuzzer.moveOn();
             clientHelloTwo = fuzzer.createClientHello(
@@ -170,7 +170,7 @@ public class CipherSuitesFuzzerTest {
                     List.of(CipherSuite.TLS_AES_128_GCM_SHA256),
                     List.of(CompressionMethod.None),
                     List.of());
-            assertTrue(clientHelloTwo.getCipherSuites() instanceof FuzzedVector);
+            assertTrue(clientHelloTwo.cipherSuites() instanceof FuzzedVector);
 
             assertNotEquals(clientHelloOne, clientHelloTwo);
         }

@@ -7,7 +7,7 @@ public interface KeyShare extends Struct {
     
     interface ClientHello extends KeyShare {
 
-        int LENGTH_BYTES = 2;
+        int length_bytes = 2;
 
         Vector<KeyShareEntry> getClientShares();
     }

@@ -6,6 +6,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.*;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
 import java.io.IOException;
+import java.util.List;
 
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Target.client_hello;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Target.server_hello;
@@ -27,25 +28,28 @@ public class CipherSuitesFuzzer extends FuzzyStructFactory<Vector<CipherSuite>> 
     }
 
     @Override
-    synchronized public ClientHello createClientHello(ProtocolVersion legacy_version,
-                                                      Random random,
-                                                      Vector<Byte> legacy_session_id,
-                                                      Vector<CipherSuite> cipher_suites,
-                                                      Vector<CompressionMethod> legacy_compression_methods,
-                                                      Vector<Extension> extensions) {
+    public ClientHello createClientHello(ProtocolVersion legacy_version,
+                                         Random random,
+                                         byte[] legacy_session_id,
+                                         List<CipherSuite> cipher_suites,
+                                         List<CompressionMethod> legacy_compression_methods,
+                                         List<Extension> extensions) {
 
-        if (targeted(client_hello)) {
-            output.info("fuzz cipher suites in ClientHello");
-            cipher_suites = fuzz(cipher_suites);
-        }
-
-        return factory.createClientHello(
+        ClientHello clientHello = factory.createClientHello(
                 legacy_version,
                 random,
                 legacy_session_id,
                 cipher_suites,
                 legacy_compression_methods,
                 extensions);
+
+        if (targeted(client_hello)) {
+            output.info("fuzz cipher suites in ClientHello");
+            Vector<CipherSuite> fuzzed = fuzz(clientHello.cipherSuites());
+            clientHello.cipherSuites(fuzzed);
+        }
+
+        return clientHello;
     }
 
     @Override

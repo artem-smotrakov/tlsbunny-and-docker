@@ -4,5 +4,5 @@ import com.gypsyengineer.tlsbunny.tls.Struct;
 
 public interface NamedGroupList extends Struct {
 
-    int LENGTH_BYTES = 2;
+    int length_bytes = 2;
 }

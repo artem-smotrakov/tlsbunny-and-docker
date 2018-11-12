@@ -14,7 +14,7 @@ public abstract class KeyShareImpl implements KeyShare {
         private final Vector<KeyShareEntry> client_shares;
 
         ClientHelloImpl() {
-            this(Vector.wrap(LENGTH_BYTES));
+            this(Vector.wrap(length_bytes));
         }
 
         public ClientHelloImpl(Vector<KeyShareEntry> client_shares) {

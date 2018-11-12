@@ -12,7 +12,7 @@ public interface StructFactory {
         return new StructFactoryImpl();
     }
 
-    byte[] EMPTY_SESSION_ID = Utils.EMPTY_ARRAY;
+    byte[] empty_session_id = Utils.empty_array;
 
     CompressionMethod createCompressionMethod(int code);
     CipherSuite createCipherSuite(int first, int second);
@@ -48,7 +48,6 @@ public interface StructFactory {
     // handshake messages
     Handshake createHandshake(HandshakeType type, byte[] content);
 
-
     Certificate createCertificate(Vector<Byte> certificate_request_context,
                                   Vector<CertificateEntry> certificate_list);
 
@@ -76,36 +75,13 @@ public interface StructFactory {
     CertificateVerify createCertificateVerify(SignatureScheme algorithm,
                                               byte[] signature);
 
-    default ClientHello createClientHello(ProtocolVersion legacy_version,
+    ClientHello createClientHello(ProtocolVersion legacy_version,
                                   Random random,
                                   byte[] legacy_session_id,
                                   List<CipherSuite> cipher_suites,
                                   List<CompressionMethod> legacy_compression_methods,
-                                  List<Extension> extensions) {
+                                  List<Extension> extensions);
 
-        return createClientHello(
-                legacy_version,
-                random,
-                Vector.wrap(
-                        ClientHello.LEGACY_SESSION_ID_LENGTH_BYTES,
-                        legacy_session_id),
-                Vector.wrap(
-                        ClientHello.CIPHER_SUITES_LENGTH_BYTES,
-                        cipher_suites),
-                Vector.wrap(
-                        ClientHello.LEGACY_COMPRESSION_METHODS_LENGTH_BYTES,
-                        legacy_compression_methods),
-                Vector.wrap(
-                        ClientHello.EXTENSIONS_LENGTH_BYTES,
-                        extensions));
-    }
-
-    ClientHello createClientHello(ProtocolVersion legacy_version,
-                                  Random random,
-                                  Vector<Byte> legacy_session_id,
-                                  Vector<CipherSuite> cipher_suites,
-                                  Vector<CompressionMethod> legacy_compression_methods,
-                                  Vector<Extension> extensions);
     EncryptedExtensions createEncryptedExtensions(Vector<Extension> extensions);
     EndOfEarlyData createEndOfEarlyData();
     Finished createFinished(byte[] verify_data);

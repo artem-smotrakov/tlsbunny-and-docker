@@ -30,12 +30,12 @@ public class LegacyCompressionMethodsFuzzer
     }
 
     @Override
-    synchronized public ClientHello createClientHello(ProtocolVersion legacy_version,
-                                                      Random random,
-                                                      byte[] legacy_session_id,
-                                                      List<CipherSuite> cipher_suites,
-                                                      List<CompressionMethod> legacy_compression_methods,
-                                                      List<Extension> extensions) {
+    public ClientHello createClientHello(ProtocolVersion legacy_version,
+                                         Random random,
+                                         byte[] legacy_session_id,
+                                         List<CipherSuite> cipher_suites,
+                                         List<CompressionMethod> legacy_compression_methods,
+                                         List<Extension> extensions) {
 
         ClientHello hello = factory.createClientHello(
                 legacy_version,
@@ -47,13 +47,8 @@ public class LegacyCompressionMethodsFuzzer
 
         if (targeted(client_hello)) {
             output.info("fuzz legacy compression methods in ClientHello");
-            hello = factory.createClientHello(
-                    hello.getProtocolVersion(),
-                    hello.getRandom(),
-                    hello.getLegacySessionId(),
-                    hello.getCipherSuites(),
-                    fuzz(hello.getLegacyCompressionMethods()),
-                    hello.getExtensions());
+            Vector<CompressionMethod> fuzzed = fuzz(hello.legacyCompressionMethods());
+            hello.legacyCompressionMethods(fuzzed);
         }
 
         return hello;

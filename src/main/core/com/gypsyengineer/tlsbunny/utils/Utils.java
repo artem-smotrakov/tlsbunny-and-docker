@@ -13,7 +13,7 @@ public class Utils {
 
     public static final long DEFAULT_SEED = 0;
     public static final long SEED = Long.getLong("tlsbunny.seed", DEFAULT_SEED);
-    public static final byte[] EMPTY_ARRAY = new byte[0];
+    public static final byte[] empty_array = new byte[0];
 
     public static List<Byte> toList(byte[] bytes) {
         List<Byte> objects = new ArrayList<>();

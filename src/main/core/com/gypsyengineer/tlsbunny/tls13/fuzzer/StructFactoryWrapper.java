@@ -4,6 +4,8 @@ import com.gypsyengineer.tlsbunny.tls.Random;
 import com.gypsyengineer.tlsbunny.tls.Vector;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
 
+import java.util.List;
+
 public class StructFactoryWrapper implements StructFactory {
 
     protected final StructFactory factory;
@@ -165,13 +167,13 @@ public class StructFactoryWrapper implements StructFactory {
     @Override
     public ClientHello createClientHello(ProtocolVersion legacy_version,
                                          Random random,
-                                         Vector<Byte> legacy_session_id,
-                                         Vector<CipherSuite> cipher_suites,
-                                         Vector<CompressionMethod> legacy_compression_methods,
-                                         Vector<Extension> extensions) {
+                                         byte[] legacy_session_id,
+                                         List<CipherSuite> cipher_suites,
+                                         List<CompressionMethod> legacy_compression_methods,
+                                         List<Extension> extensions) {
 
-        return factory.createClientHello(legacy_version, random, legacy_session_id,
-                cipher_suites, legacy_compression_methods, extensions);
+        return factory.createClientHello(legacy_version, random,
+                legacy_session_id, cipher_suites, legacy_compression_methods, extensions);
     }
 
     @Override
