@@ -14,6 +14,9 @@ import com.gypsyengineer.tlsbunny.utils.Output;
 
 import java.io.IOException;
 import java.net.ConnectException;
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public class MutatedClient implements Client {
@@ -128,7 +131,10 @@ public class MutatedClient implements Client {
         output.info("smoke test passed, start fuzzing");
 
         output.info("run fuzzer config:");
-        output.info("  targets    = %s", fuzzyStructFactory.targets());
+        output.info("  targets    = %s",
+                Arrays.stream(fuzzyStructFactory.targets())
+                        .map(Object::toString)
+                        .collect(Collectors.joining(", ")));
         output.info("  fuzzer     = %s",
                 fuzzyStructFactory.fuzzer() != null
                         ? fuzzyStructFactory.fuzzer().toString()

@@ -14,8 +14,10 @@ import com.gypsyengineer.tlsbunny.utils.Output;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
@@ -143,7 +145,10 @@ public class MutatedServer implements Server {
         engineFactory.set(fuzzer);
 
         output.info("run fuzzer config:");
-        output.info("  targets    = %s", fuzzer.targets());
+        output.info("  targets    = %s",
+                Arrays.stream(fuzzer.targets())
+                        .map(Object::toString)
+                        .collect(Collectors.joining(", ")));
         output.info("  fuzzer     = %s",
                 fuzzer.fuzzer() != null
                         ? fuzzer.fuzzer().toString()
