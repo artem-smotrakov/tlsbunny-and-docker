@@ -8,6 +8,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.HasOutput;
 import com.gypsyengineer.tlsbunny.utils.Output;
+import com.gypsyengineer.tlsbunny.utils.UncaughtExceptionHandler;
 
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
@@ -41,6 +42,7 @@ public interface Client extends AutoCloseable, Runnable, HasOutput<Client> {
      */
     default Thread start() {
         Thread thread = new Thread(this);
+        thread.setUncaughtExceptionHandler(new UncaughtExceptionHandler());
         thread.start();
         return thread;
     }
