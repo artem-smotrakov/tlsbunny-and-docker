@@ -50,6 +50,7 @@ public interface Client extends AutoCloseable, Runnable, HasOutput<Client> {
     /**
      * Applies an analyzer to all engines in the client.
      */
+    // TODO: we also have set(Analyzer) - do we need it?
     default Client apply(Analyzer analyzer) {
         for (Engine engine : engines()) {
             engine.apply(analyzer);

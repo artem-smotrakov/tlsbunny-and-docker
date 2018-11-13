@@ -14,7 +14,10 @@ import org.junit.Test;
 import java.io.IOException;
 
 import static com.gypsyengineer.tlsbunny.impl.test.tls13.Utils.checkForASanFindings;
+import static com.gypsyengineer.tlsbunny.tls13.client.HttpsClient.httpsClient;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Configs.*;
+import static com.gypsyengineer.tlsbunny.tls13.fuzzer.MultiConfigClient.multiConfigClient;
+import static com.gypsyengineer.tlsbunny.tls13.fuzzer.MutatedClient.mutatedClient;
 
 public class OpensslHttpsClientSmokeFuzzing {
 
@@ -112,8 +115,10 @@ public class OpensslHttpsClientSmokeFuzzing {
     @Test
     public void legacySessionId() throws Exception {
         new ImplTest()
-                .set(new MultiThreadedClient()
-                        .set(minimized(legacySessionIdConfigs(mainConfig))))
+                .set(multiConfigClient()
+                        .of(mutatedClient().of(httpsClient()))
+                        .set(mainConfig)
+                        .configs(minimized(legacySessionIdConfigs())))
                 .set(server)
                 .run();
     }

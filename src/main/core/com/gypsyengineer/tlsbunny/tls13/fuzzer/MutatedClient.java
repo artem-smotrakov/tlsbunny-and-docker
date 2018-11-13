@@ -30,10 +30,21 @@ public class MutatedClient implements Client {
 
     private boolean strict = true;
 
+    public static MutatedClient mutatedClient() {
+        return new MutatedClient();
+    }
+
+    private MutatedClient() {}
+
     public MutatedClient(Client client, Output output, FuzzerConfig fuzzerConfig) {
         this.client = client;
         this.output = output;
         this.fuzzerConfig = fuzzerConfig;
+    }
+
+    public MutatedClient of(Client client) {
+        this.client = client;
+        return this;
     }
 
     @Override

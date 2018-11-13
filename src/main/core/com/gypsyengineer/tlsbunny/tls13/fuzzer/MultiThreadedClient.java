@@ -15,13 +15,18 @@ import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public class MultiThreadedClient implements Client {
 
+    // TODO should it update fuzzer configs with the main config?
+    //      see MultiConfigClient class
     private Config mainConfig = SystemPropertiesConfig.load();
+
     private FuzzerConfig[] fuzzerConfigs;
     private Output output;
     private Analyzer analyzer;
     private Check[] checks;
-    private Runner.ClientFactory clientFactory;
     private boolean running = false;
+
+    // TODO can we get rid of it?
+    private Runner.ClientFactory clientFactory;
 
     @Override
     public Output output() {
