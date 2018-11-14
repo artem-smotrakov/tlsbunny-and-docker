@@ -71,11 +71,17 @@ public class DeepHandshakeFuzzyClient implements Client {
 
     private boolean strict = true;
 
+    public static DeepHandshakeFuzzyClient deepHandshakeFuzzyClient() {
+        return new DeepHandshakeFuzzyClient();
+    }
+
     public static DeepHandshakeFuzzyClient deepHandshakeFuzzyClient(
             Client client, FuzzerConfig fuzzerConfig, Output output) {
 
         return new DeepHandshakeFuzzyClient(client, fuzzerConfig, output);
     }
+
+    private DeepHandshakeFuzzyClient() {}
 
     public DeepHandshakeFuzzyClient(
             Client client, FuzzerConfig fuzzerConfig, Output output) {
@@ -83,6 +89,11 @@ public class DeepHandshakeFuzzyClient implements Client {
         this.client = client;
         this.output = output;
         this.fuzzerConfig = fuzzerConfig;
+    }
+
+    public DeepHandshakeFuzzyClient of(Client client) {
+        this.client = client;
+        return this;
     }
 
     @Override
