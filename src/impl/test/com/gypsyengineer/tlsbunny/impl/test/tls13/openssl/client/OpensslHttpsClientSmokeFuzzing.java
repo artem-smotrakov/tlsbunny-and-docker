@@ -2,7 +2,7 @@ package com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.client;
 
 import com.gypsyengineer.tlsbunny.impl.test.tls13.ImplTest;
 import com.gypsyengineer.tlsbunny.impl.test.tls13.Utils;
-import com.gypsyengineer.tlsbunny.tls13.fuzzer.DeepHandshakeFuzzyClient;
+import com.gypsyengineer.tlsbunny.tls13.fuzzer.DeepHandshakeFuzzerConfigs;
 import com.gypsyengineer.tlsbunny.tls13.utils.FuzzerConfig;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
@@ -136,7 +136,7 @@ public class OpensslHttpsClientSmokeFuzzing {
         new ImplTest()
                 .set(multiConfigClient()
                         .of(deepHandshakeFuzzyClient().of(httpsClient()))
-                        .configs(minimized(DeepHandshakeFuzzyClient.deepHandshakeFuzzingConfigsNoClientAuth(mainConfig))))
+                        .configs(minimized(DeepHandshakeFuzzerConfigs.noClientAuth(mainConfig))))
                 .set(server)
                 .run();
     }

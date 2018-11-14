@@ -2,6 +2,7 @@ package com.gypsyengineer.tlsbunny.tls13.client;
 
 import com.gypsyengineer.tlsbunny.TestUtils;
 import com.gypsyengineer.tlsbunny.TestUtils.FakeTestAnalyzer;
+import com.gypsyengineer.tlsbunny.tls13.fuzzer.DeepHandshakeFuzzerConfigs;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.DeepHandshakeFuzzyClient;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.DeepHandshakeFuzzer;
@@ -30,7 +31,7 @@ public class DeepHandshakeFuzzyClientTest {
 
     @Test
     public void noClientAuth() throws Exception {
-        test(minimized(DeepHandshakeFuzzyClient.deepHandshakeFuzzingConfigsNoClientAuth(clientConfig)));
+        test(minimized(DeepHandshakeFuzzerConfigs.noClientAuth(clientConfig)));
     }
 
     public void test(FuzzerConfig[] configs) throws Exception {
