@@ -30,7 +30,7 @@ public class DeepHandshakeFuzzyClientTest {
 
     @Test
     public void noClientAuth() throws Exception {
-        test(minimized(DeepHandshakeFuzzyClient.noClientAuth(clientConfig)));
+        test(minimized(DeepHandshakeFuzzyClient.deepHandshakeFuzzingConfigsNoClientAuth(clientConfig)));
     }
 
     public void test(FuzzerConfig[] configs) throws Exception {

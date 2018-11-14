@@ -11,7 +11,7 @@ import com.gypsyengineer.tlsbunny.utils.Output;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 import org.junit.Test;
 
-import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Configs.*;
+import static com.gypsyengineer.tlsbunny.tls13.fuzzer.MutatedConfigs.*;
 import static com.gypsyengineer.tlsbunny.tls13.server.HttpsServer.httpsServer;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

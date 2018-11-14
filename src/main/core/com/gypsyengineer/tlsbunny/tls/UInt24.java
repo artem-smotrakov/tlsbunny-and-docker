@@ -6,7 +6,7 @@ import java.util.Objects;
 
 public class UInt24 implements Struct {
 
-    public static final int ENCODING_LENGTH = 3;
+    public static final int encoding_length = 3;
     public static final int BASE_POW_1 = 256;
     public static final int BASE_POW_2 = BASE_POW_1 * BASE_POW_1;
     public static final int MAX = 16777215;
@@ -29,7 +29,7 @@ public class UInt24 implements Struct {
 
     @Override
     public int encodingLength() {
-        return ENCODING_LENGTH;
+        return encoding_length;
     }
 
     @Override

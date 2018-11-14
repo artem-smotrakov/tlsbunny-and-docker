@@ -14,12 +14,12 @@ public class HandshakeTypeImpl implements HandshakeType {
 
     @Override
     public int encodingLength() {
-        return ENCODING_LENGTH;
+        return encoding_length;
     }
 
     @Override
     public byte[] encoding() {
-        return ByteBuffer.allocate(ENCODING_LENGTH).put((byte) value).array();
+        return ByteBuffer.allocate(encoding_length).put((byte) value).array();
     }
 
     @Override

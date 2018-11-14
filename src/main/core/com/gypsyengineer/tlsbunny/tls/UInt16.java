@@ -5,7 +5,7 @@ import java.util.Objects;
 
 public class UInt16 implements Struct {
 
-    public static final int ENCODING_LENGTH = 2;
+    public static final int encoding_length = 2;
     public static final int MAX = 65535;
     public static final int MIN = 0;
     public static final UInt16 ZERO = new UInt16(0);
@@ -27,12 +27,12 @@ public class UInt16 implements Struct {
 
     @Override
     public int encodingLength() {
-        return ENCODING_LENGTH;
+        return encoding_length;
     }
     
     @Override
     public byte[] encoding() {
-        return ByteBuffer.allocate(ENCODING_LENGTH).putShort((short) value).array();
+        return ByteBuffer.allocate(encoding_length).putShort((short) value).array();
     }
 
     @Override

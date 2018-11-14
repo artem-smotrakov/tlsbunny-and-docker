@@ -2,9 +2,7 @@ package com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.client;
 
 import com.gypsyengineer.tlsbunny.impl.test.tls13.ImplTest;
 import com.gypsyengineer.tlsbunny.impl.test.tls13.Utils;
-import com.gypsyengineer.tlsbunny.tls13.client.HttpsClient;
-import com.gypsyengineer.tlsbunny.tls13.fuzzer.DeepHandshakeFuzzyClient;
-import com.gypsyengineer.tlsbunny.tls13.fuzzer.MultiThreadedClient;
+import com.gypsyengineer.tlsbunny.tls13.fuzzer.DeepHandshakeFuzzerConfigs;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 import org.junit.AfterClass;
@@ -15,8 +13,11 @@ import org.junit.Test;
 import java.io.IOException;
 
 import static com.gypsyengineer.tlsbunny.impl.test.tls13.Utils.checkForASanFindings;
+import static com.gypsyengineer.tlsbunny.tls13.client.HttpsClient.httpsClient;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.DeepHandshakeFuzzyClient.deepHandshakeFuzzyClient;
-import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Configs.*;
+import static com.gypsyengineer.tlsbunny.tls13.fuzzer.MutatedConfigs.*;
+import static com.gypsyengineer.tlsbunny.tls13.fuzzer.MultiConfigClient.multiConfigClient;
+import static com.gypsyengineer.tlsbunny.tls13.fuzzer.MutatedClient.mutatedClient;
 
 public class OpensslHttpsClientFuzzing {
 
@@ -38,8 +39,9 @@ public class OpensslHttpsClientFuzzing {
     @Test
     public void ccs() throws Exception {
         new ImplTest()
-                .set(new MultiThreadedClient()
-                        .set(ccsConfigs(mainConfig)))
+                .set(multiConfigClient()
+                        .of(mutatedClient().of(httpsClient()))
+                        .configs(ccsConfigs(mainConfig)))
                 .set(server)
                 .run();
     }
@@ -47,8 +49,9 @@ public class OpensslHttpsClientFuzzing {
     @Test
     public void tlsPlaintext() throws Exception {
         new ImplTest()
-                .set(new MultiThreadedClient()
-                        .set(tlsPlaintextConfigs(mainConfig)))
+                .set(multiConfigClient()
+                        .of(mutatedClient().of(httpsClient()))
+                        .configs(tlsPlaintextConfigs(mainConfig)))
                 .set(server)
                 .run();
     }
@@ -56,8 +59,9 @@ public class OpensslHttpsClientFuzzing {
     @Test
     public void handshake() throws Exception {
         new ImplTest()
-                .set(new MultiThreadedClient()
-                        .set(handshakeConfigs(mainConfig)))
+                .set(multiConfigClient()
+                        .of(mutatedClient().of(httpsClient()))
+                        .configs(handshakeConfigs(mainConfig)))
                 .set(server)
                 .run();
     }
@@ -65,8 +69,9 @@ public class OpensslHttpsClientFuzzing {
     @Test
     public void clientHello() throws Exception {
         new ImplTest()
-                .set(new MultiThreadedClient()
-                        .set(clientHelloConfigs(mainConfig)))
+                .set(multiConfigClient()
+                        .of(mutatedClient().of(httpsClient()))
+                        .configs(clientHelloConfigs(mainConfig)))
                 .set(server)
                 .run();
     }
@@ -74,8 +79,9 @@ public class OpensslHttpsClientFuzzing {
     @Test
     public void finished() throws Exception {
         new ImplTest()
-                .set(new MultiThreadedClient()
-                        .set(finishedConfigs(mainConfig)))
+                .set(multiConfigClient()
+                        .of(mutatedClient().of(httpsClient()))
+                        .configs(finishedConfigs(mainConfig)))
                 .set(server)
                 .run();
     }
@@ -83,8 +89,9 @@ public class OpensslHttpsClientFuzzing {
     @Test
     public void cipherSuites() throws Exception {
         new ImplTest()
-                .set(new MultiThreadedClient()
-                        .set(cipherSuitesConfigs(mainConfig)))
+                .set(multiConfigClient()
+                        .of(mutatedClient().of(httpsClient()))
+                        .configs(cipherSuitesConfigs(mainConfig)))
                 .set(server)
                 .run();
     }
@@ -92,8 +99,9 @@ public class OpensslHttpsClientFuzzing {
     @Test
     public void extensionVector() throws Exception {
         new ImplTest()
-                .set(new MultiThreadedClient()
-                        .set(extensionVectorConfigs(mainConfig)))
+                .set(multiConfigClient()
+                        .of(mutatedClient().of(httpsClient()))
+                        .configs(extensionVectorConfigs(mainConfig)))
                 .set(server)
                 .run();
     }
@@ -101,8 +109,9 @@ public class OpensslHttpsClientFuzzing {
     @Test
     public void legacyCompressionMethods() throws Exception {
         new ImplTest()
-                .set(new MultiThreadedClient()
-                        .set(legacyCompressionMethodsConfigs(mainConfig)))
+                .set(multiConfigClient()
+                        .of(mutatedClient().of(httpsClient()))
+                        .configs(legacyCompressionMethodsConfigs(mainConfig)))
                 .set(server)
                 .run();
     }
@@ -110,8 +119,9 @@ public class OpensslHttpsClientFuzzing {
     @Test
     public void legacySessionId() throws Exception {
         new ImplTest()
-                .set(new MultiThreadedClient()
-                        .set(legacySessionIdConfigs(mainConfig)))
+                .set(multiConfigClient()
+                        .of(mutatedClient().of(httpsClient()))
+                        .configs(legacySessionIdConfigs(mainConfig)))
                 .set(server)
                 .run();
     }
@@ -119,9 +129,9 @@ public class OpensslHttpsClientFuzzing {
     @Test
     public void deepHandshakeFuzzer() throws Exception {
         new ImplTest()
-                .set(new MultiThreadedClient()
-                        .set((config, output) -> deepHandshakeFuzzyClient(new HttpsClient(), config, output))
-                        .set(DeepHandshakeFuzzyClient.noClientAuth(mainConfig)))
+                .set(multiConfigClient()
+                        .of(deepHandshakeFuzzyClient().of(httpsClient()))
+                        .configs(DeepHandshakeFuzzerConfigs.noClientAuth(mainConfig)))
                 .set(server)
                 .run();
     }

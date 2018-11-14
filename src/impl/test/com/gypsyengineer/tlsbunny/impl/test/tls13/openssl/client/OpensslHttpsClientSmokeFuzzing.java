@@ -2,6 +2,7 @@ package com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.client;
 
 import com.gypsyengineer.tlsbunny.impl.test.tls13.ImplTest;
 import com.gypsyengineer.tlsbunny.impl.test.tls13.Utils;
+import com.gypsyengineer.tlsbunny.tls13.fuzzer.DeepHandshakeFuzzyClient;
 import com.gypsyengineer.tlsbunny.tls13.utils.FuzzerConfig;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
@@ -14,7 +15,8 @@ import java.io.IOException;
 
 import static com.gypsyengineer.tlsbunny.impl.test.tls13.Utils.checkForASanFindings;
 import static com.gypsyengineer.tlsbunny.tls13.client.HttpsClient.httpsClient;
-import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Configs.*;
+import static com.gypsyengineer.tlsbunny.tls13.fuzzer.MutatedConfigs.*;
+import static com.gypsyengineer.tlsbunny.tls13.fuzzer.DeepHandshakeFuzzyClient.deepHandshakeFuzzyClient;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.MultiConfigClient.multiConfigClient;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.MutatedClient.mutatedClient;
 
@@ -44,8 +46,7 @@ public class OpensslHttpsClientSmokeFuzzing {
         new ImplTest()
                 .set(multiConfigClient()
                         .of(mutatedClient().of(httpsClient()))
-                        .set(mainConfig)
-                        .configs(minimized(ccsConfigs())))
+                        .configs(minimized(ccsConfigs(mainConfig))))
                 .set(server)
                 .run();
     }
@@ -55,8 +56,7 @@ public class OpensslHttpsClientSmokeFuzzing {
         new ImplTest()
                 .set(multiConfigClient()
                         .of(mutatedClient().of(httpsClient()))
-                        .set(mainConfig)
-                        .configs(minimized(tlsPlaintextConfigs())))
+                        .configs(minimized(tlsPlaintextConfigs(mainConfig))))
                 .set(server)
                 .run();
     }
@@ -66,8 +66,7 @@ public class OpensslHttpsClientSmokeFuzzing {
         new ImplTest()
                 .set(multiConfigClient()
                         .of(mutatedClient().of(httpsClient()))
-                        .set(mainConfig)
-                        .configs(minimized(handshakeConfigs())))
+                        .configs(minimized(handshakeConfigs(mainConfig))))
                 .set(server)
                 .run();
     }
@@ -77,8 +76,7 @@ public class OpensslHttpsClientSmokeFuzzing {
         new ImplTest()
                 .set(multiConfigClient()
                         .of(mutatedClient().of(httpsClient()))
-                        .set(mainConfig)
-                        .configs(minimized(clientHelloConfigs())))
+                        .configs(minimized(clientHelloConfigs(mainConfig))))
                 .set(server)
                 .run();
     }
@@ -88,8 +86,7 @@ public class OpensslHttpsClientSmokeFuzzing {
         new ImplTest()
                 .set(multiConfigClient()
                         .of(mutatedClient().of(httpsClient()))
-                        .set(mainConfig)
-                        .configs(minimized(finishedConfigs())))
+                        .configs(minimized(finishedConfigs(mainConfig))))
                 .set(server)
                 .run();
     }
@@ -99,8 +96,7 @@ public class OpensslHttpsClientSmokeFuzzing {
         new ImplTest()
                 .set(multiConfigClient()
                         .of(mutatedClient().of(httpsClient()))
-                        .set(mainConfig)
-                        .configs(minimized(cipherSuitesConfigs())))
+                        .configs(minimized(cipherSuitesConfigs(mainConfig))))
                 .set(server)
                 .run();
     }
@@ -110,8 +106,7 @@ public class OpensslHttpsClientSmokeFuzzing {
         new ImplTest()
                 .set(multiConfigClient()
                         .of(mutatedClient().of(httpsClient()))
-                        .set(mainConfig)
-                        .configs(minimized(extensionVectorConfigs())))
+                        .configs(minimized(extensionVectorConfigs(mainConfig))))
                 .set(server)
                 .run();
     }
@@ -121,8 +116,7 @@ public class OpensslHttpsClientSmokeFuzzing {
         new ImplTest()
                 .set(multiConfigClient()
                         .of(mutatedClient().of(httpsClient()))
-                        .set(mainConfig)
-                        .configs(minimized(legacyCompressionMethodsConfigs())))
+                        .configs(minimized(legacyCompressionMethodsConfigs(mainConfig))))
                 .set(server)
                 .run();
     }
@@ -132,8 +126,17 @@ public class OpensslHttpsClientSmokeFuzzing {
         new ImplTest()
                 .set(multiConfigClient()
                         .of(mutatedClient().of(httpsClient()))
-                        .set(mainConfig)
-                        .configs(minimized(legacySessionIdConfigs())))
+                        .configs(minimized(legacySessionIdConfigs(mainConfig))))
+                .set(server)
+                .run();
+    }
+
+    @Test
+    public void deepHandshakeFuzzer() throws Exception {
+        new ImplTest()
+                .set(multiConfigClient()
+                        .of(deepHandshakeFuzzyClient().of(httpsClient()))
+                        .configs(minimized(DeepHandshakeFuzzyClient.deepHandshakeFuzzingConfigsNoClientAuth(mainConfig))))
                 .set(server)
                 .run();
     }

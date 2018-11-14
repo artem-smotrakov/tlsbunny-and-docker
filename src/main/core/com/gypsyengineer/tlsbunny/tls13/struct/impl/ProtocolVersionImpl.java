@@ -18,7 +18,7 @@ public class ProtocolVersionImpl implements ProtocolVersion {
 
     @Override
     public int encodingLength() {
-        return ENCODING_LENGTH;
+        return encoding_length;
     }
 
     @Override

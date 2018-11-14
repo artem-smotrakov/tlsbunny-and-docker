@@ -12,9 +12,9 @@ import com.gypsyengineer.tlsbunny.utils.Output;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 import org.junit.Test;
 
-import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Configs.*;
-import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Configs.legacyCompressionMethodsConfigs;
-import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Configs.legacySessionIdConfigs;
+import static com.gypsyengineer.tlsbunny.tls13.fuzzer.MutatedConfigs.*;
+import static com.gypsyengineer.tlsbunny.tls13.fuzzer.MutatedConfigs.legacyCompressionMethodsConfigs;
+import static com.gypsyengineer.tlsbunny.tls13.fuzzer.MutatedConfigs.legacySessionIdConfigs;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.MutatedServer.mutatedServer;
 import static com.gypsyengineer.tlsbunny.tls13.server.HttpsServer.httpsServer;
 import static org.junit.Assert.*;

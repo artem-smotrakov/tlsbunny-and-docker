@@ -25,14 +25,14 @@ import static com.gypsyengineer.tlsbunny.tls13.fuzzer.SimpleVectorFuzzer.simpleV
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Target.*;
 
 // TODO add a config for CertificateRequest
-public class Configs {
+public class MutatedConfigs {
 
-    public static final int TLS_PLAINTEXT_HEADER_LENGTH =
-            ContentType.ENCODING_LENGTH + ProtocolVersion.ENCODING_LENGTH
-                    + UInt16.ENCODING_LENGTH - 1;
+    public static final int tls_plaintext_header_length =
+            ContentType.encoding_length + ProtocolVersion.encoding_length
+                    + UInt16.encoding_length - 1;
 
-    public static final int HANDSHAKE_HEADER_LENGTH =
-            HandshakeType.ENCODING_LENGTH + UInt24.ENCODING_LENGTH - 1;
+    public static final int handshake_header_length =
+            HandshakeType.encoding_length + UInt24.encoding_length - 1;
 
     // read timeouts in millis
     public static final long long_read_timeout = 5000;
@@ -78,7 +78,7 @@ public class Configs {
                                         .minRatio(0.01)
                                         .maxRatio(0.09)
                                         .startIndex(0)
-                                        .endIndex(TLS_PLAINTEXT_HEADER_LENGTH)))
+                                        .endIndex(tls_plaintext_header_length)))
                         .readTimeout(short_read_timeout)
                         .endTest(200)
                         .parts(2),
@@ -89,7 +89,7 @@ public class Configs {
                                         .minRatio(0.01)
                                         .maxRatio(0.09)
                                         .startIndex(0)
-                                        .endIndex(TLS_PLAINTEXT_HEADER_LENGTH)))
+                                        .endIndex(tls_plaintext_header_length)))
                         .readTimeout(short_read_timeout)
                         .endTest(200)
                         .parts(2),
@@ -126,7 +126,7 @@ public class Configs {
                                         .minRatio(0.01)
                                         .maxRatio(0.09)
                                         .startIndex(0)
-                                        .endIndex(HANDSHAKE_HEADER_LENGTH)))
+                                        .endIndex(handshake_header_length)))
                         .readTimeout(short_read_timeout)
                         .endTest(2000)
                         .parts(5),
@@ -137,7 +137,7 @@ public class Configs {
                                         .minRatio(0.01)
                                         .maxRatio(0.09)
                                         .startIndex(0)
-                                        .endIndex(HANDSHAKE_HEADER_LENGTH)))
+                                        .endIndex(handshake_header_length)))
                         .readTimeout(short_read_timeout)
                         .endTest(2000)
                         .parts(5),

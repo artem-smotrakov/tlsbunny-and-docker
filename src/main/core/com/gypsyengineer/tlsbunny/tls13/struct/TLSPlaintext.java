@@ -8,9 +8,9 @@ public interface TLSPlaintext extends Struct {
     int max_allowed_length = 16384;
 
     // it's the length of an empty TLSPlaintext structure
-    int MIN_ENCODING_LENGTH = ContentType.ENCODING_LENGTH
-            + ProtocolVersion.ENCODING_LENGTH
-            + UInt16.ENCODING_LENGTH;
+    int MIN_ENCODING_LENGTH = ContentType.encoding_length
+            + ProtocolVersion.encoding_length
+            + UInt16.encoding_length;
 
     boolean containsAlert();
     boolean containsApplicationData();

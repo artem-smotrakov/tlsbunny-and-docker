@@ -9,15 +9,14 @@ import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.tls13.utils.FuzzerConfig;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.Output;
-import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 
+import static com.gypsyengineer.tlsbunny.tls13.utils.FuzzerConfigUpdater.fuzzerConfigUpdater;
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public class MultiConfigClient implements Client, AutoCloseable {
 
     private Client client;
 
-    private Config mainConfig = SystemPropertiesConfig.load();
     private FuzzerConfig[] configs = new FuzzerConfig[0];
 
     private boolean running = false;
@@ -35,7 +34,6 @@ public class MultiConfigClient implements Client, AutoCloseable {
         }
 
         this.configs = configs;
-        updateFuzzerConfigs();
 
         return this;
     }
@@ -47,14 +45,12 @@ public class MultiConfigClient implements Client, AutoCloseable {
 
     @Override
     public Config config() {
-        return mainConfig;
+        return fuzzerConfigUpdater(configs);
     }
 
     @Override
     public MultiConfigClient set(Config config) {
-        mainConfig = config;
-        updateFuzzerConfigs();
-        return this;
+        throw new UnsupportedOperationException("no configs for you!");
     }
 
     @Override
@@ -146,9 +142,4 @@ public class MultiConfigClient implements Client, AutoCloseable {
         stop();
     }
 
-    private void updateFuzzerConfigs() {
-        for (FuzzerConfig config : configs) {
-            config.set(mainConfig);
-        }
-    }
 }

@@ -4,7 +4,7 @@ import com.gypsyengineer.tlsbunny.tls.Struct;
 
 public interface ContentType extends Struct {
 
-    int ENCODING_LENGTH = 1;
+    int encoding_length = 1;
 
     ContentType invalid = StructFactory.getDefault().createContentType(0);
     ContentType change_cipher_spec = StructFactory.getDefault().createContentType(20);
