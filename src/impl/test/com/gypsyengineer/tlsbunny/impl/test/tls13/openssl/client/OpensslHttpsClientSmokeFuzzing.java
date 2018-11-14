@@ -2,7 +2,6 @@ package com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.client;
 
 import com.gypsyengineer.tlsbunny.impl.test.tls13.ImplTest;
 import com.gypsyengineer.tlsbunny.impl.test.tls13.Utils;
-import com.gypsyengineer.tlsbunny.tls13.fuzzer.MultiThreadedClient;
 import com.gypsyengineer.tlsbunny.tls13.utils.FuzzerConfig;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
@@ -43,8 +42,10 @@ public class OpensslHttpsClientSmokeFuzzing {
     @Test
     public void ccs() throws Exception {
         new ImplTest()
-                .set(new MultiThreadedClient()
-                        .set(minimized(ccsConfigs(mainConfig))))
+                .set(multiConfigClient()
+                        .of(mutatedClient().of(httpsClient()))
+                        .set(mainConfig)
+                        .configs(minimized(ccsConfigs())))
                 .set(server)
                 .run();
     }
@@ -52,8 +53,10 @@ public class OpensslHttpsClientSmokeFuzzing {
     @Test
     public void tlsPlaintext() throws Exception {
         new ImplTest()
-                .set(new MultiThreadedClient()
-                        .set(minimized(tlsPlaintextConfigs(mainConfig))))
+                .set(multiConfigClient()
+                        .of(mutatedClient().of(httpsClient()))
+                        .set(mainConfig)
+                        .configs(minimized(tlsPlaintextConfigs())))
                 .set(server)
                 .run();
     }
@@ -61,8 +64,10 @@ public class OpensslHttpsClientSmokeFuzzing {
     @Test
     public void handshake() throws Exception {
         new ImplTest()
-                .set(new MultiThreadedClient()
-                        .set(minimized(handshakeConfigs(mainConfig))))
+                .set(multiConfigClient()
+                        .of(mutatedClient().of(httpsClient()))
+                        .set(mainConfig)
+                        .configs(minimized(handshakeConfigs())))
                 .set(server)
                 .run();
     }
@@ -70,8 +75,10 @@ public class OpensslHttpsClientSmokeFuzzing {
     @Test
     public void clientHello() throws Exception {
         new ImplTest()
-                .set(new MultiThreadedClient()
-                        .set(minimized(clientHelloConfigs(mainConfig))))
+                .set(multiConfigClient()
+                        .of(mutatedClient().of(httpsClient()))
+                        .set(mainConfig)
+                        .configs(minimized(clientHelloConfigs())))
                 .set(server)
                 .run();
     }
@@ -79,8 +86,10 @@ public class OpensslHttpsClientSmokeFuzzing {
     @Test
     public void finished() throws Exception {
         new ImplTest()
-                .set(new MultiThreadedClient()
-                        .set(minimized(finishedConfigs(mainConfig))))
+                .set(multiConfigClient()
+                        .of(mutatedClient().of(httpsClient()))
+                        .set(mainConfig)
+                        .configs(minimized(finishedConfigs())))
                 .set(server)
                 .run();
     }
@@ -88,8 +97,10 @@ public class OpensslHttpsClientSmokeFuzzing {
     @Test
     public void cipherSuites() throws Exception {
         new ImplTest()
-                .set(new MultiThreadedClient()
-                        .set(minimized(cipherSuitesConfigs(mainConfig))))
+                .set(multiConfigClient()
+                        .of(mutatedClient().of(httpsClient()))
+                        .set(mainConfig)
+                        .configs(minimized(cipherSuitesConfigs())))
                 .set(server)
                 .run();
     }
@@ -97,8 +108,10 @@ public class OpensslHttpsClientSmokeFuzzing {
     @Test
     public void extensionVector() throws Exception {
         new ImplTest()
-                .set(new MultiThreadedClient()
-                        .set(minimized(extensionVectorConfigs(mainConfig))))
+                .set(multiConfigClient()
+                        .of(mutatedClient().of(httpsClient()))
+                        .set(mainConfig)
+                        .configs(minimized(extensionVectorConfigs())))
                 .set(server)
                 .run();
     }
@@ -106,8 +119,10 @@ public class OpensslHttpsClientSmokeFuzzing {
     @Test
     public void legacyCompressionMethods() throws Exception {
         new ImplTest()
-                .set(new MultiThreadedClient()
-                        .set(minimized(legacyCompressionMethodsConfigs(mainConfig))))
+                .set(multiConfigClient()
+                        .of(mutatedClient().of(httpsClient()))
+                        .set(mainConfig)
+                        .configs(minimized(legacyCompressionMethodsConfigs())))
                 .set(server)
                 .run();
     }
