@@ -1,8 +1,14 @@
 package com.gypsyengineer.tlsbunny.tls13.server;
 
+import com.gypsyengineer.tlsbunny.tls13.connection.action.ActionFailed;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.Phase;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.GeneratingAlert;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.WrappingIntoTLSPlaintexts;
 import com.gypsyengineer.tlsbunny.tls13.connection.check.Check;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.EngineFactory;
+import com.gypsyengineer.tlsbunny.tls13.crypto.AEADException;
+import com.gypsyengineer.tlsbunny.tls13.handshake.NegotiatorException;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 import com.gypsyengineer.tlsbunny.utils.Connection;
@@ -10,10 +16,14 @@ import com.gypsyengineer.tlsbunny.utils.Output;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static com.gypsyengineer.tlsbunny.tls13.struct.AlertDescription.handshake_failure;
+import static com.gypsyengineer.tlsbunny.tls13.struct.AlertLevel.fatal;
+import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.alert;
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public class SingleThreadServer implements Server {
@@ -122,7 +132,13 @@ public class SingleThreadServer implements Server {
 
                 engine.set(output);
                 engine.set(connection);
-                engine.connect(); // TODO: rename connect -> run
+
+                try {
+                    engine.connect(); // TODO: rename connect -> run
+                } catch (Exception e) {
+                    connection.send(generateAlert(engine));
+                    failed = true;
+                }
 
                 if (check != null) {
                     output.info("run check: %s", check.name());
@@ -134,7 +150,7 @@ public class SingleThreadServer implements Server {
 
                 output.info("done");
             } catch (Exception e) {
-                output.achtung("exception: ", e);
+                output.achtung("unexpected exception: ", e);
                 failed = true;
                 break;
             }
@@ -169,6 +185,25 @@ public class SingleThreadServer implements Server {
         if (output != null) {
             output.flush();
         }
+    }
+
+    private ByteBuffer generateAlert(Engine engine) throws IOException, NegotiatorException,
+            ActionFailed, AEADException {
+
+        ByteBuffer buffer = new GeneratingAlert()
+                .level(fatal)
+                .description(handshake_failure)
+                .set(engine.context())
+                .set(output)
+                .run()
+                .out();
+        return new WrappingIntoTLSPlaintexts()
+                .type(alert)
+                .set(engine.context())
+                .set(output)
+                .in(buffer)
+                .run()
+                .out();
     }
 
 }
