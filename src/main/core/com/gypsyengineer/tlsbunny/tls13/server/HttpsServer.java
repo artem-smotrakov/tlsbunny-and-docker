@@ -71,6 +71,11 @@ public class HttpsServer implements Server {
         return this;
     }
 
+    public HttpsServer neverStop() {
+        server.stopWhen(new NonStop());
+        return this;
+    }
+
     @Override
     public HttpsServer stop() {
         server.stop();
@@ -115,7 +120,7 @@ public class HttpsServer implements Server {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         server.close();
     }
 
