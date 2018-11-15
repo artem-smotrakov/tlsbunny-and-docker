@@ -3,7 +3,6 @@ package com.gypsyengineer.tlsbunny.tls13.connection;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.ActionFailed;
 import com.gypsyengineer.tlsbunny.tls13.connection.check.Check;
-import com.gypsyengineer.tlsbunny.tls13.crypto.AEADException;
 import com.gypsyengineer.tlsbunny.tls13.crypto.HKDF;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.handshake.ECDHENegotiator;
@@ -23,28 +22,27 @@ import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public class Engine {
 
-    private static final ByteBuffer NOTHING = ByteBuffer.allocate(0);
+    private static final ByteBuffer nothing = ByteBuffer.allocate(0);
 
     private enum ActionType {
-        run,
-        send, send_while,
-        receive, receive_while,
-        store, restore
+        run, send, receive, store, restore, receive_while
     }
 
     public enum Status {
-        not_started, running, could_not_send, unexpected_error, success
+        not_started, running, unexpected_error, success
     }
 
     private final List<ActionHolder> actions = new ArrayList<>();
 
     private Connection connection;
+    private boolean createdConnection = false;
+
     private Output output = new Output();
     private String host = "localhost";
     private int port = 443;
     private Status status = Status.not_started;
-    private ByteBuffer buffer = NOTHING;
-    private ByteBuffer applicationData = NOTHING;
+    private ByteBuffer buffer = nothing;
+    private ByteBuffer applicationData = nothing;
     private Context context = new Context();
 
     private Throwable exception;
@@ -84,27 +82,12 @@ public class Engine {
         return this;
     }
 
-    public Engine timeout(long timeout) {
-        this.timeout = timeout;
-        return this;
-    }
-
     public Throwable exception() {
         return exception;
     }
 
-    public Engine nice() {
-        strict = false;
-        return this;
-    }
-
     public Engine strict() {
         strict = true;
-        return this;
-    }
-
-    public Engine continueIfAlert() {
-        stopIfAlert = false;
         return this;
     }
 
@@ -217,8 +200,9 @@ public class Engine {
         context.negotiator.set(output);
         status = Status.running;
 
-        try (Connection connection = initConnection()) {
-            buffer = NOTHING;
+        initConnection();
+        try {
+            buffer = nothing;
 
             loop: for (ActionHolder holder : actions) {
                 ActionFactory actionFactory = holder.factory;
@@ -226,53 +210,32 @@ public class Engine {
                 Action action;
                 switch (holder.type) {
                     case send:
-                        try {
-                            action = actionFactory.create();
-                            output.info("send: %s", action.name());
-                            init(action).run();
-                            connection.send(action.out());
-                        } catch (ActionFailed | AEADException | NegotiatorException | IOException e) {
-                            status = Status.could_not_send;
-                            return reportError(e);
-                        }
+                        action = actionFactory.create();
+                        output.info("send: %s", action.name());
+                        init(action).run();
+                        connection.send(action.out());
                         break;
                     case receive:
-                        try {
-                            action = actionFactory.create();
-                            output.info("receive: %s", action.name());
+                        action = actionFactory.create();
+                        output.info("receive: %s", action.name());
+                        read(connection, action);
+                        init(action).run();
+                        combineData(action);
+                        break;
+                    case receive_while:
+                        action = actionFactory.create();
+                        while (holder.condition.met(context)) {
+                            output.info("receive (conditional): %s", action.name());
                             read(connection, action);
                             init(action).run();
                             combineData(action);
-                        } catch (ActionFailed | AEADException | NegotiatorException | IOException e) {
-                            status = Status.unexpected_error;
-                            return reportError(e);
-                        }
-                        break;
-                    case receive_while:
-                        try {
-                            action = actionFactory.create();
-                            while (holder.condition.met(context)) {
-                                output.info("receive (conditional): %s", action.name());
-                                read(connection, action);
-                                init(action).run();
-                                combineData(action);
-                            }
-                        } catch (ActionFailed | AEADException | NegotiatorException | IOException e) {
-                            status = Status.unexpected_error;
-                            return reportError(e);
                         }
                         break;
                     case run:
-                        try {
-                            action = actionFactory.create();
-                            output.info("run: %s", action.name());
-                            init(action).run();
-                            combineData(action);
-                        } catch (ActionFailed | AEADException | NegotiatorException | IOException e) {
-                            status = Status.unexpected_error;
-                            return reportError(e);
-                        }
-
+                        action = actionFactory.create();
+                        output.info("run: %s", action.name());
+                        init(action).run();
+                        combineData(action);
                         break;
                     case store:
                         storeImpl();
@@ -292,10 +255,19 @@ public class Engine {
 
                 output.flush();
             }
-        } catch (IOException e) {
-            reportError(e);
+        } catch (Exception e) {
+            status = Status.unexpected_error;
+            return reportError(e);
         } finally {
             output.flush();
+
+            if (createdConnection && !connection.isClosed()) {
+                try {
+                    connection.close();
+                } catch (IOException e) {
+                    throw new EngineException("could not close connection", e);
+                }
+            }
         }
 
         if (status == Status.running) {
@@ -349,7 +321,7 @@ public class Engine {
         byte[] data = new byte[buffer.remaining()];
         buffer.get(data);
         storedData.add(data);
-        buffer = NOTHING;
+        buffer = nothing;
         output.info("stored %d bytes", data.length);
     }
 
@@ -425,13 +397,19 @@ public class Engine {
         return action;
     }
 
-    private Connection initConnection() throws IOException {
+    private void initConnection() throws EngineException {
         if (connection != null) {
-            return connection;
+            return;
         }
 
         if (host != null && port > 0) {
-            return Connection.create(host, port, timeout);
+            try {
+                connection = Connection.create(host, port, timeout);
+                createdConnection = true;
+                return;
+            } catch (IOException e) {
+                throw new EngineException("could not init connection", e);
+            }
         }
 
         throw whatTheHell("connection can't be initialized!");
