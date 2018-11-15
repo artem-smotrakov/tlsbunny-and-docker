@@ -148,7 +148,7 @@ public class OpensslHttpsClientSmokeFuzzing {
         checkForASanFindings(server.output());
     }
 
-    private static FuzzerConfig[] minimized(FuzzerConfig[] configs) {
+    public static FuzzerConfig[] minimized(FuzzerConfig[] configs) {
         for (FuzzerConfig config : configs) {
             config.startTest(start);
             config.endTest(end);
