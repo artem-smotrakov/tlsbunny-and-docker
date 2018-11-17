@@ -2,8 +2,6 @@ package com.gypsyengineer.tlsbunny.tls13.struct;
 
 import com.gypsyengineer.tlsbunny.tls.Random;
 import com.gypsyengineer.tlsbunny.tls.Vector;
-import com.gypsyengineer.tlsbunny.tls13.struct.impl.CertificateImpl;
-import com.gypsyengineer.tlsbunny.tls13.struct.impl.CertificateRequestImpl;
 import com.gypsyengineer.tlsbunny.tls13.struct.impl.StructFactoryImpl;
 import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.util.List;
@@ -66,15 +64,11 @@ public interface StructFactory {
                                   List<CompressionMethod> legacy_compression_methods,
                                   List<Extension> extensions);
 
-    EncryptedExtensions createEncryptedExtensions(Vector<Extension> extensions);
     EndOfEarlyData createEndOfEarlyData();
     Finished createFinished(byte[] verify_data);
     HelloRetryRequest createHelloRetryRequest();
 
-    default EncryptedExtensions createEncryptedExtensions(Extension... extensions) {
-        return createEncryptedExtensions(
-                Vector.wrap(EncryptedExtensions.LENGTH_BYTES, extensions));
-    }
+    EncryptedExtensions createEncryptedExtensions(Extension... extensions);
 
     default ServerHello createServerHello(ProtocolVersion version,
                                   Random random,

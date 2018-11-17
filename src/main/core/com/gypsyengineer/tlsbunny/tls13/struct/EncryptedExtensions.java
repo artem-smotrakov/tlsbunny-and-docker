@@ -4,7 +4,7 @@ import com.gypsyengineer.tlsbunny.tls.Vector;
 
 public interface EncryptedExtensions extends HandshakeMessage {
 
-    int LENGTH_BYTES = 2;
+    int length_bytes = 2;
 
     Vector<Extension> getExtensions();
 }
