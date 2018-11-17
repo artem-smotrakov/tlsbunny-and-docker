@@ -1,4 +1,4 @@
-package com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.client;
+package com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.server;
 
 import com.gypsyengineer.tlsbunny.impl.test.tls13.Utils;
 import com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.OpensslDocker;

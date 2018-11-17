@@ -1,8 +1,10 @@
-package com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.client;
+package com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.server;
 
 import com.gypsyengineer.tlsbunny.impl.test.tls13.ImplTest;
 import com.gypsyengineer.tlsbunny.impl.test.tls13.Utils;
-import com.gypsyengineer.tlsbunny.tls13.client.*;
+import com.gypsyengineer.tlsbunny.tls13.fuzzer.MultiThreadedClient;
+import com.gypsyengineer.tlsbunny.utils.Config;
+import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -11,10 +13,13 @@ import org.junit.Test;
 import java.io.IOException;
 
 import static com.gypsyengineer.tlsbunny.impl.test.tls13.Utils.checkForASanFindings;
+import static com.gypsyengineer.tlsbunny.tls13.fuzzer.MutatedConfigs.certificateConfigs;
+import static com.gypsyengineer.tlsbunny.tls13.fuzzer.MutatedConfigs.certificateVerifyConfigs;
 
-public class TestsForOpenSSLServerWithClientAuth {
+public class FuzzingForOpensslServerWithClientAuth {
 
     private static OpensslServer server;
+    private static Config mainConfig = SystemPropertiesConfig.load();
 
     @BeforeClass
     public static void setUp() throws Exception {
@@ -30,9 +35,19 @@ public class TestsForOpenSSLServerWithClientAuth {
     }
 
     @Test
-    public void httpsClientAuth() throws Exception {
+    public void certificate() throws Exception {
         new ImplTest()
-                .set(new HttpsClientAuth())
+                .set(new MultiThreadedClient()
+                        .set(certificateConfigs(mainConfig)))
+                .set(server)
+                .run();
+    }
+
+    @Test
+    public void certificateVerify() throws Exception {
+        new ImplTest()
+                .set(new MultiThreadedClient()
+                        .set(certificateVerifyConfigs(mainConfig)))
                 .set(server)
                 .run();
     }
@@ -43,4 +58,5 @@ public class TestsForOpenSSLServerWithClientAuth {
         Utils.waitStop(server);
         checkForASanFindings(server.output());
     }
+
 }

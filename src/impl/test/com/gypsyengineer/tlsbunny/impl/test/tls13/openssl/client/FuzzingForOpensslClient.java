@@ -1,16 +1,12 @@
-package com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.server;
+package com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.client;
 
-import com.gypsyengineer.tlsbunny.impl.test.tls13.ImplTest;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 import org.junit.Test;
 
 import static com.gypsyengineer.tlsbunny.tls13.server.HttpsServer.httpsServer;
-import static com.gypsyengineer.tlsbunny.tls13.server.OneConnectionReceived.oneConnectionReceived;
-import static com.gypsyengineer.tlsbunny.tls13.fuzzer.MutatedServer.mutatedServer;
-import static com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup.secp256r1;
 
-public class MutatedFuzzingForOpenSSLClient {
+public class FuzzingForOpensslClient {
 
     private static Config serverConfig = SystemPropertiesConfig.load();
 

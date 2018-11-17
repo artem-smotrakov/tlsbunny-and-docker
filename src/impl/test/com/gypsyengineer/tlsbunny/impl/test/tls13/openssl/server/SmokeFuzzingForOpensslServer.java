@@ -1,4 +1,4 @@
-package com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.client;
+package com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.server;
 
 import com.gypsyengineer.tlsbunny.impl.test.tls13.ImplTest;
 import com.gypsyengineer.tlsbunny.impl.test.tls13.Utils;
@@ -20,7 +20,7 @@ import static com.gypsyengineer.tlsbunny.tls13.fuzzer.DeepHandshakeFuzzyClient.d
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.MultiConfigClient.multiConfigClient;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.MutatedClient.mutatedClient;
 
-public class OpensslHttpsClientSmokeFuzzing {
+public class SmokeFuzzingForOpensslServer {
 
     private static final int start = 10;
     private static final int end = 15;

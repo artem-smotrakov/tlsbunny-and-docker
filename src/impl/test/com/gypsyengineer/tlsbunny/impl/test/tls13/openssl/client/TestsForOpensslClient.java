@@ -1,4 +1,4 @@
-package com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.server;
+package com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.client;
 
 import com.gypsyengineer.tlsbunny.impl.test.tls13.ImplTest;
 import com.gypsyengineer.tlsbunny.utils.Config;
@@ -12,7 +12,7 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup.secp256r1;
 /**
  * Tests for OpenSSL s_client.
  */
-public class TestsForOpenSSLClient {
+public class TestsForOpensslClient {
 
     @Test
     public void successfulHandshake() throws Exception {

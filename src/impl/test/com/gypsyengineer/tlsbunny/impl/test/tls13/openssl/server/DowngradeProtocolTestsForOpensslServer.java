@@ -1,4 +1,4 @@
-package com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.client;
+package com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.server;
 
 import com.gypsyengineer.tlsbunny.impl.test.tls13.ImplTest;
 import com.gypsyengineer.tlsbunny.impl.test.tls13.Utils;
@@ -15,7 +15,7 @@ import java.io.IOException;
 import static com.gypsyengineer.tlsbunny.impl.test.tls13.Utils.checkForASanFindings;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.*;
 
-public class OpensslDowngradeProtocolTests {
+public class DowngradeProtocolTestsForOpensslServer {
 
     private static OpensslServer server;
 
