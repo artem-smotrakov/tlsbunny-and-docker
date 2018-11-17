@@ -33,6 +33,10 @@ public class HttpsClientAuth extends SingleConnectionClient {
         }
     }
 
+    public static HttpsClientAuth httpsClientAuth() {
+        return new HttpsClientAuth();
+    }
+
     public HttpsClientAuth() {
         checks = List.of(
                 new NoAlertCheck(),

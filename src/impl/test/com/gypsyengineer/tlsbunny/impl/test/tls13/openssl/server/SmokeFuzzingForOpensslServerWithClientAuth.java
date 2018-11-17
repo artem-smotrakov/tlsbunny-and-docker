@@ -2,7 +2,6 @@ package com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.server;
 
 import com.gypsyengineer.tlsbunny.impl.test.tls13.ImplTest;
 import com.gypsyengineer.tlsbunny.impl.test.tls13.Utils;
-import com.gypsyengineer.tlsbunny.tls13.fuzzer.MultiThreadedClient;
 import com.gypsyengineer.tlsbunny.tls13.utils.FuzzerConfig;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
@@ -14,6 +13,9 @@ import org.junit.Test;
 import java.io.IOException;
 
 import static com.gypsyengineer.tlsbunny.impl.test.tls13.Utils.checkForASanFindings;
+import static com.gypsyengineer.tlsbunny.tls13.client.HttpsClientAuth.httpsClientAuth;
+import static com.gypsyengineer.tlsbunny.tls13.fuzzer.MultiConfigClient.multiConfigClient;
+import static com.gypsyengineer.tlsbunny.tls13.fuzzer.MutatedClient.mutatedClient;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.MutatedConfigs.*;
 
 public class SmokeFuzzingForOpensslServerWithClientAuth {
@@ -41,8 +43,9 @@ public class SmokeFuzzingForOpensslServerWithClientAuth {
     @Test
     public void certificate() throws Exception {
         new ImplTest()
-                .set(new MultiThreadedClient()
-                        .set(minimized(certificateConfigs(mainConfig))))
+                .set(multiConfigClient()
+                        .of(mutatedClient().of(httpsClientAuth()))
+                        .configs(minimized(certificateConfigs(mainConfig))))
                 .set(server)
                 .run();
     }
@@ -50,8 +53,9 @@ public class SmokeFuzzingForOpensslServerWithClientAuth {
     @Test
     public void certificateVerify() throws Exception {
         new ImplTest()
-                .set(new MultiThreadedClient()
-                        .set(minimized(certificateVerifyConfigs(mainConfig))))
+                .set(multiConfigClient()
+                        .of(mutatedClient().of(httpsClientAuth()))
+                        .configs(minimized(certificateVerifyConfigs(mainConfig))))
                 .set(server)
                 .run();
     }
