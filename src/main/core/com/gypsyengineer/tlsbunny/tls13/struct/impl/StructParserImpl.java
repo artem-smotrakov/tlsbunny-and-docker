@@ -130,11 +130,11 @@ public class StructParserImpl implements StructParser {
     public CertificateRequest parseCertificateRequest(ByteBuffer buffer) {
         return new CertificateRequestImpl(Vector.parse(
                     buffer,
-                    CertificateRequest.CERTIFICATE_REQUEST_CONTEXT_LENGTH_BYTES,
+                    CertificateRequest.certificate_request_context_length_bytes,
                     buf -> buf.get()),
                 Vector.parse(
                     buffer,
-                    CertificateRequest.EXTENSIONS_LENGTH_BYTES,
+                    CertificateRequest.extensions_length_bytes,
                     buf -> parseExtension(buf)));
     }
 

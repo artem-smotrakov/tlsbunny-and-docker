@@ -4,8 +4,8 @@ import com.gypsyengineer.tlsbunny.tls.Vector;
 
 public interface CertificateRequest extends HandshakeMessage {
 
-    int CERTIFICATE_REQUEST_CONTEXT_LENGTH_BYTES = 1;
-    int EXTENSIONS_LENGTH_BYTES = 2;
+    int certificate_request_context_length_bytes = 1;
+    int extensions_length_bytes = 2;
 
     Vector<Byte> getCertificateRequestContext();
     Vector<Extension> getExtensions();

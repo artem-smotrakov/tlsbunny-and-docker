@@ -3,6 +3,7 @@ package com.gypsyengineer.tlsbunny.tls13.struct;
 import com.gypsyengineer.tlsbunny.tls.Random;
 import com.gypsyengineer.tlsbunny.tls.Vector;
 import com.gypsyengineer.tlsbunny.tls13.struct.impl.CertificateImpl;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.CertificateRequestImpl;
 import com.gypsyengineer.tlsbunny.tls13.struct.impl.StructFactoryImpl;
 import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.util.List;
@@ -53,17 +54,7 @@ public interface StructFactory {
                                           CertificateEntry... certificate_list);
 
     CertificateRequest createCertificateRequest(byte[] certificate_request_context,
-                                                Vector<Extension> extensions);
-
-    default CertificateRequest createCertificateRequest(byte[] certificate_request_context,
-                                                List<Extension> extensions) {
-
-        return createCertificateRequest(
-                certificate_request_context,
-                Vector.wrap(
-                        CertificateRequest.EXTENSIONS_LENGTH_BYTES,
-                        extensions));
-    }
+                                                List<Extension> extensions);
 
     CertificateVerify createCertificateVerify(SignatureScheme algorithm,
                                               byte[] signature);

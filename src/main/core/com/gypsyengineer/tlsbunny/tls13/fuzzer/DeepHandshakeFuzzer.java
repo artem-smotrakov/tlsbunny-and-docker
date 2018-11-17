@@ -241,9 +241,8 @@ public class DeepHandshakeFuzzer extends StructFactoryWrapper
     }
 
     @Override
-    public synchronized CertificateRequest createCertificateRequest(
-            byte[] certificate_request_context, Vector<Extension> extensions) {
-
+    public CertificateRequest createCertificateRequest(byte[] certificate_request_context,
+                                                       List<Extension> extensions) {
         return handle(super.createCertificateRequest(certificate_request_context, extensions));
     }
 

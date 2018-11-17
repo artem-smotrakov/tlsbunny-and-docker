@@ -137,18 +137,19 @@ public class StructFactoryImpl implements StructFactory {
                 algorithm,
                 Vector.wrap(CertificateVerifyImpl.signature_length_bytes, signature));
     }
-    
+
     @Override
     public CertificateRequest createCertificateRequest(byte[] certificate_request_context,
-                                                       Vector<Extension> extensions) {
-
+                                                       List<Extension> extensions) {
         return new CertificateRequestImpl(
                 Vector.wrap(
-                        CertificateRequest.CERTIFICATE_REQUEST_CONTEXT_LENGTH_BYTES,
+                        CertificateRequest.certificate_request_context_length_bytes,
                         certificate_request_context),
-                extensions);
+                Vector.wrap(
+                        CertificateRequest.extensions_length_bytes,
+                        extensions));
     }
-    
+
     @Override
     public Finished createFinished(byte[] verify_data) {
         return new FinishedImpl(new Bytes(verify_data));

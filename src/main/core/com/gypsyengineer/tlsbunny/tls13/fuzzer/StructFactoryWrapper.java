@@ -146,8 +146,7 @@ public class StructFactoryWrapper implements StructFactory {
 
     @Override
     public CertificateRequest createCertificateRequest(byte[] certificate_request_context,
-                                                Vector<Extension> extensions) {
-
+                                                       List<Extension> extensions) {
         return factory.createCertificateRequest(certificate_request_context, extensions);
     }
 
