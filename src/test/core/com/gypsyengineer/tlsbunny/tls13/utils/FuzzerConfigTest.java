@@ -52,16 +52,16 @@ public class FuzzerConfigTest {
 
         assertEquals(
                 firstConfig.clientCertificate(),
-                SystemPropertiesConfig.DEFAULT_CLIENT_CERTIFICATE);
+                SystemPropertiesConfig.default_client_certificate);
         assertEquals(
                 firstConfig.clientKey(),
-                SystemPropertiesConfig.DEFAULT_CLIENT_KEY);
+                SystemPropertiesConfig.default_client_key);
         assertEquals(
                 firstConfig.serverCertificate(),
-                SystemPropertiesConfig.DEFAULT_SERVER_CERTIFICATE);
+                SystemPropertiesConfig.default_server_certificate);
         assertEquals(
                 firstConfig.serverKey(),
-                SystemPropertiesConfig.DEFAULT_SERVER_KEY);
+                SystemPropertiesConfig.default_server_key);
 
         assertTrue(firstConfig.targetFilter().isEmpty());
 
