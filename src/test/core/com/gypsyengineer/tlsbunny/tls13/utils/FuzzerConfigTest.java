@@ -4,9 +4,9 @@ import com.gypsyengineer.tlsbunny.tls13.connection.check.AlertCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.check.Check;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
-import org.junit.Assert;
 import org.junit.Test;
 
+import static com.gypsyengineer.tlsbunny.TestUtils.expectUnsupported;
 import static com.gypsyengineer.tlsbunny.tls13.utils.FuzzerConfigUpdater.fuzzerConfigUpdater;
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.*;
@@ -79,7 +79,7 @@ public class FuzzerConfigTest {
     }
 
     @Test
-    public void testFuzzerConfigUpdater() {
+    public void assign() {
         Config mainConfig = SystemPropertiesConfig.load();
         FuzzerConfig[] configs = {
                 new FuzzerConfig(mainConfig),
@@ -94,6 +94,14 @@ public class FuzzerConfigTest {
             assertNotEquals("test", config.host());
             assertNotEquals(0.111, config.minRatio());
             assertNotEquals(0.222, config.maxRatio());
+            assertNotEquals(1000, config.readTimeout());
+            assertNotEquals("a/b/cert.pem", config.serverCertificate());
+            assertNotEquals("a/b/key.pem", config.serverKey());
+            assertNotEquals("c/d/cert.pem", config.clientCertificate());
+            assertNotEquals("c/d/key.pem", config.clientKey());
+            assertNotEquals(123, config.startTest());
+            assertNotEquals(234, config.endTest());
+            assertNotEquals(42, config.parts());
         }
 
         FuzzerConfigUpdater updater = fuzzerConfigUpdater(configs);
@@ -101,12 +109,46 @@ public class FuzzerConfigTest {
         updater.host("test");
         updater.minRatio(0.111);
         updater.maxRatio(0.222);
+        updater.readTimeout(1000);
+        updater.serverCertificate("a/b/cert.pem");
+        updater.serverKey("a/b/key.pem");
+        updater.clientCertificate("c/d/cert.pem");
+        updater.clientKey("c/d/key.pem");
+        updater.startTest(123);
+        updater.endTest(234);
+        updater.parts(42);
 
         for (Config config : configs) {
             assertEquals(42, config.port());
             assertEquals("test", config.host());
             assertTrue(0.111 == config.minRatio());
             assertTrue(0.222 == config.maxRatio());
+            assertEquals(1000, config.readTimeout());
+            assertEquals("a/b/cert.pem", config.serverCertificate());
+            assertEquals("a/b/key.pem", config.serverKey());
+            assertEquals("c/d/cert.pem", config.clientCertificate());
+            assertEquals("c/d/key.pem", config.clientKey());
+            assertEquals(123, config.startTest());
+            assertEquals(234, config.endTest());
+            assertEquals(42, config.parts());
         }
     }
+
+    @Test
+    public void unsupported() throws Exception {
+        FuzzerConfigUpdater updater = fuzzerConfigUpdater();
+        expectUnsupported(() -> updater.port());
+        expectUnsupported(() -> updater.parts());
+        expectUnsupported(() -> updater.host());
+        expectUnsupported(() -> updater.minRatio());
+        expectUnsupported(() -> updater.maxRatio());
+        expectUnsupported(() -> updater.serverKey());
+        expectUnsupported(() -> updater.serverCertificate());
+        expectUnsupported(() -> updater.clientKey());
+        expectUnsupported(() -> updater.clientCertificate());
+        expectUnsupported(() -> updater.startTest());
+        expectUnsupported(() -> updater.endTest());
+        expectUnsupported(() -> updater.readTimeout());
+    }
+
 }
