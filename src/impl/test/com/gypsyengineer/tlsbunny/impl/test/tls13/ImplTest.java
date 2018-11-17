@@ -3,6 +3,7 @@ package com.gypsyengineer.tlsbunny.impl.test.tls13;
 import com.gypsyengineer.tlsbunny.tls13.client.Client;
 import com.gypsyengineer.tlsbunny.tls13.server.Server;
 import com.gypsyengineer.tlsbunny.utils.Output;
+import com.gypsyengineer.tlsbunny.utils.UncaughtExceptionHandler;
 
 import static com.gypsyengineer.tlsbunny.impl.test.tls13.Utils.checkForASanFindings;
 import static com.gypsyengineer.tlsbunny.impl.test.tls13.Utils.sleep;
@@ -15,9 +16,6 @@ public class ImplTest {
 
     private Client client;
     private Server server;
-
-    private Thread serverThread;
-    private Thread clientThread;
 
     public ImplTest set(Client client) {
         this.client = client;
@@ -42,9 +40,12 @@ public class ImplTest {
              Output serverOutput = new Output("server")) {
 
             // start the server if it's not running
+            UncaughtExceptionHandler serverExceptionHandler = null;
+            Thread serverThread = null;
             if (!server.running()) {
                 server.set(serverOutput);
                 serverThread = server.start();
+                serverExceptionHandler = exceptionHandlerOf(serverThread);
                 Utils.waitStart(server);
             }
 
@@ -55,7 +56,9 @@ public class ImplTest {
 
             client.config().port(server.port());
             client.set(clientOutput);
-            clientThread = client.start();
+            Thread clientThread = client.start();
+            UncaughtExceptionHandler clientExceptionHandler = exceptionHandlerOf(clientThread);
+
             sleep(delay);
 
             // wait for client or server to finish
@@ -89,7 +92,7 @@ public class ImplTest {
                 Utils.sleep(delay);
             }
 
-            if (clientThread != null && clientThread.isAlive()) {
+            if (clientThread.isAlive()) {
                 throw whatTheHell("client thread is still running!");
             }
 
@@ -97,8 +100,14 @@ public class ImplTest {
                 throw whatTheHell("server thread is still running!");
             }
 
-            if (server.failed()) {
-                throw whatTheHell("server failed!");
+            if (clientExceptionHandler.knowsSomething()) {
+                throw whatTheHell("unexpected exception on client side",
+                        clientExceptionHandler.exception());
+            }
+
+            if (serverExceptionHandler != null && serverExceptionHandler.knowsSomething()) {
+                throw whatTheHell("unexpected exception on server side",
+                        serverExceptionHandler.exception());
             }
 
             checkForASanFindings(client.output());
@@ -106,6 +115,20 @@ public class ImplTest {
         }
 
         return this;
+    }
+
+    private static UncaughtExceptionHandler exceptionHandlerOf(Thread thread) {
+        Thread.UncaughtExceptionHandler handler = thread.getUncaughtExceptionHandler();
+        if (handler == null) {
+            throw whatTheHell("no exception handler! (null)");
+        }
+
+        if (handler instanceof UncaughtExceptionHandler == false) {
+            throw whatTheHell("unexpected exception handler: %s",
+                    handler.getClass().getName());
+        }
+
+        return (UncaughtExceptionHandler) handler;
     }
 
 }

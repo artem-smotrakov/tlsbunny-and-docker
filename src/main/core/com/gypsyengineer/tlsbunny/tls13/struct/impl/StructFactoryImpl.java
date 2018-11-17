@@ -8,6 +8,8 @@ import com.gypsyengineer.tlsbunny.tls.Vector;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
 import com.gypsyengineer.tlsbunny.utils.Utils;
 
+import java.util.List;
+
 // TODO: all implementations should return immutable vectors
 public class StructFactoryImpl implements StructFactory {
 
@@ -23,13 +25,13 @@ public class StructFactoryImpl implements StructFactory {
     public TLSPlaintext[] createTLSPlaintexts(
             ContentType type, ProtocolVersion version, byte[] content) {
         
-        if (content.length <= TLSPlaintext.MAX_ALLOWED_LENGTH) {
+        if (content.length <= TLSPlaintext.max_allowed_length) {
             return new TLSPlaintext[] {
                 createTLSPlaintext(type, version, content)
             };
         }
 
-        byte[][] fragments = Utils.split(content, TLSPlaintext.MAX_ALLOWED_LENGTH);
+        byte[][] fragments = Utils.split(content, TLSPlaintext.max_allowed_length);
         TLSPlaintext[] tlsPlaintexts = new TLSPlaintext[fragments.length];
         for (int i=0; i < fragments.length; i++) {
             tlsPlaintexts[i] = createTLSPlaintext(type, version, fragments[i]);
@@ -67,13 +69,30 @@ public class StructFactoryImpl implements StructFactory {
     @Override
     public ClientHello createClientHello(ProtocolVersion legacy_version,
                                          Random random,
-                                         Vector<Byte> legacy_session_id,
-                                         Vector<CipherSuite> cipher_suites,
-                                         Vector<CompressionMethod> legacy_compression_methods,
-                                         Vector<Extension> extensions) {
+                                         byte[] legacy_session_id,
+                                         List<CipherSuite> cipher_suites,
+                                         List<CompressionMethod> legacy_compression_methods,
+                                         List<Extension> extensions) {
+        return new ClientHelloImpl(
+                legacy_version,
+                random,
+                Vector.wrap(
+                        ClientHello.legacy_session_id_length_bytes,
+                        legacy_session_id),
+                Vector.wrap(
+                        ClientHello.cipher_suites_length_bytes,
+                        cipher_suites),
+                Vector.wrap(
+                        ClientHello.legacy_compression_methods_length_bytes,
+                        legacy_compression_methods),
+                Vector.wrap(
+                        ClientHello.extensions_length_bytes,
+                        extensions));
+    }
 
-        return new ClientHelloImpl(legacy_version, random, legacy_session_id,
-                cipher_suites, legacy_compression_methods, extensions);
+    @Override
+    public EncryptedExtensions createEncryptedExtensions(Vector<Extension> extensions) {
+        return new EncryptedExtensionsImpl(extensions);
     }
 
     @Override
@@ -115,7 +134,7 @@ public class StructFactoryImpl implements StructFactory {
         
         return new CertificateVerifyImpl(
                 algorithm,
-                Vector.wrap(CertificateVerifyImpl.SIGNATURE_LENGTH_BYTES, signature));
+                Vector.wrap(CertificateVerifyImpl.signature_length_bytes, signature));
     }
     
     @Override
@@ -139,7 +158,7 @@ public class StructFactoryImpl implements StructFactory {
             ProtocolVersion version) {
 
         return new SupportedVersionsImpl.ClientHelloImpl(
-                Vector.wrap(SupportedVersions.ClientHello.VERSIONS_LENGTH_BYTES, version));
+                Vector.wrap(SupportedVersions.ClientHello.versions_length_bytes, version));
     }
 
     @Override
@@ -176,7 +195,7 @@ public class StructFactoryImpl implements StructFactory {
         if (entries.length > 0) {
             return new KeyShareImpl.ClientHelloImpl(
                     Vector.wrap(
-                            KeyShare.ClientHello.LENGTH_BYTES,
+                            KeyShare.ClientHello.length_bytes,
                             entries));
         }
 
@@ -191,13 +210,13 @@ public class StructFactoryImpl implements StructFactory {
     @Override
     public SignatureSchemeList createSignatureSchemeList(SignatureScheme scheme) {
         return new SignatureSchemeListImpl(
-                Vector.wrap(SignatureSchemeList.LENGTH_BYTES, scheme));
+                Vector.wrap(SignatureSchemeList.length_bytes, scheme));
     }
 
     @Override
     public NamedGroupList createNamedGroupList(NamedGroup... groups) {
         return new NamedGroupListImpl(
-                Vector.wrap(NamedGroupList.LENGTH_BYTES, groups));
+                Vector.wrap(NamedGroupList.length_bytes, groups));
     }
 
     @Override

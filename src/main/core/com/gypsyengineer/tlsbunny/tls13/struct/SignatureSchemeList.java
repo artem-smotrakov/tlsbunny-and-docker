@@ -5,7 +5,7 @@ import com.gypsyengineer.tlsbunny.tls.Vector;
 
 public interface SignatureSchemeList extends Struct {
 
-    int LENGTH_BYTES = 2;
+    int length_bytes = 2;
 
     Vector<SignatureScheme> getSupportedSignatureAlgorithms();
 }

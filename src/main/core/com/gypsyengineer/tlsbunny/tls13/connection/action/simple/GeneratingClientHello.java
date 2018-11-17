@@ -117,7 +117,7 @@ public class GeneratingClientHello extends AbstractAction<GeneratingClientHello>
         ClientHello hello = context.factory.createClientHello(
                 legacyVersion,
                 createRandom(),
-                StructFactory.EMPTY_SESSION_ID,
+                StructFactory.empty_session_id,
                 List.of(cipherSuites),
                 List.of(CompressionMethod.None),
                 extensions);

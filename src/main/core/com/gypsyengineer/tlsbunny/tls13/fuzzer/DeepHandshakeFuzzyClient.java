@@ -1,15 +1,12 @@
-package com.gypsyengineer.tlsbunny.tls13.client.fuzzer;
+package com.gypsyengineer.tlsbunny.tls13.fuzzer;
 
 import com.gypsyengineer.tlsbunny.fuzzer.Ratio;
 import com.gypsyengineer.tlsbunny.tls13.client.Client;
-import com.gypsyengineer.tlsbunny.tls13.client.HttpsClient;
-import com.gypsyengineer.tlsbunny.tls13.client.HttpsClientAuth;
 import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.EngineException;
 import com.gypsyengineer.tlsbunny.tls13.connection.check.Check;
 import com.gypsyengineer.tlsbunny.tls13.connection.check.SuccessCheck;
-import com.gypsyengineer.tlsbunny.tls13.fuzzer.DeepHandshakeFuzzer;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Negotiator;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.tls13.utils.FuzzerConfig;
@@ -32,59 +29,38 @@ import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public class DeepHandshakeFuzzyClient implements Client {
 
-    public static final Runner.ClientFactory client_factory =
-            DeepHandshakeFuzzyClient::deepHandshakeFuzzyClient;
-
     private static final int max_attempts = 3;
     private static final int delay = 3000; // in millis
 
-    private static final long long_read_timeout = 5000;
-
-    private static final Ratio[] byte_flip_ratios = {
-            new Ratio(0.01, 0.02),
-            new Ratio(0.02, 0.03),
-            new Ratio(0.03, 0.04),
-            new Ratio(0.04, 0.05),
-            new Ratio(0.05, 0.06),
-            new Ratio(0.06, 0.07),
-            new Ratio(0.07, 0.08),
-            new Ratio(0.08, 0.09),
-            new Ratio(0.1, 0.2),
-            new Ratio(0.2, 0.3),
-            new Ratio(0.3, 0.4),
-            new Ratio(0.4, 0.5),
-            new Ratio(0.5, 0.6),
-            new Ratio(0.6, 0.7),
-            new Ratio(0.7, 0.8),
-            new Ratio(0.8, 0.9),
-            new Ratio(0.9, 1.0),
-    };
-
-    private static final Ratio[] bit_flip_ratios = {
-            new Ratio(0.01, 0.02),
-            new Ratio(0.02, 0.03),
-            new Ratio(0.03, 0.04),
-            new Ratio(0.04, 0.05),
-            new Ratio(0.05, 0.06),
-            new Ratio(0.06, 0.07),
-            new Ratio(0.07, 0.08),
-            new Ratio(0.08, 0.09),
-    };
-
+    private Client client;
     private Output output;
     private FuzzerConfig fuzzerConfig;
 
     private boolean strict = true;
 
-    public static DeepHandshakeFuzzyClient deepHandshakeFuzzyClient(
-            FuzzerConfig fuzzerConfig, Output output) {
-
-        return new DeepHandshakeFuzzyClient(fuzzerConfig, output);
+    public static DeepHandshakeFuzzyClient deepHandshakeFuzzyClient() {
+        return new DeepHandshakeFuzzyClient();
     }
 
-    public DeepHandshakeFuzzyClient(FuzzerConfig fuzzerConfig, Output output) {
+    public static DeepHandshakeFuzzyClient deepHandshakeFuzzyClient(
+            Client client, FuzzerConfig fuzzerConfig, Output output) {
+
+        return new DeepHandshakeFuzzyClient(client, fuzzerConfig, output);
+    }
+
+    private DeepHandshakeFuzzyClient() {}
+
+    public DeepHandshakeFuzzyClient(
+            Client client, FuzzerConfig fuzzerConfig, Output output) {
+
+        this.client = client;
         this.output = output;
         this.fuzzerConfig = fuzzerConfig;
+    }
+
+    public DeepHandshakeFuzzyClient of(Client client) {
+        this.client = client;
+        return this;
     }
 
     @Override
@@ -164,11 +140,6 @@ public class DeepHandshakeFuzzyClient implements Client {
 
         DeepHandshakeFuzzer deepHandshakeFuzzer = (DeepHandshakeFuzzer) factory;
         deepHandshakeFuzzer.set(output);
-
-        if (fuzzerConfig.noClient()) {
-            throw whatTheHell("no client provided!");
-        }
-        Client client = fuzzerConfig.client();
 
         deepHandshakeFuzzer.recording();
         try {
@@ -269,96 +240,6 @@ public class DeepHandshakeFuzzyClient implements Client {
 
     private boolean shouldRun(DeepHandshakeFuzzer fuzzer) {
         return fuzzer.canFuzz() && fuzzer.currentTest() <= fuzzerConfig.endTest();
-    }
-
-    // fuzzer configs
-
-    public static FuzzerConfig[] noClientAuth(Config config) {
-        return merge(
-                enumerateByteFlipRatios(
-                        () -> deepHandshakeFuzzer(),
-                        new FuzzerConfig(config)
-                                .client(new HttpsClient())
-                                .readTimeout(long_read_timeout)
-                                .endTest(2000)
-                                .parts(5)),
-                enumerateBitFlipRatios(
-                        () -> deepHandshakeFuzzer(),
-                        new FuzzerConfig(config)
-                                .client(new HttpsClient())
-                                .readTimeout(long_read_timeout)
-                                .endTest(2000)
-                                .parts(5)));
-    }
-
-    public static FuzzerConfig[] clientAuth(Config config) {
-        return merge(
-                enumerateByteFlipRatios(
-                        () -> deepHandshakeFuzzer(),
-                        new FuzzerConfig(config)
-                                .client(new HttpsClientAuth())
-                                .readTimeout(long_read_timeout)
-                                .endTest(2000)
-                                .parts(5)),
-                enumerateBitFlipRatios(
-                        () -> deepHandshakeFuzzer(),
-                        new FuzzerConfig(config)
-                                .client(new HttpsClientAuth())
-                                .readTimeout(long_read_timeout)
-                                .endTest(2000)
-                                .parts(5)));
-    }
-
-    private static FuzzerConfig[] enumerateByteFlipRatios(
-            FuzzyStructFactoryBuilder builder, FuzzerConfig... configs) {
-
-        List<FuzzerConfig> generatedConfigs = new ArrayList<>();
-        for (FuzzerConfig config : configs) {
-            for (Ratio ratio : byte_flip_ratios) {
-                FuzzerConfig newConfig = config.copy();
-                DeepHandshakeFuzzer deepHandshakeFuzzer = builder.build();
-                deepHandshakeFuzzer.fuzzer(newByteFlipFuzzer()
-                        .minRatio(ratio.min())
-                        .maxRatio(ratio.max()));
-                newConfig.factory(deepHandshakeFuzzer);
-
-                generatedConfigs.add(newConfig);
-            }
-        }
-
-        return generatedConfigs.toArray(new FuzzerConfig[0]);
-    }
-
-    private static FuzzerConfig[] enumerateBitFlipRatios(
-            FuzzyStructFactoryBuilder builder, FuzzerConfig... configs) {
-
-        List<FuzzerConfig> generatedConfigs = new ArrayList<>();
-        for (FuzzerConfig config : configs) {
-            for (Ratio ratio : bit_flip_ratios) {
-                FuzzerConfig newConfig = config.copy();
-                DeepHandshakeFuzzer deepHandshakeFuzzer = builder.build();
-                deepHandshakeFuzzer.fuzzer(newBitFlipFuzzer()
-                                .minRatio(ratio.min())
-                                .maxRatio(ratio.max()));
-                newConfig.factory(deepHandshakeFuzzer);
-
-                generatedConfigs.add(newConfig);
-            }
-        }
-
-        return generatedConfigs.toArray(new FuzzerConfig[0]);
-    }
-
-    private static FuzzerConfig[] merge(FuzzerConfig[]... lists) {
-        List<FuzzerConfig> result = new ArrayList<>();
-        for (FuzzerConfig[] configs : lists) {
-            result.addAll(List.of(configs));
-        }
-        return result.toArray(new FuzzerConfig[0]);
-    }
-
-    private interface FuzzyStructFactoryBuilder {
-        DeepHandshakeFuzzer build();
     }
 
 }

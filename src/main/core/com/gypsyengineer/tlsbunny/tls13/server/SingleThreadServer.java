@@ -1,8 +1,14 @@
 package com.gypsyengineer.tlsbunny.tls13.server;
 
+import com.gypsyengineer.tlsbunny.tls13.connection.action.ActionFailed;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.Phase;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.GeneratingAlert;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.WrappingIntoTLSPlaintexts;
 import com.gypsyengineer.tlsbunny.tls13.connection.check.Check;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.EngineFactory;
+import com.gypsyengineer.tlsbunny.tls13.crypto.AEADException;
+import com.gypsyengineer.tlsbunny.tls13.handshake.NegotiatorException;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 import com.gypsyengineer.tlsbunny.utils.Connection;
@@ -10,32 +16,32 @@ import com.gypsyengineer.tlsbunny.utils.Output;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import static com.gypsyengineer.tlsbunny.tls13.struct.AlertDescription.handshake_failure;
+import static com.gypsyengineer.tlsbunny.tls13.struct.AlertLevel.fatal;
+import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.alert;
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public class SingleThreadServer implements Server {
 
     public static final int free_port = 0;
-    private static final int start_delay = 1000; // in millis
 
     private final ServerSocket serverSocket;
 
+    // TODO: add synchronization
     private Config config = SystemPropertiesConfig.load();
     private EngineFactory factory;
     private StopCondition stopCondition = new NonStop();
     private Output output = new Output("server");
     private Check check;
-
     private boolean failed = false;
-
-    // TODO: add synchronization
-    private Engine recentEngine;
-    private List<Engine> engines = new ArrayList<>();
-
-    // TODO: add synchronization
     private boolean running = false;
+
+    private final List<Engine> engines = Collections.synchronizedList(new ArrayList<>());
 
     public SingleThreadServer() throws IOException {
         this(free_port);
@@ -95,18 +101,18 @@ public class SingleThreadServer implements Server {
     }
 
     @Override
-    public Engine recentEngine() {
-        return recentEngine;
-    }
-
-    @Override
     public Engine[] engines() {
-        return engines.toArray(new Engine[engines.size()]);
+        return engines.toArray(new Engine[0]);
     }
 
     @Override
     public int port() {
         return serverSocket.getLocalPort();
+    }
+
+    @Override
+    public EngineFactory engineFactory() {
+        return factory;
     }
 
     @Override
@@ -121,24 +127,30 @@ public class SingleThreadServer implements Server {
             try (Connection connection = Connection.create(serverSocket.accept())) {
                 output.info("accepted");
 
-                recentEngine = factory.create();
-                engines.add(recentEngine);
+                Engine engine = factory.create();
+                engines.add(engine);
 
-                recentEngine.set(output);
-                recentEngine.set(connection);
-                recentEngine.connect(); // TODO: rename connect -> run
+                engine.set(output);
+                engine.set(connection);
+
+                try {
+                    engine.connect(); // TODO: rename connect -> run
+                } catch (Exception e) {
+                    connection.send(generateAlert(engine));
+                    failed = true;
+                }
 
                 if (check != null) {
                     output.info("run check: %s", check.name());
-                    check.set(recentEngine);
-                    check.set(recentEngine.context());
+                    check.set(engine);
+                    check.set(engine.context());
                     check.run();
                     failed &= check.failed();
                 }
 
                 output.info("done");
             } catch (Exception e) {
-                output.achtung("exception: ", e);
+                output.achtung("unexpected exception: ", e);
                 failed = true;
                 break;
             }
@@ -151,19 +163,6 @@ public class SingleThreadServer implements Server {
     @Override
     public boolean running() {
         return running;
-    }
-
-    public Thread start() {
-        Thread thread = new Thread(this);
-        thread.start();
-
-        try {
-            Thread.sleep(start_delay);
-        } catch (InterruptedException e) {
-            output.achtung("exception: ", e);
-        }
-
-        return thread;
     }
 
     @Override
@@ -180,14 +179,31 @@ public class SingleThreadServer implements Server {
     }
 
     @Override
-    public void close() throws IOException {
-        if (!serverSocket.isClosed()) {
-            serverSocket.close();
-        }
+    public void close() {
+        stop();
 
         if (output != null) {
             output.flush();
         }
+    }
+
+    private ByteBuffer generateAlert(Engine engine) throws IOException, NegotiatorException,
+            ActionFailed, AEADException {
+
+        ByteBuffer buffer = new GeneratingAlert()
+                .level(fatal)
+                .description(handshake_failure)
+                .set(engine.context())
+                .set(output)
+                .run()
+                .out();
+        return new WrappingIntoTLSPlaintexts()
+                .type(alert)
+                .set(engine.context())
+                .set(output)
+                .in(buffer)
+                .run()
+                .out();
     }
 
 }

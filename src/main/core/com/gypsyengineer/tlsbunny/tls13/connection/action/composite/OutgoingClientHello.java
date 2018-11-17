@@ -26,7 +26,7 @@ public class OutgoingClientHello extends AbstractAction {
 
         ClientHello hello = context.factory.createClientHello(ProtocolVersion.TLSv12,
                 createRandom(),
-                StructFactory.EMPTY_SESSION_ID,
+                StructFactory.empty_session_id,
                 List.of(CipherSuite.TLS_AES_128_GCM_SHA256),
                 List.of(context.factory.createCompressionMethod(0)),
                 extensions);

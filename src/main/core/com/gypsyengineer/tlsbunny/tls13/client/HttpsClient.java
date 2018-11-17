@@ -35,6 +35,10 @@ public class HttpsClient extends SingleConnectionClient {
         }
     }
 
+    public static HttpsClient httpsClient() {
+        return new HttpsClient();
+    }
+
     public HttpsClient() {
         checks = List.of(
                 new NoAlertCheck(),

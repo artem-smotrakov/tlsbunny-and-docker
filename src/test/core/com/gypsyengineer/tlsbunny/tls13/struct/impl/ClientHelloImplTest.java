@@ -16,15 +16,15 @@ public class ClientHelloImplTest {
 
         assertTrue(hello.composite());
         assertEquals(hello.total(), 6);
-        assertEquals(hello.getProtocolVersion(), hello.element(0));
-        assertEquals(hello.getRandom(), hello.element(1));
-        assertEquals(hello.getLegacySessionId(), hello.element(2));
-        assertEquals(hello.getCipherSuites(), hello.element(3));
-        assertEquals(hello.getLegacyCompressionMethods(), hello.element(4));
-        assertEquals(hello.getExtensions(), hello.element(5));
+        assertEquals(hello.protocolVersion(), hello.element(0));
+        assertEquals(hello.random(), hello.element(1));
+        assertEquals(hello.legacySessionId(), hello.element(2));
+        assertEquals(hello.cipherSuites(), hello.element(3));
+        assertEquals(hello.legacyCompressionMethods(), hello.element(4));
+        assertEquals(hello.extensions(), hello.element(5));
 
         hello.element(0, ProtocolVersion.TLSv12);
-        assertEquals(hello.getProtocolVersion(), hello.element(0));
+        assertEquals(hello.protocolVersion(), hello.element(0));
         assertEquals(ProtocolVersion.TLSv12, hello.element(0));
     }
 

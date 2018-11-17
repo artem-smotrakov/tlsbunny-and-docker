@@ -1,5 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls13.fuzzer;
 
+import com.gypsyengineer.tlsbunny.TestUtils;
 import com.gypsyengineer.tlsbunny.fuzzer.AbstractFlipFuzzer;
 import com.gypsyengineer.tlsbunny.tls.Random;
 import com.gypsyengineer.tlsbunny.tls.Struct;
@@ -44,7 +45,7 @@ public class DeepHandshakeFuzzerTest {
 
     @Test
     public void fuzzing() throws IOException {
-        DeepHandshakeFuzzer fuzzer = deepHandshakeFuzzer().fuzzer(new ZeroFuzzer());
+        DeepHandshakeFuzzer fuzzer = deepHandshakeFuzzer().fuzzer(new TestUtils.ZeroFuzzer());
         fuzzer.recording();
         ClientHello hello = createClientHello(
                 fuzzer,
@@ -439,15 +440,5 @@ public class DeepHandshakeFuzzerTest {
                     .run(new WrappingApplicationDataIntoTLSCiphertext())
                     .send(new OutgoingData());
         }
-    }
-
-    // the fuzzer just sets all bytes of encoding to zeroes
-    private static class ZeroFuzzer extends AbstractFlipFuzzer {
-
-        @Override
-        protected byte[] fuzzImpl(byte[] array) {
-            return new byte[array.length];
-        }
-
     }
 }

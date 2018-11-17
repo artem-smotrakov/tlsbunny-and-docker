@@ -77,37 +77,61 @@ public class ClientHelloImpl implements ClientHello {
     }
 
     @Override
-    public Vector<Byte> getLegacySessionId() {
+    public Vector<Byte> legacySessionId() {
         return legacy_session_id;
     }
 
     @Override
-    public Vector<CompressionMethod> getLegacyCompressionMethods() {
+    public Vector<CompressionMethod> legacyCompressionMethods() {
         return legacy_compression_methods;
     }
 
     @Override
-    public Vector<CipherSuite> getCipherSuites() {
+    public Vector<CipherSuite> cipherSuites() {
         return cipher_suites;
     }
 
     @Override
-    public ProtocolVersion getProtocolVersion() {
+    public ProtocolVersion protocolVersion() {
         return legacy_version;
     }
 
     @Override
-    public Random getRandom() {
+    public Random random() {
         return random;
     }
 
     @Override
-    public Vector<Extension> getExtensions() {
+    public ClientHello cipherSuites(Vector<CipherSuite> cipherSuites) {
+        this.cipher_suites = cipherSuites;
+        return this;
+    }
+
+    @Override
+    public ClientHello extensions(Vector<Extension> extensions) {
+        this.extensions = extensions;
+        return this;
+    }
+
+    @Override
+    public ClientHello legacyCompressionMethods(Vector<CompressionMethod> compressionMethods) {
+        this.legacy_compression_methods = compressionMethods;
+        return this;
+    }
+
+    @Override
+    public ClientHello legacySessionId(Vector<Byte> sessionId) {
+        this.legacy_session_id = sessionId;
+        return this;
+    }
+
+    @Override
+    public Vector<Extension> extensions() {
         return extensions;
     }
 
     @Override
-    public Extension findExtension(ExtensionType type) {
+    public Extension find(ExtensionType type) {
         for (Extension extension : extensions.toList()) {
             if (type.equals(extension.getExtensionType())) {
                 return extension;

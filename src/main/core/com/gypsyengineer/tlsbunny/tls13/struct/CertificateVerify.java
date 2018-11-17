@@ -4,7 +4,7 @@ import com.gypsyengineer.tlsbunny.tls.Vector;
 
 public interface CertificateVerify extends HandshakeMessage {
 
-    int SIGNATURE_LENGTH_BYTES = 2;
+    int signature_length_bytes = 2;
 
     SignatureScheme getAlgorithm();
     Vector<Byte> getSignature();

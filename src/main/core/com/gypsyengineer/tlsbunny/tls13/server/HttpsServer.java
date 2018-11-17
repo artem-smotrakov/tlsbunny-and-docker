@@ -71,9 +71,9 @@ public class HttpsServer implements Server {
         return this;
     }
 
-    @Override
-    public Thread start() {
-        return server.start();
+    public HttpsServer neverStop() {
+        server.stopWhen(new NonStop());
+        return this;
     }
 
     @Override
@@ -93,11 +93,6 @@ public class HttpsServer implements Server {
     }
 
     @Override
-    public Engine recentEngine() {
-        return server.recentEngine();
-    }
-
-    @Override
     public Engine[] engines() {
         return server.engines();
     }
@@ -105,6 +100,11 @@ public class HttpsServer implements Server {
     @Override
     public boolean failed() {
         return server.failed();
+    }
+
+    @Override
+    public EngineFactory engineFactory() {
+        return engineFactory;
     }
 
     @Override
@@ -120,7 +120,7 @@ public class HttpsServer implements Server {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         server.close();
     }
 

@@ -8,13 +8,12 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.gypsyengineer.tlsbunny.tls13.fuzzer.Target.*;
 import static com.gypsyengineer.tlsbunny.utils.HexDump.printHexDiff;
 
 public class MutatedStructFactory extends FuzzyStructFactory<byte[]> {
 
-    public static final Target DEFAULT_TARGET = Target.tls_plaintext;
-
-    public static MutatedStructFactory newMutatedStructFactory() {
+    public static MutatedStructFactory mutatedStructFactory() {
         return new MutatedStructFactory();
     }
 
@@ -24,7 +23,7 @@ public class MutatedStructFactory extends FuzzyStructFactory<byte[]> {
 
     public MutatedStructFactory(StructFactory factory, Output output) {
         super(factory, output);
-        target(DEFAULT_TARGET);
+        targets(tls_plaintext);
     }
 
     @Override
@@ -34,7 +33,7 @@ public class MutatedStructFactory extends FuzzyStructFactory<byte[]> {
         TLSPlaintext[] tlsPlaintexts = factory.createTLSPlaintexts(
                 type, version, content);
 
-        if (target == Target.tls_plaintext) {
+        if (targeted(tls_plaintext)) {
             int index = 0;
             try {
                 byte[] encoding = tlsPlaintexts[index].encoding();
@@ -57,7 +56,7 @@ public class MutatedStructFactory extends FuzzyStructFactory<byte[]> {
         TLSPlaintext tlsPlaintext = factory.createTLSPlaintext(
                 type, version, content);
 
-        if (target == Target.tls_plaintext) {
+        if (targeted(tls_plaintext)) {
             output.info("fuzz TLSPlaintext");
             try {
                 tlsPlaintext = new MutatedStruct(fuzz(tlsPlaintext.encoding()));
@@ -73,7 +72,7 @@ public class MutatedStructFactory extends FuzzyStructFactory<byte[]> {
     synchronized public Handshake createHandshake(HandshakeType type, byte[] content) {
         Handshake handshake = factory.createHandshake(type, content);
 
-        if (target == Target.handshake) {
+        if (targeted(Target.handshake)) {
             output.info("fuzz Handshake");
             try {
                 handshake = new MutatedStruct(fuzz(handshake.encoding()));
@@ -98,7 +97,7 @@ public class MutatedStructFactory extends FuzzyStructFactory<byte[]> {
                 legacy_version, random, legacy_session_id, cipher_suites,
                 legacy_compression_methods, extensions);
 
-        if (target == Target.client_hello) {
+        if (targeted(client_hello)) {
             output.info("fuzz ClientHello");
             try {
                 byte[] fuzzed = fuzz(clientHello.encoding());
@@ -113,10 +112,54 @@ public class MutatedStructFactory extends FuzzyStructFactory<byte[]> {
     }
 
     @Override
+    public ServerHello createServerHello(ProtocolVersion version,
+                                         Random random,
+                                         byte[] legacy_session_id_echo,
+                                         CipherSuite cipher_suite,
+                                         CompressionMethod legacy_compression_method,
+                                         List<Extension> extensions) {
+
+        ServerHello serverHello = factory.createServerHello(
+                version, random, legacy_session_id_echo, cipher_suite,
+                legacy_compression_method, extensions);
+
+        if (targeted(server_hello)) {
+            output.info("fuzz ServerHello");
+            try {
+                byte[] fuzzed = fuzz(serverHello.encoding());
+                serverHello = new MutatedStruct(
+                        fuzzed.length, fuzzed, HandshakeType.server_hello);
+            } catch (IOException e) {
+                output.achtung("I couldn't fuzz ServerHello: %s", e.getMessage());
+            }
+        }
+
+        return serverHello;
+    }
+
+    @Override
+    public EncryptedExtensions createEncryptedExtensions(Extension... extensions) {
+        EncryptedExtensions encryptedExtensions = factory.createEncryptedExtensions(extensions);
+
+        if (targeted(encrypted_extensions)) {
+            output.info("fuzz EncryptedExtensions");
+            try {
+                byte[] fuzzed = fuzz(encryptedExtensions.encoding());
+                encryptedExtensions = new MutatedStruct(
+                        fuzzed.length, fuzzed, HandshakeType.encrypted_extensions);
+            } catch (IOException e) {
+                output.achtung("I couldn't fuzz EncryptedExtensions: %s", e.getMessage());
+            }
+        }
+
+        return encryptedExtensions;
+    }
+
+    @Override
     synchronized public Finished createFinished(byte[] verify_data) {
         Finished finished = factory.createFinished(verify_data);
 
-        if (target == Target.finished) {
+        if (targeted(Target.finished)) {
             output.info("fuzz Finished");
             try {
                 byte[] fuzzed = fuzz(finished.encoding());
@@ -137,7 +180,7 @@ public class MutatedStructFactory extends FuzzyStructFactory<byte[]> {
         Certificate certificate = factory.createCertificate(
                 certificate_request_context, certificate_list);
 
-        if (target == Target.certificate) {
+        if (targeted(Target.certificate)) {
             output.info("fuzz Certificate");
             try {
                 byte[] fuzzed = fuzz(certificate.encoding());
@@ -158,7 +201,7 @@ public class MutatedStructFactory extends FuzzyStructFactory<byte[]> {
         CertificateVerify certificateVerify = factory.createCertificateVerify(
                 algorithm, signature);
 
-        if (target == Target.certificate_verify) {
+        if (targeted(certificate_verify)) {
             output.info("fuzz CertificateVerify");
             try {
                 byte[] fuzzed = fuzz(certificateVerify.encoding());
@@ -176,7 +219,7 @@ public class MutatedStructFactory extends FuzzyStructFactory<byte[]> {
     synchronized public ChangeCipherSpec createChangeCipherSpec(int value) {
         ChangeCipherSpec ccs = factory.createChangeCipherSpec(value);
 
-        if (target == Target.ccs) {
+        if (targeted(Target.ccs)) {
             output.info("fuzz ChangeCipherSpec");
             try {
                 byte[] fuzzed = fuzz(ccs.encoding());
@@ -193,11 +236,11 @@ public class MutatedStructFactory extends FuzzyStructFactory<byte[]> {
     synchronized public byte[] fuzz(byte[] encoding) {
         byte[] fuzzed = fuzzer.fuzz(encoding);
 
-        output.info("%s (original): %n", target);
+        output.info("original: %n");
         output.increaseIndent();
         output.info("%s%n", printHexDiff(encoding, fuzzed));
         output.decreaseIndent();
-        output.info("%s (fuzzed): %n", target);
+        output.info("fuzzed: %n");
         output.increaseIndent();
         output.info("%s%n", printHexDiff(fuzzed, encoding));
         output.decreaseIndent();

@@ -6,7 +6,8 @@ import com.gypsyengineer.tlsbunny.tls13.struct.*;
 import java.io.IOException;
 
 public class MutatedStruct implements TLSPlaintext, Handshake, ChangeCipherSpec,
-        ClientHello, Finished, Certificate, CertificateVerify {
+        ClientHello, ServerHello, EncryptedExtensions, Finished, Certificate,
+        CertificateVerify {
 
     private static final HandshakeType NO_HANDSHAKE_TYPE = null;
 
@@ -155,27 +156,57 @@ public class MutatedStruct implements TLSPlaintext, Handshake, ChangeCipherSpec,
     }
 
     @Override
-    public Extension findExtension(ExtensionType type) {
+    public Extension find(ExtensionType type) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Vector<CipherSuite> getCipherSuites() {
+    public Vector<CipherSuite> cipherSuites() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Vector<Extension> getExtensions() {
+    public Vector<Extension> extensions() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Vector<CompressionMethod> getLegacyCompressionMethods() {
+    public Vector<CompressionMethod> legacyCompressionMethods() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Vector<Byte> getLegacySessionId() {
+    public Vector<Byte> legacySessionId() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public ProtocolVersion protocolVersion() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Random random() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public ClientHello cipherSuites(Vector<CipherSuite> cipherSuites) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public ClientHello extensions(Vector<Extension> extensions) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public ClientHello legacyCompressionMethods(Vector<CompressionMethod> compressionMethods) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public ClientHello legacySessionId(Vector<Byte> sessionId) {
         throw new UnsupportedOperationException();
     }
 
@@ -186,6 +217,31 @@ public class MutatedStruct implements TLSPlaintext, Handshake, ChangeCipherSpec,
 
     @Override
     public Random getRandom() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Vector<Byte> getLegacySessionIdEcho() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public CipherSuite getCipherSuite() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public CompressionMethod getLegacyCompressionMethod() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Vector<Extension> getExtensions() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Extension findExtension(ExtensionType type) {
         throw new UnsupportedOperationException();
     }
 

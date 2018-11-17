@@ -4,12 +4,12 @@ import com.gypsyengineer.tlsbunny.tls13.connection.check.AlertCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.check.Check;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
+import org.junit.Assert;
 import org.junit.Test;
 
+import static com.gypsyengineer.tlsbunny.tls13.utils.FuzzerConfigUpdater.fuzzerConfigUpdater;
 import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.*;
 
 public class FuzzerConfigTest {
 
@@ -76,5 +76,37 @@ public class FuzzerConfigTest {
 
         assertTrue(firstConfig.minRatio(0.11).minRatio() == 0.11);
         assertTrue(firstConfig.maxRatio(0.11).maxRatio() == 0.11);
+    }
+
+    @Test
+    public void testFuzzerConfigUpdater() {
+        Config mainConfig = SystemPropertiesConfig.load();
+        FuzzerConfig[] configs = {
+                new FuzzerConfig(mainConfig),
+                new FuzzerConfig(mainConfig),
+                new FuzzerConfig(mainConfig),
+                new FuzzerConfig(mainConfig),
+                new FuzzerConfig(mainConfig),
+        };
+
+        for (Config config : configs) {
+            assertNotEquals(42, config.port());
+            assertNotEquals("test", config.host());
+            assertNotEquals(0.111, config.minRatio());
+            assertNotEquals(0.222, config.maxRatio());
+        }
+
+        FuzzerConfigUpdater updater = fuzzerConfigUpdater(configs);
+        updater.port(42);
+        updater.host("test");
+        updater.minRatio(0.111);
+        updater.maxRatio(0.222);
+
+        for (Config config : configs) {
+            assertEquals(42, config.port());
+            assertEquals("test", config.host());
+            assertTrue(0.111 == config.minRatio());
+            assertTrue(0.222 == config.maxRatio());
+        }
     }
 }

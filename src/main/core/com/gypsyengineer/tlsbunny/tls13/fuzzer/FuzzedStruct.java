@@ -75,27 +75,57 @@ public class FuzzedStruct implements ClientHello, ServerHello,
     }
 
     @Override
-    public Extension findExtension(ExtensionType type) {
+    public Extension find(ExtensionType type) {
         throw new UnsupportedOperationException("I can't do that!");
     }
 
     @Override
-    public Vector<CipherSuite> getCipherSuites() {
+    public Vector<CipherSuite> cipherSuites() {
         throw new UnsupportedOperationException("I can't do that!");
     }
 
     @Override
-    public Vector<Extension> getExtensions() {
+    public Vector<Extension> extensions() {
         throw new UnsupportedOperationException("I can't do that!");
     }
 
     @Override
-    public Vector<CompressionMethod> getLegacyCompressionMethods() {
+    public Vector<CompressionMethod> legacyCompressionMethods() {
         throw new UnsupportedOperationException("I can't do that!");
     }
 
     @Override
-    public Vector<Byte> getLegacySessionId() {
+    public Vector<Byte> legacySessionId() {
+        throw new UnsupportedOperationException("I can't do that!");
+    }
+
+    @Override
+    public ProtocolVersion protocolVersion() {
+        throw new UnsupportedOperationException("I can't do that!");
+    }
+
+    @Override
+    public Random random() {
+        throw new UnsupportedOperationException("I can't do that!");
+    }
+
+    @Override
+    public ClientHello cipherSuites(Vector<CipherSuite> cipherSuites) {
+        throw new UnsupportedOperationException("I can't do that!");
+    }
+
+    @Override
+    public ClientHello extensions(Vector<Extension> extensions) {
+        throw new UnsupportedOperationException("I can't do that!");
+    }
+
+    @Override
+    public ClientHello legacyCompressionMethods(Vector<CompressionMethod> compressionMethods) {
+        throw new UnsupportedOperationException("I can't do that!");
+    }
+
+    @Override
+    public ClientHello legacySessionId(Vector<Byte> sessionId) {
         throw new UnsupportedOperationException("I can't do that!");
     }
 
@@ -121,6 +151,16 @@ public class FuzzedStruct implements ClientHello, ServerHello,
 
     @Override
     public CompressionMethod getLegacyCompressionMethod() {
+        throw new UnsupportedOperationException("I can't do that!");
+    }
+
+    @Override
+    public Vector<Extension> getExtensions() {
+        throw new UnsupportedOperationException("I can't do that!");
+    }
+
+    @Override
+    public Extension findExtension(ExtensionType type) {
         throw new UnsupportedOperationException("I can't do that!");
     }
 

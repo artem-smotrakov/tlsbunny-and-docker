@@ -7,7 +7,7 @@ import com.gypsyengineer.tlsbunny.utils.Output;
 public abstract class FuzzyStructFactory<T> extends StructFactoryWrapper
         implements StructFactory, Fuzzer<T> {
 
-    protected Target target;
+    protected Target[] targets;
     protected Output output;
     protected Fuzzer<T> fuzzer;
 
@@ -16,17 +16,21 @@ public abstract class FuzzyStructFactory<T> extends StructFactoryWrapper
         this.output = output;
     }
 
-    synchronized public FuzzyStructFactory target(Target target) {
-        this.target = target;
+    synchronized public FuzzyStructFactory targets(Target... targets) {
+        this.targets = targets.clone();
         return this;
     }
 
-    synchronized public FuzzyStructFactory target(String target) {
-        return target(Target.valueOf(target));
+    synchronized public FuzzyStructFactory targets(String... targets) {
+        this.targets = new Target[targets.length];
+        for (int i = 0; i < targets.length; i++) {
+            this.targets[i] = Target.valueOf(targets[i]);
+        }
+        return this;
     }
 
-    synchronized public Target target() {
-        return target;
+    synchronized public Target[] targets() {
+        return targets.clone();
     }
 
     synchronized public FuzzyStructFactory<T> fuzzer(Fuzzer<T> fuzzer) {
@@ -69,6 +73,16 @@ public abstract class FuzzyStructFactory<T> extends StructFactoryWrapper
     @Override
     synchronized public void moveOn() {
         fuzzer.moveOn();
+    }
+
+    protected boolean targeted(Target target) {
+        for (Target t : targets) {
+            if (t == target) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 }

@@ -4,7 +4,7 @@ import com.gypsyengineer.tlsbunny.tls.Struct;
 
 public interface HandshakeType extends Struct {
 
-    int ENCODING_LENGTH = 1;
+    int encoding_length = 1;
     
     HandshakeType certificate = StructFactory.getDefault().createHandshakeType(11);
     HandshakeType certificate_request = StructFactory.getDefault().createHandshakeType(13);

@@ -8,6 +8,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.HasOutput;
 import com.gypsyengineer.tlsbunny.utils.Output;
+import com.gypsyengineer.tlsbunny.utils.UncaughtExceptionHandler;
 
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
@@ -41,8 +42,21 @@ public interface Client extends AutoCloseable, Runnable, HasOutput<Client> {
      */
     default Thread start() {
         Thread thread = new Thread(this);
+        thread.setUncaughtExceptionHandler(new UncaughtExceptionHandler());
         thread.start();
         return thread;
+    }
+
+    /**
+     * Applies an analyzer to all engines in the client.
+     */
+    // TODO: we also have set(Analyzer) - do we need it?
+    default Client apply(Analyzer analyzer) {
+        for (Engine engine : engines()) {
+            engine.apply(analyzer);
+        }
+
+        return this;
     }
 
     /**

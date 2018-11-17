@@ -1,4 +1,4 @@
-package com.gypsyengineer.tlsbunny.tls13.client.fuzzer;
+package com.gypsyengineer.tlsbunny.tls13.fuzzer;
 
 import com.gypsyengineer.tlsbunny.tls13.client.Client;
 import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
@@ -15,11 +15,17 @@ import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public class MultiThreadedClient implements Client {
 
+    // TODO should it update fuzzer configs with the main config?
+    //      see MultiConfigClient class
     private Config mainConfig = SystemPropertiesConfig.load();
+
     private FuzzerConfig[] fuzzerConfigs;
     private Output output;
     private Analyzer analyzer;
     private Check[] checks;
+    private boolean running = false;
+
+    // TODO can we get rid of it?
     private Runner.ClientFactory clientFactory;
 
     @Override
@@ -64,15 +70,25 @@ public class MultiThreadedClient implements Client {
             throw whatTheHell("no fuzzer configs! (empty array)");
         }
 
-        new Runner()
-                .set(clientFactory)
-                .set(output)
-                .set(fuzzerConfigs)
-                .set(checks)
-                .set(analyzer)
-                .submit();
+        running = true;
+        try {
+            new Runner()
+                    .set(clientFactory)
+                    .set(output)
+                    .set(fuzzerConfigs)
+                    .set(checks)
+                    .set(analyzer)
+                    .submit();
+        } finally {
+            running = false;
+        }
 
         return this;
+    }
+
+    @Override
+    public boolean running() {
+        return running;
     }
 
     @Override

@@ -4,12 +4,15 @@ import com.gypsyengineer.tlsbunny.fuzzer.AbstractFlipFuzzer;
 import com.gypsyengineer.tlsbunny.fuzzer.Fuzzer;
 import com.gypsyengineer.tlsbunny.tls.Random;
 import com.gypsyengineer.tlsbunny.tls.Vector;
+import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
+import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
 import com.gypsyengineer.tlsbunny.utils.Output;
 import com.gypsyengineer.tlsbunny.utils.WhatTheHell;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.fail;
@@ -108,17 +111,30 @@ public class TestUtils {
         expectUnsupportedMethods(object, List.of(excluded));
     }
 
-    public static class FakeFlipFuzzer extends AbstractFlipFuzzer {
+    public interface FakeFuzzer {
+        int count();
+    }
+
+    public static class FakeFlipFuzzer extends AbstractFlipFuzzer implements FakeFuzzer {
+
+        private int count = 0;
 
         @Override
-        protected byte[] fuzzImpl(byte[] array) {
+        synchronized protected byte[] fuzzImpl(byte[] array) {
             // do nothing
+            count++;
             return array;
+        }
+
+        @Override
+        synchronized public int count() {
+            return count;
         }
     }
 
-    public static class FakeVectorFuzzer implements Fuzzer<Vector<Byte>> {
+    public static class FakeVectorFuzzer implements Fuzzer<Vector<Byte>>, FakeFuzzer {
 
+        private int count = 0;
         private long test = 0;
 
         @Override
@@ -127,7 +143,8 @@ public class TestUtils {
         }
 
         @Override
-        public Vector fuzz(Vector object) {
+        synchronized public Vector fuzz(Vector object) {
+            count++;
             return object;
         }
 
@@ -155,10 +172,17 @@ public class TestUtils {
         public Output output() {
             return new Output();
         }
+
+        @Override
+        synchronized public int count() {
+            return count;
+        }
     }
 
-    public static class FakeCompressionMethodFuzzer implements Fuzzer<Vector<CompressionMethod>> {
+    public static class FakeCompressionMethodFuzzer
+            implements Fuzzer<Vector<CompressionMethod>>, FakeFuzzer {
 
+        private int count = 0;
         private long test = 0;
 
         @Override
@@ -167,7 +191,8 @@ public class TestUtils {
         }
 
         @Override
-        public Vector<CompressionMethod> fuzz(Vector<CompressionMethod> object) {
+        synchronized public Vector<CompressionMethod> fuzz(Vector<CompressionMethod> object) {
+            count++;
             return object;
         }
 
@@ -195,10 +220,17 @@ public class TestUtils {
         public Output output() {
             return new Output();
         }
+
+        @Override
+        synchronized public int count() {
+            return count;
+        }
     }
 
-    public static class FakeCipherSuitesFuzzer implements Fuzzer<Vector<CipherSuite>> {
+    public static class FakeCipherSuitesFuzzer
+            implements Fuzzer<Vector<CipherSuite>>, FakeFuzzer {
 
+        private int count = 0;
         private long test = 0;
 
         @Override
@@ -207,7 +239,8 @@ public class TestUtils {
         }
 
         @Override
-        public Vector<CipherSuite> fuzz(Vector<CipherSuite> object) {
+        synchronized public Vector<CipherSuite> fuzz(Vector<CipherSuite> object) {
+            count++;
             return object;
         }
 
@@ -235,10 +268,17 @@ public class TestUtils {
         public Output output() {
             return new Output();
         }
+
+        @Override
+        synchronized public int count() {
+            return count;
+        }
     }
 
-    public static class FakeExtensionVectorFuzzer implements Fuzzer<Vector<Extension>> {
+    public static class FakeExtensionVectorFuzzer
+            implements Fuzzer<Vector<Extension>>, FakeFuzzer {
 
+        private int count = 0;
         private long test = 0;
 
         @Override
@@ -247,7 +287,8 @@ public class TestUtils {
         }
 
         @Override
-        public Vector<Extension> fuzz(Vector<Extension> object) {
+        synchronized public Vector<Extension> fuzz(Vector<Extension> object) {
+            count++;
             return object;
         }
 
@@ -274,6 +315,58 @@ public class TestUtils {
         @Override
         public Output output() {
             return new Output();
+        }
+
+        @Override
+        synchronized public int count() {
+            return count;
+        }
+    }
+
+    // the fuzzer just sets all bytes of encoding to zeroes
+    public static class ZeroFuzzer extends AbstractFlipFuzzer implements FakeFuzzer {
+
+        private int count = 0;
+
+        @Override
+        synchronized protected byte[] fuzzImpl(byte[] array) {
+            count++;
+            return new byte[array.length];
+        }
+
+        @Override
+        synchronized public int count() {
+            return count;
+        }
+
+    }
+
+    public static class FakeTestAnalyzer implements Analyzer {
+
+        private Output output;
+        private final List<Engine> engines = new ArrayList<>();
+
+        @Override
+        public Analyzer set(Output output) {
+            this.output = output;
+            return this;
+        }
+
+        @Override
+        public Analyzer add(Engine... engines) {
+            this.engines.addAll(List.of(engines));
+            return this;
+        }
+
+        @Override
+        public Analyzer run() {
+            output.info("run analyzer");
+            return this;
+        }
+
+        @Override
+        public Engine[] engines() {
+            return engines.toArray(new Engine[0]);
         }
     }
 }

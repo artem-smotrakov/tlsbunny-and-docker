@@ -1,7 +1,5 @@
-package com.gypsyengineer.tlsbunny.tls13.client.fuzzer;
+package com.gypsyengineer.tlsbunny.tls13.fuzzer;
 
-import com.gypsyengineer.tlsbunny.tls13.fuzzer.DeepHandshakeFuzzer;
-import com.gypsyengineer.tlsbunny.tls13.fuzzer.FuzzyStructFactory;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.tls13.utils.SplittedFuzzerConfig;
 import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
@@ -118,7 +116,6 @@ public class Runner {
                 DeepHandshakeFuzzer deepHandshakeFuzzer = (DeepHandshakeFuzzer) factory;
                 output.info("\tfuzzer     = %s", deepHandshakeFuzzer.fuzzer());
             }
-            output.info("\tclient     = %s", config.client().getClass().getSimpleName());
             output.info("\tstart test = %d", config.startTest());
             output.info("\tend test   = %d", config.endTest());
             output.info("\tparts      = %d", config.parts());

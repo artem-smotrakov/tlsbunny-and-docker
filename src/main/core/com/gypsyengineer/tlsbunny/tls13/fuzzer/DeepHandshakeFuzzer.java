@@ -264,10 +264,10 @@ public class DeepHandshakeFuzzer extends StructFactoryWrapper
     @Override
     public synchronized ClientHello createClientHello(ProtocolVersion legacy_version,
                                                       Random random,
-                                                      Vector<Byte> legacy_session_id,
-                                                      Vector<CipherSuite> cipher_suites,
-                                                      Vector<CompressionMethod> legacy_compression_methods,
-                                                      Vector<Extension> extensions) {
+                                                      byte[] legacy_session_id,
+                                                      List<CipherSuite> cipher_suites,
+                                                      List<CompressionMethod> legacy_compression_methods,
+                                                      List<Extension> extensions) {
 
         return handle(super.createClientHello(legacy_version, random,
                 legacy_session_id, cipher_suites, legacy_compression_methods, extensions));

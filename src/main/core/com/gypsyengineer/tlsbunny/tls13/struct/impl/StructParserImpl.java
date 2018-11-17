@@ -142,7 +142,7 @@ public class StructParserImpl implements StructParser {
     public CertificateVerify parseCertificateVerify(ByteBuffer buffer) {
         return new CertificateVerifyImpl(
                 parseSignatureScheme(buffer),
-                Vector.parseOpaqueVector(buffer, CertificateVerify.SIGNATURE_LENGTH_BYTES));
+                Vector.parseOpaqueVector(buffer, CertificateVerify.signature_length_bytes));
     }
 
     @Override
@@ -151,19 +151,19 @@ public class StructParserImpl implements StructParser {
         Random random = Random.parse(buffer);
         Vector<Byte> legacy_session_id = Vector.parse(
                 buffer,
-                ClientHello.LEGACY_SESSION_ID_LENGTH_BYTES,
+                ClientHello.legacy_session_id_length_bytes,
                 buf -> buf.get());
         Vector<CipherSuite> cipher_suites = Vector.parse(
                 buffer,
-                ClientHello.CIPHER_SUITES_LENGTH_BYTES,
+                ClientHello.cipher_suites_length_bytes,
                 buf -> parseCipherSuite(buf));
         Vector<CompressionMethod> legacy_compression_methods = Vector.parse(
                 buffer,
-                ClientHello.LEGACY_COMPRESSION_METHODS_LENGTH_BYTES,
+                ClientHello.legacy_compression_methods_length_bytes,
                 buf -> parseCompressionMethod(buf));
         Vector<Extension> extensions = Vector.parse(
                 buffer,
-                ClientHello.EXTENSIONS_LENGTH_BYTES,
+                ClientHello.extensions_length_bytes,
                 buf -> parseExtension(buf));
 
         return new ClientHelloImpl(legacy_version, random, legacy_session_id,
@@ -224,7 +224,7 @@ public class StructParserImpl implements StructParser {
         return new SignatureSchemeListImpl(
                 Vector.parse(
                         buffer,
-                        SignatureSchemeList.LENGTH_BYTES,
+                        SignatureSchemeList.length_bytes,
                         buf -> parseSignatureScheme(buf)));
     }
 
@@ -233,7 +233,7 @@ public class StructParserImpl implements StructParser {
         return new SupportedVersionsImpl.ClientHelloImpl(
                     Vector.parse(
                             buffer,
-                            SupportedVersions.ClientHello.VERSIONS_LENGTH_BYTES,
+                            SupportedVersions.ClientHello.versions_length_bytes,
                             buf -> parseProtocolVersion(buf)));
     }
 
@@ -269,7 +269,7 @@ public class StructParserImpl implements StructParser {
         return new NamedGroupListImpl(
                 Vector.parse(
                         buffer,
-                        NamedGroupList.LENGTH_BYTES,
+                        NamedGroupList.length_bytes,
                         buf -> parseNamedGroup(buf)));
     }
 
@@ -278,7 +278,7 @@ public class StructParserImpl implements StructParser {
             return new KeyShareImpl.ClientHelloImpl(
                     Vector.parse(
                         buffer,
-                        KeyShare.ClientHello.LENGTH_BYTES,
+                        KeyShare.ClientHello.length_bytes,
                         buf -> parseKeyShareEntry(buf)));
     }
 

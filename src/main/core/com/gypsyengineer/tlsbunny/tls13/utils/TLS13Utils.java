@@ -41,7 +41,7 @@ public class TLS13Utils {
 
         return factory.parser()
                 .parseKeyShareFromClientHello(
-                        hello.findExtension(ExtensionType.key_share)
+                        hello.find(ExtensionType.key_share)
                                 .getExtensionData().bytes());
     }
 
