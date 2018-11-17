@@ -53,10 +53,11 @@ public class StructFactoryImpl implements StructFactory {
     }
 
     @Override
-    public Certificate createCertificate(Vector<Byte> certificate_request_context,
-                                         Vector<CertificateEntry> certificate_list) {
-
-        return new CertificateImpl(certificate_request_context, certificate_list);
+    public Certificate createCertificate(byte[] certificate_request_context,
+                                         CertificateEntry... certificate_list) {
+        return new CertificateImpl(
+                Vector.wrap(Certificate.CONTEXT_LENGTH_BYTES, certificate_request_context),
+                Vector.wrap(Certificate.CERTIFICATE_LIST_LENGTH_BYTES, certificate_list));
     }
 
     @Override

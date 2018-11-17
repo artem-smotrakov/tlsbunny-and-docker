@@ -2,6 +2,7 @@ package com.gypsyengineer.tlsbunny.tls13.struct;
 
 import com.gypsyengineer.tlsbunny.tls.Random;
 import com.gypsyengineer.tlsbunny.tls.Vector;
+import com.gypsyengineer.tlsbunny.tls13.struct.impl.CertificateImpl;
 import com.gypsyengineer.tlsbunny.tls13.struct.impl.StructFactoryImpl;
 import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.util.List;
@@ -48,16 +49,8 @@ public interface StructFactory {
     // handshake messages
     Handshake createHandshake(HandshakeType type, byte[] content);
 
-    Certificate createCertificate(Vector<Byte> certificate_request_context,
-                                  Vector<CertificateEntry> certificate_list);
-
-    default Certificate createCertificate(byte[] certificate_request_context,
-                                  CertificateEntry... certificate_list) {
-
-        return createCertificate(
-                Vector.wrap(Certificate.CONTEXT_LENGTH_BYTES, certificate_request_context),
-                Vector.wrap(Certificate.CERTIFICATE_LIST_LENGTH_BYTES, certificate_list));
-    }
+    Certificate createCertificate(byte[] certificate_request_context,
+                                          CertificateEntry... certificate_list);
 
     CertificateRequest createCertificateRequest(byte[] certificate_request_context,
                                                 Vector<Extension> extensions);

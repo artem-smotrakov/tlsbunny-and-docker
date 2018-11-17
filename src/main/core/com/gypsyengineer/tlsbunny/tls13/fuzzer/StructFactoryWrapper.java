@@ -15,12 +15,6 @@ public class StructFactoryWrapper implements StructFactory {
     }
 
     @Override
-    public Certificate createCertificate(Vector<Byte> certificate_request_context,
-                                         Vector<CertificateEntry> certificate_list) {
-        return factory.createCertificate(certificate_request_context, certificate_list);
-    }
-
-    @Override
     public CompressionMethod createCompressionMethod(int code) {
         return factory.createCompressionMethod(code);
     }
@@ -144,8 +138,8 @@ public class StructFactoryWrapper implements StructFactory {
     }
 
     @Override
-    public Certificate createCertificate(
-            byte[] certificate_request_context, CertificateEntry... certificate_list) {
+    public Certificate createCertificate(byte[] certificate_request_context,
+                                         CertificateEntry... certificate_list) {
 
         return factory.createCertificate(certificate_request_context, certificate_list);
     }
