@@ -58,9 +58,9 @@ public class IncomingServerHello extends AbstractAction {
         ServerHello serverHello = context.factory.parser()
                 .parseServerHello(handshake.getBody());
 
-        if (!context.suite.equals(serverHello.getCipherSuite())) {
+        if (!context.suite.equals(serverHello.cipherSuite())) {
             output.info("expected cipher suite: %s", context.suite);
-            output.info("received cipher suite: %s", serverHello.getCipherSuite());
+            output.info("received cipher suite: %s", serverHello.cipherSuite());
             throw new ActionFailed("unexpected ciphersuite");
         }
 

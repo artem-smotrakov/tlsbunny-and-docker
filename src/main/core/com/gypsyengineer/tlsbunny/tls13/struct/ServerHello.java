@@ -5,15 +5,18 @@ import com.gypsyengineer.tlsbunny.tls.Vector;
 
 public interface ServerHello extends HandshakeMessage {
 
-    int EXTENSIONS_LENGTH_BYTES = 2;
-    int LEGACY_SESSION_ID_ECHO_LENGTH_BYTES = 1;
+    int extensions_length_bytes = 2;
+    int legacy_session_id_echo_length_bytes = 1;
 
-    ProtocolVersion getProtocolVersion();
-    Random getRandom();
-    Vector<Byte> getLegacySessionIdEcho();
-    CipherSuite getCipherSuite();
-    CompressionMethod getLegacyCompressionMethod();
-    Vector<Extension> getExtensions();
+    ProtocolVersion protocolVersion();
+    Random random();
+    Vector<Byte> legacySessionIdEcho();
+    CipherSuite cipherSuite();
+    CompressionMethod legacyCompressionMethod();
+    Vector<Extension> extensions();
 
-    Extension findExtension(ExtensionType type);
+    void extensions(Vector<Extension> extensions);
+    void legacySessionIdEcho(Vector<Byte> echo);
+
+    Extension find(ExtensionType type);
 }

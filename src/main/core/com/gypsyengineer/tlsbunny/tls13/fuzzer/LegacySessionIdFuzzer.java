@@ -70,13 +70,8 @@ public class LegacySessionIdFuzzer extends FuzzyStructFactory<Vector<Byte>> {
 
         if (targeted(server_hello)) {
             output.info("fuzz legacy session ID echo in ServerHello");
-            hello = factory.createServerHello(
-                    hello.getProtocolVersion(),
-                    hello.getRandom(),
-                    fuzz(hello.getLegacySessionIdEcho()),
-                    hello.getCipherSuite(),
-                    hello.getLegacyCompressionMethod(),
-                    hello.getExtensions());
+            Vector<Byte> fuzzed = fuzz(hello.legacySessionIdEcho());
+            hello.legacySessionIdEcho(fuzzed);
         }
 
         return hello;

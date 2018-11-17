@@ -37,7 +37,7 @@ public class EncryptedExtensionsImpl implements EncryptedExtensions {
     }
 
     @Override
-    public Vector<Extension> getExtensions() {
+    public Vector<Extension> extensions() {
         return extensions;
     }
 

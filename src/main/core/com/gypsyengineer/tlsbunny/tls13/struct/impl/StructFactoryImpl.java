@@ -99,13 +99,22 @@ public class StructFactoryImpl implements StructFactory {
     @Override
     public ServerHello createServerHello(ProtocolVersion version,
                                          Random random,
-                                         Vector<Byte> legacy_session_id_echo,
+                                         byte[] legacy_session_id_echo,
                                          CipherSuite cipher_suite,
                                          CompressionMethod legacy_compression_method,
-                                         Vector<Extension> extensions) {
+                                         List<Extension> extensions) {
 
-        return new ServerHelloImpl(version, random, legacy_session_id_echo,
-                cipher_suite, legacy_compression_method, extensions);
+        return new ServerHelloImpl(
+                version,
+                random,
+                Vector.wrap(
+                        ServerHello.legacy_session_id_echo_length_bytes,
+                        legacy_session_id_echo),
+                cipher_suite,
+                legacy_compression_method,
+                Vector.wrap(
+                        ServerHello.extensions_length_bytes,
+                        extensions));
     }
 
     @Override

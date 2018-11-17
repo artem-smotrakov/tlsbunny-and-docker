@@ -70,33 +70,13 @@ public interface StructFactory {
 
     EncryptedExtensions createEncryptedExtensions(Extension... extensions);
 
-    default ServerHello createServerHello(ProtocolVersion version,
+    ServerHello createServerHello(ProtocolVersion version,
                                   Random random,
                                   byte[] legacy_session_id_echo,
                                   CipherSuite cipher_suite,
                                   CompressionMethod legacy_compression_method,
-                                  List<Extension> extensions) {
+                                  List<Extension> extensions);
 
-        return createServerHello(
-                version,
-                random,
-                Vector.wrap(
-                        ServerHello.LEGACY_SESSION_ID_ECHO_LENGTH_BYTES,
-                        legacy_session_id_echo),
-                cipher_suite,
-                legacy_compression_method,
-                Vector.wrap(
-                        ServerHello.EXTENSIONS_LENGTH_BYTES,
-                        extensions));
-    }
-
-    ServerHello createServerHello(ProtocolVersion version,
-                                  Random random,
-                                  Vector<Byte> legacy_session_id_echo,
-                                  CipherSuite cipher_suite,
-                                  CompressionMethod legacy_compression_method,
-                                  Vector<Extension> extensions);
-    
     // create extensions
     KeyShare.ClientHello createKeyShareForClientHello(KeyShareEntry... entries);
     KeyShare.ServerHello createKeyShareForServerHello(KeyShareEntry entry);

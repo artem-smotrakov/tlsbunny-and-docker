@@ -25,13 +25,13 @@ public class StructParserImpl implements StructParser {
                 Random.parse(buffer),
                 Vector.parse(
                         buffer,
-                        ServerHello.LEGACY_SESSION_ID_ECHO_LENGTH_BYTES,
+                        ServerHello.legacy_session_id_echo_length_bytes,
                         buf -> buf.get()),
                 parseCipherSuite(buffer),
                 parseCompressionMethod(buffer),
                 Vector.parse(
                     buffer,
-                    ServerHello.EXTENSIONS_LENGTH_BYTES,
+                    ServerHello.extensions_length_bytes,
                     buf -> parseExtension(buf)));
     }
 
@@ -194,13 +194,13 @@ public class StructParserImpl implements StructParser {
                 Random.parse(buffer),
                 Vector.parse(
                         buffer,
-                        HelloRetryRequestImpl.LEGACY_SESSION_ID_ECHO_LENGTH_BYTES,
+                        HelloRetryRequestImpl.legacy_session_id_echo_length_bytes,
                         buf -> buf.get()),
                 parseCipherSuite(buffer),
                 parseCompressionMethod(buffer),
                 Vector.parse(
                     buffer,
-                    HelloRetryRequestImpl.EXTENSIONS_LENGTH_BYTES,
+                    HelloRetryRequestImpl.extensions_length_bytes,
                     buf -> parseExtension(buf)));
     }
 

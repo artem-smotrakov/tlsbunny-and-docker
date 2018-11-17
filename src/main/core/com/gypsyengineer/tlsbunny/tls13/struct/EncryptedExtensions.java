@@ -6,5 +6,5 @@ public interface EncryptedExtensions extends HandshakeMessage {
 
     int length_bytes = 2;
 
-    Vector<Extension> getExtensions();
+    Vector<Extension> extensions();
 }

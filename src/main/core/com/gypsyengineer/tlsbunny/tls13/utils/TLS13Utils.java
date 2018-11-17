@@ -48,7 +48,7 @@ public class TLS13Utils {
     public static KeyShare.ServerHello findKeyShare(StructFactory factory, ServerHello hello)
             throws IOException {
 
-        Extension ext = hello.findExtension(ExtensionType.key_share);
+        Extension ext = hello.find(ExtensionType.key_share);
         if (ext == null) {
             throw new IOException("could not find key_share extension (null)");
         }
@@ -61,7 +61,7 @@ public class TLS13Utils {
     public static SupportedVersions.ServerHello findSupportedVersion(
             StructFactory factory, ServerHello hello) throws IOException {
 
-        Extension ext = hello.findExtension(ExtensionType.supported_versions);
+        Extension ext = hello.find(ExtensionType.supported_versions);
         if (ext == null) {
             throw new IOException("could not find supported_versions extension (null)");
         }

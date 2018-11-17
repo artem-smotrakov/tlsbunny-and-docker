@@ -65,6 +65,11 @@ public class FuzzedStruct implements ClientHello, ServerHello,
     }
 
     @Override
+    public Vector<Byte> certificateRequestContext() {
+        throw new UnsupportedOperationException("I can't do that!");
+    }
+
+    @Override
     public SignatureScheme getAlgorithm() {
         throw new UnsupportedOperationException("I can't do that!");
     }
@@ -75,17 +80,7 @@ public class FuzzedStruct implements ClientHello, ServerHello,
     }
 
     @Override
-    public Extension find(ExtensionType type) {
-        throw new UnsupportedOperationException("I can't do that!");
-    }
-
-    @Override
     public Vector<CipherSuite> cipherSuites() {
-        throw new UnsupportedOperationException("I can't do that!");
-    }
-
-    @Override
-    public Vector<Extension> extensions() {
         throw new UnsupportedOperationException("I can't do that!");
     }
 
@@ -110,57 +105,52 @@ public class FuzzedStruct implements ClientHello, ServerHello,
     }
 
     @Override
-    public ClientHello cipherSuites(Vector<CipherSuite> cipherSuites) {
+    public void cipherSuites(Vector<CipherSuite> cipherSuites) {
         throw new UnsupportedOperationException("I can't do that!");
     }
 
     @Override
-    public ClientHello extensions(Vector<Extension> extensions) {
+    public void extensions(Vector<Extension> extensions) {
         throw new UnsupportedOperationException("I can't do that!");
     }
 
     @Override
-    public ClientHello legacyCompressionMethods(Vector<CompressionMethod> compressionMethods) {
+    public void legacySessionIdEcho(Vector<Byte> echo) {
         throw new UnsupportedOperationException("I can't do that!");
     }
 
     @Override
-    public ClientHello legacySessionId(Vector<Byte> sessionId) {
+    public void legacyCompressionMethods(Vector<CompressionMethod> compressionMethods) {
         throw new UnsupportedOperationException("I can't do that!");
     }
 
     @Override
-    public ProtocolVersion getProtocolVersion() {
+    public void legacySessionId(Vector<Byte> sessionId) {
         throw new UnsupportedOperationException("I can't do that!");
     }
 
     @Override
-    public Random getRandom() {
+    public Vector<Byte> legacySessionIdEcho() {
         throw new UnsupportedOperationException("I can't do that!");
     }
 
     @Override
-    public Vector<Byte> getLegacySessionIdEcho() {
+    public CipherSuite cipherSuite() {
         throw new UnsupportedOperationException("I can't do that!");
     }
 
     @Override
-    public CipherSuite getCipherSuite() {
+    public CompressionMethod legacyCompressionMethod() {
         throw new UnsupportedOperationException("I can't do that!");
     }
 
     @Override
-    public CompressionMethod getLegacyCompressionMethod() {
+    public Vector<Extension> extensions() {
         throw new UnsupportedOperationException("I can't do that!");
     }
 
     @Override
-    public Vector<Extension> getExtensions() {
-        throw new UnsupportedOperationException("I can't do that!");
-    }
-
-    @Override
-    public Extension findExtension(ExtensionType type) {
+    public Extension find(ExtensionType type) {
         throw new UnsupportedOperationException("I can't do that!");
     }
 
