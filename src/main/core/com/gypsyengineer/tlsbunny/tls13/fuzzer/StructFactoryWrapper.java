@@ -15,12 +15,6 @@ public class StructFactoryWrapper implements StructFactory {
     }
 
     @Override
-    public Certificate createCertificate(Vector<Byte> certificate_request_context,
-                                         Vector<CertificateEntry> certificate_list) {
-        return factory.createCertificate(certificate_request_context, certificate_list);
-    }
-
-    @Override
     public CompressionMethod createCompressionMethod(int code) {
         return factory.createCompressionMethod(code);
     }
@@ -144,16 +138,15 @@ public class StructFactoryWrapper implements StructFactory {
     }
 
     @Override
-    public Certificate createCertificate(
-            byte[] certificate_request_context, CertificateEntry... certificate_list) {
+    public Certificate createCertificate(byte[] certificate_request_context,
+                                         CertificateEntry... certificate_list) {
 
         return factory.createCertificate(certificate_request_context, certificate_list);
     }
 
     @Override
     public CertificateRequest createCertificateRequest(byte[] certificate_request_context,
-                                                Vector<Extension> extensions) {
-
+                                                       List<Extension> extensions) {
         return factory.createCertificateRequest(certificate_request_context, extensions);
     }
 
@@ -182,11 +175,6 @@ public class StructFactoryWrapper implements StructFactory {
     }
 
     @Override
-    public EncryptedExtensions createEncryptedExtensions(Vector<Extension> extensions) {
-        return factory.createEncryptedExtensions(extensions);
-    }
-
-    @Override
     public EndOfEarlyData createEndOfEarlyData() {
         return factory.createEndOfEarlyData();
     }
@@ -204,10 +192,10 @@ public class StructFactoryWrapper implements StructFactory {
     @Override
     public ServerHello createServerHello(ProtocolVersion version,
                                          Random random,
-                                         Vector<Byte> legacy_session_id_echo,
+                                         byte[] legacy_session_id_echo,
                                          CipherSuite cipher_suite,
                                          CompressionMethod legacy_compression_method,
-                                         Vector<Extension> extensions) {
+                                         List<Extension> extensions) {
 
         return factory.createServerHello(version, random, legacy_session_id_echo,
                 cipher_suite, legacy_compression_method, extensions);

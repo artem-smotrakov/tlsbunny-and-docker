@@ -34,9 +34,9 @@ public interface ClientHello extends HandshakeMessage {
     ProtocolVersion protocolVersion();
     Random random();
 
-    ClientHello cipherSuites(Vector<CipherSuite> cipherSuites);
-    ClientHello extensions(Vector<Extension> extensions);
-    ClientHello legacyCompressionMethods(Vector<CompressionMethod> compressionMethods);
-    ClientHello legacySessionId(Vector<Byte> sessionId);
+    void cipherSuites(Vector<CipherSuite> cipherSuites);
+    void extensions(Vector<Extension> extensions);
+    void legacyCompressionMethods(Vector<CompressionMethod> compressionMethods);
+    void legacySessionId(Vector<Byte> sessionId);
 }
 

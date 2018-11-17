@@ -5,6 +5,7 @@ import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.EngineException;
 import com.gypsyengineer.tlsbunny.tls13.connection.check.Check;
+import com.gypsyengineer.tlsbunny.tls13.connection.check.NoAlertCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.check.SuccessCheck;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Negotiator;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
@@ -131,6 +132,7 @@ public class MutatedClient implements Client {
                     .set(fuzzerConfig)
                     .set(output)
                     .set(new SuccessCheck())
+                    .set(new NoAlertCheck())
                     .connect();
         } catch (Exception e) {
             reportError("smoke test failed", e);

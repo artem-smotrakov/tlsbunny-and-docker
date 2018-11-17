@@ -12,10 +12,10 @@ public class SystemPropertiesConfig implements Config {
     public static final int DEFAULT_PORT = 10101;
     public static final String DEFAULT_HOST = "localhost";
     public static final int DEFAULT_THREADS = 1;
-    public static final String DEFAULT_SERVER_CERTIFICATE = "certs/server_cert.der";
-    public static final String DEFAULT_SERVER_KEY = "certs/server_key.pkcs8";
-    public static final String DEFAULT_CLIENT_CERTIFICATE = "certs/client_cert.der";
-    public static final String DEFAULT_CLIENT_KEY = "certs/client_key.pkcs8";
+    public static final String default_server_certificate = "certs/server_cert.der";
+    public static final String default_server_key = "certs/server_key.pkcs8";
+    public static final String default_client_certificate = "certs/client_cert.der";
+    public static final String default_client_key = "certs/client_key.pkcs8";
     public static final long DEFAULT_READ_TIMEOUT = 5000; // in millis
     public static final String EMPTY_STRING = "";
 
@@ -243,13 +243,13 @@ public class SystemPropertiesConfig implements Config {
         config.startTest = Long.getLong("tlsbunny.start.test", DEFAULT_START_TEST);
         config.endTest = Long.getLong("tlsbunny.end.test", DEFAULT_END_TEST);
         config.serverCertificate = System.getProperty(
-                "tlsbunny.server.cert", DEFAULT_SERVER_CERTIFICATE);
+                "tlsbunny.server.cert", default_server_certificate);
         config.serverKey = System.getProperty(
-                "tlsbunny.server.key", DEFAULT_SERVER_KEY);
+                "tlsbunny.server.key", default_server_key);
         config.clientCertificate = System.getProperty(
-                "tlsbunny.client.cert", DEFAULT_CLIENT_CERTIFICATE);
+                "tlsbunny.client.cert", default_client_certificate);
         config.clientKey = System.getProperty(
-                "tlsbunny.client.key", DEFAULT_CLIENT_KEY);
+                "tlsbunny.client.key", default_client_key);
         config.readTimeout = Long.getLong("tlsbunny.read.timeout", DEFAULT_READ_TIMEOUT);
 
         return config;

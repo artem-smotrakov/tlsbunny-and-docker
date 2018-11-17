@@ -1,4 +1,4 @@
-package com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.client;
+package com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.server;
 
 import com.gypsyengineer.tlsbunny.impl.test.tls13.ImplTest;
 import com.gypsyengineer.tlsbunny.impl.test.tls13.Utils;
@@ -19,7 +19,7 @@ import static com.gypsyengineer.tlsbunny.tls13.fuzzer.MutatedConfigs.*;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.MultiConfigClient.multiConfigClient;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.MutatedClient.mutatedClient;
 
-public class OpensslHttpsClientFuzzing {
+public class FuzzingForOpensslServer {
 
     private static OpensslServer server;
     private static Config mainConfig = SystemPropertiesConfig.load();

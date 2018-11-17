@@ -53,10 +53,11 @@ public class StructFactoryImpl implements StructFactory {
     }
 
     @Override
-    public Certificate createCertificate(Vector<Byte> certificate_request_context,
-                                         Vector<CertificateEntry> certificate_list) {
-
-        return new CertificateImpl(certificate_request_context, certificate_list);
+    public Certificate createCertificate(byte[] certificate_request_context,
+                                         CertificateEntry... certificate_list) {
+        return new CertificateImpl(
+                Vector.wrap(Certificate.CONTEXT_LENGTH_BYTES, certificate_request_context),
+                Vector.wrap(Certificate.CERTIFICATE_LIST_LENGTH_BYTES, certificate_list));
     }
 
     @Override
@@ -91,11 +92,6 @@ public class StructFactoryImpl implements StructFactory {
     }
 
     @Override
-    public EncryptedExtensions createEncryptedExtensions(Vector<Extension> extensions) {
-        return new EncryptedExtensionsImpl(extensions);
-    }
-
-    @Override
     public ChangeCipherSpec createChangeCipherSpec(int value) {
         return new ChangeCipherSpecImpl(value);
     }
@@ -103,13 +99,22 @@ public class StructFactoryImpl implements StructFactory {
     @Override
     public ServerHello createServerHello(ProtocolVersion version,
                                          Random random,
-                                         Vector<Byte> legacy_session_id_echo,
+                                         byte[] legacy_session_id_echo,
                                          CipherSuite cipher_suite,
                                          CompressionMethod legacy_compression_method,
-                                         Vector<Extension> extensions) {
+                                         List<Extension> extensions) {
 
-        return new ServerHelloImpl(version, random, legacy_session_id_echo,
-                cipher_suite, legacy_compression_method, extensions);
+        return new ServerHelloImpl(
+                version,
+                random,
+                Vector.wrap(
+                        ServerHello.legacy_session_id_echo_length_bytes,
+                        legacy_session_id_echo),
+                cipher_suite,
+                legacy_compression_method,
+                Vector.wrap(
+                        ServerHello.extensions_length_bytes,
+                        extensions));
     }
 
     @Override
@@ -120,7 +125,7 @@ public class StructFactoryImpl implements StructFactory {
     @Override
     public EncryptedExtensions createEncryptedExtensions(Extension... extensions) {
         return new EncryptedExtensionsImpl(
-                Vector.wrap(EncryptedExtensions.LENGTH_BYTES, extensions));
+                Vector.wrap(EncryptedExtensions.length_bytes, extensions));
     }
     
     @Override
@@ -136,18 +141,19 @@ public class StructFactoryImpl implements StructFactory {
                 algorithm,
                 Vector.wrap(CertificateVerifyImpl.signature_length_bytes, signature));
     }
-    
+
     @Override
     public CertificateRequest createCertificateRequest(byte[] certificate_request_context,
-                                                       Vector<Extension> extensions) {
-
+                                                       List<Extension> extensions) {
         return new CertificateRequestImpl(
                 Vector.wrap(
-                        CertificateRequest.CERTIFICATE_REQUEST_CONTEXT_LENGTH_BYTES,
+                        CertificateRequest.certificate_request_context_length_bytes,
                         certificate_request_context),
-                extensions);
+                Vector.wrap(
+                        CertificateRequest.extensions_length_bytes,
+                        extensions));
     }
-    
+
     @Override
     public Finished createFinished(byte[] verify_data) {
         return new FinishedImpl(new Bytes(verify_data));

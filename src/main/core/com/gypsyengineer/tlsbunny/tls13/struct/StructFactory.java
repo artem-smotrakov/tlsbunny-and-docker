@@ -48,29 +48,11 @@ public interface StructFactory {
     // handshake messages
     Handshake createHandshake(HandshakeType type, byte[] content);
 
-    Certificate createCertificate(Vector<Byte> certificate_request_context,
-                                  Vector<CertificateEntry> certificate_list);
-
-    default Certificate createCertificate(byte[] certificate_request_context,
-                                  CertificateEntry... certificate_list) {
-
-        return createCertificate(
-                Vector.wrap(Certificate.CONTEXT_LENGTH_BYTES, certificate_request_context),
-                Vector.wrap(Certificate.CERTIFICATE_LIST_LENGTH_BYTES, certificate_list));
-    }
+    Certificate createCertificate(byte[] certificate_request_context,
+                                          CertificateEntry... certificate_list);
 
     CertificateRequest createCertificateRequest(byte[] certificate_request_context,
-                                                Vector<Extension> extensions);
-
-    default CertificateRequest createCertificateRequest(byte[] certificate_request_context,
-                                                List<Extension> extensions) {
-
-        return createCertificateRequest(
-                certificate_request_context,
-                Vector.wrap(
-                        CertificateRequest.EXTENSIONS_LENGTH_BYTES,
-                        extensions));
-    }
+                                                List<Extension> extensions);
 
     CertificateVerify createCertificateVerify(SignatureScheme algorithm,
                                               byte[] signature);
@@ -82,43 +64,19 @@ public interface StructFactory {
                                   List<CompressionMethod> legacy_compression_methods,
                                   List<Extension> extensions);
 
-    EncryptedExtensions createEncryptedExtensions(Vector<Extension> extensions);
     EndOfEarlyData createEndOfEarlyData();
     Finished createFinished(byte[] verify_data);
     HelloRetryRequest createHelloRetryRequest();
 
-    default EncryptedExtensions createEncryptedExtensions(Extension... extensions) {
-        return createEncryptedExtensions(
-                Vector.wrap(EncryptedExtensions.LENGTH_BYTES, extensions));
-    }
+    EncryptedExtensions createEncryptedExtensions(Extension... extensions);
 
-    default ServerHello createServerHello(ProtocolVersion version,
+    ServerHello createServerHello(ProtocolVersion version,
                                   Random random,
                                   byte[] legacy_session_id_echo,
                                   CipherSuite cipher_suite,
                                   CompressionMethod legacy_compression_method,
-                                  List<Extension> extensions) {
+                                  List<Extension> extensions);
 
-        return createServerHello(
-                version,
-                random,
-                Vector.wrap(
-                        ServerHello.LEGACY_SESSION_ID_ECHO_LENGTH_BYTES,
-                        legacy_session_id_echo),
-                cipher_suite,
-                legacy_compression_method,
-                Vector.wrap(
-                        ServerHello.EXTENSIONS_LENGTH_BYTES,
-                        extensions));
-    }
-
-    ServerHello createServerHello(ProtocolVersion version,
-                                  Random random,
-                                  Vector<Byte> legacy_session_id_echo,
-                                  CipherSuite cipher_suite,
-                                  CompressionMethod legacy_compression_method,
-                                  Vector<Extension> extensions);
-    
     // create extensions
     KeyShare.ClientHello createKeyShareForClientHello(KeyShareEntry... entries);
     KeyShare.ServerHello createKeyShareForServerHello(KeyShareEntry entry);

@@ -3,7 +3,6 @@ package com.gypsyengineer.tlsbunny.tls13.fuzzer;
 import com.gypsyengineer.tlsbunny.fuzzer.Fuzzer;
 import com.gypsyengineer.tlsbunny.tls.Random;
 import com.gypsyengineer.tlsbunny.tls.Struct;
-import com.gypsyengineer.tlsbunny.tls.Vector;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
@@ -234,13 +233,6 @@ public class DeepHandshakeFuzzer extends StructFactoryWrapper
     // override only methods for creating Handshake messages
 
     @Override
-    public synchronized Certificate createCertificate(Vector<Byte> certificate_request_context,
-                                                      Vector<CertificateEntry> certificate_list) {
-
-        return handle(super.createCertificate(certificate_request_context, certificate_list));
-    }
-
-    @Override
     public synchronized Certificate createCertificate(byte[] certificate_request_context,
                                                       CertificateEntry... certificate_list) {
 
@@ -248,9 +240,8 @@ public class DeepHandshakeFuzzer extends StructFactoryWrapper
     }
 
     @Override
-    public synchronized CertificateRequest createCertificateRequest(
-            byte[] certificate_request_context, Vector<Extension> extensions) {
-
+    public CertificateRequest createCertificateRequest(byte[] certificate_request_context,
+                                                       List<Extension> extensions) {
         return handle(super.createCertificateRequest(certificate_request_context, extensions));
     }
 
@@ -294,12 +285,12 @@ public class DeepHandshakeFuzzer extends StructFactoryWrapper
     }
 
     @Override
-    public synchronized ServerHello createServerHello(ProtocolVersion version,
-                                                      Random random,
-                                                      Vector<Byte> legacy_session_id_echo,
-                                                      CipherSuite cipher_suite,
-                                                      CompressionMethod legacy_compression_method,
-                                                      Vector<Extension> extensions) {
+    public ServerHello createServerHello(ProtocolVersion version,
+                                         Random random,
+                                         byte[] legacy_session_id_echo,
+                                         CipherSuite cipher_suite,
+                                         CompressionMethod legacy_compression_method,
+                                         List<Extension> extensions) {
 
         return handle(super.createServerHello(version, random, legacy_session_id_echo,
                 cipher_suite, legacy_compression_method, extensions));

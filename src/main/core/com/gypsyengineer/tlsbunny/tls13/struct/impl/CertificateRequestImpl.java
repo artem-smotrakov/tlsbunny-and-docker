@@ -38,12 +38,12 @@ public class CertificateRequestImpl implements CertificateRequest {
     }
 
     @Override
-    public Vector<Byte> getCertificateRequestContext() {
+    public Vector<Byte> certificateRequestContext() {
         return certificate_request_context;
     }
 
     @Override
-    public Vector<Extension> getExtensions() {
+    public Vector<Extension> extensions() {
         return extensions;
     }
 

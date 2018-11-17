@@ -17,12 +17,12 @@ import static com.gypsyengineer.tlsbunny.utils.Utils.cast;
 
 public class ServerHelloImpl implements ServerHello {
 
-    protected final ProtocolVersion version;
-    protected final Random random;
-    protected final Vector<Byte> legacy_session_id_echo;
-    protected final CipherSuite cipher_suite;
-    protected final CompressionMethod legacy_compression_method;
-    protected final Vector<Extension> extensions;
+    protected ProtocolVersion version;
+    protected Random random;
+    protected Vector<Byte> legacy_session_id_echo;
+    protected CipherSuite cipher_suite;
+    protected CompressionMethod legacy_compression_method;
+    protected Vector<Extension> extensions;
 
     ServerHelloImpl(ProtocolVersion version, Random random,
             Vector<Byte> legacy_session_id_echo,
@@ -61,32 +61,32 @@ public class ServerHelloImpl implements ServerHello {
     }
 
     @Override
-    public ProtocolVersion getProtocolVersion() {
+    public ProtocolVersion protocolVersion() {
         return version;
     }
 
     @Override
-    public Random getRandom() {
+    public Random random() {
         return random;
     }
 
     @Override
-    public Vector<Byte> getLegacySessionIdEcho() {
+    public Vector<Byte> legacySessionIdEcho() {
         return legacy_session_id_echo;
     }
 
     @Override
-    public CipherSuite getCipherSuite() {
+    public CipherSuite cipherSuite() {
         return cipher_suite;
     }
 
     @Override
-    public CompressionMethod getLegacyCompressionMethod() {
+    public CompressionMethod legacyCompressionMethod() {
         return legacy_compression_method;
     }
 
     @Override
-    public Extension findExtension(ExtensionType type) {
+    public Extension find(ExtensionType type) {
         for (Extension extension : extensions.toList()) {
             if (type.equals(extension.getExtensionType())) {
                 return extension;
@@ -97,8 +97,18 @@ public class ServerHelloImpl implements ServerHello {
     }
 
     @Override
-    public Vector<Extension> getExtensions() {
+    public Vector<Extension> extensions() {
         return extensions;
+    }
+
+    @Override
+    public void extensions(Vector<Extension> extensions) {
+        this.extensions = extensions;
+    }
+
+    @Override
+    public void legacySessionIdEcho(Vector<Byte> legacy_session_id_echo) {
+        this.legacy_session_id_echo = legacy_session_id_echo;
     }
 
     @Override

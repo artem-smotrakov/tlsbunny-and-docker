@@ -93,18 +93,21 @@ public class MultiConfigClient implements Client, AutoCloseable {
         synchronized (this) {
             running = true;
         }
-        for (FuzzerConfig config : configs) {
-            synchronized (this) {
-                if (stopped) {
-                    break;
-                }
-            }
-            client.set(config);
-            client.connect();
-        }
 
-        synchronized (this) {
-            running = false;
+        try {
+            for (FuzzerConfig config : configs) {
+                synchronized (this) {
+                    if (stopped) {
+                        break;
+                    }
+                }
+                client.set(config);
+                client.connect();
+            }
+        } finally {
+            synchronized (this) {
+                running = false;
+            }
         }
 
         return this;

@@ -102,27 +102,23 @@ public class ClientHelloImpl implements ClientHello {
     }
 
     @Override
-    public ClientHello cipherSuites(Vector<CipherSuite> cipherSuites) {
+    public void cipherSuites(Vector<CipherSuite> cipherSuites) {
         this.cipher_suites = cipherSuites;
-        return this;
     }
 
     @Override
-    public ClientHello extensions(Vector<Extension> extensions) {
+    public void extensions(Vector<Extension> extensions) {
         this.extensions = extensions;
-        return this;
     }
 
     @Override
-    public ClientHello legacyCompressionMethods(Vector<CompressionMethod> compressionMethods) {
+    public void legacyCompressionMethods(Vector<CompressionMethod> compressionMethods) {
         this.legacy_compression_methods = compressionMethods;
-        return this;
     }
 
     @Override
-    public ClientHello legacySessionId(Vector<Byte> sessionId) {
+    public void legacySessionId(Vector<Byte> sessionId) {
         this.legacy_session_id = sessionId;
-        return this;
     }
 
     @Override
