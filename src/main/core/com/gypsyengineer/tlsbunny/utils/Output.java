@@ -8,7 +8,8 @@ import java.util.List;
 
 public class Output implements AutoCloseable {
 
-    private static boolean onlyAchtungs = false;
+    private static boolean onlyAchtung = Boolean.valueOf(
+            System.getProperty("tlsbunny.output.only.achtung", "false"));
 
     public static final String ansi_red = "\u001B[31m";
     public static final String ansi_reset = "\u001B[0m";
@@ -29,21 +30,21 @@ public class Output implements AutoCloseable {
         return new Output(prefix);
     }
 
-    public static void printOnlyAchtungs() {
+    public static void printOnlyAchtung() {
         synchronized (Output.class) {
-            onlyAchtungs = true;
+            onlyAchtung = true;
         }
     }
 
     public static void printAll() {
         synchronized (Output.class) {
-            onlyAchtungs = false;
+            onlyAchtung = false;
         }
     }
 
     public static boolean onlyAchtungs() {
         synchronized (Output.class) {
-            return onlyAchtungs;
+            return onlyAchtung;
         }
     }
 
