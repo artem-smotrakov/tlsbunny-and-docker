@@ -12,7 +12,7 @@ import static com.gypsyengineer.tlsbunny.tls13.fuzzer.MultiConfigClient.multiCon
 import static com.gypsyengineer.tlsbunny.tls13.server.HttpsServer.httpsServer;
 import static com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup.secp256r1;
 
-public class ImplTestTest {
+public class TestForVendorTest {
 
     @Test
     public void test() throws Exception {
