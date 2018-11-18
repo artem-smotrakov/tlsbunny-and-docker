@@ -19,14 +19,14 @@ public class CCSTest {
         context.factory = StructFactory.getDefault();
 
         ByteBuffer buffer = new OutgoingChangeCipherSpec()
-                .set(ChangeCipherSpec.VALID_VALUE)
+                .set(ChangeCipherSpec.valid_value)
                 .set(context)
                 .run()
                 .out();
         assertNotNull(buffer);
 
         new IncomingChangeCipherSpec()
-                .expect(ChangeCipherSpec.VALID_VALUE)
+                .expect(ChangeCipherSpec.valid_value)
                 .set(context)
                 .in(buffer)
                 .run();

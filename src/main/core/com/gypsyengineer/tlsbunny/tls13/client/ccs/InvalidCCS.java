@@ -3,6 +3,7 @@ package com.gypsyengineer.tlsbunny.tls13.client.ccs;
 import com.gypsyengineer.tlsbunny.tls13.client.AbstractClient;
 import com.gypsyengineer.tlsbunny.tls13.client.Client;
 import com.gypsyengineer.tlsbunny.tls13.connection.*;
+import com.gypsyengineer.tlsbunny.tls13.connection.action.ActionFailed;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Side;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.*;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
@@ -11,12 +12,13 @@ import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.handshake.NegotiatorException;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
+import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
-import static com.gypsyengineer.tlsbunny.tls13.struct.ChangeCipherSpec.MAX;
-import static com.gypsyengineer.tlsbunny.tls13.struct.ChangeCipherSpec.MIN;
-import static com.gypsyengineer.tlsbunny.tls13.struct.ChangeCipherSpec.VALID_VALUE;
+import static com.gypsyengineer.tlsbunny.tls13.struct.ChangeCipherSpec.max;
+import static com.gypsyengineer.tlsbunny.tls13.struct.ChangeCipherSpec.min;
+import static com.gypsyengineer.tlsbunny.tls13.struct.ChangeCipherSpec.valid_value;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
 import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.client_hello;
 import static com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType.finished;
@@ -28,8 +30,8 @@ import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public class InvalidCCS extends AbstractClient {
 
-    private int start = MIN;
-    private int end = MAX;
+    private int start = min;
+    private int end = max;
 
     public static void main(String[] args) throws Exception {
         try (Output output = new Output()) {
@@ -54,19 +56,36 @@ public class InvalidCCS extends AbstractClient {
     }
 
     @Override
-    public Client connectImpl() throws Exception {
+    public Client connectImpl() throws NoSuchAlgorithmException, NegotiatorException,
+            EngineException, ActionFailed {
+
         if (start > end) {
-            throw whatTheHell("starting ccs value (%d) is greater than end ccs value (%d)", start, end);
+            throw whatTheHell("starting ccs value (%d) is greater " +
+                    "than end ccs value (%d)", start, end);
         }
 
         Analyzer analyzer = new NoAlertAnalyzer().set(output);
         for (int ccsValue = start; ccsValue <= end; ccsValue++) {
-            if (ccsValue == VALID_VALUE) {
+            if (ccsValue == valid_value) {
                 continue;
             }
             output.info("try CCS with %d", ccsValue);
-            Engine engine = createEngine(ccsValue).connect().run(checks).apply(analyzer);
-            engines.add(engine);
+            try {
+                Engine engine = createEngine(ccsValue)
+                        .connect()
+                        .run(checks)
+                        .apply(analyzer);
+                engines.add(engine);
+            } catch (EngineException e) {
+                Throwable cause = e.getCause();
+                if (cause instanceof IOException) {
+                    // we expect that the server might have closed the connection
+                    // after receiving an invalid CCS message
+                    output.info("exception: %s", e.getMessage());
+                } else {
+                    throw e;
+                }
+            }
         }
         analyzer.run();
 

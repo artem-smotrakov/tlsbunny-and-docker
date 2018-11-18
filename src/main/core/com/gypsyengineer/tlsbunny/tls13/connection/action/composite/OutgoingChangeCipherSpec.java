@@ -8,7 +8,7 @@ import java.io.IOException;
 
 public class OutgoingChangeCipherSpec extends AbstractAction {
 
-    private int value = ChangeCipherSpec.VALID_VALUE;
+    private int value = ChangeCipherSpec.valid_value;
 
     public OutgoingChangeCipherSpec set(int value) {
         this.value = value;
