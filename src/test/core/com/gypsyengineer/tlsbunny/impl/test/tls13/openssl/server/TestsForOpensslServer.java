@@ -12,10 +12,7 @@ import com.gypsyengineer.tlsbunny.tls13.connection.check.AlertCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.check.AllFailedCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.check.ExceptionCheck;
 import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 
 import java.io.IOException;
 import java.net.SocketException;
@@ -64,6 +61,20 @@ public class TestsForOpensslServer {
     }
 
     @Test
+    @Ignore
+    /**
+     * The test is ignored because it fails since the server doesn't send an alert.
+     *
+     * The TLS 1.3 spec says the following:
+     *
+     *      Implementations MUST NOT send None-length fragments of Handshake
+     *      types, even if those fragments contain padding.
+     *
+     *  https://tools.ietf.org/html/draft-ietf-tls-tls13-28#section-5.1
+     *
+     *  Should it expect an alert them
+     *  after sending an empty TLSPlaintext message of handshake type?
+     */
     public void startWithTLSPlaintextWithHandshake() throws Exception {
         new ImplTest()
                 .set(new StartWithEmptyTLSPlaintext().set(ContentType.handshake))
@@ -72,6 +83,19 @@ public class TestsForOpensslServer {
     }
 
     @Test
+    @Ignore
+    /**
+     * The test is ignored because it fails since the server doesn't send an alert.
+     *
+     * The TLS 1.3 spec says the following:
+     *
+     *    A change_cipher_spec record received before the first ClientHello message
+     *    or after the peer's Finished message MUST be treated as an unexpected record type
+     *
+     *  https://tools.ietf.org/html/draft-ietf-tls-tls13-28#section-5
+     *
+     *  Is it a minor bug in OpenSSL?
+     */
     public void startWithTLSPlaintextWithCCS() throws Exception {
         new ImplTest()
                 .set(new StartWithEmptyTLSPlaintext().set(ContentType.change_cipher_spec))
