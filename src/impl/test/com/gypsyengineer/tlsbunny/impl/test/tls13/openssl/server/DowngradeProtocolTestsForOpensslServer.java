@@ -13,6 +13,7 @@ import org.junit.Test;
 import java.io.IOException;
 
 import static com.gypsyengineer.tlsbunny.impl.test.tls13.Utils.checkForASanFindings;
+import static com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.server.OpensslServer.opensslServer;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.*;
 
 public class DowngradeProtocolTestsForOpensslServer {
@@ -21,7 +22,7 @@ public class DowngradeProtocolTestsForOpensslServer {
 
     @BeforeClass
     public static void setUp() throws Exception {
-        server = new OpensslServer();
+        server = opensslServer();
         server.dockerEnv(
                 "options",
                 "-min_protocol TLSv1 -max_protocol TLSv1.3 -debug -tlsextdebug");

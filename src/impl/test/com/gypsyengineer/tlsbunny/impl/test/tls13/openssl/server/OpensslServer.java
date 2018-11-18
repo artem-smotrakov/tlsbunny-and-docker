@@ -30,7 +30,7 @@ public class OpensslServer extends OpensslDocker implements Server {
         return new OpensslServer();
     }
 
-    public OpensslServer() {
+    private OpensslServer() {
         output.add(listener);
     }
 

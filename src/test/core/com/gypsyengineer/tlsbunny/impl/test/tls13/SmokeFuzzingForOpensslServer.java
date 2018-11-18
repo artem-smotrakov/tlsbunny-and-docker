@@ -14,6 +14,7 @@ import org.junit.Test;
 import java.io.IOException;
 
 import static com.gypsyengineer.tlsbunny.impl.test.tls13.Utils.checkForASanFindings;
+import static com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.server.OpensslServer.opensslServer;
 import static com.gypsyengineer.tlsbunny.tls13.client.HttpsClient.httpsClient;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.MutatedConfigs.*;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.DeepHandshakeFuzzyClient.deepHandshakeFuzzyClient;
@@ -31,7 +32,7 @@ public class SmokeFuzzingForOpensslServer {
 
     @BeforeClass
     public static void setUp() throws Exception {
-        server = new OpensslServer();
+        server = opensslServer();
         server.start();
         Utils.waitStart(server);
     }

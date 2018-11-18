@@ -11,6 +11,7 @@ import org.junit.Test;
 import java.io.IOException;
 
 import static com.gypsyengineer.tlsbunny.impl.test.tls13.Utils.checkForASanFindings;
+import static com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.server.OpensslServer.opensslServer;
 
 public class TestsForOpensslServerWithClientAuth {
 
@@ -18,7 +19,7 @@ public class TestsForOpensslServerWithClientAuth {
 
     @BeforeClass
     public static void setUp() throws Exception {
-        server = new OpensslServer();
+        server = opensslServer();
         server.dockerEnv("options", "-Verify 0 -CAfile certs/root_cert.pem");
         server.start();
         Utils.waitStart(server);
