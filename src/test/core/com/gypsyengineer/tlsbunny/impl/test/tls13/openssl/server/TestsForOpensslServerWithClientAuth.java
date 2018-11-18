@@ -2,6 +2,7 @@ package com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.server;
 
 import com.gypsyengineer.tlsbunny.impl.test.tls13.ImplTest;
 import com.gypsyengineer.tlsbunny.impl.test.tls13.Utils;
+import com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.OpensslServer;
 import com.gypsyengineer.tlsbunny.tls13.client.*;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -11,7 +12,7 @@ import org.junit.Test;
 import java.io.IOException;
 
 import static com.gypsyengineer.tlsbunny.impl.test.tls13.Utils.checkForASanFindings;
-import static com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.server.OpensslServer.opensslServer;
+import static com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.OpensslServer.opensslServer;
 
 public class TestsForOpensslServerWithClientAuth {
 

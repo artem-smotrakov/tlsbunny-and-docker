@@ -2,6 +2,7 @@ package com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.server;
 
 import com.gypsyengineer.tlsbunny.impl.test.tls13.ImplTest;
 import com.gypsyengineer.tlsbunny.impl.test.tls13.Utils;
+import com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.OpensslServer;
 import com.gypsyengineer.tlsbunny.tls13.client.*;
 import com.gypsyengineer.tlsbunny.tls13.client.ccs.CCSAfterHandshake;
 import com.gypsyengineer.tlsbunny.tls13.client.ccs.InvalidCCS;
@@ -20,7 +21,7 @@ import java.io.IOException;
 import java.net.SocketException;
 
 import static com.gypsyengineer.tlsbunny.impl.test.tls13.Utils.checkForASanFindings;
-import static com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.server.OpensslServer.opensslServer;
+import static com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.OpensslServer.opensslServer;
 
 public class TestsForOpensslServer {
 

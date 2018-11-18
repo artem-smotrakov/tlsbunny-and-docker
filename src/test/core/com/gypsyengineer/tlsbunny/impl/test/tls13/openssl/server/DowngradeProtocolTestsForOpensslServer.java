@@ -2,6 +2,7 @@ package com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.server;
 
 import com.gypsyengineer.tlsbunny.impl.test.tls13.ImplTest;
 import com.gypsyengineer.tlsbunny.impl.test.tls13.Utils;
+import com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.OpensslServer;
 import com.gypsyengineer.tlsbunny.tls13.client.HttpsClient;
 import com.gypsyengineer.tlsbunny.tls13.client.downgrade.CheckDowngradeMessage;
 import com.gypsyengineer.tlsbunny.tls13.client.downgrade.NoSupportedVersions;
@@ -13,7 +14,7 @@ import org.junit.Test;
 import java.io.IOException;
 
 import static com.gypsyengineer.tlsbunny.impl.test.tls13.Utils.checkForASanFindings;
-import static com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.server.OpensslServer.opensslServer;
+import static com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.OpensslServer.opensslServer;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.*;
 
 public class DowngradeProtocolTestsForOpensslServer {
