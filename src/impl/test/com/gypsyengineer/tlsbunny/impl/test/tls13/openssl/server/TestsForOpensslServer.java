@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.net.SocketException;
 
 import static com.gypsyengineer.tlsbunny.impl.test.tls13.Utils.checkForASanFindings;
+import static com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.server.OpensslServer.opensslServer;
 
 public class TestsForOpensslServer {
 
@@ -27,7 +28,7 @@ public class TestsForOpensslServer {
 
     @BeforeClass
     public static void setUp() throws Exception {
-        server = new OpensslServer();
+        server = opensslServer();
         server.start();
         Utils.waitStart(server);
     }

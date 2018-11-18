@@ -1,13 +1,18 @@
+sudo: required
 language: java
 dist: trusty
 
+services:
+  - docker
+
 jdk:
-  - openjdk9
   - openjdk10
   - openjdk11
 
 before_install:
   - ./gradlew wrapper --gradle-version 4.10.2
+  - docker pull artemsmotrakov/tlsbunny_openssl_tls13_server:2018_11_17
+  - docker run artemsmotrakov/tlsbunny_openssl_tls13_server:2018_11_17 /bin/bash -c "openssl version"
 
 after_success:
   - ./gradlew jacocoTestReport coveralls
@@ -19,6 +24,7 @@ addons:
       secure: "dluei+0gd66JePCjVlPagI8hrZ56BU5CaQV3SLzskTe2iHyV/Xvspwn5FN4c3lwKtLbr0pQXpbpddKEinqpZ9JUFgvtpl1MoI6fI61vrtBgrZTsAPvWgQYN7OluvKSjaIK6Q4SJAd6KLS1GBGEG55np4rD3W4fKW1jyz+ZaAOvQHxBT5JkOARRZKtLHgL8iN6I8YYF7WGwwp5BtrfALz5jTPKsIcuWXqICLwVmZmnGjWnsqRxZuYxcWX27jcoWuGg8ei+BjUf9yWzevkqVU3896vg/sCWjua+jJzVXXElmrXe3bJXGd0zS8LyjvrSVFwueY4pMy1HYZwtBDJMb2lriDTimeVmb+Bb2YJDfUuq5f2w20Cp/RbWvvCMoYVerosSk3OaqYLPEHFFu+MSI76erHgHDHJX+i9A1MwU0nl7JCivejpqMpho52dGUScqAfWeXE68Kd5/1nKNQr+roMhzyQnFwFTJahD3BVmxXmhcLR4sYT0inqxSGQ+leAfYS0qLztz/2QthZyGvzPhiP/orzhBK2AUnSQjPu3hX2azkH1Pjgm/pW2twdkkURNstQvLj+PboFJZzJjMrmgJ6q00dclKEvHU3hx69ea//9b0l7+wPJnhN17fsTfc84ATpXadtB2K6nCrabGnlxoK0V5RO7MdeYzdMCdsQCqTLry/BbY="
 
 script:
-  - ./gradlew check --info
+  - ./gradlew test --info -Ptlsbunny.test.exclude=com/gypsyengineer/tlsbunny/impl/test/tls13/**
+  - ./gradlew test --info -Ptlsbunny.test.include=com/gypsyengineer/tlsbunny/impl/test/tls13/** -Dtlsbunny.output.only.achtung=true
   - sonar-scanner
 

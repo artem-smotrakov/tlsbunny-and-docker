@@ -110,7 +110,7 @@ public class OpensslClient extends OpensslDocker implements Client {
 
         command.add("--name");
         command.add(containerName);
-        command.add("openssl/tls13");
+        command.add(image);
 
         try {
             int code = Utils.waitProcessFinish(output, command);

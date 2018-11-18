@@ -12,6 +12,7 @@ import org.junit.Test;
 import java.io.IOException;
 
 import static com.gypsyengineer.tlsbunny.impl.test.tls13.Utils.checkForASanFindings;
+import static com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.server.OpensslServer.opensslServer;
 import static com.gypsyengineer.tlsbunny.tls13.client.HttpsClientAuth.httpsClientAuth;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.MultiConfigClient.multiConfigClient;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.MutatedClient.mutatedClient;
@@ -25,7 +26,7 @@ public class FuzzingForOpensslServerWithClientAuth {
 
     @BeforeClass
     public static void setUp() throws Exception {
-        server = new OpensslServer();
+        server = opensslServer();
         server.dockerEnv("options", "-Verify 0 -CAfile certs/root_cert.pem");
         server.start();
         Utils.waitStart(server);

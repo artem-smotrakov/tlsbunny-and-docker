@@ -42,11 +42,24 @@ sourceSets {
         java {
             srcDirs 'src/test/core'
         }
+
         compileClasspath += sourceSets.main.output
         compileClasspath += sourceSets.test_impl.output
         compileClasspath += configurations.testRuntimeClasspath
         runtimeClasspath += output + compileClasspath
     }
+}
+
+test {
+    if (project.hasProperty('tlsbunny.test.exclude')) {
+        exclude project.property('tlsbunny.test.exclude')
+    }
+
+    if (project.hasProperty('tlsbunny.test.include')) {
+        include project.property('tlsbunny.test.include')
+    }
+
+    systemProperty "tlsbunny.output.only.achtung", System.getProperty("tlsbunny.output.only.achtung", "false")
 }
 
 jacocoTestReport {

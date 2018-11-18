@@ -6,7 +6,7 @@ import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 import org.junit.Test;
 
-import static com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.server.SmokeFuzzingForOpensslServer.minimized;
+import static com.gypsyengineer.tlsbunny.impl.test.tls13.SmokeFuzzingForOpensslServer.minimized;
 import static com.gypsyengineer.tlsbunny.tls13.client.HttpsClient.httpsClient;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.DeepHandshakeFuzzyClient.deepHandshakeFuzzyClient;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.MultiConfigClient.multiConfigClient;

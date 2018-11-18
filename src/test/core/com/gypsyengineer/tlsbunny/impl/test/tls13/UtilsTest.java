@@ -2,11 +2,21 @@ package com.gypsyengineer.tlsbunny.impl.test.tls13;
 
 import com.gypsyengineer.tlsbunny.utils.Achtung;
 import com.gypsyengineer.tlsbunny.utils.Output;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.junit.Assert.fail;
 
 public class UtilsTest {
+
+    private static boolean value;
+
+    @BeforeClass
+    public static void setUp() {
+        value = Output.printOnlyAchtung();
+        Output.printAll();
+    }
 
     @Test
     public void asanMessageFound() {
@@ -29,5 +39,10 @@ public class UtilsTest {
             output.achtung("warning");
             Utils.checkForASanFindings(output);
         }
+    }
+
+    @AfterClass
+    public static void tearDown() {
+        Output.printOnlyAchtung(value);
     }
 }
