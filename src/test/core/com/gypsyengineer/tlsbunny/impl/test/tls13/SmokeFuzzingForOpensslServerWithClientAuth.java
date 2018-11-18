@@ -1,7 +1,8 @@
-package com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.server;
+package com.gypsyengineer.tlsbunny.impl.test.tls13;
 
 import com.gypsyengineer.tlsbunny.impl.test.tls13.ImplTest;
 import com.gypsyengineer.tlsbunny.impl.test.tls13.Utils;
+import com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.server.OpensslServer;
 import com.gypsyengineer.tlsbunny.tls13.utils.FuzzerConfig;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
