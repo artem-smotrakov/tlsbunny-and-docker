@@ -16,8 +16,8 @@ public class DeepHandshakeFuzzerConfigs {
     // settings for minimized configs
     private static boolean fullConfigs = Boolean.valueOf(
             System.getProperty("tlsbunny.fuzzer.full.configs", "false"));
-    private static final int start = 10;
-    private static final int end = 15;
+    private static final int start = 5;
+    private static final int end = 7;
     private static final int parts = 1;
 
     private static final long long_read_timeout = 5000;
