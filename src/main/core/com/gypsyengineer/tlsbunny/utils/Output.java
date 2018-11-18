@@ -30,9 +30,15 @@ public class Output implements AutoCloseable {
         return new Output(prefix);
     }
 
-    public static void printOnlyAchtung() {
+    public static void printOnlyAchtung(boolean onlyAchtung) {
         synchronized (Output.class) {
-            onlyAchtung = true;
+            Output.onlyAchtung = onlyAchtung;
+        }
+    }
+
+    public static boolean printOnlyAchtung() {
+        synchronized (Output.class) {
+            return Output.onlyAchtung;
         }
     }
 
