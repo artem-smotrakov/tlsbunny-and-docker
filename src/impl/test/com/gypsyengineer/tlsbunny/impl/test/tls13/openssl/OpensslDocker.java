@@ -21,6 +21,8 @@ public class OpensslDocker {
     protected static final String host_report_directory = String.format(
             "%s/openssl_report", System.getProperty("user.dir"));
 
+    protected static final String image = "artemsmotrakov/tlsbunny_openssl_tls13_server:2018_11_17";
+
     protected static final String container_report_directory = "/var/reports";
 
     protected final String containerName = String.format("%s_%d",

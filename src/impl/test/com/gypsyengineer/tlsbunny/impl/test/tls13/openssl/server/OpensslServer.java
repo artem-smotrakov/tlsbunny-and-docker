@@ -131,7 +131,7 @@ public class OpensslServer extends OpensslDocker implements Server {
 
         command.add("--name");
         command.add(containerName);
-        command.add("openssl/tls13");
+        command.add(image);
 
         try {
             int code = Utils.waitProcessFinish(output, command);
