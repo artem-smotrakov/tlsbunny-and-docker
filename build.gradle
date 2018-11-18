@@ -58,6 +58,8 @@ test {
     if (project.hasProperty('tlsbunny.test.include')) {
         include project.property('tlsbunny.test.include')
     }
+
+    systemProperty "tlsbunny.output.only.achtung", System.getProperty("tlsbunny.output.only.achtung", "false")
 }
 
 jacocoTestReport {
