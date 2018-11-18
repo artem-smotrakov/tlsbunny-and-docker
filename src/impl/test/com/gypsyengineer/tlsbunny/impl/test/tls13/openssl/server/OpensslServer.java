@@ -205,8 +205,8 @@ public class OpensslServer extends OpensslDocker implements Server {
 
     private static class OutputListenerImpl implements OutputListener {
 
-        int acceptCounter = 0;
-        boolean serverStarted = false;
+        private int acceptCounter = 0;
+        private boolean serverStarted = false;
 
         @Override
         synchronized public void receivedInfo(String... strings) {
