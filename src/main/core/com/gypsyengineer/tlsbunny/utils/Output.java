@@ -19,6 +19,7 @@ public class Output implements AutoCloseable {
     private String prefix = tlsbunny;
     private int index = 0;
     private String indent = "";
+    private final List<OutputListener> listeners = Collections.synchronizedList(new ArrayList<>());
 
     public static Output newOutput() {
         return new Output();
@@ -54,6 +55,11 @@ public class Output implements AutoCloseable {
         prefix(prefix);
     }
 
+    public Output add(OutputListener listener) {
+        listeners.add(listener);
+        return this;
+    }
+
     synchronized public void increaseIndent() {
         int indentLength = indent.length() + indent_step;
         indent = new String(new char[indentLength]).replace('\0', ' ');
@@ -82,28 +88,32 @@ public class Output implements AutoCloseable {
     }
 
     synchronized public void info(String format, Object... values) {
+        String text = String.format(format, values);
+        String[] lines = text.split("\\r?\\n");
+        for (OutputListener listener : listeners) {
+            listener.receivedInfo(lines);
+        }
         if (onlyAchtungs()) {
             return;
         }
-        String text = String.format(format, values);
-        String[] lines = text.split("\\r?\\n");
         for (String line : lines) {
             printf("%s%s%s%n", prefix, indent, line);
         }
     }
 
     synchronized public void info(String message, Throwable e) {
-        if (onlyAchtungs()) {
-            return;
-        }
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         e.printStackTrace(new PrintStream(baos, true));
         info(String.format("%s%n%s", message, new String(baos.toByteArray())));
     }
 
     synchronized public void achtung(String format, Object... values) {
+        String line = String.format(format, values);
+        for (OutputListener listener : listeners) {
+            listener.receivedAchtung(line);
+        }
         printf("%s%sachtung: %s%s%n",
-                prefix, ansi_red, String.format(format, values), ansi_reset);
+                prefix, ansi_red, line, ansi_reset);
     }
 
     synchronized public void achtung(String message, Throwable e) {
