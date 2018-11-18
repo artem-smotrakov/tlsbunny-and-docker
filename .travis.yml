@@ -6,7 +6,6 @@ services:
   - docker
 
 jdk:
-  - openjdk9
   - openjdk10
   - openjdk11
 
