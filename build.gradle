@@ -42,10 +42,19 @@ sourceSets {
         java {
             srcDirs 'src/test/core'
         }
+
         compileClasspath += sourceSets.main.output
         compileClasspath += sourceSets.test_impl.output
         compileClasspath += configurations.testRuntimeClasspath
         runtimeClasspath += output + compileClasspath
+
+        if (project.hasProperty('tlsbunny.test.exclude')) {
+            exclude project.property('tlsbunny.test.exclude')
+        }
+
+        if (project.hasProperty('tlsbunny.test.include')) {
+            exclude project.property('tlsbunny.test.include')
+        }
     }
 }
 
