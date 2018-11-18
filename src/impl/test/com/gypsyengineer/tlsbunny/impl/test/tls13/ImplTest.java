@@ -36,16 +36,22 @@ public class ImplTest {
             throw whatTheHell("server is not set! (null)");
         }
 
+        // it may be better to set a separate exception handler for client and server
+        // threads, but it doesn't work for some reason
+        // TODO look into it
+        Thread.UncaughtExceptionHandler previousExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
+        UncaughtExceptionHandler exceptionHandler = new UncaughtExceptionHandler();
+        Thread.setDefaultUncaughtExceptionHandler(exceptionHandler);
+
+        Thread serverThread = null;
+        Thread clientThread;
         try (Output clientOutput = new Output("client");
              Output serverOutput = new Output("server")) {
 
             // start the server if it's not running
-            UncaughtExceptionHandler serverExceptionHandler = null;
-            Thread serverThread = null;
             if (!server.running()) {
                 server.set(serverOutput);
                 serverThread = server.start();
-                serverExceptionHandler = exceptionHandlerOf(serverThread);
                 Utils.waitStart(server);
             }
 
@@ -56,9 +62,7 @@ public class ImplTest {
 
             client.config().port(server.port());
             client.set(clientOutput);
-            Thread clientThread = client.start();
-            UncaughtExceptionHandler clientExceptionHandler = exceptionHandlerOf(clientThread);
-
+            clientThread = client.start();
             sleep(delay);
 
             // wait for client or server to finish
@@ -67,10 +71,8 @@ public class ImplTest {
                     // server stopped
 
                     // stop the client if we started it in this test
-                    if (clientThread != null) {
-                        client.stop();
-                        Utils.waitStop(client);
-                    }
+                    client.stop();
+                    Utils.waitStop(client);
 
                     // and exit
                     break;
@@ -100,14 +102,21 @@ public class ImplTest {
                 throw whatTheHell("server thread is still running!");
             }
 
-            if (clientExceptionHandler.knowsSomething()) {
-                throw whatTheHell("unexpected exception on client side",
-                        clientExceptionHandler.exception());
+            if (exceptionHandler.knowsSomething()) {
+                throw whatTheHell("unexpected exception", exceptionHandler.exception());
+            }
+        } finally {
+            // restore exception handler
+            Thread.setDefaultUncaughtExceptionHandler(previousExceptionHandler);
+
+            if (serverThread != null && server.running()) {
+                server.stop();
+                Utils.waitStop(server);
             }
 
-            if (serverExceptionHandler != null && serverExceptionHandler.knowsSomething()) {
-                throw whatTheHell("unexpected exception on server side",
-                        serverExceptionHandler.exception());
+            if (client.running()) {
+                client.stop();
+                Utils.waitStop(client);
             }
 
             checkForASanFindings(client.output());
@@ -115,20 +124,6 @@ public class ImplTest {
         }
 
         return this;
-    }
-
-    private static UncaughtExceptionHandler exceptionHandlerOf(Thread thread) {
-        Thread.UncaughtExceptionHandler handler = thread.getUncaughtExceptionHandler();
-        if (handler == null) {
-            throw whatTheHell("no exception handler! (null)");
-        }
-
-        if (handler instanceof UncaughtExceptionHandler == false) {
-            throw whatTheHell("unexpected exception handler: %s",
-                    handler.getClass().getName());
-        }
-
-        return (UncaughtExceptionHandler) handler;
     }
 
 }
