@@ -9,6 +9,7 @@ import com.gypsyengineer.tlsbunny.tls13.server.Server;
 import com.gypsyengineer.tlsbunny.tls13.server.StopCondition;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.Output;
+import com.gypsyengineer.tlsbunny.utils.OutputListener;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,20 +23,21 @@ public class OpensslServer extends OpensslDocker implements Server {
     public static final int port = 10101;
 
     private boolean failed = false;
-    private int acceptCounter = 0;
+    private int previousAcceptCounter = 0;
+    private final OutputListenerImpl listener = new OutputListenerImpl();
+
+    public static OpensslServer opensslServer() {
+        return new OpensslServer();
+    }
+
+    public OpensslServer() {
+        output.add(listener);
+    }
 
     public boolean ready() {
-        List<String> strings = output.strings();
-        int acceptCounter = 0;
-        for (String string : strings) {
-            if (string.contains("tlsbunny: accept")) {
-                acceptCounter++;
-            }
-        }
-
         synchronized (this) {
-            if (acceptCounter != this.acceptCounter) {
-                this.acceptCounter = acceptCounter;
+            if (previousAcceptCounter != listener.acceptCounter) {
+                previousAcceptCounter = listener.acceptCounter;
                 return true;
             }
         }
@@ -178,7 +180,7 @@ public class OpensslServer extends OpensslDocker implements Server {
 
     @Override
     public boolean running() {
-        if (!output.contains("ACCEPT")) {
+        if (!listener.serverStarted) {
             return false;
         }
 
@@ -199,6 +201,34 @@ public class OpensslServer extends OpensslDocker implements Server {
         }
 
         output.flush();
+    }
+
+    private static class OutputListenerImpl implements OutputListener {
+
+        int acceptCounter = 0;
+        boolean serverStarted = false;
+
+        @Override
+        synchronized public void receivedInfo(String... strings) {
+            if (!serverStarted) {
+                for (String string : strings) {
+                    if (string.contains("ACCEPT")) {
+                        serverStarted = true;
+                    }
+                }
+            }
+
+            for (String string : strings) {
+                if (string.contains("tlsbunny: accept")) {
+                    acceptCounter++;
+                }
+            }
+        }
+
+        @Override
+        synchronized public void receivedAchtung(String... strings) {
+            // do nothing
+        }
     }
 
 }
