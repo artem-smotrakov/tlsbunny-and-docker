@@ -1,6 +1,6 @@
 package com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.server;
 
-import com.gypsyengineer.tlsbunny.impl.test.tls13.ImplTest;
+import com.gypsyengineer.tlsbunny.impl.test.tls13.VendorTest;
 import com.gypsyengineer.tlsbunny.impl.test.tls13.Utils;
 import com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.OpensslServer;
 import com.gypsyengineer.tlsbunny.utils.Config;
@@ -40,7 +40,7 @@ public class FuzzingForOpensslServerWithClientAuth {
 
     @Test
     public void certificate() throws Exception {
-        new ImplTest()
+        new VendorTest()
                 .set(multiConfigClient()
                         .of(mutatedClient().of(httpsClientAuth()))
                         .configs(certificateConfigs(mainConfig)))
@@ -50,7 +50,7 @@ public class FuzzingForOpensslServerWithClientAuth {
 
     @Test
     public void certificateVerify() throws Exception {
-        new ImplTest()
+        new VendorTest()
                 .set(multiConfigClient()
                         .of(mutatedClient().of(httpsClientAuth()))
                         .configs(certificateVerifyConfigs(mainConfig)))

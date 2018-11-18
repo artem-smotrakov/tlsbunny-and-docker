@@ -1,6 +1,6 @@
 package com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.server;
 
-import com.gypsyengineer.tlsbunny.impl.test.tls13.ImplTest;
+import com.gypsyengineer.tlsbunny.impl.test.tls13.VendorTest;
 import com.gypsyengineer.tlsbunny.impl.test.tls13.Utils;
 import com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.OpensslServer;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.DeepHandshakeFuzzerConfigs;
@@ -40,7 +40,7 @@ public class FuzzingForOpensslServer {
 
     @Test
     public void ccs() throws Exception {
-        new ImplTest()
+        new VendorTest()
                 .set(multiConfigClient()
                         .of(mutatedClient().of(httpsClient()))
                         .configs(ccsConfigs(mainConfig)))
@@ -50,7 +50,7 @@ public class FuzzingForOpensslServer {
 
     @Test
     public void tlsPlaintext() throws Exception {
-        new ImplTest()
+        new VendorTest()
                 .set(multiConfigClient()
                         .of(mutatedClient().of(httpsClient()))
                         .configs(tlsPlaintextConfigs(mainConfig)))
@@ -60,7 +60,7 @@ public class FuzzingForOpensslServer {
 
     @Test
     public void handshake() throws Exception {
-        new ImplTest()
+        new VendorTest()
                 .set(multiConfigClient()
                         .of(mutatedClient().of(httpsClient()))
                         .configs(handshakeConfigs(mainConfig)))
@@ -70,7 +70,7 @@ public class FuzzingForOpensslServer {
 
     @Test
     public void clientHello() throws Exception {
-        new ImplTest()
+        new VendorTest()
                 .set(multiConfigClient()
                         .of(mutatedClient().of(httpsClient()))
                         .configs(clientHelloConfigs(mainConfig)))
@@ -80,7 +80,7 @@ public class FuzzingForOpensslServer {
 
     @Test
     public void finished() throws Exception {
-        new ImplTest()
+        new VendorTest()
                 .set(multiConfigClient()
                         .of(mutatedClient().of(httpsClient()))
                         .configs(finishedConfigs(mainConfig)))
@@ -90,7 +90,7 @@ public class FuzzingForOpensslServer {
 
     @Test
     public void cipherSuites() throws Exception {
-        new ImplTest()
+        new VendorTest()
                 .set(multiConfigClient()
                         .of(mutatedClient().of(httpsClient()))
                         .configs(cipherSuitesConfigs(mainConfig)))
@@ -100,7 +100,7 @@ public class FuzzingForOpensslServer {
 
     @Test
     public void extensionVector() throws Exception {
-        new ImplTest()
+        new VendorTest()
                 .set(multiConfigClient()
                         .of(mutatedClient().of(httpsClient()))
                         .configs(extensionVectorConfigs(mainConfig)))
@@ -110,7 +110,7 @@ public class FuzzingForOpensslServer {
 
     @Test
     public void legacyCompressionMethods() throws Exception {
-        new ImplTest()
+        new VendorTest()
                 .set(multiConfigClient()
                         .of(mutatedClient().of(httpsClient()))
                         .configs(legacyCompressionMethodsConfigs(mainConfig)))
@@ -120,7 +120,7 @@ public class FuzzingForOpensslServer {
 
     @Test
     public void legacySessionId() throws Exception {
-        new ImplTest()
+        new VendorTest()
                 .set(multiConfigClient()
                         .of(mutatedClient().of(httpsClient()))
                         .configs(legacySessionIdConfigs(mainConfig)))
@@ -130,7 +130,7 @@ public class FuzzingForOpensslServer {
 
     @Test
     public void deepHandshakeFuzzer() throws Exception {
-        new ImplTest()
+        new VendorTest()
                 .set(multiConfigClient()
                         .of(deepHandshakeFuzzyClient().of(httpsClient()))
                         .configs(DeepHandshakeFuzzerConfigs.noClientAuth(mainConfig)))

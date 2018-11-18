@@ -1,6 +1,6 @@
 package com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.server;
 
-import com.gypsyengineer.tlsbunny.impl.test.tls13.ImplTest;
+import com.gypsyengineer.tlsbunny.impl.test.tls13.VendorTest;
 import com.gypsyengineer.tlsbunny.impl.test.tls13.Utils;
 import com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.OpensslServer;
 import com.gypsyengineer.tlsbunny.tls13.client.*;
@@ -33,7 +33,7 @@ public class TestsForOpensslServerWithClientAuth {
 
     @Test
     public void httpsClientAuth() throws Exception {
-        new ImplTest()
+        new VendorTest()
                 .set(new HttpsClientAuth())
                 .set(server)
                 .run();

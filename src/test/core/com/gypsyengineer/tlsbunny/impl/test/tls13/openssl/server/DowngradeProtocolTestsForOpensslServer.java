@@ -1,6 +1,6 @@
 package com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.server;
 
-import com.gypsyengineer.tlsbunny.impl.test.tls13.ImplTest;
+import com.gypsyengineer.tlsbunny.impl.test.tls13.VendorTest;
 import com.gypsyengineer.tlsbunny.impl.test.tls13.Utils;
 import com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.OpensslServer;
 import com.gypsyengineer.tlsbunny.tls13.client.HttpsClient;
@@ -41,7 +41,7 @@ public class DowngradeProtocolTestsForOpensslServer {
         // try to establish a normal connection
         // to check if the server works well
 
-        new ImplTest()
+        new VendorTest()
                 .set(new HttpsClient())
                 .set(server)
                 .run();
@@ -49,7 +49,7 @@ public class DowngradeProtocolTestsForOpensslServer {
 
     @Test
     public void checkDowngradeTLSv10() throws Exception {
-        new ImplTest()
+        new VendorTest()
                 .set(new CheckDowngradeMessage().expect(TLSv10))
                 .set(server)
                 .run();
@@ -57,7 +57,7 @@ public class DowngradeProtocolTestsForOpensslServer {
 
     @Test
     public void checkDowngradeTLSv11() throws Exception {
-        new ImplTest()
+        new VendorTest()
                 .set(new CheckDowngradeMessage().expect(TLSv11))
                 .set(server)
                 .run();
@@ -65,7 +65,7 @@ public class DowngradeProtocolTestsForOpensslServer {
 
     @Test
     public void checkDowngradeTLSv12() throws Exception {
-        new ImplTest()
+        new VendorTest()
                 .set(new CheckDowngradeMessage().expect(TLSv12))
                 .set(server)
                 .run();
@@ -73,7 +73,7 @@ public class DowngradeProtocolTestsForOpensslServer {
 
     @Test
     public void noDowngradeMessage() throws Exception {
-        new ImplTest()
+        new VendorTest()
                 .set(new CheckDowngradeMessage().expect(TLSv13))
                 .set(server)
                 .run();
@@ -81,7 +81,7 @@ public class DowngradeProtocolTestsForOpensslServer {
 
     @Test
     public void noSupportedVersions() throws Exception {
-        new ImplTest()
+        new VendorTest()
                 .set(new NoSupportedVersions())
                 .set(server)
                 .run();

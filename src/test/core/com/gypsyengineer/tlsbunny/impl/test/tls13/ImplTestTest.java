@@ -25,7 +25,7 @@ public class ImplTestTest {
         Config mainConfig = SystemPropertiesConfig.load();
 
         try (server) {
-            new ImplTest()
+            new VendorTest()
                     .set(multiConfigClient()
                             .of(deepHandshakeFuzzyClient().of(httpsClient()))
                             .configs(DeepHandshakeFuzzerConfigs.noClientAuth(mainConfig)))

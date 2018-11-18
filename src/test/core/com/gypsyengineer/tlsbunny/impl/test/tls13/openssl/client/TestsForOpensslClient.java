@@ -1,6 +1,6 @@
 package com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.client;
 
-import com.gypsyengineer.tlsbunny.impl.test.tls13.ImplTest;
+import com.gypsyengineer.tlsbunny.impl.test.tls13.VendorTest;
 import com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.OpensslClient;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
@@ -19,7 +19,7 @@ public class TestsForOpensslClient {
     public void successfulHandshake() throws Exception {
         Config serverConfig = SystemPropertiesConfig.load();
 
-        new ImplTest()
+        new VendorTest()
                 .set(new OpensslClient())
                 .set(httpsServer()
                         .set(serverConfig)

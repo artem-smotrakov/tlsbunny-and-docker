@@ -9,7 +9,7 @@ import static com.gypsyengineer.tlsbunny.impl.test.tls13.Utils.checkForASanFindi
 import static com.gypsyengineer.tlsbunny.impl.test.tls13.Utils.sleep;
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
-public class ImplTest {
+public class VendorTest {
 
     // in millis
     private static final long delay = 3 * 1000;
@@ -17,17 +17,17 @@ public class ImplTest {
     private Client client;
     private Server server;
 
-    public ImplTest set(Client client) {
+    public VendorTest set(Client client) {
         this.client = client;
         return this;
     }
 
-    public ImplTest set(Server server) {
+    public VendorTest set(Server server) {
         this.server = server;
         return this;
     }
 
-    public ImplTest run() throws Exception {
+    public VendorTest run() throws Exception {
         if (client == null) {
             throw whatTheHell("client is not set! (null)");
         }

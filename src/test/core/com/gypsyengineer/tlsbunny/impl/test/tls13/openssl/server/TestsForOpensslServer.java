@@ -1,6 +1,6 @@
 package com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.server;
 
-import com.gypsyengineer.tlsbunny.impl.test.tls13.ImplTest;
+import com.gypsyengineer.tlsbunny.impl.test.tls13.VendorTest;
 import com.gypsyengineer.tlsbunny.impl.test.tls13.Utils;
 import com.gypsyengineer.tlsbunny.impl.test.tls13.openssl.OpensslServer;
 import com.gypsyengineer.tlsbunny.tls13.client.*;
@@ -38,7 +38,7 @@ public class TestsForOpensslServer {
 
     @Test
     public void httpClient() throws Exception {
-        new ImplTest()
+        new VendorTest()
                 .set(new HttpsClient())
                 .set(server)
                 .run();
@@ -46,7 +46,7 @@ public class TestsForOpensslServer {
 
     @Test
     public void ccsAfterHandshake() throws Exception {
-        new ImplTest()
+        new VendorTest()
                 .set(new CCSAfterHandshake())
                 .set(server)
                 .run();
@@ -54,7 +54,7 @@ public class TestsForOpensslServer {
 
     @Test
     public void doubleClientHello() throws Exception {
-        new ImplTest()
+        new VendorTest()
                 .set(new DoubleClientHello())
                 .set(server)
                 .run();
@@ -76,7 +76,7 @@ public class TestsForOpensslServer {
      *  after sending an empty TLSPlaintext message of handshake type?
      */
     public void startWithTLSPlaintextWithHandshake() throws Exception {
-        new ImplTest()
+        new VendorTest()
                 .set(new StartWithEmptyTLSPlaintext().set(ContentType.handshake))
                 .set(server)
                 .run();
@@ -97,7 +97,7 @@ public class TestsForOpensslServer {
      *  Is it a minor bug in OpenSSL?
      */
     public void startWithTLSPlaintextWithCCS() throws Exception {
-        new ImplTest()
+        new VendorTest()
                 .set(new StartWithEmptyTLSPlaintext().set(ContentType.change_cipher_spec))
                 .set(server)
                 .run();
@@ -105,7 +105,7 @@ public class TestsForOpensslServer {
 
     @Test
     public void startWithTLSPlaintextWithApplicationData() throws Exception {
-        new ImplTest()
+        new VendorTest()
                 .set(new StartWithEmptyTLSPlaintext().set(ContentType.application_data))
                 .set(server)
                 .run();
@@ -113,7 +113,7 @@ public class TestsForOpensslServer {
 
     @Test
     public void startWithTLSPlaintextWithAlert() throws Exception {
-        new ImplTest()
+        new VendorTest()
                 .set(new StartWithEmptyTLSPlaintext().set(ContentType.alert))
                 .set(server)
                 .run();
@@ -121,7 +121,7 @@ public class TestsForOpensslServer {
 
     @Test
     public void startWithCCS() throws Exception {
-        new ImplTest()
+        new VendorTest()
                 .set(new StartWithCCS())
                 .set(server)
                 .run();
@@ -129,7 +129,7 @@ public class TestsForOpensslServer {
 
     @Test
     public void multipleCCS() throws Exception {
-        new ImplTest()
+        new VendorTest()
                 .set(new MultipleCCS())
                 .set(server)
                 .run();
@@ -140,7 +140,7 @@ public class TestsForOpensslServer {
         // sometimes OpenSSL sends an alert, but sometimes it just closes the connection
         // it may be a little bug, needs more investigation
 
-        new ImplTest()
+        new VendorTest()
                 .set(new InvalidCCS()
                         .set(new AllFailedCheck()
                                 .add(new AlertCheck())
@@ -152,7 +152,7 @@ public class TestsForOpensslServer {
 
     @Test
     public void ecdheStrictValidation() throws Exception {
-        new ImplTest()
+        new VendorTest()
                 .set(new ECDHEStrictValidation())
                 .set(server)
                 .run();
@@ -160,7 +160,7 @@ public class TestsForOpensslServer {
 
     @Test
     public void manyGroupsInClientHello() throws Exception {
-        new ImplTest()
+        new VendorTest()
                 .set(new ManyGroupsInClientHello())
                 .set(server)
                 .run();
@@ -168,7 +168,7 @@ public class TestsForOpensslServer {
 
     @Test
     public void startWithServerHello() throws Exception {
-        new ImplTest()
+        new VendorTest()
                 .set(new StartWithServerHello())
                 .set(server)
                 .run();
@@ -176,7 +176,7 @@ public class TestsForOpensslServer {
 
     @Test
     public void startWithFinished() throws Exception {
-        new ImplTest()
+        new VendorTest()
                 .set(new StartWithFinished())
                 .set(server)
                 .run();
