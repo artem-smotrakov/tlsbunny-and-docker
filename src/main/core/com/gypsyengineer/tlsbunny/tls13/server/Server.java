@@ -32,6 +32,14 @@ public interface Server extends Runnable, AutoCloseable, HasOutput<Server> {
     boolean running();
 
     /**
+     * @return true if the server is ready to accept a connection,
+     *         false otherwise
+     */
+    default boolean ready() {
+        throw new UnsupportedOperationException("not ready for you!");
+    }
+
+    /**
      * @return the port number on which the server is running
      */
     int port();
