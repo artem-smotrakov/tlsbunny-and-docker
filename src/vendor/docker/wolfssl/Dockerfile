@@ -28,14 +28,12 @@ ENV CFLAGS "-fsanitize=address -fno-omit-frame-pointer"
 ENV CXXFLAGS "-fsanitize=address -fno-omit-frame-pointer"
 ENV LDFLAGS "-fsanitize=address"
 
-
 RUN git clone https://github.com/wolfSSL/wolfssl && \
     cd wolfssl && \
     bash autogen.sh && \
     CFLAGS=${CFLAGS} CXXFLAGS=${CXXFLAGS} LDFLAGS=${LDFLAGS} \
 	    ./configure \
 		    --enable-tls13 \
-		    --enable-tls13-draft26 \
 		    --enable-debug && \
     CFLAGS=${CFLAGS} CXXFLAGS=${CXXFLAGS} LDFLAGS=${LDFLAGS} make && \
     make install
@@ -45,4 +43,4 @@ EXPOSE 40101
 ENV ASAN_OPTIONS "detect_leaks=0"
 WORKDIR /var/src/wolfssl
 
-CMD [ "bash", "src/vendor/wolfssl/start.sh" ]
+CMD [ "bash", "/var/src/tlsbunny/src/vendor/wolfssl/start.sh" ]
