@@ -4,7 +4,7 @@
 # the following command builds a docker image
 # it should be run from the root of tlsbunny repository
 #
-# docker build --file src/impl/docker/openssl/Dockerfile --tag openssl/tls13 .
+# docker build --file src/vendor/docker/openssl/Dockerfile --tag openssl/tls13 .
 #
 # the following command starts an OpenSSL server
 #
@@ -32,7 +32,7 @@ RUN git clone https://github.com/openssl/openssl /var/src/openssl
 
 ADD . /var/src/tlsbunny
 WORKDIR /var/src/openssl
-RUN git apply /var/src/tlsbunny/src/impl/openssl/s_server.patch
+RUN git apply /var/src/tlsbunny/src/vendor/openssl/s_server.patch
 RUN ./config \
 	    --debug \
 	    enable-asan \
@@ -46,4 +46,4 @@ WORKDIR /var/src/tlsbunny
 
 EXPOSE 10101
 
-CMD [ "bash", "src/impl/openssl/start.sh", "/var/src/openssl" ]
+CMD [ "bash", "src/vendor/openssl/start.sh", "/var/src/openssl" ]
