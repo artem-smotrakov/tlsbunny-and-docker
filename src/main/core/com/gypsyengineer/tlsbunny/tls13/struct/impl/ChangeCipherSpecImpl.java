@@ -18,7 +18,7 @@ public class ChangeCipherSpecImpl implements ChangeCipherSpec {
 
     @Override
     public boolean isValid() {
-        return value == VALID_VALUE;
+        return value == valid_value;
     }
 
     @Override

@@ -13,6 +13,13 @@ import static com.gypsyengineer.tlsbunny.tls13.fuzzer.DeepHandshakeFuzzer.deepHa
 
 public class DeepHandshakeFuzzerConfigs {
 
+    // settings for minimized configs
+    private static boolean fullConfigs = Boolean.valueOf(
+            System.getProperty("tlsbunny.fuzzer.full.configs", "false"));
+    private static final int start = 5;
+    private static final int end = 7;
+    private static final int parts = 1;
+
     private static final long long_read_timeout = 5000;
 
     private static final Ratio[] byte_flip_ratios = {
@@ -47,35 +54,57 @@ public class DeepHandshakeFuzzerConfigs {
     };
 
     public static FuzzerConfig[] noClientAuth(Config config) {
-        return merge(
-                enumerateByteFlipRatios(
-                        () -> deepHandshakeFuzzer(),
-                        new FuzzerConfig(config)
-                                .readTimeout(long_read_timeout)
-                                .endTest(2000)
-                                .parts(5)),
-                enumerateBitFlipRatios(
-                        () -> deepHandshakeFuzzer(),
-                        new FuzzerConfig(config)
-                                .readTimeout(long_read_timeout)
-                                .endTest(2000)
-                                .parts(5)));
+        return minimizeIfNecessary(
+                concatenate(
+                    enumerateByteFlipRatios(
+                            () -> deepHandshakeFuzzer(),
+                            new FuzzerConfig(config)
+                                    .readTimeout(long_read_timeout)
+                                    .endTest(2000)
+                                    .parts(5)),
+                    enumerateBitFlipRatios(
+                            () -> deepHandshakeFuzzer(),
+                            new FuzzerConfig(config)
+                                    .readTimeout(long_read_timeout)
+                                    .endTest(2000)
+                                    .parts(5))
+                )
+        );
     }
 
     public static FuzzerConfig[] clientAuth(Config config) {
-        return merge(
-                enumerateByteFlipRatios(
-                        () -> deepHandshakeFuzzer(),
-                        new FuzzerConfig(config)
-                                .readTimeout(long_read_timeout)
-                                .endTest(2000)
-                                .parts(5)),
-                enumerateBitFlipRatios(
-                        () -> deepHandshakeFuzzer(),
-                        new FuzzerConfig(config)
-                                .readTimeout(long_read_timeout)
-                                .endTest(2000)
-                                .parts(5)));
+        return minimizeIfNecessary(
+                concatenate(
+                    enumerateByteFlipRatios(
+                            () -> deepHandshakeFuzzer(),
+                            new FuzzerConfig(config)
+                                    .readTimeout(long_read_timeout)
+                                    .endTest(2000)
+                                    .parts(5)),
+                    enumerateBitFlipRatios(
+                            () -> deepHandshakeFuzzer(),
+                            new FuzzerConfig(config)
+                                    .readTimeout(long_read_timeout)
+                                    .endTest(2000)
+                                    .parts(5))
+                )
+        );
+    }
+
+    // helper methods
+
+    public static FuzzerConfig[] minimizeIfNecessary(FuzzerConfig... configs) {
+        if (fullConfigs) {
+            return configs;
+        }
+
+        for (FuzzerConfig config : configs) {
+            config.startTest(start);
+            config.endTest(end);
+            config.parts(parts);
+        }
+
+        return configs;
     }
 
     private static FuzzerConfig[] enumerateByteFlipRatios(
@@ -118,7 +147,7 @@ public class DeepHandshakeFuzzerConfigs {
         return generatedConfigs.toArray(new FuzzerConfig[0]);
     }
 
-    private static FuzzerConfig[] merge(FuzzerConfig[]... lists) {
+    private static FuzzerConfig[] concatenate(FuzzerConfig[]... lists) {
         List<FuzzerConfig> result = new ArrayList<>();
         for (FuzzerConfig[] configs : lists) {
             result.addAll(List.of(configs));

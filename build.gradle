@@ -30,9 +30,9 @@ sourceSets {
         }
     }
 
-    test_impl {
+    vendor {
         java {
-            srcDir 'src/impl/test'
+            srcDir 'src/vendor/test'
         }
         compileClasspath += sourceSets.main.output + configurations.testRuntimeClasspath
         runtimeClasspath += output + compileClasspath
@@ -44,7 +44,7 @@ sourceSets {
         }
 
         compileClasspath += sourceSets.main.output
-        compileClasspath += sourceSets.test_impl.output
+        compileClasspath += sourceSets.vendor.output
         compileClasspath += configurations.testRuntimeClasspath
         runtimeClasspath += output + compileClasspath
     }
@@ -143,7 +143,7 @@ task buildOpensslDocker(type: Exec) {
     commandLine 'docker',
             'build',
             '--no-cache',
-            '--file', 'src/impl/docker/openssl/Dockerfile',
+            '--file', 'src/vendor/docker/openssl/Dockerfile',
             '--tag',  'openssl/tls13',
             '.'
 }
@@ -177,26 +177,26 @@ task runOpensslServer {
 task runOpensslTests(type: Test) {
     description = 'Runs tests for OpenSSL'
     group = 'openssl'
-    testClassesDirs = sourceSets.test_impl.output.classesDirs
-    classpath = sourceSets.test_impl.runtimeClasspath
+    testClassesDirs = sourceSets.vendor.output.classesDirs
+    classpath = sourceSets.vendor.runtimeClasspath
     testLogging.showStandardStreams = true
     ignoreFailures = true
     outputs.upToDateWhen { false }
 
-    include 'com/gypsyengineer/tlsbunny/impl/test/tls13/openssl/**/*Tests*'
-    exclude 'com/gypsyengineer/tlsbunny/impl/test/tls13/openssl/**/*Fuzzing*'
+    include 'com/gypsyengineer/tlsbunny/vendor/test/tls13/openssl/**/*Tests*'
+    exclude 'com/gypsyengineer/tlsbunny/vendor/test/tls13/openssl/**/*Fuzzing*'
 }
 
 task runOpensslFuzzing(type: Test) {
     description = 'Runs fuzzing for OpenSSL'
     group = 'openssl'
-    testClassesDirs = sourceSets.test_impl.output.classesDirs
-    classpath = sourceSets.test_impl.runtimeClasspath
+    testClassesDirs = sourceSets.vendor.output.classesDirs
+    classpath = sourceSets.vendor.runtimeClasspath
     testLogging.showStandardStreams = true
     ignoreFailures = true
     outputs.upToDateWhen { false }
 
-    include 'com/gypsyengineer/tlsbunny/impl/test/tls13/openssl/**/*Fuzzing*'
+    include 'com/gypsyengineer/tlsbunny/vendor/test/tls13/openssl/**/*Fuzzing*'
 }
 
 // tasks for running tests for picotls

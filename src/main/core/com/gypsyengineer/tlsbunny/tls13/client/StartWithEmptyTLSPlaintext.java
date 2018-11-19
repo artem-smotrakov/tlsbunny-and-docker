@@ -91,7 +91,7 @@ public class StartWithEmptyTLSPlaintext extends SingleConnectionClient {
     }
 
     protected Engine createEngine()
-            throws NegotiatorException, NoSuchAlgorithmException, EngineException {
+            throws NegotiatorException, NoSuchAlgorithmException {
 
         output.info("test: start handshake with an empty TLSPlaintext (%s)", type);
 
@@ -101,7 +101,7 @@ public class StartWithEmptyTLSPlaintext extends SingleConnectionClient {
                 .set(factory)
                 .set(output)
 
-                .send(new GeneratingEmptyTLSPlaintext()
+                .run(new GeneratingEmptyTLSPlaintext()
                         .type(type)
                         .version(TLSv12))
                 .send(new OutgoingData())
