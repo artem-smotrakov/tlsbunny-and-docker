@@ -1,4 +1,4 @@
-package com.gypsyengineer.tlsbunny.vendor.test.tls13;
+package com.gypsyengineer.tlsbunny.vendor.test.tls13.common.server;
 
 import com.gypsyengineer.tlsbunny.tls13.client.*;
 import com.gypsyengineer.tlsbunny.tls13.client.ccs.CCSAfterHandshake;
@@ -10,6 +10,8 @@ import com.gypsyengineer.tlsbunny.tls13.connection.check.AllFailedCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.check.ExceptionCheck;
 import com.gypsyengineer.tlsbunny.tls13.server.Server;
 import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
+import com.gypsyengineer.tlsbunny.vendor.test.tls13.Utils;
+import com.gypsyengineer.tlsbunny.vendor.test.tls13.VendorTest;
 import org.junit.*;
 
 import java.io.IOException;
@@ -17,7 +19,7 @@ import java.net.SocketException;
 
 import static com.gypsyengineer.tlsbunny.vendor.test.tls13.Utils.checkForASanFindings;
 
-public class TestsForServer {
+public abstract class TestsForServer {
 
     protected static Server server;
 

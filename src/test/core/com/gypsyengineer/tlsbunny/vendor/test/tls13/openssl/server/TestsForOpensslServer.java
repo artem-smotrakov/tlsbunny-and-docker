@@ -1,6 +1,6 @@
 package com.gypsyengineer.tlsbunny.vendor.test.tls13.openssl.server;
 
-import com.gypsyengineer.tlsbunny.vendor.test.tls13.TestsForServer;
+import com.gypsyengineer.tlsbunny.vendor.test.tls13.common.server.TestsForServer;
 import com.gypsyengineer.tlsbunny.vendor.test.tls13.Utils;
 import org.junit.*;
 
