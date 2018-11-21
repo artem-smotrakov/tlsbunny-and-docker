@@ -1,11 +1,9 @@
-package com.gypsyengineer.tlsbunny.vendor.test.tls13.openssl;
+package com.gypsyengineer.tlsbunny.vendor.test.tls13.wolfssl;
 
-import com.gypsyengineer.tlsbunny.vendor.test.tls13.Utils;
 import com.gypsyengineer.tlsbunny.utils.Output;
+import com.gypsyengineer.tlsbunny.vendor.test.tls13.Utils;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -13,36 +11,25 @@ import java.util.Map;
 
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
-public class OpensslDocker {
+public class WolfsslDocker {
 
     protected static final String remove_container_template =
             "docker container rm %s";
 
-    protected static final String host_report_directory = String.format(
-            "%s/openssl_report", System.getProperty("user.dir"));
-
     protected static final String image = System.getProperty(
-            "tlsbunny.openssl.docker.image",
-            "artemsmotrakov/tlsbunny_openssl_tls13_server:2018_11_17");
-
-    protected static final String container_report_directory = "/var/reports";
+            "tlsbunny.wolfssl.docker.image",
+            "artemsmotrakov/tlsbunny_wolfssl_tls13:2018_11_19");
 
     protected final String containerName = String.format("%s_%d",
             this.getClass().getSimpleName().toLowerCase(), System.currentTimeMillis());
+
     protected final Output output = new Output(this.getClass().getSimpleName());
+
     protected Map<String, String> dockerEnv = Collections.synchronizedMap(new HashMap<>());
 
-    public OpensslDocker dockerEnv(String name, String value) {
+    public WolfsslDocker dockerEnv(String name, String value) {
         dockerEnv.put(name, value);
         return this;
-    }
-
-    protected void createReportDirectory() {
-        try {
-            Files.createDirectories(Paths.get(host_report_directory));
-        } catch (IOException e) {
-            throw whatTheHell("could not create a directory for reports!", e);
-        }
     }
 
     protected boolean containerRunning() {

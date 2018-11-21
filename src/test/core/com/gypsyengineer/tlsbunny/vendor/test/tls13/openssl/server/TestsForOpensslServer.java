@@ -1,28 +1,13 @@
 package com.gypsyengineer.tlsbunny.vendor.test.tls13.openssl.server;
 
-import com.gypsyengineer.tlsbunny.vendor.test.tls13.VendorTest;
+import com.gypsyengineer.tlsbunny.vendor.test.tls13.common.server.TestsForServer;
 import com.gypsyengineer.tlsbunny.vendor.test.tls13.Utils;
-import com.gypsyengineer.tlsbunny.vendor.test.tls13.openssl.OpensslServer;
-import com.gypsyengineer.tlsbunny.tls13.client.*;
-import com.gypsyengineer.tlsbunny.tls13.client.ccs.CCSAfterHandshake;
-import com.gypsyengineer.tlsbunny.tls13.client.ccs.InvalidCCS;
-import com.gypsyengineer.tlsbunny.tls13.client.ccs.MultipleCCS;
-import com.gypsyengineer.tlsbunny.tls13.client.ccs.StartWithCCS;
-import com.gypsyengineer.tlsbunny.tls13.connection.check.AlertCheck;
-import com.gypsyengineer.tlsbunny.tls13.connection.check.AllFailedCheck;
-import com.gypsyengineer.tlsbunny.tls13.connection.check.ExceptionCheck;
-import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
 import org.junit.*;
 
-import java.io.IOException;
-import java.net.SocketException;
-
-import static com.gypsyengineer.tlsbunny.vendor.test.tls13.Utils.checkForASanFindings;
+import static com.gypsyengineer.tlsbunny.utils.Achtung.achtung;
 import static com.gypsyengineer.tlsbunny.vendor.test.tls13.openssl.OpensslServer.opensslServer;
 
-public class TestsForOpensslServer {
-
-    private static OpensslServer server;
+public class TestsForOpensslServer extends TestsForServer {
 
     @BeforeClass
     public static void setUp() throws Exception {
@@ -31,36 +16,8 @@ public class TestsForOpensslServer {
         Utils.waitStart(server);
     }
 
-    @Before
-    public void serverReady() throws IOException, InterruptedException {
-        Utils.waitServerReady(server);
-    }
-
     @Test
-    public void httpClient() throws Exception {
-        new VendorTest()
-                .set(new HttpsClient())
-                .set(server)
-                .run();
-    }
-
-    @Test
-    public void ccsAfterHandshake() throws Exception {
-        new VendorTest()
-                .set(new CCSAfterHandshake())
-                .set(server)
-                .run();
-    }
-
-    @Test
-    public void doubleClientHello() throws Exception {
-        new VendorTest()
-                .set(new DoubleClientHello())
-                .set(server)
-                .run();
-    }
-
-    @Test
+    @Override
     @Ignore
     /**
      * The test is ignored because it fails since the server doesn't send an alert.
@@ -75,14 +32,12 @@ public class TestsForOpensslServer {
      *  Should it expect an alert them
      *  after sending an empty TLSPlaintext message of handshake type?
      */
-    public void startWithTLSPlaintextWithHandshake() throws Exception {
-        new VendorTest()
-                .set(new StartWithEmptyTLSPlaintext().set(ContentType.handshake))
-                .set(server)
-                .run();
+    public void startWithTLSPlaintextWithHandshake() {
+        throw achtung("don't override this method!");
     }
 
     @Test
+    @Override
     @Ignore
     /**
      * The test is ignored because it fails since the server doesn't send an alert.
@@ -97,95 +52,7 @@ public class TestsForOpensslServer {
      *  Is it a minor bug in OpenSSL?
      */
     public void startWithTLSPlaintextWithCCS() throws Exception {
-        new VendorTest()
-                .set(new StartWithEmptyTLSPlaintext().set(ContentType.change_cipher_spec))
-                .set(server)
-                .run();
+        throw achtung("don't override this method!");
     }
 
-    @Test
-    public void startWithTLSPlaintextWithApplicationData() throws Exception {
-        new VendorTest()
-                .set(new StartWithEmptyTLSPlaintext().set(ContentType.application_data))
-                .set(server)
-                .run();
-    }
-
-    @Test
-    public void startWithTLSPlaintextWithAlert() throws Exception {
-        new VendorTest()
-                .set(new StartWithEmptyTLSPlaintext().set(ContentType.alert))
-                .set(server)
-                .run();
-    }
-
-    @Test
-    public void startWithCCS() throws Exception {
-        new VendorTest()
-                .set(new StartWithCCS())
-                .set(server)
-                .run();
-    }
-
-    @Test
-    public void multipleCCS() throws Exception {
-        new VendorTest()
-                .set(new MultipleCCS())
-                .set(server)
-                .run();
-    }
-
-    @Test
-    public void invalidCCS() throws Exception {
-        // sometimes OpenSSL sends an alert, but sometimes it just closes the connection
-        // it may be a little bug, needs more investigation
-
-        new VendorTest()
-                .set(new InvalidCCS()
-                        .set(new AllFailedCheck()
-                                .add(new AlertCheck())
-                                .add(new ExceptionCheck()
-                                        .set(SocketException.class))))
-                .set(server)
-                .run();
-    }
-
-    @Test
-    public void ecdheStrictValidation() throws Exception {
-        new VendorTest()
-                .set(new ECDHEStrictValidation())
-                .set(server)
-                .run();
-    }
-
-    @Test
-    public void manyGroupsInClientHello() throws Exception {
-        new VendorTest()
-                .set(new ManyGroupsInClientHello())
-                .set(server)
-                .run();
-    }
-
-    @Test
-    public void startWithServerHello() throws Exception {
-        new VendorTest()
-                .set(new StartWithServerHello())
-                .set(server)
-                .run();
-    }
-
-    @Test
-    public void startWithFinished() throws Exception {
-        new VendorTest()
-                .set(new StartWithFinished())
-                .set(server)
-                .run();
-    }
-
-    @AfterClass
-    public static void tearDown() throws Exception {
-        server.close();
-        Utils.waitStop(server);
-        checkForASanFindings(server.output());
-    }
 }

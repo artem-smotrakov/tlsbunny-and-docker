@@ -128,13 +128,13 @@ public class Utils {
         } while (server.running());
     }
 
-    public static void waitServerReady(OpensslServer server)
+    public static void waitServerReady(Server server)
             throws IOException, InterruptedException {
 
         waitServerReady(server, default_timeout);
     }
 
-    public static void waitServerReady(OpensslServer server, long timeout)
+    public static void waitServerReady(Server server, long timeout)
             throws IOException, InterruptedException {
 
         long start = System.currentTimeMillis();

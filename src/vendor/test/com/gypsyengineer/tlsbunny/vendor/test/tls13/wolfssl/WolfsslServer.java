@@ -1,14 +1,14 @@
-package com.gypsyengineer.tlsbunny.vendor.test.tls13.openssl;
+package com.gypsyengineer.tlsbunny.vendor.test.tls13.wolfssl;
 
-import com.gypsyengineer.tlsbunny.vendor.test.tls13.Utils;
-import com.gypsyengineer.tlsbunny.tls13.connection.check.Check;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.EngineFactory;
+import com.gypsyengineer.tlsbunny.tls13.connection.check.Check;
 import com.gypsyengineer.tlsbunny.tls13.server.Server;
 import com.gypsyengineer.tlsbunny.tls13.server.StopCondition;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.Output;
 import com.gypsyengineer.tlsbunny.utils.OutputListener;
+import com.gypsyengineer.tlsbunny.vendor.test.tls13.Utils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -17,19 +17,19 @@ import java.util.Map;
 
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
-public class OpensslServer extends OpensslDocker implements Server {
+public class WolfsslServer extends WolfsslDocker implements Server {
 
-    public static final int port = 10101;
+    public static final int port = 40101;
 
     private boolean failed = false;
     private int previousAcceptCounter = 0;
     private final OutputListenerImpl listener = new OutputListenerImpl();
 
-    public static OpensslServer opensslServer() {
-        return new OpensslServer();
+    public static WolfsslServer wolfsslServer() {
+        return new WolfsslServer();
     }
 
-    private OpensslServer() {
+    private WolfsslServer() {
         output.add(listener);
     }
 
@@ -46,28 +46,28 @@ public class OpensslServer extends OpensslDocker implements Server {
     }
 
     @Override
-    public OpensslServer set(Config config) {
+    public WolfsslServer set(Config config) {
         throw new UnsupportedOperationException("no configs for you!");
     }
 
     @Override
-    public OpensslServer set(Output output) {
+    public WolfsslServer set(Output output) {
         output.achtung("you can't set output for me!");
         return this;
     }
 
     @Override
-    public OpensslServer set(EngineFactory engineFactory) {
+    public WolfsslServer set(EngineFactory engineFactory) {
         throw new UnsupportedOperationException("no engine factories for you!");
     }
 
     @Override
-    public OpensslServer set(Check check) {
+    public WolfsslServer set(Check check) {
         throw new UnsupportedOperationException("no checks for you!");
     }
 
     @Override
-    public OpensslServer stopWhen(StopCondition condition) {
+    public WolfsslServer stopWhen(StopCondition condition) {
         throw new UnsupportedOperationException("no stop conditions for you!");
     }
 
@@ -102,8 +102,6 @@ public class OpensslServer extends OpensslDocker implements Server {
             throw whatTheHell("the server has already been started!");
         }
 
-        createReportDirectory();
-
         Thread thread = new Thread(this);
         thread.start();
 
@@ -117,9 +115,6 @@ public class OpensslServer extends OpensslDocker implements Server {
         command.add("run");
         command.add("-p");
         command.add(String.format("%d:%d", port, port));
-        command.add("-v");
-        command.add(String.format("%s:%s",
-                host_report_directory, container_report_directory));
 
         if (!dockerEnv.isEmpty()) {
             for (Map.Entry entry : dockerEnv.entrySet()) {
@@ -127,9 +122,6 @@ public class OpensslServer extends OpensslDocker implements Server {
                 command.add(String.format("%s=%s", entry.getKey(), entry.getValue()));
             }
         }
-
-        // note: -debug and -tlsextdebug options enable more output
-        //       (they need to be passed to s_server via "options" variable)
 
         command.add("--name");
         command.add(containerName);
@@ -154,7 +146,7 @@ public class OpensslServer extends OpensslDocker implements Server {
     }
 
     @Override
-    public OpensslServer stop() {
+    public WolfsslServer stop() {
         try {
             List<String> command = List.of(
                     "docker",
@@ -162,7 +154,7 @@ public class OpensslServer extends OpensslDocker implements Server {
                     containerName,
                     "bash",
                     "-c",
-                    "pidof openssl | xargs kill -SIGINT"
+                    "rm /var/src/wolfssl/stop.file; pidof lt-server | xargs kill -9"
             );
 
             int code = Utils.waitProcessFinish(output, command);
@@ -212,14 +204,14 @@ public class OpensslServer extends OpensslDocker implements Server {
         synchronized public void receivedInfo(String... strings) {
             if (!serverStarted) {
                 for (String string : strings) {
-                    if (string.contains("ACCEPT")) {
+                    if (string.contains("wolfSSL Leaving SSL_new, return 0")) {
                         serverStarted = true;
                     }
                 }
             }
 
             for (String string : strings) {
-                if (string.contains("tlsbunny: accept")) {
+                if (string.contains("wolfSSL Entering wolfSSL_SetHsDoneCb")) {
                     acceptCounter++;
                 }
             }

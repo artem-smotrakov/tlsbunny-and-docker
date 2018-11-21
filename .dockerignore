@@ -1,0 +1,7 @@
+.git
+.gitignore
+.idea
+openssl_report
+out
+tlsbunny.iml
+.travis.yml
