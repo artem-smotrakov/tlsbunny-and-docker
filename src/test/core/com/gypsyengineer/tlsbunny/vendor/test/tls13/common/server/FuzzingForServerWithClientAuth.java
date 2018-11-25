@@ -17,7 +17,6 @@ import static com.gypsyengineer.tlsbunny.tls13.fuzzer.MutatedClient.mutatedClien
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.MutatedConfigs.certificateConfigs;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.MutatedConfigs.certificateVerifyConfigs;
 import static com.gypsyengineer.tlsbunny.vendor.test.tls13.Utils.checkForASanFindings;
-import static com.gypsyengineer.tlsbunny.vendor.test.tls13.openssl.OpensslServer.opensslServer;
 
 public abstract class FuzzingForServerWithClientAuth {
 

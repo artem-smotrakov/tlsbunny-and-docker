@@ -22,7 +22,7 @@ public class UtilsTest {
     public void asanMessageFound() {
         try (Output output = new Output()) {
             output.info("one");
-            output.info("ERROR: AddressSanitizer: buffer overflow");
+            output.info("ERROR: AddressSanitizer: this is a test!");
             output.achtung("warning");
             Utils.checkForASanFindings(output);
             fail("expected achtung");
