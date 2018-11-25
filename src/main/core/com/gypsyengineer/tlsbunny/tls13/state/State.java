@@ -4,11 +4,29 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
+
 public class State {
 
     private final Map<String, Fact> facts = new HashMap<>();
 
-    public State add(Fact fact) {
+    public static State state(Fact... facts) {
+        Objects.requireNonNull(facts, "facts can't be null!");
+        if (facts.length == 0) {
+            throw whatTheHell("no facts provided!");
+        }
+
+        State state = new State();
+        for (Fact fact : facts) {
+            state.add(fact);
+        }
+
+        return state;
+    }
+
+    private State() {}
+
+    private State add(Fact fact) {
         Objects.requireNonNull(fact.name(), "hey! name can't be null!");
         facts.put(fact.name(), fact);
         return this;
