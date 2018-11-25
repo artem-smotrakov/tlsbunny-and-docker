@@ -14,13 +14,28 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class TestUtils {
 
     public interface TestAction {
         void run() throws Exception;
+    }
+
+    public static void assertContains(Object object, Object... array) {
+        Objects.requireNonNull(object);
+        Objects.requireNonNull(array);
+        assertTrue(array.length > 0);
+        for (Object element : array) {
+            if (object.equals(element)) {
+                return;
+            }
+        }
+
+        fail("the list doesn't contain the object!");
     }
 
     public static void expectIllegalState(TestAction test) throws Exception {
@@ -47,6 +62,21 @@ public class TestUtils {
             fail("expected an exception");
         } catch (UnsupportedOperationException e) {
             // good
+        }
+    }
+
+    public static void expectException(TestAction test, Class expected) {
+        Objects.requireNonNull(test, "no action!");
+        Objects.requireNonNull(expected, "no class!");
+        try {
+            test.run();
+            fail("expected an exception");
+        } catch (Throwable t) {
+            if (!t.getClass().equals(expected)) {
+                t.printStackTrace();
+                fail(String.format("expected %s but caught %s",
+                        expected.getSimpleName(), t.getClass().getSimpleName()));
+            }
         }
     }
 

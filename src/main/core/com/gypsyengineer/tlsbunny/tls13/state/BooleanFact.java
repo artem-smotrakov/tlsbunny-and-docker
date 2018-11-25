@@ -10,6 +10,7 @@ public class BooleanFact implements Fact<Boolean> {
     private final Boolean value;
 
     public static BooleanFact booleanFact(String name, Boolean value) {
+        Objects.requireNonNull(name, "name can't be null!");
         return new BooleanFact(name, value);
     }
 
