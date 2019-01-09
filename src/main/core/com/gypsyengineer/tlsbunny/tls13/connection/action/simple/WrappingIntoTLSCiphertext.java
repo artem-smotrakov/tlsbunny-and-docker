@@ -57,7 +57,7 @@ public class WrappingIntoTLSCiphertext extends AbstractAction {
             throw whatTheHell("encryptor is not initialized (null)");
         }
 
-        TLSInnerPlaintext tlsInnerPlaintext = context.factory.createTLSInnerPlaintext(
+        TLSInnerPlaintext tlsInnerPlaintext = context.factory().createTLSInnerPlaintext(
                 type, content, NO_PADDING);
         byte[] plaintext = tlsInnerPlaintext.encoding();
 
@@ -67,7 +67,7 @@ public class WrappingIntoTLSCiphertext extends AbstractAction {
         encryptor.update(plaintext);
         byte[] ciphertext = encryptor.finish();
 
-        out = TLS13Utils.store(context.factory.createTLSPlaintexts(application_data, TLSv12, ciphertext));
+        out = TLS13Utils.store(context.factory().createTLSPlaintexts(application_data, TLSv12, ciphertext));
 
         return this;
     }

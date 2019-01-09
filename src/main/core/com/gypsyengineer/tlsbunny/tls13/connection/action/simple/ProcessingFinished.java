@@ -53,20 +53,20 @@ public class ProcessingFinished extends AbstractAction<ProcessingFinished> {
             throw whatTheHell("side not specified! (null)");
         }
 
-        Finished finished = context.factory.parser().parseFinished(
-                in, context.suite.hashLength());
+        Finished finished = context.factory().parser().parseFinished(
+                in, context.suite().hashLength());
 
-        byte[] verify_key = context.hkdf.expandLabel(
+        byte[] verify_key = context.hkdf().expandLabel(
                 getBaseKey(),
                 Constants.finished(),
                 zero_hash_value,
-                context.hkdf.getHashLength());
+                context.hkdf().getHashLength());
 
         byte[] verify_data;
         try {
-            verify_data = context.hkdf.hmac(
+            verify_data = context.hkdf().hmac(
                     verify_key,
-                    TranscriptHash.compute(context.suite.hash(), context.allMessages()));
+                    TranscriptHash.compute(context.suite().hash(), context.allMessages()));
         } catch (NoSuchAlgorithmException e) {
             throw new ActionFailed(e);
         }

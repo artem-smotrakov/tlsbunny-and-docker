@@ -36,7 +36,7 @@ public class OutgoingApplicationData extends AbstractAction {
 
     @Override
     public Action run() throws IOException, AEADException {
-        TLSPlaintext[] tlsPlaintexts = context.factory.createTLSPlaintexts(
+        TLSPlaintext[] tlsPlaintexts = context.factory().createTLSPlaintexts(
                 ContentType.application_data,
                 ProtocolVersion.TLSv12,
                 encrypt(data));
@@ -47,7 +47,7 @@ public class OutgoingApplicationData extends AbstractAction {
     }
 
     private byte[] encrypt(byte[] data) throws IOException, AEADException {
-        TLSInnerPlaintext tlsInnerPlaintext = context.factory.createTLSInnerPlaintext(
+        TLSInnerPlaintext tlsInnerPlaintext = context.factory().createTLSInnerPlaintext(
                 ContentType.application_data, data, NO_PADDING);
         byte[] plaintext = tlsInnerPlaintext.encoding();
 

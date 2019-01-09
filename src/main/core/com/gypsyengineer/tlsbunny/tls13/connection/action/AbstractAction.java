@@ -69,9 +69,9 @@ public abstract class AbstractAction<T extends AbstractAction> implements Action
     protected byte[] processEncrypted(AEAD decryptor, ContentType expectedType)
             throws ActionFailed, AEADException, IOException {
 
-        TLSPlaintext tlsPlaintext = context.factory.parser().parseTLSPlaintext(in);
+        TLSPlaintext tlsPlaintext = context.factory().parser().parseTLSPlaintext(in);
         if (tlsPlaintext.containsAlert()) {
-            Alert alert = context.factory.parser().parseAlert(tlsPlaintext.getFragment());
+            Alert alert = context.factory().parser().parseAlert(tlsPlaintext.getFragment());
             context.setAlert(alert);
             throw new ActionFailed(String.format("received an alert: %s", alert));
         }
@@ -83,7 +83,7 @@ public abstract class AbstractAction<T extends AbstractAction> implements Action
         TLSInnerPlaintext tlsInnerPlaintext = decrypt(decryptor, tlsPlaintext);
 
         if (!expectedType.isAlert() && tlsInnerPlaintext.containsAlert()) {
-            Alert alert = context.factory.parser().parseAlert(tlsInnerPlaintext.getContent());
+            Alert alert = context.factory().parser().parseAlert(tlsInnerPlaintext.getContent());
             context.setAlert(alert);
             throw new ActionFailed(String.format("received an alert: %s", alert));
         }
@@ -100,47 +100,47 @@ public abstract class AbstractAction<T extends AbstractAction> implements Action
     protected Handshake processEncryptedHandshake()
             throws AEADException, ActionFailed, IOException {
 
-        return context.factory.parser().parseHandshake(
+        return context.factory().parser().parseHandshake(
                 processEncrypted(context.handshakeDecryptor, ContentType.handshake));
     }
 
     protected Handshake toHandshake(HandshakeMessage message) throws IOException {
-        return context.factory.createHandshake(message.type(), message.encoding());
+        return context.factory().createHandshake(message.type(), message.encoding());
     }
 
     protected Extension wrap(SupportedVersions supportedVersions) throws IOException {
-        return context.factory.createExtension(
+        return context.factory().createExtension(
                 ExtensionType.supported_versions, supportedVersions.encoding());
     }
 
     protected Extension wrap(SignatureSchemeList signatureSchemeList) throws IOException {
-        return context.factory.createExtension(
+        return context.factory().createExtension(
                 ExtensionType.signature_algorithms, signatureSchemeList.encoding());
     }
 
     protected Extension wrap(NamedGroupList namedGroupList) throws IOException {
-        return context.factory.createExtension(
+        return context.factory().createExtension(
                 ExtensionType.supported_groups, namedGroupList.encoding());
     }
 
     protected Extension wrap(KeyShare keyShare) throws IOException {
-        return context.factory.createExtension(
+        return context.factory().createExtension(
                 ExtensionType.key_share, keyShare.encoding());
     }
 
     protected Extension wrap(Cookie cookie) throws IOException {
-        return context.factory.createExtension(ExtensionType.cookie, cookie.encoding());
+        return context.factory().createExtension(ExtensionType.cookie, cookie.encoding());
     }
 
     protected Extension wrap(MaxFragmentLength maxFragmentLength) throws IOException {
-        return context.factory.createExtension(
+        return context.factory().createExtension(
                 ExtensionType.max_fragment_length, maxFragmentLength.encoding());
     }
 
     protected TLSInnerPlaintext decrypt(AEAD decryptor, TLSPlaintext tlsPlaintext)
             throws AEADException {
 
-        return context.factory.parser().parseTLSInnerPlaintext(
+        return context.factory().parser().parseTLSInnerPlaintext(
                 decryptor.decrypt(tlsPlaintext));
     }
 

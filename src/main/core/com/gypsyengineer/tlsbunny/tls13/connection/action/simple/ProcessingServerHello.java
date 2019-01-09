@@ -11,7 +11,7 @@ public class ProcessingServerHello extends AbstractAction<ProcessingServerHello>
 
     @Override
     public ProcessingServerHello run() {
-        context.factory.parser().parseServerHello(in);
+        context.factory().parser().parseServerHello(in);
         output.info("received a ServerHello message");
 
         return this;

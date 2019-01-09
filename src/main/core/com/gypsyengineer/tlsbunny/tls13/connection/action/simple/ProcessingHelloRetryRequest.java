@@ -16,7 +16,7 @@ public class ProcessingHelloRetryRequest extends AbstractAction {
 
     @Override
     public Action run() throws IOException {
-        HelloRetryRequest helloRetryRequest = context.factory.parser().parseHelloRetryRequest(in);
+        HelloRetryRequest helloRetryRequest = context.factory().parser().parseHelloRetryRequest(in);
         out = ByteBuffer.wrap(helloRetryRequest.encoding());
         output.info("received a HelloRetryRequest message");
 

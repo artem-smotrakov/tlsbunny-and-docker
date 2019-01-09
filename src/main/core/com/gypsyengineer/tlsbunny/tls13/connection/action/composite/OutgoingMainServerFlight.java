@@ -77,7 +77,7 @@ public class OutgoingMainServerFlight extends AbstractAction<OutgoingMainServerF
                 .supportedVersion(TLSv13)
                 .group(secp256r1)
                 .signatureScheme(ecdsa_secp256r1_sha256)
-                .keyShareEntry(context -> context.negotiator.createKeyShareEntry())
+                .keyShareEntry(context -> context.negotiator().createKeyShareEntry())
                 .set(output)
                 .set(context)
                 .run()

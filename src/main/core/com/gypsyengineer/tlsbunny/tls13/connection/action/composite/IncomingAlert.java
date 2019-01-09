@@ -17,20 +17,20 @@ public class IncomingAlert extends AbstractAction {
 
     @Override
     public Action run() throws ActionFailed, AEADException, IOException {
-        TLSPlaintext tlsPlaintext = context.factory.parser().parseTLSPlaintext(in);
+        TLSPlaintext tlsPlaintext = context.factory().parser().parseTLSPlaintext(in);
 
         Alert alert;
         if (tlsPlaintext.containsAlert()) {
-            alert = context.factory.parser().parseAlert(tlsPlaintext.getFragment());
+            alert = context.factory().parser().parseAlert(tlsPlaintext.getFragment());
         } else if (tlsPlaintext.containsApplicationData()) {
-            TLSInnerPlaintext tlsInnerPlaintext = context.factory.parser().parseTLSInnerPlaintext(
+            TLSInnerPlaintext tlsInnerPlaintext = context.factory().parser().parseTLSInnerPlaintext(
                     context.applicationDataDecryptor.decrypt(tlsPlaintext));
 
             if (!tlsInnerPlaintext.containsAlert()) {
                 throw new ActionFailed("expected an alert");
             }
 
-            alert = context.factory.parser().parseAlert(tlsInnerPlaintext.getContent());
+            alert = context.factory().parser().parseAlert(tlsInnerPlaintext.getContent());
         } else {
             throw new ActionFailed("expected an alert");
         }

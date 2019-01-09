@@ -21,7 +21,7 @@ public class UpdatingContext extends AbstractAction {
     public Action run() {
         in.mark();
         try {
-            context.set(element, context.factory.parser().parseHandshake(in));
+            context.set(element, context.factory().parser().parseHandshake(in));
         } finally {
             in.reset();
         }

@@ -40,7 +40,7 @@ public class CheckingDowngradeMessageInServerHello
 
     @Override
     public CheckingDowngradeMessageInServerHello run() {
-        context.factory.parser().parseProtocolVersion(in);
+        context.factory().parser().parseProtocolVersion(in);
 
         byte[] bytes = Random.parse(in).getBytes();
 

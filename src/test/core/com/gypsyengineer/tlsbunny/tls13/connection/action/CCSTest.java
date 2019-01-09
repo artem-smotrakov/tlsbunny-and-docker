@@ -16,7 +16,7 @@ public class CCSTest {
     @Test
     public void generateAndParse() throws Exception {
         Context context = new Context();
-        context.factory = StructFactory.getDefault();
+        context.set(StructFactory.getDefault());
 
         ByteBuffer buffer = new OutgoingChangeCipherSpec()
                 .set(ChangeCipherSpec.valid_value)

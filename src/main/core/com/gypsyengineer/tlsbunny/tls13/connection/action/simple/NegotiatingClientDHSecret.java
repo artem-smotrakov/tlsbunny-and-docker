@@ -20,21 +20,21 @@ public class NegotiatingClientDHSecret extends AbstractAction<NegotiatingClientD
 
     @Override
     public Action run() throws IOException, NegotiatorException {
-        ServerHello serverHello = context.factory.parser().parseServerHello(
+        ServerHello serverHello = context.factory().parser().parseServerHello(
                 context.getServerHello().getBody());
 
         // TODO: we look for only first key share, but there may be multiple key shares
-        KeyShare.ServerHello keyShare = findKeyShare(context.factory, serverHello);
+        KeyShare.ServerHello keyShare = findKeyShare(context.factory(), serverHello);
 
         KeyShareEntry keyShareEntry = keyShare.getServerShare();
 
-        if (!context.group.equals(keyShareEntry.getNamedGroup())) {
-            output.info("expected groups: %s", context.group);
+        if (!context.group().equals(keyShareEntry.getNamedGroup())) {
+            output.info("expected groups: %s", context.group());
             output.info("received groups: %s", keyShareEntry.getNamedGroup());
             throw new NegotiatorException("unexpected groups");
         }
-        context.negotiator.processKeyShareEntry(keyShareEntry);
-        context.dh_shared_secret = context.negotiator.generateSecret();
+        context.negotiator().processKeyShareEntry(keyShareEntry);
+        context.dh_shared_secret = context.negotiator().generateSecret();
 
         return this;
     }

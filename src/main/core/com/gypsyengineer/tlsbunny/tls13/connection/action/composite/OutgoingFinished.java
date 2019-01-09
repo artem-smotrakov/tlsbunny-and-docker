@@ -36,39 +36,39 @@ public class OutgoingFinished extends AbstractAction {
         Handshake handshake = toHandshake(finished);
         context.setClientFinished(handshake);
 
-        context.resumption_master_secret = context.hkdf.deriveSecret(
+        context.resumption_master_secret = context.hkdf().deriveSecret(
                 context.master_secret,
                 Constants.res_master(),
                 context.allMessages());
-        context.client_application_write_key = context.hkdf.expandLabel(
+        context.client_application_write_key = context.hkdf().expandLabel(
                 context.client_application_traffic_secret_0,
                 Constants.key(),
                 zero_hash_value,
-                context.suite.keyLength());
-        context.client_application_write_iv = context.hkdf.expandLabel(
+                context.suite().keyLength());
+        context.client_application_write_iv = context.hkdf().expandLabel(
                 context.client_application_traffic_secret_0,
                 Constants.iv(),
                 zero_hash_value,
-                context.suite.ivLength());
-        context.server_application_write_key = context.hkdf.expandLabel(
+                context.suite().ivLength());
+        context.server_application_write_key = context.hkdf().expandLabel(
                 context.server_application_traffic_secret_0,
                 Constants.key(),
                 zero_hash_value,
-                context.suite.keyLength());
-        context.server_application_write_iv = context.hkdf.expandLabel(
+                context.suite().keyLength());
+        context.server_application_write_iv = context.hkdf().expandLabel(
                 context.server_application_traffic_secret_0,
                 Constants.iv(),
                 zero_hash_value,
-                context.suite.ivLength());
+                context.suite().ivLength());
 
         out = TLS13Utils.store(encrypt(handshake));
 
         context.applicationDataEncryptor = AEAD.createEncryptor(
-                context.suite.cipher(),
+                context.suite().cipher(),
                 context.client_application_write_key,
                 context.client_application_write_iv);
         context.applicationDataDecryptor = AEAD.createDecryptor(
-                context.suite.cipher(),
+                context.suite().cipher(),
                 context.server_application_write_key,
                 context.server_application_write_iv);
 
@@ -77,25 +77,25 @@ public class OutgoingFinished extends AbstractAction {
 
     private Finished createFinished() throws IOException, ActionFailed {
         try {
-            byte[] verify_data = context.hkdf.hmac(
+            byte[] verify_data = context.hkdf().hmac(
                     context.finished_key,
-                    TranscriptHash.compute(context.suite.hash(), context.allMessages()));
+                    TranscriptHash.compute(context.suite().hash(), context.allMessages()));
 
-            return context.factory.createFinished(verify_data);
+            return context.factory().createFinished(verify_data);
         } catch (NoSuchAlgorithmException e) {
             throw new ActionFailed(e);
         }
     }
 
     TLSPlaintext[] encrypt(Handshake message) throws AEADException, IOException {
-        return context.factory.createTLSPlaintexts(
+        return context.factory().createTLSPlaintexts(
                 ContentType.application_data,
                 ProtocolVersion.TLSv12,
                 encrypt(message.encoding()));
     }
 
     private byte[] encrypt(byte[] data) throws AEADException, IOException {
-        TLSInnerPlaintext tlsInnerPlaintext = context.factory.createTLSInnerPlaintext(
+        TLSInnerPlaintext tlsInnerPlaintext = context.factory().createTLSInnerPlaintext(
                 ContentType.handshake, data, NO_PADDING);
         byte[] plaintext = tlsInnerPlaintext.encoding();
 

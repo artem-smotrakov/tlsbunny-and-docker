@@ -22,9 +22,9 @@ public class OutgoingChangeCipherSpec extends AbstractAction {
 
     @Override
     public OutgoingChangeCipherSpec run() throws IOException {
-        ChangeCipherSpec ccs = context.factory.createChangeCipherSpec(value);
+        ChangeCipherSpec ccs = context.factory().createChangeCipherSpec(value);
 
-        TLSPlaintext[] tlsPlaintexts = context.factory.createTLSPlaintexts(
+        TLSPlaintext[] tlsPlaintexts = context.factory().createTLSPlaintexts(
                 ContentType.change_cipher_spec,
                 ProtocolVersion.TLSv12,
                 ccs.encoding());

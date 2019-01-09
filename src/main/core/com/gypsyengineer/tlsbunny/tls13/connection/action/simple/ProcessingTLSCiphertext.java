@@ -49,7 +49,7 @@ public class ProcessingTLSCiphertext extends AbstractAction<ProcessingTLSCiphert
     @Override
     public ProcessingTLSCiphertext run() throws IOException, ActionFailed, AEADException {
         if (tlsCiphertext == NO_TLS_CIPHERTEXT_SPECIFIED) {
-            tlsCiphertext = context.factory.parser().parseTLSPlaintext(in);
+            tlsCiphertext = context.factory().parser().parseTLSPlaintext(in);
         }
 
         if (!tlsCiphertext.containsApplicationData()) {
@@ -63,7 +63,7 @@ public class ProcessingTLSCiphertext extends AbstractAction<ProcessingTLSCiphert
         }
 
         byte[] plaintext = decryptor.decrypt(tlsCiphertext);
-        tlsInnerPlaintext = context.factory.parser()
+        tlsInnerPlaintext = context.factory().parser()
                 .parseTLSInnerPlaintext(plaintext);
 
         ContentType type = tlsInnerPlaintext.getType();

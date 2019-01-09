@@ -17,7 +17,7 @@ public class GeneratingRandomFinishedKey extends AbstractAction {
     @Override
     public Action run() {
         Random generator = new Random(SEED);
-        context.finished_key = new byte[context.suite.hashLength()];
+        context.finished_key = new byte[context.suite().hashLength()];
         generator.nextBytes(context.finished_key);
 
         return this;

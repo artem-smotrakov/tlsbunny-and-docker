@@ -28,12 +28,12 @@ public class IncomingChangeCipherSpec extends AbstractAction {
 
     @Override
     public IncomingChangeCipherSpec run() throws ActionFailed, IOException {
-        TLSPlaintext tlsPlaintext = context.factory.parser().parseTLSPlaintext(in);
+        TLSPlaintext tlsPlaintext = context.factory().parser().parseTLSPlaintext(in);
         if (!tlsPlaintext.containsChangeCipherSpec()) {
             throw new ActionFailed("expected a change cipher spec message");
         }
 
-        ChangeCipherSpec ccs = context.factory.parser().parseChangeCipherSpec(
+        ChangeCipherSpec ccs = context.factory().parser().parseChangeCipherSpec(
                 tlsPlaintext.getFragment());
 
         if (expectedValue != -1 && ccs.getValue() != expectedValue) {

@@ -13,7 +13,7 @@ public class ProcessingCertificateVerify
 
     @Override
     public Action run() {
-        context.factory.parser().parseCertificateVerify(in);
+        context.factory().parser().parseCertificateVerify(in);
         output.info("received a CertificateVerify message");
 
         return this;

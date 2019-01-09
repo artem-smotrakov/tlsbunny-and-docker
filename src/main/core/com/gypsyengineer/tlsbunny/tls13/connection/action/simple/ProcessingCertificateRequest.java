@@ -14,7 +14,7 @@ public class ProcessingCertificateRequest
 
     @Override
     public Action run() {
-        CertificateRequest request = context.factory.parser().parseCertificateRequest(in);
+        CertificateRequest request = context.factory().parser().parseCertificateRequest(in);
         context.certificate_request_context = request.certificateRequestContext();
         output.info("received a CertificateRequest message");
 

@@ -16,7 +16,7 @@ public class GeneratingEncryptedExtensions
 
     @Override
     public GeneratingEncryptedExtensions run() throws IOException {
-        EncryptedExtensions extensions = context.factory.createEncryptedExtensions();
+        EncryptedExtensions extensions = context.factory().createEncryptedExtensions();
 
         out = ByteBuffer.wrap(extensions.encoding());
 

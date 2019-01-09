@@ -19,13 +19,13 @@ public class IncomingEncryptedHandshakeData extends AbstractAction {
 
     @Override
     public Action run() throws ActionFailed, AEADException, IOException {
-        TLSPlaintext tlsPlaintext = context.factory.parser().parseTLSPlaintext(in);
+        TLSPlaintext tlsPlaintext = context.factory().parser().parseTLSPlaintext(in);
 
         if (!tlsPlaintext.containsApplicationData()) {
             throw new ActionFailed("expected encrypted data");
         }
 
-        TLSInnerPlaintext tlsInnerPlaintext = context.factory.parser().parseTLSInnerPlaintext(
+        TLSInnerPlaintext tlsInnerPlaintext = context.factory().parser().parseTLSInnerPlaintext(
                 context.handshakeDecryptor.decrypt(tlsPlaintext));
 
         out = ByteBuffer.wrap(tlsInnerPlaintext.getContent());

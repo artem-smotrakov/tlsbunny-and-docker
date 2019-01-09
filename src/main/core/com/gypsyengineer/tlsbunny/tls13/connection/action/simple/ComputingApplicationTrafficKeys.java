@@ -45,49 +45,49 @@ public class ComputingApplicationTrafficKeys
 
         Handshake[] messages = context.messagesForApplicationKeys();
 
-        context.client_application_traffic_secret_0 = context.hkdf.deriveSecret(
+        context.client_application_traffic_secret_0 = context.hkdf().deriveSecret(
                 context.master_secret,
                 Constants.c_ap_traffic(),
                 messages);
-        context.server_application_traffic_secret_0 = context.hkdf.deriveSecret(
+        context.server_application_traffic_secret_0 = context.hkdf().deriveSecret(
                 context.master_secret,
                 Constants.s_ap_traffic(),
                 messages);
-        context.exporter_master_secret = context.hkdf.deriveSecret(
+        context.exporter_master_secret = context.hkdf().deriveSecret(
                 context.master_secret,
                 Constants.exp_master(),
                 messages);
-        context.resumption_master_secret = context.hkdf.deriveSecret(
+        context.resumption_master_secret = context.hkdf().deriveSecret(
                 context.master_secret,
                 Constants.res_master(),
                 messages);
-        context.client_application_write_key = context.hkdf.expandLabel(
+        context.client_application_write_key = context.hkdf().expandLabel(
                 context.client_application_traffic_secret_0,
                 Constants.key(),
                 zero_hash_value,
-                context.suite.keyLength());
-        context.client_application_write_iv = context.hkdf.expandLabel(
+                context.suite().keyLength());
+        context.client_application_write_iv = context.hkdf().expandLabel(
                 context.client_application_traffic_secret_0,
                 Constants.iv(),
                 zero_hash_value,
-                context.suite.ivLength());
-        context.server_application_write_key = context.hkdf.expandLabel(
+                context.suite().ivLength());
+        context.server_application_write_key = context.hkdf().expandLabel(
                 context.server_application_traffic_secret_0,
                 Constants.key(),
                 zero_hash_value,
-                context.suite.keyLength());
-        context.server_application_write_iv = context.hkdf.expandLabel(
+                context.suite().keyLength());
+        context.server_application_write_iv = context.hkdf().expandLabel(
                 context.server_application_traffic_secret_0,
                 Constants.iv(),
                 zero_hash_value,
-                context.suite.ivLength());
+                context.suite().ivLength());
 
         context.applicationDataEncryptor = AEAD.createEncryptor(
-                context.suite.cipher(),
+                context.suite().cipher(),
                 encryptorKey(),
                 encryptorIv());
         context.applicationDataDecryptor = AEAD.createDecryptor(
-                context.suite.cipher(),
+                context.suite().cipher(),
                 decryptorKey(),
                 decryptorIv());
 

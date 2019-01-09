@@ -43,15 +43,15 @@ public class Context {
     private boolean clientFinishedVerified = false;
     private boolean serverFinishedVerified = false;
 
-    public StructFactory factory;
-    public SignatureScheme scheme;
+    private StructFactory factory;
+    private SignatureScheme scheme;
 
     // TODO: group doesn't look necessary, we can rely on negotiator
-    public NamedGroup group;
+    private NamedGroup group;
 
-    public CipherSuite suite;
-    public Negotiator negotiator;
-    public HKDF hkdf;
+    private CipherSuite suite;
+    private Negotiator negotiator;
+    private HKDF hkdf;
 
     // TODO: these fields should have private or package access
     public byte[] dh_shared_secret;
@@ -89,6 +89,60 @@ public class Context {
     public AEAD applicationDataDecryptor;
 
     public List<byte[]> applicationData = new ArrayList<>();
+
+    public Context set(HKDF hkdf) {
+        this.hkdf = hkdf;
+        return this;
+    }
+
+    public HKDF hkdf() {
+        return hkdf;
+    }
+
+    public Context set(Negotiator negotiator) {
+        this.negotiator = negotiator;
+        return this;
+    }
+
+    public Negotiator negotiator() {
+        return negotiator;
+    }
+
+    public Context set(CipherSuite suite) {
+        this.suite = suite;
+        return this;
+    }
+
+    public CipherSuite suite() {
+        return suite;
+    }
+
+    public Context set(NamedGroup group) {
+        this.group = group;
+        return this;
+    }
+
+    public NamedGroup group() {
+        return group;
+    }
+
+    public Context set(StructFactory factory) {
+        this.factory = factory;
+        return this;
+    }
+
+    public StructFactory factory() {
+        return factory;
+    }
+
+    public Context set(SignatureScheme scheme) {
+        this.scheme = scheme;
+        return this;
+    }
+
+    public SignatureScheme scheme() {
+        return scheme;
+    }
 
     public boolean hasFirstClientHello() {
         return firstClientHello != null;

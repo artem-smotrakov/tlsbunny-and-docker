@@ -69,7 +69,7 @@ public class GeneratingClientHello extends AbstractAction<GeneratingClientHello>
     }
 
     public GeneratingClientHello maxFragmentLength(int code) {
-        this.maxFragmentLength = context.factory.createMaxFragmentLength(code);
+        this.maxFragmentLength = context.factory().createMaxFragmentLength(code);
         return this;
     }
 
@@ -88,33 +88,33 @@ public class GeneratingClientHello extends AbstractAction<GeneratingClientHello>
         List<Extension> extensions = new ArrayList<>();
 
         for (ProtocolVersion version : versions) {
-            extensions.add(wrap(context.factory.createSupportedVersionForClientHello(version)));
+            extensions.add(wrap(context.factory().createSupportedVersionForClientHello(version)));
         }
 
         for (SignatureScheme scheme : schemes) {
-            extensions.add(wrap(context.factory.createSignatureSchemeList(scheme)));
+            extensions.add(wrap(context.factory().createSignatureSchemeList(scheme)));
         }
 
-        extensions.add(wrap(context.factory.createNamedGroupList(groups)));
+        extensions.add(wrap(context.factory().createNamedGroupList(groups)));
 
         for (KeyShareFactory factory : keyShareFactories) {
             extensions.add(wrap(factory.create(context)));
         }
 
         for (KeyShareEntryFactory factory : keyShareEntryFactories) {
-            extensions.add(wrap(context.factory.createKeyShareForClientHello(
+            extensions.add(wrap(context.factory().createKeyShareForClientHello(
                     factory.create(context))));
         }
 
         if (cookie != NO_COOKIE) {
-            extensions.add(wrap(context.factory.createCookie(cookie)));
+            extensions.add(wrap(context.factory().createCookie(cookie)));
         }
 
         if (maxFragmentLength != NO_MAX_FRAGMENT_LENGTH) {
             extensions.add(wrap(maxFragmentLength));
         }
 
-        ClientHello hello = context.factory.createClientHello(
+        ClientHello hello = context.factory().createClientHello(
                 legacyVersion,
                 createRandom(),
                 StructFactory.empty_session_id,

@@ -51,21 +51,21 @@ public class OutgoingClientCertificate extends AbstractAction {
             certificate_request_context = context.certificate_request_context.bytes();
         }
 
-        return context.factory.createCertificate(
+        return context.factory().createCertificate(
                 certificate_request_context,
-                context.factory.createX509CertificateEntry(cert_data));
+                context.factory().createX509CertificateEntry(cert_data));
     }
 
 
     TLSPlaintext[] encrypt(Handshake message) throws IOException, AEADException {
-        return context.factory.createTLSPlaintexts(
+        return context.factory().createTLSPlaintexts(
                 ContentType.application_data,
                 ProtocolVersion.TLSv12,
                 encrypt(message.encoding()));
     }
 
     private byte[] encrypt(byte[] data) throws IOException, AEADException {
-        TLSInnerPlaintext tlsInnerPlaintext = context.factory.createTLSInnerPlaintext(
+        TLSInnerPlaintext tlsInnerPlaintext = context.factory().createTLSInnerPlaintext(
                 ContentType.handshake, data, NO_PADDING);
         byte[] plaintext = tlsInnerPlaintext.encoding();
 

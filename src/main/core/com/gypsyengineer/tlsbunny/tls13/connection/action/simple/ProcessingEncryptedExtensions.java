@@ -12,7 +12,7 @@ public class ProcessingEncryptedExtensions extends AbstractAction<ProcessingEncr
 
     @Override
     public Action run() {
-        context.factory.parser().parseEncryptedExtensions(in);
+        context.factory().parser().parseEncryptedExtensions(in);
         output.info("received an EncryptedExtensions message");
 
         return this;

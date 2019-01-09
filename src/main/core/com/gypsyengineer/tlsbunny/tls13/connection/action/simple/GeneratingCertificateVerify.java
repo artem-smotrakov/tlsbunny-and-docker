@@ -70,7 +70,7 @@ public class GeneratingCertificateVerify extends AbstractAction<GeneratingCertif
                     CERTIFICATE_VERIFY_PREFIX,
                     contextString(),
                     ZERO,
-                    TranscriptHash.compute(context.suite.hash(), context.allMessages()));
+                    TranscriptHash.compute(context.suite().hash(), context.allMessages()));
 
             Signature signature = Signature.getInstance("SHA256withECDSA");
             signature.initSign(
@@ -78,7 +78,7 @@ public class GeneratingCertificateVerify extends AbstractAction<GeneratingCertif
                             new PKCS8EncodedKeySpec(key_data)));
             signature.update(content);
 
-            CertificateVerify certificateVerify = context.factory.createCertificateVerify(
+            CertificateVerify certificateVerify = context.factory().createCertificateVerify(
                     SignatureScheme.ecdsa_secp256r1_sha256, signature.sign());
 
             out = ByteBuffer.wrap(certificateVerify.encoding());

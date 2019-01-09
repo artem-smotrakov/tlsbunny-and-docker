@@ -29,10 +29,10 @@ public class IncomingServerHello extends AbstractAction {
     public Action run()
             throws ActionFailed, NegotiatorException, IOException, AEADException {
 
-        TLSPlaintext tlsPlaintext = context.factory.parser().parseTLSPlaintext(in);
+        TLSPlaintext tlsPlaintext = context.factory().parser().parseTLSPlaintext(in);
 
         if (tlsPlaintext.containsAlert()) {
-            Alert alert = context.factory.parser().parseAlert(tlsPlaintext.getFragment());
+            Alert alert = context.factory().parser().parseAlert(tlsPlaintext.getFragment());
             context.setAlert(alert);
             throw new ActionFailed(String.format("received an alert: %s", alert));
         }
@@ -41,7 +41,7 @@ public class IncomingServerHello extends AbstractAction {
             throw new ActionFailed("expected a handshake message");
         }
 
-        Handshake handshake = context.factory.parser()
+        Handshake handshake = context.factory().parser()
                 .parseHandshake(tlsPlaintext.getFragment());
 
         if (!handshake.containsServerHello()) {
@@ -56,97 +56,97 @@ public class IncomingServerHello extends AbstractAction {
     private void processServerHello(Handshake handshake)
             throws ActionFailed, IOException, NegotiatorException, AEADException {
 
-        ServerHello serverHello = context.factory.parser()
+        ServerHello serverHello = context.factory().parser()
                 .parseServerHello(handshake.getBody());
 
-        if (!context.suite.equals(serverHello.cipherSuite())) {
-            output.info("expected cipher suite: %s", context.suite);
+        if (!context.suite().equals(serverHello.cipherSuite())) {
+            output.info("expected cipher suite: %s", context.suite());
             output.info("received cipher suite: %s", serverHello.cipherSuite());
             throw new ActionFailed("unexpected ciphersuite");
         }
 
         SupportedVersions.ServerHello selected_version = findSupportedVersion(
-                context.factory, serverHello);
+                context.factory(), serverHello);
 
         // TODO: we look for only first key share, but there may be multiple key shares
-        KeyShare.ServerHello keyShare = findKeyShare(context.factory, serverHello);
-        if (!context.group.equals(keyShare.getServerShare().getNamedGroup())) {
-            output.info("expected groups: %s", context.group);
+        KeyShare.ServerHello keyShare = findKeyShare(context.factory(), serverHello);
+        if (!context.group().equals(keyShare.getServerShare().getNamedGroup())) {
+            output.info("expected groups: %s", context.group());
             output.info("received groups: %s", keyShare.getServerShare().getNamedGroup());
             throw new RuntimeException("unexpected groups");
         }
 
-        context.negotiator.processKeyShareEntry(keyShare.getServerShare());
-        context.dh_shared_secret = context.negotiator.generateSecret();
+        context.negotiator().processKeyShareEntry(keyShare.getServerShare());
+        context.dh_shared_secret = context.negotiator().generateSecret();
 
         context.setServerHello(handshake);
 
-        byte[] psk = zeroes(context.hkdf.getHashLength());
+        byte[] psk = zeroes(context.hkdf().getHashLength());
 
         Handshake wrappedClientHello = context.getFirstClientHello();
 
-        context.early_secret = context.hkdf.extract(zero_salt, psk);
-        context.binder_key = context.hkdf.deriveSecret(
+        context.early_secret = context.hkdf().extract(zero_salt, psk);
+        context.binder_key = context.hkdf().deriveSecret(
                 context.early_secret,
                 concatenate(Constants.ext_binder(), Constants.res_binder()));
-        context.client_early_traffic_secret = context.hkdf.deriveSecret(
+        context.client_early_traffic_secret = context.hkdf().deriveSecret(
                 context.early_secret,
                 Constants.c_e_traffic(),
                 wrappedClientHello);
-        context.early_exporter_master_secret = context.hkdf.deriveSecret(
+        context.early_exporter_master_secret = context.hkdf().deriveSecret(
                 context.early_secret,
                 Constants.e_exp_master(),
                 wrappedClientHello);
 
-        context.handshake_secret_salt = context.hkdf.deriveSecret(
+        context.handshake_secret_salt = context.hkdf().deriveSecret(
                 context.early_secret, Constants.derived());
 
-        context.handshake_secret = context.hkdf.extract(
+        context.handshake_secret = context.hkdf().extract(
                 context.handshake_secret_salt, context.dh_shared_secret);
-        context.client_handshake_traffic_secret = context.hkdf.deriveSecret(
+        context.client_handshake_traffic_secret = context.hkdf().deriveSecret(
                 context.handshake_secret,
                 Constants.c_hs_traffic(),
                 wrappedClientHello, handshake);
-        context.server_handshake_traffic_secret = context.hkdf.deriveSecret(
+        context.server_handshake_traffic_secret = context.hkdf().deriveSecret(
                 context.handshake_secret,
                 Constants.s_hs_traffic(),
                 wrappedClientHello, handshake);
-        context.master_secret = context.hkdf.extract(
-                context.hkdf.deriveSecret(context.handshake_secret, Constants.derived()),
-                zeroes(context.hkdf.getHashLength()));
+        context.master_secret = context.hkdf().extract(
+                context.hkdf().deriveSecret(context.handshake_secret, Constants.derived()),
+                zeroes(context.hkdf().getHashLength()));
 
-        context.client_handshake_write_key = context.hkdf.expandLabel(
+        context.client_handshake_write_key = context.hkdf().expandLabel(
                 context.client_handshake_traffic_secret,
                 Constants.key(),
                 zero_hash_value,
-                context.suite.keyLength());
-        context.client_handshake_write_iv = context.hkdf.expandLabel(
+                context.suite().keyLength());
+        context.client_handshake_write_iv = context.hkdf().expandLabel(
                 context.client_handshake_traffic_secret,
                 Constants.iv(),
                 zero_hash_value,
-                context.suite.ivLength());
-        context.server_handshake_write_key = context.hkdf.expandLabel(
+                context.suite().ivLength());
+        context.server_handshake_write_key = context.hkdf().expandLabel(
                 context.server_handshake_traffic_secret,
                 Constants.key(),
                 zero_hash_value,
-                context.suite.keyLength());
-        context.server_handshake_write_iv = context.hkdf.expandLabel(
+                context.suite().keyLength());
+        context.server_handshake_write_iv = context.hkdf().expandLabel(
                 context.server_handshake_traffic_secret,
                 Constants.iv(),
                 zero_hash_value,
-                context.suite.ivLength());
-        context.finished_key = context.hkdf.expandLabel(
+                context.suite().ivLength());
+        context.finished_key = context.hkdf().expandLabel(
                 context.client_handshake_traffic_secret,
                 Constants.finished(),
                 zero_hash_value,
-                context.hkdf.getHashLength());
+                context.hkdf().getHashLength());
 
         context.handshakeEncryptor = AEAD.createEncryptor(
-                context.suite.cipher(),
+                context.suite().cipher(),
                 context.client_handshake_write_key,
                 context.client_handshake_write_iv);
         context.handshakeDecryptor = AEAD.createDecryptor(
-                context.suite.cipher(),
+                context.suite().cipher(),
                 context.server_handshake_write_key,
                 context.server_handshake_write_iv);
     }

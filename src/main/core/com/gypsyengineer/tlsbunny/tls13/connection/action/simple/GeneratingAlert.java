@@ -28,7 +28,7 @@ public class GeneratingAlert extends AbstractAction<GeneratingAlert> {
 
     @Override
     public GeneratingAlert run() throws IOException {
-        Alert alert = context.factory.createAlert(level, description);
+        Alert alert = context.factory().createAlert(level, description);
         out = ByteBuffer.wrap(alert.encoding());
         return this;
     }

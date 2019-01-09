@@ -94,7 +94,7 @@ public class SendDowngradeMessage {
                             .downgradeProtection(downgradeVersion)
                             .group(secp256r1)
                             .signatureScheme(ecdsa_secp256r1_sha256)
-                            .keyShareEntry(context -> context.negotiator.createKeyShareEntry()))
+                            .keyShareEntry(context -> context.negotiator().createKeyShareEntry()))
                     .run(new WrappingIntoHandshake()
                             .type(server_hello)
                             .updateContext(Context.Element.server_hello))

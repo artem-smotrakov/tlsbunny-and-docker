@@ -60,7 +60,7 @@ public class ManyGroupsInClientHello extends SingleConnectionClient {
                         .supportedVersions(TLSv13)
                         .groups(manyGroups)
                         .signatureSchemes(ecdsa_secp256r1_sha256)
-                        .keyShareEntries(context -> context.negotiator.createKeyShareEntry()))
+                        .keyShareEntries(context -> context.negotiator().createKeyShareEntry()))
                 .run(new WrappingIntoHandshake()
                         .type(client_hello)
                         .updateContext(Context.Element.first_client_hello))
