@@ -14,7 +14,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.Handshake;
 import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext;
 
-import static com.gypsyengineer.tlsbunny.tls13.handshake.Constants.ZERO_HASH_VALUE;
+import static com.gypsyengineer.tlsbunny.tls13.handshake.Constants.zero_hash_value;
 import static com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext.NO_PADDING;
 
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
@@ -38,27 +38,27 @@ public class OutgoingFinished extends AbstractAction {
 
         context.resumption_master_secret = context.hkdf.deriveSecret(
                 context.master_secret,
-                Constants.res_master,
+                Constants.res_master(),
                 context.allMessages());
         context.client_application_write_key = context.hkdf.expandLabel(
                 context.client_application_traffic_secret_0,
-                Constants.key,
-                ZERO_HASH_VALUE,
+                Constants.key(),
+                zero_hash_value,
                 context.suite.keyLength());
         context.client_application_write_iv = context.hkdf.expandLabel(
                 context.client_application_traffic_secret_0,
-                Constants.iv,
-                ZERO_HASH_VALUE,
+                Constants.iv(),
+                zero_hash_value,
                 context.suite.ivLength());
         context.server_application_write_key = context.hkdf.expandLabel(
                 context.server_application_traffic_secret_0,
-                Constants.key,
-                ZERO_HASH_VALUE,
+                Constants.key(),
+                zero_hash_value,
                 context.suite.keyLength());
         context.server_application_write_iv = context.hkdf.expandLabel(
                 context.server_application_traffic_secret_0,
-                Constants.iv,
-                ZERO_HASH_VALUE,
+                Constants.iv(),
+                zero_hash_value,
                 context.suite.ivLength());
 
         out = TLS13Utils.store(encrypt(handshake));

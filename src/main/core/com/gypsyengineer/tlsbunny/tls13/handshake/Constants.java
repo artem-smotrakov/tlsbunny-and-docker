@@ -4,21 +4,62 @@ public class Constants {
 
     // TODO: these constants shouldn't be public
 
-    public static final byte[] exp_master      = "exp master".getBytes();
-    public static final byte[] ext_binder      = "ext binder".getBytes();
-    public static final byte[] res_binder      = "res binder".getBytes();
-    public static final byte[] c_e_traffic     = "c e traffic".getBytes();
-    public static final byte[] e_exp_master    = "e exp master".getBytes();
-    public static final byte[] derived         = "derived".getBytes();
-    public static final byte[] c_hs_traffic    = "c hs traffic".getBytes();
-    public static final byte[] s_hs_traffic    = "s hs traffic".getBytes();
-    public static final byte[] c_ap_traffic    = "c ap traffic".getBytes();
-    public static final byte[] s_ap_traffic    = "s ap traffic".getBytes();
-    public static final byte[] res_master      = "res master".getBytes();
-    public static final byte[] key             = "key".getBytes();
-    public static final byte[] iv              = "iv".getBytes();
-    public static final byte[] finished        = "finished".getBytes();
+    public static byte[] exp_master() {
+        return "exp master".getBytes();
+    }
+    
+    public static byte[] ext_binder() {
+        return "ext binder".getBytes();
+    }
+    
+    public static byte[] res_binder() {
+        return "res binder".getBytes();
+    }
+    
+    public static byte[] c_e_traffic() {
+        return "c e traffic".getBytes();
+    }
+    
+    public static byte[] e_exp_master() {
+        return "e exp master".getBytes();
+    }
+    
+    public static byte[] derived() {
+        return "derived".getBytes();
+    }
+    
+    public static byte[] c_hs_traffic() {
+        return "c hs traffic".getBytes();
+    }
 
-    public static final byte[] ZERO_SALT = new byte[0];
-    public static final byte[] ZERO_HASH_VALUE = new byte[0];
+    public static byte[] s_hs_traffic() {
+        return "s hs traffic".getBytes();
+    }
+
+    public static byte[] c_ap_traffic() {
+        return "c ap traffic".getBytes();
+    }
+
+    public static byte[] s_ap_traffic() {
+        return "s ap traffic".getBytes();
+    }
+
+    public static byte[] res_master() {
+        return "res master".getBytes();
+    }
+
+    public static byte[] key() {
+        return "key".getBytes();
+    }
+
+    public static byte[] iv() {
+        return "iv".getBytes();
+    }
+
+    public static byte[] finished() {
+        return "finished".getBytes();
+    }
+
+    public static byte[] zero_salt = new byte[0];
+    public static byte[] zero_hash_value = new byte[0];
 }

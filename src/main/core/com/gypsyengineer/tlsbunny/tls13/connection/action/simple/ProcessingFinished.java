@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
-import static com.gypsyengineer.tlsbunny.tls13.handshake.Constants.ZERO_HASH_VALUE;
+import static com.gypsyengineer.tlsbunny.tls13.handshake.Constants.zero_hash_value;
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public class ProcessingFinished extends AbstractAction<ProcessingFinished> {
@@ -58,8 +58,8 @@ public class ProcessingFinished extends AbstractAction<ProcessingFinished> {
 
         byte[] verify_key = context.hkdf.expandLabel(
                 getBaseKey(),
-                Constants.finished,
-                ZERO_HASH_VALUE,
+                Constants.finished(),
+                zero_hash_value,
                 context.hkdf.getHashLength());
 
         byte[] verify_data;

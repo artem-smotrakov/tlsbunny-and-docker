@@ -9,8 +9,8 @@ import com.gypsyengineer.tlsbunny.tls13.struct.Handshake;
 
 import java.io.IOException;
 
-import static com.gypsyengineer.tlsbunny.tls13.handshake.Constants.ZERO_HASH_VALUE;
-import static com.gypsyengineer.tlsbunny.tls13.handshake.Constants.ZERO_SALT;
+import static com.gypsyengineer.tlsbunny.tls13.handshake.Constants.zero_hash_value;
+import static com.gypsyengineer.tlsbunny.tls13.handshake.Constants.zero_salt;
 import static com.gypsyengineer.tlsbunny.utils.Utils.concatenate;
 import static com.gypsyengineer.tlsbunny.utils.Utils.zeroes;
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
@@ -50,61 +50,61 @@ public class ComputingHandshakeTrafficKeys
         Handshake clientHello = context.getFirstClientHello();
         Handshake serverHello = context.getServerHello();
 
-        context.early_secret = context.hkdf.extract(ZERO_SALT, psk);
+        context.early_secret = context.hkdf.extract(zero_salt, psk);
         context.binder_key = context.hkdf.deriveSecret(
                 context.early_secret,
-                concatenate(Constants.ext_binder, Constants.res_binder));
+                concatenate(Constants.ext_binder(), Constants.res_binder()));
         context.client_early_traffic_secret = context.hkdf.deriveSecret(
                 context.early_secret,
-                Constants.c_e_traffic,
+                Constants.c_e_traffic(),
                 clientHello);
         context.early_exporter_master_secret = context.hkdf.deriveSecret(
                 context.early_secret,
-                Constants.e_exp_master,
+                Constants.e_exp_master(),
                 clientHello);
 
         context.handshake_secret_salt = context.hkdf.deriveSecret(
-                context.early_secret, Constants.derived);
+                context.early_secret, Constants.derived());
 
         context.handshake_secret = context.hkdf.extract(
                 context.handshake_secret_salt, context.dh_shared_secret);
         context.client_handshake_traffic_secret = context.hkdf.deriveSecret(
                 context.handshake_secret,
-                Constants.c_hs_traffic,
+                Constants.c_hs_traffic(),
                 clientHello, serverHello);
         context.server_handshake_traffic_secret = context.hkdf.deriveSecret(
                 context.handshake_secret,
-                Constants.s_hs_traffic,
+                Constants.s_hs_traffic(),
                 clientHello, serverHello);
         context.master_secret = context.hkdf.extract(
-                context.hkdf.deriveSecret(context.handshake_secret, Constants.derived),
+                context.hkdf.deriveSecret(context.handshake_secret, Constants.derived()),
                 zeroes(context.hkdf.getHashLength()));
 
         context.client_handshake_write_key = context.hkdf.expandLabel(
                 context.client_handshake_traffic_secret,
-                Constants.key,
-                ZERO_HASH_VALUE,
+                Constants.key(),
+                zero_hash_value,
                 context.suite.keyLength());
         context.client_handshake_write_iv = context.hkdf.expandLabel(
                 context.client_handshake_traffic_secret,
-                Constants.iv,
-                ZERO_HASH_VALUE,
+                Constants.iv(),
+                zero_hash_value,
                 context.suite.ivLength());
         context.server_handshake_write_key = context.hkdf.expandLabel(
                 context.server_handshake_traffic_secret,
-                Constants.key,
-                ZERO_HASH_VALUE,
+                Constants.key(),
+                zero_hash_value,
                 context.suite.keyLength());
         context.server_handshake_write_iv = context.hkdf.expandLabel(
                 context.server_handshake_traffic_secret,
-                Constants.iv,
-                ZERO_HASH_VALUE,
+                Constants.iv(),
+                zero_hash_value,
                 context.suite.ivLength());
 
         context.finished_key = context.hkdf.expandLabel(
                 finishedBaseKey(),
-                Constants.finished,
-                ZERO_HASH_VALUE,
+                Constants.finished(),
+                zero_hash_value,
                 context.hkdf.getHashLength());
 
         context.handshakeEncryptor = AEAD.createEncryptor(
