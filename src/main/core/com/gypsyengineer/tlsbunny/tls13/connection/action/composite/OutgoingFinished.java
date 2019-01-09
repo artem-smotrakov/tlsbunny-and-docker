@@ -36,41 +36,41 @@ public class OutgoingFinished extends AbstractAction {
         Handshake handshake = toHandshake(finished);
         context.setClientFinished(handshake);
 
-        context.resumption_master_secret = context.hkdf().deriveSecret(
-                context.master_secret,
+        context.resumption_master_secret(context.hkdf().deriveSecret(
+                context.master_secret(),
                 Constants.res_master(),
-                context.allMessages());
-        context.client_application_write_key = context.hkdf().expandLabel(
-                context.client_application_traffic_secret_0,
+                context.allMessages()));
+        context.client_application_write_key(context.hkdf().expandLabel(
+                context.client_application_traffic_secret_0(),
                 Constants.key(),
                 zero_hash_value,
-                context.suite().keyLength());
-        context.client_application_write_iv = context.hkdf().expandLabel(
-                context.client_application_traffic_secret_0,
+                context.suite().keyLength()));
+        context.client_application_write_iv(context.hkdf().expandLabel(
+                context.client_application_traffic_secret_0(),
                 Constants.iv(),
                 zero_hash_value,
-                context.suite().ivLength());
-        context.server_application_write_key = context.hkdf().expandLabel(
-                context.server_application_traffic_secret_0,
+                context.suite().ivLength()));
+        context.server_application_write_key(context.hkdf().expandLabel(
+                context.server_application_traffic_secret_0(),
                 Constants.key(),
                 zero_hash_value,
-                context.suite().keyLength());
-        context.server_application_write_iv = context.hkdf().expandLabel(
-                context.server_application_traffic_secret_0,
+                context.suite().keyLength()));
+        context.server_application_write_iv(context.hkdf().expandLabel(
+                context.server_application_traffic_secret_0(),
                 Constants.iv(),
                 zero_hash_value,
-                context.suite().ivLength());
+                context.suite().ivLength()));
 
         out = TLS13Utils.store(encrypt(handshake));
 
         context.applicationDataEncryptor = AEAD.createEncryptor(
                 context.suite().cipher(),
-                context.client_application_write_key,
-                context.client_application_write_iv);
+                context.client_application_write_key(),
+                context.client_application_write_iv());
         context.applicationDataDecryptor = AEAD.createDecryptor(
                 context.suite().cipher(),
-                context.server_application_write_key,
-                context.server_application_write_iv);
+                context.server_application_write_key(),
+                context.server_application_write_iv());
 
         return this;
     }
@@ -78,7 +78,7 @@ public class OutgoingFinished extends AbstractAction {
     private Finished createFinished() throws IOException, ActionFailed {
         try {
             byte[] verify_data = context.hkdf().hmac(
-                    context.finished_key,
+                    context.finished_key(),
                     TranscriptHash.compute(context.suite().hash(), context.allMessages()));
 
             return context.factory().createFinished(verify_data);

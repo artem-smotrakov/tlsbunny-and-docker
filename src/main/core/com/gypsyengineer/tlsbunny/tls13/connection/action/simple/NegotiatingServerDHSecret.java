@@ -41,7 +41,7 @@ public class NegotiatingServerDHSecret extends AbstractAction<NegotiatingServerD
         }
 
         context.negotiator().processKeyShareEntry(selectedKeyShareEntry);
-        context.dh_shared_secret = context.negotiator().generateSecret();
+        context.dh_shared_secret(context.negotiator().generateSecret());
 
         return this;
     }

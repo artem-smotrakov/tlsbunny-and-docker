@@ -95,9 +95,9 @@ public class ProcessingFinished extends AbstractAction<ProcessingFinished> {
     private byte[] getBaseKey() {
         switch (side) {
             case client:
-                return context.server_handshake_traffic_secret;
+                return context.server_handshake_traffic_secret();
             case server:
-                return context.client_handshake_traffic_secret;
+                return context.client_handshake_traffic_secret();
             default:
                 throw whatTheHell("unknown side: " + side);
         }

@@ -53,7 +53,7 @@ public class GeneratingFinished extends AbstractAction {
 
         try {
             byte[] verify_data = context.hkdf().hmac(
-                    context.finished_key,
+                    context.finished_key(),
                     TranscriptHash.compute(context.suite().hash(), context.allMessages()));
 
             Finished finished = context.factory().createFinished(verify_data);

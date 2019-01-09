@@ -45,42 +45,42 @@ public class ComputingApplicationTrafficKeys
 
         Handshake[] messages = context.messagesForApplicationKeys();
 
-        context.client_application_traffic_secret_0 = context.hkdf().deriveSecret(
-                context.master_secret,
+        context.client_application_traffic_secret_0(context.hkdf().deriveSecret(
+                context.master_secret(),
                 Constants.c_ap_traffic(),
-                messages);
-        context.server_application_traffic_secret_0 = context.hkdf().deriveSecret(
-                context.master_secret,
+                messages));
+        context.server_application_traffic_secret_0(context.hkdf().deriveSecret(
+                context.master_secret(),
                 Constants.s_ap_traffic(),
-                messages);
-        context.exporter_master_secret = context.hkdf().deriveSecret(
-                context.master_secret,
+                messages));
+        context.exporter_master_secret(context.hkdf().deriveSecret(
+                context.master_secret(),
                 Constants.exp_master(),
-                messages);
-        context.resumption_master_secret = context.hkdf().deriveSecret(
-                context.master_secret,
+                messages));
+        context.resumption_master_secret(context.hkdf().deriveSecret(
+                context.master_secret(),
                 Constants.res_master(),
-                messages);
-        context.client_application_write_key = context.hkdf().expandLabel(
-                context.client_application_traffic_secret_0,
+                messages));
+        context.client_application_write_key(context.hkdf().expandLabel(
+                context.client_application_traffic_secret_0(),
                 Constants.key(),
                 zero_hash_value,
-                context.suite().keyLength());
-        context.client_application_write_iv = context.hkdf().expandLabel(
-                context.client_application_traffic_secret_0,
+                context.suite().keyLength()));
+        context.client_application_write_iv(context.hkdf().expandLabel(
+                context.client_application_traffic_secret_0(),
                 Constants.iv(),
                 zero_hash_value,
-                context.suite().ivLength());
-        context.server_application_write_key = context.hkdf().expandLabel(
-                context.server_application_traffic_secret_0,
+                context.suite().ivLength()));
+        context.server_application_write_key(context.hkdf().expandLabel(
+                context.server_application_traffic_secret_0(),
                 Constants.key(),
                 zero_hash_value,
-                context.suite().keyLength());
-        context.server_application_write_iv = context.hkdf().expandLabel(
-                context.server_application_traffic_secret_0,
+                context.suite().keyLength()));
+        context.server_application_write_iv(context.hkdf().expandLabel(
+                context.server_application_traffic_secret_0(),
                 Constants.iv(),
                 zero_hash_value,
-                context.suite().ivLength());
+                context.suite().ivLength()));
 
         context.applicationDataEncryptor = AEAD.createEncryptor(
                 context.suite().cipher(),
@@ -96,26 +96,26 @@ public class ComputingApplicationTrafficKeys
 
     private byte[] encryptorKey() {
         return side == Side.client
-                ? context.client_application_write_key
-                : context.server_application_write_key;
+                ? context.client_application_write_key()
+                : context.server_application_write_key();
     }
 
     private byte[] encryptorIv() {
         return side == Side.client
-                ? context.client_application_write_iv
-                : context.server_application_write_iv;
+                ? context.client_application_write_iv()
+                : context.server_application_write_iv();
     }
 
     private byte[] decryptorKey() {
         return side == Side.client
-                ? context.server_application_write_key
-                : context.client_application_write_key;
+                ? context.server_application_write_key()
+                : context.client_application_write_key();
     }
 
     private byte[] decryptorIv() {
         return side == Side.client
-                ? context.server_application_write_iv
-                : context.client_application_write_iv;
+                ? context.server_application_write_iv()
+                : context.client_application_write_iv();
     }
 
 }

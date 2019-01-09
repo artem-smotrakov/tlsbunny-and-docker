@@ -34,7 +34,7 @@ public class NegotiatingClientDHSecret extends AbstractAction<NegotiatingClientD
             throw new NegotiatorException("unexpected groups");
         }
         context.negotiator().processKeyShareEntry(keyShareEntry);
-        context.dh_shared_secret = context.negotiator().generateSecret();
+        context.dh_shared_secret(context.negotiator().generateSecret());
 
         return this;
     }

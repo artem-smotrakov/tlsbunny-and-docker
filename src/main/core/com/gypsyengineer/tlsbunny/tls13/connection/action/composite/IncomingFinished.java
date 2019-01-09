@@ -46,7 +46,7 @@ public class IncomingFinished extends AbstractAction {
                 context.suite().hashLength());
 
         byte[] verify_key = context.hkdf().expandLabel(
-                context.server_handshake_traffic_secret,
+                context.server_handshake_traffic_secret(),
                 Constants.finished(),
                 zero_hash_value,
                 context.hkdf().getHashLength());
@@ -63,17 +63,17 @@ public class IncomingFinished extends AbstractAction {
         context.setServerFinished(handshake);
         context.verifyServerFinished();
 
-        context.client_application_traffic_secret_0 = context.hkdf().deriveSecret(
-                context.master_secret,
+        context.client_application_traffic_secret_0(context.hkdf().deriveSecret(
+                context.master_secret(),
                 Constants.c_ap_traffic(),
-                context.allMessages());
-        context.server_application_traffic_secret_0 = context.hkdf().deriveSecret(
-                context.master_secret,
+                context.allMessages()));
+        context.server_application_traffic_secret_0(context.hkdf().deriveSecret(
+                context.master_secret(),
                 Constants.s_ap_traffic(),
-                context.allMessages());
-        context.exporter_master_secret = context.hkdf().deriveSecret(
-                context.master_secret,
+                context.allMessages()));
+        context.exporter_master_secret(context.hkdf().deriveSecret(
+                context.master_secret(),
                 Constants.exp_master(),
-                context.allMessages());
+                context.allMessages()));
     }
 }

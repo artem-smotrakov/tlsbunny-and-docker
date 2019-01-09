@@ -54,29 +54,29 @@ public class Context {
     private HKDF hkdf;
 
     // TODO: these fields should have private or package access
-    public byte[] dh_shared_secret;
-    public byte[] early_secret;
-    public byte[] binder_key;
-    public byte[] client_early_traffic_secret;
-    public byte[] early_exporter_master_secret;
-    public byte[] handshake_secret_salt;
-    public byte[] handshake_secret;
-    public byte[] client_handshake_traffic_secret;
-    public byte[] server_handshake_traffic_secret;
-    public byte[] master_secret;
-    public byte[] client_application_traffic_secret_0;
-    public byte[] server_application_traffic_secret_0;
-    public byte[] exporter_master_secret;
-    public byte[] resumption_master_secret;
-    public byte[] client_handshake_write_key;
-    public byte[] client_handshake_write_iv;
-    public byte[] server_handshake_write_key;
-    public byte[] server_handshake_write_iv;
-    public byte[] finished_key;
-    public byte[] client_application_write_key;
-    public byte[] client_application_write_iv;
-    public byte[] server_application_write_key;
-    public byte[] server_application_write_iv;
+    private byte[] dh_shared_secret;
+    private byte[] early_secret;
+    private byte[] binder_key;
+    private byte[] client_early_traffic_secret;
+    private byte[] early_exporter_master_secret;
+    private byte[] handshake_secret_salt;
+    private byte[] handshake_secret;
+    private byte[] client_handshake_traffic_secret;
+    private byte[] server_handshake_traffic_secret;
+    private byte[] master_secret;
+    private byte[] client_application_traffic_secret_0;
+    private byte[] server_application_traffic_secret_0;
+    private byte[] exporter_master_secret;
+    private byte[] resumption_master_secret;
+    private byte[] client_handshake_write_key;
+    private byte[] client_handshake_write_iv;
+    private byte[] server_handshake_write_key;
+    private byte[] server_handshake_write_iv;
+    private byte[] finished_key;
+    private byte[] client_application_write_key;
+    private byte[] client_application_write_iv;
+    private byte[] server_application_write_key;
+    private byte[] server_application_write_iv;
 
     public Vector<Byte> certificate_request_context;
 
@@ -142,6 +142,190 @@ public class Context {
 
     public SignatureScheme scheme() {
         return scheme;
+    }
+
+    public byte[] dh_shared_secret() {
+        return dh_shared_secret;
+    }
+
+    public void dh_shared_secret(byte[] dh_shared_secret) {
+        this.dh_shared_secret = dh_shared_secret;
+    }
+
+    public byte[] early_secret() {
+        return early_secret;
+    }
+
+    public void early_secret(byte[] early_secret) {
+        this.early_secret = early_secret;
+    }
+
+    public byte[] binder_key() {
+        return binder_key;
+    }
+
+    public void binder_key(byte[] binder_key) {
+        this.binder_key = binder_key;
+    }
+
+    public byte[] client_early_traffic_secret() {
+        return client_early_traffic_secret;
+    }
+
+    public void client_early_traffic_secret(byte[] client_early_traffic_secret) {
+        this.client_early_traffic_secret = client_early_traffic_secret;
+    }
+
+    public byte[] early_exporter_master_secret() {
+        return early_exporter_master_secret;
+    }
+
+    public void early_exporter_master_secret(byte[] early_exporter_master_secret) {
+        this.early_exporter_master_secret = early_exporter_master_secret;
+    }
+
+    public byte[] handshake_secret_salt() {
+        return handshake_secret_salt;
+    }
+
+    public void handshake_secret_salt(byte[] handshake_secret_salt) {
+        this.handshake_secret_salt = handshake_secret_salt;
+    }
+
+    public byte[] handshake_secret() {
+        return handshake_secret;
+    }
+
+    public void handshake_secret(byte[] handshake_secret) {
+        this.handshake_secret = handshake_secret;
+    }
+
+    public byte[] client_handshake_traffic_secret() {
+        return client_handshake_traffic_secret;
+    }
+
+    public void client_handshake_traffic_secret(byte[] client_handshake_traffic_secret) {
+        this.client_handshake_traffic_secret = client_handshake_traffic_secret;
+    }
+
+    public byte[] server_handshake_traffic_secret() {
+        return server_handshake_traffic_secret;
+    }
+
+    public void server_handshake_traffic_secret(byte[] server_handshake_traffic_secret) {
+        this.server_handshake_traffic_secret = server_handshake_traffic_secret;
+    }
+
+    public byte[] master_secret() {
+        return master_secret;
+    }
+
+    public void master_secret(byte[] master_secret) {
+        this.master_secret = master_secret;
+    }
+
+    public byte[] client_application_traffic_secret_0() {
+        return client_application_traffic_secret_0;
+    }
+
+    public void client_application_traffic_secret_0(byte[] client_application_traffic_secret_0) {
+        this.client_application_traffic_secret_0 = client_application_traffic_secret_0;
+    }
+
+    public byte[] server_application_traffic_secret_0() {
+        return server_application_traffic_secret_0;
+    }
+
+    public void server_application_traffic_secret_0(byte[] server_application_traffic_secret_0) {
+        this.server_application_traffic_secret_0 = server_application_traffic_secret_0;
+    }
+
+    public byte[] exporter_master_secret() {
+        return exporter_master_secret;
+    }
+
+    public void exporter_master_secret(byte[] exporter_master_secret) {
+        this.exporter_master_secret = exporter_master_secret;
+    }
+
+    public byte[] resumption_master_secret() {
+        return resumption_master_secret;
+    }
+
+    public void resumption_master_secret(byte[] resumption_master_secret) {
+        this.resumption_master_secret = resumption_master_secret;
+    }
+
+    public byte[] client_handshake_write_key() {
+        return client_handshake_write_key;
+    }
+
+    public void client_handshake_write_key(byte[] client_handshake_write_key) {
+        this.client_handshake_write_key = client_handshake_write_key;
+    }
+
+    public byte[] client_handshake_write_iv() {
+        return client_handshake_write_iv;
+    }
+
+    public void client_handshake_write_iv(byte[] client_handshake_write_iv) {
+        this.client_handshake_write_iv = client_handshake_write_iv;
+    }
+
+    public byte[] server_handshake_write_key() {
+        return server_handshake_write_key;
+    }
+
+    public void server_handshake_write_key(byte[] server_handshake_write_key) {
+        this.server_handshake_write_key = server_handshake_write_key;
+    }
+
+    public byte[] server_handshake_write_iv() {
+        return server_handshake_write_iv;
+    }
+
+    public void server_handshake_write_iv(byte[] server_handshake_write_iv) {
+        this.server_handshake_write_iv = server_handshake_write_iv;
+    }
+
+    public byte[] finished_key() {
+        return finished_key;
+    }
+
+    public void finished_key(byte[] finished_key) {
+        this.finished_key = finished_key;
+    }
+
+    public byte[] client_application_write_key() {
+        return client_application_write_key;
+    }
+
+    public void client_application_write_key(byte[] client_application_write_key) {
+        this.client_application_write_key = client_application_write_key;
+    }
+
+    public byte[] client_application_write_iv() {
+        return client_application_write_iv;
+    }
+
+    public void client_application_write_iv(byte[] client_application_write_iv) {
+        this.client_application_write_iv = client_application_write_iv;
+    }
+
+    public byte[] server_application_write_key() {
+        return server_application_write_key;
+    }
+
+    public void server_application_write_key(byte[] server_application_write_key) {
+        this.server_application_write_key = server_application_write_key;
+    }
+
+    public byte[] server_application_write_iv() {
+        return server_application_write_iv;
+    }
+
+    public void server_application_write_iv(byte[] server_application_write_iv) {
+        this.server_application_write_iv = server_application_write_iv;
     }
 
     public boolean hasFirstClientHello() {
