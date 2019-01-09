@@ -7,14 +7,14 @@ import com.gypsyengineer.tlsbunny.tls13.crypto.AEAD;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AEADException;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AesGcm;
 import com.gypsyengineer.tlsbunny.tls13.crypto.TranscriptHash;
-import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
+import com.gypsyengineer.tlsbunny.tls13.handshake.Constants;
 import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
 import com.gypsyengineer.tlsbunny.tls13.struct.Finished;
 import com.gypsyengineer.tlsbunny.tls13.struct.Handshake;
 import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext;
 
-import static com.gypsyengineer.tlsbunny.tls13.handshake.Context.ZERO_HASH_VALUE;
+import static com.gypsyengineer.tlsbunny.tls13.handshake.Constants.ZERO_HASH_VALUE;
 import static com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext.NO_PADDING;
 
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
@@ -38,26 +38,26 @@ public class OutgoingFinished extends AbstractAction {
 
         context.resumption_master_secret = context.hkdf.deriveSecret(
                 context.master_secret,
-                Context.res_master,
+                Constants.res_master,
                 context.allMessages());
         context.client_application_write_key = context.hkdf.expandLabel(
                 context.client_application_traffic_secret_0,
-                Context.key,
+                Constants.key,
                 ZERO_HASH_VALUE,
                 context.suite.keyLength());
         context.client_application_write_iv = context.hkdf.expandLabel(
                 context.client_application_traffic_secret_0,
-                Context.iv,
+                Constants.iv,
                 ZERO_HASH_VALUE,
                 context.suite.ivLength());
         context.server_application_write_key = context.hkdf.expandLabel(
                 context.server_application_traffic_secret_0,
-                Context.key,
+                Constants.key,
                 ZERO_HASH_VALUE,
                 context.suite.keyLength());
         context.server_application_write_iv = context.hkdf.expandLabel(
                 context.server_application_traffic_secret_0,
-                Context.iv,
+                Constants.iv,
                 ZERO_HASH_VALUE,
                 context.suite.ivLength());
 

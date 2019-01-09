@@ -5,6 +5,7 @@ import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.ActionFailed;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AEADException;
 import com.gypsyengineer.tlsbunny.tls13.crypto.TranscriptHash;
+import com.gypsyengineer.tlsbunny.tls13.handshake.Constants;
 import com.gypsyengineer.tlsbunny.tls13.struct.Finished;
 import com.gypsyengineer.tlsbunny.tls13.struct.Handshake;
 
@@ -12,7 +13,7 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
-import static com.gypsyengineer.tlsbunny.tls13.handshake.Context.ZERO_HASH_VALUE;
+import static com.gypsyengineer.tlsbunny.tls13.handshake.Constants.ZERO_HASH_VALUE;
 
 public class IncomingFinished extends AbstractAction {
 
@@ -46,7 +47,7 @@ public class IncomingFinished extends AbstractAction {
 
         byte[] verify_key = context.hkdf.expandLabel(
                 context.server_handshake_traffic_secret,
-                context.finished,
+                Constants.finished,
                 ZERO_HASH_VALUE,
                 context.hkdf.getHashLength());
 
@@ -64,15 +65,15 @@ public class IncomingFinished extends AbstractAction {
 
         context.client_application_traffic_secret_0 = context.hkdf.deriveSecret(
                 context.master_secret,
-                context.c_ap_traffic,
+                Constants.c_ap_traffic,
                 context.allMessages());
         context.server_application_traffic_secret_0 = context.hkdf.deriveSecret(
                 context.master_secret,
-                context.s_ap_traffic,
+                Constants.s_ap_traffic,
                 context.allMessages());
         context.exporter_master_secret = context.hkdf.deriveSecret(
                 context.master_secret,
-                context.exp_master,
+                Constants.exp_master,
                 context.allMessages());
     }
 }

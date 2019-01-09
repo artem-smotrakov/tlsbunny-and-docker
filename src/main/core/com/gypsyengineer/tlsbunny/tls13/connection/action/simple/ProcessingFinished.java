@@ -5,13 +5,14 @@ import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.ActionFailed;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Side;
 import com.gypsyengineer.tlsbunny.tls13.crypto.TranscriptHash;
+import com.gypsyengineer.tlsbunny.tls13.handshake.Constants;
 import com.gypsyengineer.tlsbunny.tls13.struct.Finished;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
-import static com.gypsyengineer.tlsbunny.tls13.handshake.Context.ZERO_HASH_VALUE;
+import static com.gypsyengineer.tlsbunny.tls13.handshake.Constants.ZERO_HASH_VALUE;
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public class ProcessingFinished extends AbstractAction<ProcessingFinished> {
@@ -57,7 +58,7 @@ public class ProcessingFinished extends AbstractAction<ProcessingFinished> {
 
         byte[] verify_key = context.hkdf.expandLabel(
                 getBaseKey(),
-                context.finished,
+                Constants.finished,
                 ZERO_HASH_VALUE,
                 context.hkdf.getHashLength());
 

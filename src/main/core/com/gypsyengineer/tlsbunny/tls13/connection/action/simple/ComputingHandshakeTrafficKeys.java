@@ -4,12 +4,13 @@ import com.gypsyengineer.tlsbunny.tls13.connection.action.AbstractAction;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Side;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AEAD;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AEADException;
+import com.gypsyengineer.tlsbunny.tls13.handshake.Constants;
 import com.gypsyengineer.tlsbunny.tls13.struct.Handshake;
 
 import java.io.IOException;
 
-import static com.gypsyengineer.tlsbunny.tls13.handshake.Context.ZERO_HASH_VALUE;
-import static com.gypsyengineer.tlsbunny.tls13.handshake.Context.ZERO_SALT;
+import static com.gypsyengineer.tlsbunny.tls13.handshake.Constants.ZERO_HASH_VALUE;
+import static com.gypsyengineer.tlsbunny.tls13.handshake.Constants.ZERO_SALT;
 import static com.gypsyengineer.tlsbunny.utils.Utils.concatenate;
 import static com.gypsyengineer.tlsbunny.utils.Utils.zeroes;
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
@@ -52,57 +53,57 @@ public class ComputingHandshakeTrafficKeys
         context.early_secret = context.hkdf.extract(ZERO_SALT, psk);
         context.binder_key = context.hkdf.deriveSecret(
                 context.early_secret,
-                concatenate(context.ext_binder, context.res_binder));
+                concatenate(Constants.ext_binder, Constants.res_binder));
         context.client_early_traffic_secret = context.hkdf.deriveSecret(
                 context.early_secret,
-                context.c_e_traffic,
+                Constants.c_e_traffic,
                 clientHello);
         context.early_exporter_master_secret = context.hkdf.deriveSecret(
                 context.early_secret,
-                context.e_exp_master,
+                Constants.e_exp_master,
                 clientHello);
 
         context.handshake_secret_salt = context.hkdf.deriveSecret(
-                context.early_secret, context.derived);
+                context.early_secret, Constants.derived);
 
         context.handshake_secret = context.hkdf.extract(
                 context.handshake_secret_salt, context.dh_shared_secret);
         context.client_handshake_traffic_secret = context.hkdf.deriveSecret(
                 context.handshake_secret,
-                context.c_hs_traffic,
+                Constants.c_hs_traffic,
                 clientHello, serverHello);
         context.server_handshake_traffic_secret = context.hkdf.deriveSecret(
                 context.handshake_secret,
-                context.s_hs_traffic,
+                Constants.s_hs_traffic,
                 clientHello, serverHello);
         context.master_secret = context.hkdf.extract(
-                context.hkdf.deriveSecret(context.handshake_secret, context.derived),
+                context.hkdf.deriveSecret(context.handshake_secret, Constants.derived),
                 zeroes(context.hkdf.getHashLength()));
 
         context.client_handshake_write_key = context.hkdf.expandLabel(
                 context.client_handshake_traffic_secret,
-                context.key,
+                Constants.key,
                 ZERO_HASH_VALUE,
                 context.suite.keyLength());
         context.client_handshake_write_iv = context.hkdf.expandLabel(
                 context.client_handshake_traffic_secret,
-                context.iv,
+                Constants.iv,
                 ZERO_HASH_VALUE,
                 context.suite.ivLength());
         context.server_handshake_write_key = context.hkdf.expandLabel(
                 context.server_handshake_traffic_secret,
-                context.key,
+                Constants.key,
                 ZERO_HASH_VALUE,
                 context.suite.keyLength());
         context.server_handshake_write_iv = context.hkdf.expandLabel(
                 context.server_handshake_traffic_secret,
-                context.iv,
+                Constants.iv,
                 ZERO_HASH_VALUE,
                 context.suite.ivLength());
 
         context.finished_key = context.hkdf.expandLabel(
                 finishedBaseKey(),
-                context.finished,
+                Constants.finished,
                 ZERO_HASH_VALUE,
                 context.hkdf.getHashLength());
 

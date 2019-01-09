@@ -4,12 +4,12 @@ import com.gypsyengineer.tlsbunny.tls13.connection.action.AbstractAction;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Side;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AEAD;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AEADException;
-import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
+import com.gypsyengineer.tlsbunny.tls13.handshake.Constants;
 import com.gypsyengineer.tlsbunny.tls13.struct.Handshake;
 
 import java.io.IOException;
 
-import static com.gypsyengineer.tlsbunny.tls13.handshake.Context.ZERO_HASH_VALUE;
+import static com.gypsyengineer.tlsbunny.tls13.handshake.Constants.ZERO_HASH_VALUE;
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public class ComputingApplicationTrafficKeys
@@ -47,38 +47,38 @@ public class ComputingApplicationTrafficKeys
 
         context.client_application_traffic_secret_0 = context.hkdf.deriveSecret(
                 context.master_secret,
-                context.c_ap_traffic,
+                Constants.c_ap_traffic,
                 messages);
         context.server_application_traffic_secret_0 = context.hkdf.deriveSecret(
                 context.master_secret,
-                context.s_ap_traffic,
+                Constants.s_ap_traffic,
                 messages);
         context.exporter_master_secret = context.hkdf.deriveSecret(
                 context.master_secret,
-                context.exp_master,
+                Constants.exp_master,
                 messages);
         context.resumption_master_secret = context.hkdf.deriveSecret(
                 context.master_secret,
-                Context.res_master,
+                Constants.res_master,
                 messages);
         context.client_application_write_key = context.hkdf.expandLabel(
                 context.client_application_traffic_secret_0,
-                Context.key,
+                Constants.key,
                 ZERO_HASH_VALUE,
                 context.suite.keyLength());
         context.client_application_write_iv = context.hkdf.expandLabel(
                 context.client_application_traffic_secret_0,
-                Context.iv,
+                Constants.iv,
                 ZERO_HASH_VALUE,
                 context.suite.ivLength());
         context.server_application_write_key = context.hkdf.expandLabel(
                 context.server_application_traffic_secret_0,
-                Context.key,
+                Constants.key,
                 ZERO_HASH_VALUE,
                 context.suite.keyLength());
         context.server_application_write_iv = context.hkdf.expandLabel(
                 context.server_application_traffic_secret_0,
-                Context.iv,
+                Constants.iv,
                 ZERO_HASH_VALUE,
                 context.suite.ivLength());
 
