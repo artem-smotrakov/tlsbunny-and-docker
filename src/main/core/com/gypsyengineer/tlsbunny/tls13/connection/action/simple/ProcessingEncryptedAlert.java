@@ -13,7 +13,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-public class ProcessingEncryptedAlert extends AbstractAction {
+public class ProcessingEncryptedAlert extends AbstractAction<ProcessingEncryptedAlert> {
 
     private final Phase phase;
 
@@ -27,7 +27,7 @@ public class ProcessingEncryptedAlert extends AbstractAction {
     }
 
     @Override
-    public Action run() throws ActionFailed, AEADException, IOException {
+    public ProcessingEncryptedAlert run() throws ActionFailed, AEADException, IOException {
         TLSPlaintext tlsPlaintext = context.factory().parser().parseTLSPlaintext(in);
 
         if (!tlsPlaintext.containsApplicationData()) {
