@@ -2,7 +2,8 @@ package com.gypsyengineer.tlsbunny.tls13.handshake;
 
 public class Constants {
 
-    // TODO: these constants shouldn't be public
+    public static byte[] zero_salt = new byte[0];
+    public static byte[] zero_hash_value = new byte[0];
 
     public static byte[] exp_master() {
         return "exp master".getBytes();
@@ -60,6 +61,4 @@ public class Constants {
         return "finished".getBytes();
     }
 
-    public static byte[] zero_salt = new byte[0];
-    public static byte[] zero_hash_value = new byte[0];
 }
