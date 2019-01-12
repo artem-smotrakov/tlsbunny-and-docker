@@ -74,7 +74,7 @@ public class Context {
     private byte[] server_application_write_key;
     private byte[] server_application_write_iv;
 
-    public Vector<Byte> certificate_request_context;
+    private Vector<Byte> certificate_request_context;
 
     private Alert alert;
 
@@ -84,6 +84,15 @@ public class Context {
     private AEAD applicationDataDecryptor;
 
     private  List<byte[]> applicationData = new ArrayList<>();
+
+    public Vector<Byte> certificateRequestContext() {
+        return certificate_request_context;
+    }
+
+    public Context certificateRequestContext(Vector<Byte> certificate_request_context) {
+        this.certificate_request_context = certificate_request_context;
+        return this;
+    }
 
     public AEAD handshakeEncryptor() {
         return handshakeEncryptor;

@@ -47,8 +47,8 @@ public class OutgoingClientCertificate extends AbstractAction {
         // TODO: looks like this class can't be used on server side
         //       on server side, certificate_request_context should be empty
         byte[] certificate_request_context = new byte[0];
-        if (context.certificate_request_context != null) {
-            certificate_request_context = context.certificate_request_context.bytes();
+        if (context.certificateRequestContext() != null) {
+            certificate_request_context = context.certificateRequestContext().bytes();
         }
 
         return context.factory().createCertificate(

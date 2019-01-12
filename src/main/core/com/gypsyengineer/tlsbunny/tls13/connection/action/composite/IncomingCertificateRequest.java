@@ -33,7 +33,7 @@ public class IncomingCertificateRequest extends AbstractAction {
     private void processCertificateRequest(Handshake handshake) throws IOException {
         CertificateRequest certificateRequest = context.factory().parser().parseCertificateRequest(
                 handshake.getBody());
-        context.certificate_request_context = certificateRequest.certificateRequestContext();
+        context.certificateRequestContext(certificateRequest.certificateRequestContext());
         context.setServerCertificateRequest(handshake);
 
         Extension extension = TLS13Utils.findExtension(
