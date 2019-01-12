@@ -46,9 +46,6 @@ public class Context {
     private StructFactory factory;
     private SignatureScheme scheme;
 
-    // TODO: group doesn't look necessary, we can rely on negotiator
-    private NamedGroup group;
-
     private CipherSuite suite;
     private Negotiator negotiator;
     private HKDF hkdf;
@@ -158,15 +155,6 @@ public class Context {
 
     public CipherSuite suite() {
         return suite;
-    }
-
-    public Context set(NamedGroup group) {
-        this.group = group;
-        return this;
-    }
-
-    public NamedGroup group() {
-        return group;
     }
 
     public Context set(StructFactory factory) {

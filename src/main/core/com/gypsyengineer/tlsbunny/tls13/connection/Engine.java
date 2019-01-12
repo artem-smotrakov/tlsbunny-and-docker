@@ -62,7 +62,6 @@ public class Engine {
     private final List<byte[]> storedData = new ArrayList<>();
 
     private Engine() {
-        context.set(NamedGroup.secp256r1);
         context.set(SignatureScheme.ecdsa_secp256r1_sha256);
         context.set(CipherSuite.TLS_AES_128_GCM_SHA256);
         context.set(StructFactory.getDefault());
@@ -127,21 +126,15 @@ public class Engine {
         return this;
     }
 
-    public Engine set(NamedGroup group) {
-        this.context.set(group);
-        return this;
-    }
-
     public Engine set(Negotiator negotiator) {
         this.context.set(negotiator);
-        this.context.set(negotiator.group());
         return this;
     }
 
     public Engine store() {
         actions.add(new ActionHolder()
                 .engine(this)
-                .factory(() -> new EmptyAction())
+                .factory(EmptyAction::new)
                 .type(ActionType.store));
         return this;
     }
@@ -149,7 +142,7 @@ public class Engine {
     public Engine restore() {
         actions.add(new ActionHolder()
                 .engine(this)
-                .factory(() -> new EmptyAction())
+                .factory(EmptyAction::new)
                 .type(ActionType.restore));
         return this;
     }
@@ -381,7 +374,7 @@ public class Engine {
     public static Engine init() throws NoSuchAlgorithmException, NegotiatorException {
         Engine engine = new Engine();
         engine.context.set(ECDHENegotiator.create(
-                (NamedGroup.Secp) engine.context.group(), engine.context.factory()));
+                NamedGroup.secp256r1, engine.context.factory()));
         engine.context.set(HKDF.create(
                 engine.context.suite().hash(), engine.context.factory()));
 

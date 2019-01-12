@@ -67,11 +67,13 @@ public class IncomingServerHello extends AbstractAction {
 
         SupportedVersions.ServerHello selected_version = findSupportedVersion(
                 context.factory(), serverHello);
+        output.info("selected version: %s", selected_version);
 
         // TODO: we look for only first key share, but there may be multiple key shares
         KeyShare.ServerHello keyShare = findKeyShare(context.factory(), serverHello);
-        if (!context.group().equals(keyShare.getServerShare().getNamedGroup())) {
-            output.info("expected groups: %s", context.group());
+        NamedGroup group = context.negotiator().group();
+        if (!group.equals(keyShare.getServerShare().getNamedGroup())) {
+            output.info("expected groups: %s", group);
             output.info("received groups: %s", keyShare.getServerShare().getNamedGroup());
             throw new RuntimeException("unexpected groups");
         }

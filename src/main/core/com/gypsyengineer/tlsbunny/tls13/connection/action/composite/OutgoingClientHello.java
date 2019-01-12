@@ -22,7 +22,7 @@ public class OutgoingClientHello extends AbstractAction {
                 wrap(context.factory().createSupportedVersionForClientHello(
                         ProtocolVersion.TLSv13)),
                 wrap(context.factory().createSignatureSchemeList(context.scheme())),
-                wrap(context.factory().createNamedGroupList(context.group())),
+                wrap(context.factory().createNamedGroupList(context.negotiator().group())),
                 wrap(context.factory().createKeyShareForClientHello(
                         context.negotiator().createKeyShareEntry())));
 

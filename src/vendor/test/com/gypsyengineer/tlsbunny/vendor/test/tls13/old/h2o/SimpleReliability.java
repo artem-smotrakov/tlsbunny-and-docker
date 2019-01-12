@@ -42,7 +42,6 @@ public class SimpleReliability {
                 .target(config.host())
                 .target(config.port())
                 .set(output)
-                .set(NamedGroup.Secp.secp256r1)
                 .set(negotiator)
                 .strict()
 
