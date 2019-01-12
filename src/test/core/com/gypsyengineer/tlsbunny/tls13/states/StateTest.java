@@ -1,6 +1,7 @@
 package com.gypsyengineer.tlsbunny.tls13.states;
 
 import com.gypsyengineer.tlsbunny.TestUtils;
+import com.gypsyengineer.tlsbunny.tls13.state.Fact;
 import com.gypsyengineer.tlsbunny.tls13.state.State;
 import org.junit.Test;
 
@@ -13,8 +14,9 @@ public class StateTest {
 
     @Test
     public void invalid() throws Exception {
-        TestUtils.expectException(() -> state(null), NullPointerException.class);
-        TestUtils.expectWhatTheHell(() -> state());
+        Fact[] nullFacts = null;
+        TestUtils.expectException(() -> state(nullFacts), NullPointerException.class);
+        TestUtils.expectWhatTheHell(State::state);
     }
 
     @Test

@@ -25,7 +25,7 @@ public class TestUtils {
         void run() throws Exception;
     }
 
-    public static void assertContains(Object object, Object... array) {
+    public static <T> void assertContains(T object, T... array) {
         Objects.requireNonNull(object);
         Objects.requireNonNull(array);
         assertTrue(array.length > 0);
