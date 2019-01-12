@@ -44,7 +44,7 @@ public class BooleanFactTest {
     }
 
     @Test
-    public void invalid() throws Exception {
+    public void invalid() {
         TestUtils.expectException(() -> booleanFact(null, true), NullPointerException.class);
     }
 
