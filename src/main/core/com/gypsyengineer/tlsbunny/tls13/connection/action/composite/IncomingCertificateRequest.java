@@ -31,9 +31,9 @@ public class IncomingCertificateRequest extends AbstractAction {
     }
 
     private void processCertificateRequest(Handshake handshake) throws IOException {
-        CertificateRequest certificateRequest = context.factory.parser().parseCertificateRequest(
+        CertificateRequest certificateRequest = context.factory().parser().parseCertificateRequest(
                 handshake.getBody());
-        context.certificate_request_context = certificateRequest.certificateRequestContext();
+        context.certificateRequestContext(certificateRequest.certificateRequestContext());
         context.setServerCertificateRequest(handshake);
 
         Extension extension = TLS13Utils.findExtension(
@@ -44,7 +44,7 @@ public class IncomingCertificateRequest extends AbstractAction {
             throw new IOException("no signature_algorithms extension");
         }
 
-        SignatureSchemeList list = context.factory.parser().parseSignatureSchemeList(
+        SignatureSchemeList list = context.factory().parser().parseSignatureSchemeList(
                 extension.getExtensionData().bytes());
 
         List<String> signature_algorithms = new ArrayList<>();

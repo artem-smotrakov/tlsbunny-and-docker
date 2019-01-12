@@ -166,7 +166,6 @@ public class HttpsServer implements Server {
                     .set(structFactory)
                     .set(output)
                     .set(negotiator)
-                    .set(negotiator.group())
 
                     .receive(new IncomingData())
 

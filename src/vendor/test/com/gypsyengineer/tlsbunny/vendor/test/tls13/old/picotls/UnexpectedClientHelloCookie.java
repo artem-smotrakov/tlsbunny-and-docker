@@ -51,7 +51,7 @@ public class UnexpectedClientHelloCookie extends SingleConnectionClient {
                         .supportedVersions(TLSv13_draft_26)
                         .groups(secp256r1)
                         .signatureSchemes(ecdsa_secp256r1_sha256)
-                        .keyShareEntries(context -> context.negotiator.createKeyShareEntry())
+                        .keyShareEntries(context -> context.negotiator().createKeyShareEntry())
                         .cookie(zeroes(ZERO_COOKIE_LENGTH)))
                 .run(new WrappingIntoHandshake()
                         .type(client_hello)

@@ -40,7 +40,7 @@ public class ProcessingHandshake extends AbstractAction<ProcessingHandshake> {
 
     @Override
     public ProcessingHandshake run() throws ActionFailed {
-        handshake = context.factory.parser().parseHandshake(in);
+        handshake = context.factory().parser().parseHandshake(in);
 
         HandshakeType type = handshake.getMessageType();
         if (expectedType != NO_TYPE_SPECIFIED && !expectedType.equals(type)) {

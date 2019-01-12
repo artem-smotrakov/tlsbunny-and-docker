@@ -44,10 +44,10 @@ public class WrappingIntoTLSCiphertext extends AbstractAction {
         AEAD encryptor;
         switch (phase) {
             case handshake:
-                encryptor = context.handshakeEncryptor;
+                encryptor = context.handshakeEncryptor();
                 break;
             case application_data:
-                encryptor = context.applicationDataEncryptor;
+                encryptor = context.applicationDataEncryptor();
                 break;
             default:
                 throw whatTheHell("unknown phase: %s", phase);
@@ -57,7 +57,7 @@ public class WrappingIntoTLSCiphertext extends AbstractAction {
             throw whatTheHell("encryptor is not initialized (null)");
         }
 
-        TLSInnerPlaintext tlsInnerPlaintext = context.factory.createTLSInnerPlaintext(
+        TLSInnerPlaintext tlsInnerPlaintext = context.factory().createTLSInnerPlaintext(
                 type, content, NO_PADDING);
         byte[] plaintext = tlsInnerPlaintext.encoding();
 
@@ -67,7 +67,7 @@ public class WrappingIntoTLSCiphertext extends AbstractAction {
         encryptor.update(plaintext);
         byte[] ciphertext = encryptor.finish();
 
-        out = TLS13Utils.store(context.factory.createTLSPlaintexts(application_data, TLSv12, ciphertext));
+        out = TLS13Utils.store(context.factory().createTLSPlaintexts(application_data, TLSv12, ciphertext));
 
         return this;
     }

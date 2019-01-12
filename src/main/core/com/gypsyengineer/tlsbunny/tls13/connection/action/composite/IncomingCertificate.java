@@ -28,9 +28,9 @@ public class IncomingCertificate extends AbstractAction {
     }
 
     private void processCertificate(Handshake handshake) {
-        context.factory.parser().parseCertificate(
+        context.factory().parser().parseCertificate(
                 handshake.getBody(),
-                buf -> context.factory.parser().parseX509CertificateEntry(buf));
+                buf -> context.factory().parser().parseX509CertificateEntry(buf));
         context.setServerCertificate(handshake);
     }
 }

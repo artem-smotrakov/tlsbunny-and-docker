@@ -50,7 +50,7 @@ public class StartWithServerHello extends SingleConnectionClient {
                         .supportedVersion(TLSv13)
                         .group(secp256r1)
                         .signatureScheme(ecdsa_secp256r1_sha256)
-                        .keyShareEntry(context -> context.negotiator.createKeyShareEntry()))
+                        .keyShareEntry(context -> context.negotiator().createKeyShareEntry()))
                 .run(new WrappingIntoHandshake()
                         .type(server_hello)
                         .run((context, message) -> context.setServerHello(message)))

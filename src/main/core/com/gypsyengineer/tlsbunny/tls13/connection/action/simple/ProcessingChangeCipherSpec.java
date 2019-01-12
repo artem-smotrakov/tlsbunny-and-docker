@@ -14,7 +14,7 @@ public class ProcessingChangeCipherSpec extends AbstractAction<ProcessingChangeC
 
     @Override
     public Action run() throws ActionFailed {
-        ChangeCipherSpec ccs = context.factory.parser().parseChangeCipherSpec(in);
+        ChangeCipherSpec ccs = context.factory().parser().parseChangeCipherSpec(in);
         if (!ccs.isValid()) {
             throw new ActionFailed("unexpected content in change_cipher_spec message");
         }

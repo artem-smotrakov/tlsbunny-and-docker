@@ -94,7 +94,7 @@ public class AllMaxFragmentLengths {
                             .supportedVersions(TLSv13_draft_26)
                             .groups(secp256r1)
                             .signatureSchemes(ecdsa_secp256r1_sha256)
-                            .keyShareEntries(context -> context.negotiator.createKeyShareEntry())
+                            .keyShareEntries(context -> context.negotiator().createKeyShareEntry())
                             .set(maxFragmentLength))
                     .run(new WrappingIntoHandshake()
                             .type(client_hello)

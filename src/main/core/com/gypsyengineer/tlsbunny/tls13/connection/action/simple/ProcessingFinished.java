@@ -5,13 +5,14 @@ import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.ActionFailed;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Side;
 import com.gypsyengineer.tlsbunny.tls13.crypto.TranscriptHash;
+import com.gypsyengineer.tlsbunny.tls13.handshake.Constants;
 import com.gypsyengineer.tlsbunny.tls13.struct.Finished;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
-import static com.gypsyengineer.tlsbunny.tls13.handshake.Context.ZERO_HASH_VALUE;
+import static com.gypsyengineer.tlsbunny.tls13.handshake.Constants.zero_hash_value;
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public class ProcessingFinished extends AbstractAction<ProcessingFinished> {
@@ -52,20 +53,20 @@ public class ProcessingFinished extends AbstractAction<ProcessingFinished> {
             throw whatTheHell("side not specified! (null)");
         }
 
-        Finished finished = context.factory.parser().parseFinished(
-                in, context.suite.hashLength());
+        Finished finished = context.factory().parser().parseFinished(
+                in, context.suite().hashLength());
 
-        byte[] verify_key = context.hkdf.expandLabel(
+        byte[] verify_key = context.hkdf().expandLabel(
                 getBaseKey(),
-                context.finished,
-                ZERO_HASH_VALUE,
-                context.hkdf.getHashLength());
+                Constants.finished(),
+                zero_hash_value,
+                context.hkdf().getHashLength());
 
         byte[] verify_data;
         try {
-            verify_data = context.hkdf.hmac(
+            verify_data = context.hkdf().hmac(
                     verify_key,
-                    TranscriptHash.compute(context.suite.hash(), context.allMessages()));
+                    TranscriptHash.compute(context.suite().hash(), context.allMessages()));
         } catch (NoSuchAlgorithmException e) {
             throw new ActionFailed(e);
         }
@@ -94,9 +95,9 @@ public class ProcessingFinished extends AbstractAction<ProcessingFinished> {
     private byte[] getBaseKey() {
         switch (side) {
             case client:
-                return context.server_handshake_traffic_secret;
+                return context.server_handshake_traffic_secret();
             case server:
-                return context.client_handshake_traffic_secret;
+                return context.client_handshake_traffic_secret();
             default:
                 throw whatTheHell("unknown side: " + side);
         }

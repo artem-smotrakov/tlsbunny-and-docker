@@ -160,7 +160,7 @@ public class IncomingMessages extends AbstractAction<IncomingMessages> {
     }
 
     private boolean canDecryptApplicationData() {
-        return context.applicationDataDecryptor != null;
+        return context.applicationDataDecryptor() != null;
     }
 
     private void processHandshake(ByteBuffer buffer)

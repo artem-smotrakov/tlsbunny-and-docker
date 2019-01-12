@@ -52,11 +52,11 @@ public class GeneratingFinished extends AbstractAction {
         }
 
         try {
-            byte[] verify_data = context.hkdf.hmac(
-                    context.finished_key,
-                    TranscriptHash.compute(context.suite.hash(), context.allMessages()));
+            byte[] verify_data = context.hkdf().hmac(
+                    context.finished_key(),
+                    TranscriptHash.compute(context.suite().hash(), context.allMessages()));
 
-            Finished finished = context.factory.createFinished(verify_data);
+            Finished finished = context.factory().createFinished(verify_data);
             out = ByteBuffer.wrap(finished.encoding());
         } catch (NoSuchAlgorithmException e) {
             throw new ActionFailed(e);

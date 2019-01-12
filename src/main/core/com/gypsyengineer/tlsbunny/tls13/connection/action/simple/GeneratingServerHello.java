@@ -73,7 +73,7 @@ public class GeneratingServerHello extends AbstractAction {
         List<Extension> extensions = new ArrayList<>();
 
         for (ProtocolVersion version : versions) {
-            extensions.add(wrap(context.factory.createSupportedVersionForServerHello(version)));
+            extensions.add(wrap(context.factory().createSupportedVersionForServerHello(version)));
         }
 
         for (KeyShareFactory factory : keyShareFactories) {
@@ -81,7 +81,7 @@ public class GeneratingServerHello extends AbstractAction {
         }
 
         for (KeyShareEntryFactory factory : keyShareEntryFactories) {
-            extensions.add(wrap(context.factory.createKeyShareForServerHello(
+            extensions.add(wrap(context.factory().createKeyShareForServerHello(
                     factory.create(context))));
         }
 
@@ -99,11 +99,11 @@ public class GeneratingServerHello extends AbstractAction {
         byte[] legacy_session_id = new byte[0];
         Handshake handshake = context.getFirstClientHello();
         if (handshake != null) {
-            legacy_session_id = context.factory.parser().parseClientHello(
+            legacy_session_id = context.factory().parser().parseClientHello(
                     handshake.getBody()).legacySessionId().bytes();
         }
 
-        ServerHello hello = context.factory.createServerHello(
+        ServerHello hello = context.factory().createServerHello(
                 ProtocolVersion.TLSv12,
                 random,
                 legacy_session_id,

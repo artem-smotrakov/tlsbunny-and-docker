@@ -16,7 +16,7 @@ public class ProcessingNewSessionTicket extends AbstractAction<ProcessingNewSess
 
     @Override
     public Action run() throws IOException {
-        NewSessionTicket ticket = context.factory.parser().parseNewSessionTicket(in);
+        NewSessionTicket ticket = context.factory().parser().parseNewSessionTicket(in);
         output.info("NewSessionTicket encoding length: %d", ticket.encodingLength());
         output.info("NewSessionTicket content: %n%s", HexDump.printHex(ticket.encoding()));
         output.info("received a NewSessionTicket message");

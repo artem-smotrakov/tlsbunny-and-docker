@@ -38,10 +38,10 @@ public class GeneratingCertificateRequest
         List<Extension> extensions = new ArrayList<>();
 
         for (SignatureScheme scheme : schemes) {
-            extensions.add(wrap(context.factory.createSignatureSchemeList(scheme)));
+            extensions.add(wrap(context.factory().createSignatureSchemeList(scheme)));
         }
 
-        CertificateRequest certificateRequest = context.factory.createCertificateRequest(
+        CertificateRequest certificateRequest = context.factory().createCertificateRequest(
                 certificate_request_context, extensions);
 
         // TODO: should it save context to context.certificate_request_context?

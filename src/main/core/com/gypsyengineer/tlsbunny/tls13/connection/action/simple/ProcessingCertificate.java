@@ -12,8 +12,8 @@ public class ProcessingCertificate extends AbstractAction<ProcessingCertificate>
 
     @Override
     public Action run() {
-        context.factory.parser().parseCertificate(
-                in, buf -> context.factory.parser().parseX509CertificateEntry(buf));
+        context.factory().parser().parseCertificate(
+                in, buf -> context.factory().parser().parseX509CertificateEntry(buf));
         output.info("received a Certificate message");
 
         return this;

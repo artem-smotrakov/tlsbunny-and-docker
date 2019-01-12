@@ -13,7 +13,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-public class ProcessingEncryptedAlert extends AbstractAction {
+public class ProcessingEncryptedAlert extends AbstractAction<ProcessingEncryptedAlert> {
 
     private final Phase phase;
 
@@ -27,8 +27,8 @@ public class ProcessingEncryptedAlert extends AbstractAction {
     }
 
     @Override
-    public Action run() throws ActionFailed, AEADException, IOException {
-        TLSPlaintext tlsPlaintext = context.factory.parser().parseTLSPlaintext(in);
+    public ProcessingEncryptedAlert run() throws ActionFailed, AEADException, IOException {
+        TLSPlaintext tlsPlaintext = context.factory().parser().parseTLSPlaintext(in);
 
         if (!tlsPlaintext.containsApplicationData()) {
             throw new ActionFailed("expected encrypted data");
@@ -37,10 +37,10 @@ public class ProcessingEncryptedAlert extends AbstractAction {
         AEAD decryptor;
         switch (phase) {
             case handshake:
-                decryptor = context.handshakeDecryptor;
+                decryptor = context.handshakeDecryptor();
                 break;
             case application_data:
-                decryptor = context.applicationDataDecryptor;
+                decryptor = context.applicationDataDecryptor();
                 break;
             default:
                 throw new IllegalArgumentException();
@@ -48,14 +48,14 @@ public class ProcessingEncryptedAlert extends AbstractAction {
 
         byte[] plaintext = decryptor.decrypt(tlsPlaintext);
         try {
-            TLSInnerPlaintext tlsInnerPlaintext = context.factory.parser()
+            TLSInnerPlaintext tlsInnerPlaintext = context.factory().parser()
                     .parseTLSInnerPlaintext(plaintext);
 
             if (!tlsInnerPlaintext.containsAlert()) {
                 throw new ActionFailed("expected an alert");
             }
 
-            Alert alert = context.factory.parser().parseAlert(tlsInnerPlaintext.getContent());
+            Alert alert = context.factory().parser().parseAlert(tlsInnerPlaintext.getContent());
             context.setAlert(alert);
             output.info("received an alert: %s", alert);
         } catch (ActionFailed e) {

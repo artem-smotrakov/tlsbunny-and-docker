@@ -23,17 +23,17 @@ public class ClientHelloTest {
     @Test
     public void generateAndParse() throws Exception {
         Context context = new Context();
-        context.factory = StructFactory.getDefault();
-        context.negotiator = ECDHENegotiator.create(
+        context.set(StructFactory.getDefault());
+        context.set(ECDHENegotiator.create(
                 NamedGroup.Secp.secp256r1, StructFactory.getDefault())
-                    .strictValidation();
+                    .strictValidation());
 
         try (Output output = new Output()) {
             ByteBuffer buffer = new GeneratingClientHello()
                     .supportedVersions(TLSv13)
                     .groups(secp256r1)
                     .signatureSchemes(ecdsa_secp256r1_sha256)
-                    .keyShareEntries(c -> c.negotiator.createKeyShareEntry())
+                    .keyShareEntries(c -> c.negotiator().createKeyShareEntry())
                     .set(context)
                     .set(output)
                     .run()
@@ -59,10 +59,10 @@ public class ClientHelloTest {
     @Test
     public void manyGroups() throws Exception {
         Context context = new Context();
-        context.factory = StructFactory.getDefault();
-        context.negotiator = ECDHENegotiator.create(
+        context.set(StructFactory.getDefault());
+        context.set(ECDHENegotiator.create(
                 NamedGroup.Secp.secp256r1, StructFactory.getDefault())
-                .strictValidation();
+                    .strictValidation());
 
         int n = 30000;
         NamedGroup[] tooManyGroups = new NamedGroup[n];
@@ -75,7 +75,7 @@ public class ClientHelloTest {
                     .supportedVersions(TLSv13)
                     .groups(tooManyGroups)
                     .signatureSchemes(ecdsa_secp256r1_sha256)
-                    .keyShareEntries(c -> c.negotiator.createKeyShareEntry())
+                    .keyShareEntries(c -> c.negotiator().createKeyShareEntry())
                     .set(context)
                     .set(output)
                     .run()

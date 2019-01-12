@@ -5,6 +5,7 @@ import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
 import com.gypsyengineer.tlsbunny.tls13.handshake.NegotiatorException;
 import com.gypsyengineer.tlsbunny.tls13.struct.KeyShare;
 import com.gypsyengineer.tlsbunny.tls13.struct.KeyShareEntry;
+import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
 import com.gypsyengineer.tlsbunny.tls13.struct.ServerHello;
 
 import java.io.IOException;
@@ -20,21 +21,22 @@ public class NegotiatingClientDHSecret extends AbstractAction<NegotiatingClientD
 
     @Override
     public Action run() throws IOException, NegotiatorException {
-        ServerHello serverHello = context.factory.parser().parseServerHello(
+        ServerHello serverHello = context.factory().parser().parseServerHello(
                 context.getServerHello().getBody());
 
         // TODO: we look for only first key share, but there may be multiple key shares
-        KeyShare.ServerHello keyShare = findKeyShare(context.factory, serverHello);
+        KeyShare.ServerHello keyShare = findKeyShare(context.factory(), serverHello);
 
         KeyShareEntry keyShareEntry = keyShare.getServerShare();
 
-        if (!context.group.equals(keyShareEntry.getNamedGroup())) {
-            output.info("expected groups: %s", context.group);
+        NamedGroup group = context.negotiator().group();
+        if (!group.equals(keyShareEntry.getNamedGroup())) {
+            output.info("expected groups: %s", group);
             output.info("received groups: %s", keyShareEntry.getNamedGroup());
             throw new NegotiatorException("unexpected groups");
         }
-        context.negotiator.processKeyShareEntry(keyShareEntry);
-        context.dh_shared_secret = context.negotiator.generateSecret();
+        context.negotiator().processKeyShareEntry(keyShareEntry);
+        context.dh_shared_secret(context.negotiator().generateSecret());
 
         return this;
     }

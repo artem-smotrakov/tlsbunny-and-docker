@@ -65,92 +65,92 @@ public class ClientAuthTest {
         assertNotNull("server context should not be null", serverContext);
 
         assertArrayEquals("contexts: dh_shared_secret are not equal",
-                clientContext.dh_shared_secret,
-                serverContext.dh_shared_secret);
+                clientContext.dh_shared_secret(),
+                serverContext.dh_shared_secret());
 
         assertArrayEquals("contexts: early_secret are not equal",
-                clientContext.early_secret,
-                serverContext.early_secret);
+                clientContext.early_secret(),
+                serverContext.early_secret());
 
         assertArrayEquals("contexts: binder_key are not equal",
-                clientContext.binder_key,
-                serverContext.binder_key);
+                clientContext.binder_key(),
+                serverContext.binder_key());
 
         assertArrayEquals("contexts: client_early_traffic_secret are not equal",
-                clientContext.client_early_traffic_secret,
-                serverContext.client_early_traffic_secret);
+                clientContext.client_early_traffic_secret(),
+                serverContext.client_early_traffic_secret());
 
         assertArrayEquals("contexts: early_exporter_master_secret are not equal",
-                clientContext.early_exporter_master_secret,
-                serverContext.early_exporter_master_secret);
+                clientContext.early_exporter_master_secret(),
+                serverContext.early_exporter_master_secret());
 
         assertArrayEquals("contexts: handshake_secret_salt are not equal",
-                clientContext.handshake_secret_salt,
-                serverContext.handshake_secret_salt);
+                clientContext.handshake_secret_salt(),
+                serverContext.handshake_secret_salt());
 
         assertArrayEquals("contexts: handshake_secret are not equal",
-                clientContext.handshake_secret,
-                serverContext.handshake_secret);
+                clientContext.handshake_secret(),
+                serverContext.handshake_secret());
 
         assertArrayEquals("contexts: client_handshake_traffic_secret are not equal",
-                clientContext.client_handshake_traffic_secret,
-                serverContext.client_handshake_traffic_secret);
+                clientContext.client_handshake_traffic_secret(),
+                serverContext.client_handshake_traffic_secret());
 
         assertArrayEquals("contexts: server_handshake_traffic_secret are not equal",
-                clientContext.server_handshake_traffic_secret,
-                serverContext.server_handshake_traffic_secret);
+                clientContext.server_handshake_traffic_secret(),
+                serverContext.server_handshake_traffic_secret());
 
         assertArrayEquals("contexts: master_secret are not equal",
-                clientContext.master_secret,
-                serverContext.master_secret);
+                clientContext.master_secret(),
+                serverContext.master_secret());
 
         assertArrayEquals("contexts: client_application_traffic_secret_0 are not equal",
-                clientContext.client_application_traffic_secret_0,
-                serverContext.client_application_traffic_secret_0);
+                clientContext.client_application_traffic_secret_0(),
+                serverContext.client_application_traffic_secret_0());
 
         assertArrayEquals("contexts: server_application_traffic_secret_0 are not equal",
-                clientContext.server_application_traffic_secret_0,
-                serverContext.server_application_traffic_secret_0);
+                clientContext.server_application_traffic_secret_0(),
+                serverContext.server_application_traffic_secret_0());
 
         assertArrayEquals("contexts: exporter_master_secret are not equal",
-                clientContext.exporter_master_secret,
-                serverContext.exporter_master_secret);
+                clientContext.exporter_master_secret(),
+                serverContext.exporter_master_secret());
 
         assertArrayEquals("contexts: resumption_master_secret are not equal",
-                clientContext.resumption_master_secret,
-                serverContext.resumption_master_secret);
+                clientContext.resumption_master_secret(),
+                serverContext.resumption_master_secret());
 
         assertArrayEquals("contexts: client_handshake_write_key are not equal",
-                clientContext.client_handshake_write_key,
-                serverContext.client_handshake_write_key);
+                clientContext.client_handshake_write_key(),
+                serverContext.client_handshake_write_key());
 
         assertArrayEquals("contexts: client_handshake_write_iv are not equal",
-                clientContext.client_handshake_write_iv,
-                serverContext.client_handshake_write_iv);
+                clientContext.client_handshake_write_iv(),
+                serverContext.client_handshake_write_iv());
 
         assertArrayEquals("contexts: server_handshake_write_key are not equal",
-                clientContext.server_handshake_write_key,
-                serverContext.server_handshake_write_key);
+                clientContext.server_handshake_write_key(),
+                serverContext.server_handshake_write_key());
 
         assertArrayEquals("contexts: server_handshake_write_iv are not equal",
-                clientContext.server_handshake_write_iv,
-                serverContext.server_handshake_write_iv);
+                clientContext.server_handshake_write_iv(),
+                serverContext.server_handshake_write_iv());
 
         assertArrayEquals("contexts: client_application_write_key are not equal",
-                clientContext.client_application_write_key,
-                serverContext.client_application_write_key);
+                clientContext.client_application_write_key(),
+                serverContext.client_application_write_key());
 
         assertArrayEquals("contexts: client_application_write_iv are not equal",
-                clientContext.client_application_write_iv,
-                serverContext.client_application_write_iv);
+                clientContext.client_application_write_iv(),
+                serverContext.client_application_write_iv());
 
         assertArrayEquals("contexts: server_application_write_key are not equal",
-                clientContext.server_application_write_key,
-                serverContext.server_application_write_key);
+                clientContext.server_application_write_key(),
+                serverContext.server_application_write_key());
 
         assertArrayEquals("contexts: server_application_write_iv are not equal",
-                clientContext.server_application_write_iv,
-                serverContext.server_application_write_iv);
+                clientContext.server_application_write_iv(),
+                serverContext.server_application_write_iv());
 
         return true;
     }

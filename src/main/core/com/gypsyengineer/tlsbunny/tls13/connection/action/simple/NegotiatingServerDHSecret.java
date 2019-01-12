@@ -21,26 +21,27 @@ public class NegotiatingServerDHSecret extends AbstractAction<NegotiatingServerD
     @Override
     public Action run() throws IOException, NegotiatorException {
         // TODO: we only care about first client hello but there may be a second one
-        ClientHello clientHello = context.factory.parser().parseClientHello(
+        ClientHello clientHello = context.factory().parser().parseClientHello(
                 context.getFirstClientHello().getBody());
 
         // TODO: we look for only first key share, but there may be multiple key shares
-        KeyShare.ClientHello keyShare = findKeyShare(context.factory, clientHello);
+        KeyShare.ClientHello keyShare = findKeyShare(context.factory(), clientHello);
 
         KeyShareEntry selectedKeyShareEntry = null;
         for (KeyShareEntry keyShareEntry : keyShare.getClientShares().toList()) {
-            if (context.group.equals(keyShareEntry.getNamedGroup())) {
+            if (context.negotiator().group().equals(keyShareEntry.getNamedGroup())) {
                 selectedKeyShareEntry = keyShareEntry;
             }
         }
 
         if (selectedKeyShareEntry == null) {
             throw new NegotiatorException(
-                    String.format("could not find a key share with %s", context.group));
+                    String.format("could not find a key share with %s",
+                            context.negotiator().group()));
         }
 
-        context.negotiator.processKeyShareEntry(selectedKeyShareEntry);
-        context.dh_shared_secret = context.negotiator.generateSecret();
+        context.negotiator().processKeyShareEntry(selectedKeyShareEntry);
+        context.dh_shared_secret(context.negotiator().generateSecret());
 
         return this;
     }

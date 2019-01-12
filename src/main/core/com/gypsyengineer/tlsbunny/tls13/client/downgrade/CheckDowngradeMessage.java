@@ -66,7 +66,7 @@ public class CheckDowngradeMessage extends SingleConnectionClient {
                                 factory.createCipherSuite(0xC0, 0x13)) // TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA
                         .supportedVersions(version)
                         .signatureSchemes(ecdsa_secp256r1_sha256)
-                        .keyShareEntries(context -> context.negotiator.createKeyShareEntry()))
+                        .keyShareEntries(context -> context.negotiator().createKeyShareEntry()))
                 .run(new WrappingIntoHandshake()
                         .type(client_hello)
                         .updateContext(Context.Element.first_client_hello))

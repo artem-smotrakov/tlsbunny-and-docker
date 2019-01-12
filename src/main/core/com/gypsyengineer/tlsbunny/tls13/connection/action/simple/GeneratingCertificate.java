@@ -37,9 +37,9 @@ public class GeneratingCertificate extends AbstractAction {
 
     @Override
     public Action run() throws IOException, AEADException {
-        Certificate certificate = context.factory.createCertificate(
+        Certificate certificate = context.factory().createCertificate(
                 certificate_request_context,
-                context.factory.createX509CertificateEntry(cert_data));
+                context.factory().createX509CertificateEntry(cert_data));
 
         // TODO: should it save context to context.certificate_request_context?
 

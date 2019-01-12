@@ -31,7 +31,7 @@ public class GeneratingEmptyTLSPlaintext extends AbstractAction<GeneratingEmptyT
 
     @Override
     public GeneratingEmptyTLSPlaintext run() throws IOException {
-        out = TLS13Utils.store(context.factory.createTLSPlaintexts(type, version, EMPTY));
+        out = TLS13Utils.store(context.factory().createTLSPlaintexts(type, version, EMPTY));
         return this;
     }
 

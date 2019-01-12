@@ -177,7 +177,7 @@ public class StructCopyTest {
             } else if (handshake.containsCertificateVerify()) {
                 list.add(parser.parseCertificateVerify(body));
             } else if (handshake.containsFinished()) {
-                list.add(parser.parseFinished(body, context.suite.hashLength()));
+                list.add(parser.parseFinished(body, context.suite().hashLength()));
             } else if (handshake.containsNewSessionTicket()) {
                 list.add(parser.parseNewSessionTicket(body));
             } else {
@@ -219,7 +219,7 @@ public class StructCopyTest {
                             .supportedVersion(TLSv13_draft_26)
                             .group(secp256r1)
                             .signatureScheme(ecdsa_secp256r1_sha256)
-                            .keyShareEntry(context -> context.negotiator.createKeyShareEntry()))
+                            .keyShareEntry(context -> context.negotiator().createKeyShareEntry()))
                     .run(new WrappingIntoHandshake()
                             .type(server_hello)
                             .updateContext(Context.Element.server_hello))

@@ -67,7 +67,7 @@ public class OutgoingClientCertificateVerify
                     CERTIFICATE_VERIFY_PREFIX,
                     CERTIFICATE_VERIFY_CONTEXT_STRING,
                     new byte[] {0},
-                    TranscriptHash.compute(context.suite.hash(), context.allMessages()));
+                    TranscriptHash.compute(context.suite().hash(), context.allMessages()));
 
             Signature signature = Signature.getInstance("SHA256withECDSA");
             signature.initSign(
@@ -75,7 +75,7 @@ public class OutgoingClientCertificateVerify
                             new PKCS8EncodedKeySpec(key_data)));
             signature.update(content);
 
-            return context.factory.createCertificateVerify(
+            return context.factory().createCertificateVerify(
                     SignatureScheme.ecdsa_secp256r1_sha256, signature.sign());
         } catch (NoSuchAlgorithmException | SignatureException
                 | InvalidKeyException | InvalidKeySpecException e) {
@@ -88,7 +88,7 @@ public class OutgoingClientCertificateVerify
     // TODO: move this method to handshakeDecryptor to avoid code duplicates
     //       run other classes for outgoing handshake messages
     TLSPlaintext[] encrypt(Handshake message) throws IOException, AEADException {
-        return context.factory.createTLSPlaintexts(
+        return context.factory().createTLSPlaintexts(
                 ContentType.application_data,
                 ProtocolVersion.TLSv12,
                 encrypt(message.encoding()));
@@ -97,16 +97,16 @@ public class OutgoingClientCertificateVerify
     // TODO: move this method to handshakeDecryptor to avoid code duplicates
     //       run other classes for outgoing handshake messages
     private byte[] encrypt(byte[] data) throws IOException, AEADException {
-        TLSInnerPlaintext tlsInnerPlaintext = context.factory.createTLSInnerPlaintext(
+        TLSInnerPlaintext tlsInnerPlaintext = context.factory().createTLSInnerPlaintext(
                 ContentType.handshake, data, NO_PADDING);
         byte[] plaintext = tlsInnerPlaintext.encoding();
 
-        context.handshakeEncryptor.start();
-        context.handshakeEncryptor.updateAAD(
+        context.handshakeEncryptor().start();
+        context.handshakeEncryptor().updateAAD(
                 AEAD.getAdditionalData(plaintext.length + AesGcm.TAG_LENGTH_IN_BYTES));
-        context.handshakeEncryptor.update(plaintext);
+        context.handshakeEncryptor().update(plaintext);
 
-        return context.handshakeEncryptor.finish();
+        return context.handshakeEncryptor().finish();
     }
 
 }

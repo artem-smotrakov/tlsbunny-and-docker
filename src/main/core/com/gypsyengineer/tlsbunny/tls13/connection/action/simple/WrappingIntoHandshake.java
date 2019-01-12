@@ -41,7 +41,7 @@ public class WrappingIntoHandshake extends AbstractAction {
         byte[] content = new byte[in.remaining()];
         in.get(content);
 
-        Handshake handshake = context.factory.createHandshake(type, content);
+        Handshake handshake = context.factory().createHandshake(type, content);
 
         if (contextUpdater != NOT_SPECIFIED) {
             contextUpdater.run(context, handshake);

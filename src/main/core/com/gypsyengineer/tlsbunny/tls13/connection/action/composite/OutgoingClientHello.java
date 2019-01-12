@@ -19,20 +19,22 @@ public class OutgoingClientHello extends AbstractAction {
     @Override
     public Action run() throws IOException, NegotiatorException {
         List<Extension> extensions = List.of(
-                wrap(context.factory.createSupportedVersionForClientHello(ProtocolVersion.TLSv13)),
-                wrap(context.factory.createSignatureSchemeList(context.scheme)),
-                wrap(context.factory.createNamedGroupList(context.group)),
-                wrap(context.factory.createKeyShareForClientHello(context.negotiator.createKeyShareEntry())));
+                wrap(context.factory().createSupportedVersionForClientHello(
+                        ProtocolVersion.TLSv13)),
+                wrap(context.factory().createSignatureSchemeList(context.scheme())),
+                wrap(context.factory().createNamedGroupList(context.negotiator().group())),
+                wrap(context.factory().createKeyShareForClientHello(
+                        context.negotiator().createKeyShareEntry())));
 
-        ClientHello hello = context.factory.createClientHello(ProtocolVersion.TLSv12,
+        ClientHello hello = context.factory().createClientHello(ProtocolVersion.TLSv12,
                 createRandom(),
                 StructFactory.empty_session_id,
                 List.of(CipherSuite.TLS_AES_128_GCM_SHA256),
-                List.of(context.factory.createCompressionMethod(0)),
+                List.of(context.factory().createCompressionMethod(0)),
                 extensions);
 
         Handshake handshake = toHandshake(hello);
-        TLSPlaintext[] tlsPlaintexts = context.factory.createTLSPlaintexts(
+        TLSPlaintext[] tlsPlaintexts = context.factory().createTLSPlaintexts(
                 ContentType.handshake,
                 ProtocolVersion.TLSv10,
                 handshake.encoding());

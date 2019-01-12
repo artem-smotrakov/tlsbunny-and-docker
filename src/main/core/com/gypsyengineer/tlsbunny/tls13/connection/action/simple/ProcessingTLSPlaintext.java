@@ -27,7 +27,7 @@ public class ProcessingTLSPlaintext extends AbstractAction<ProcessingTLSPlaintex
 
     @Override
     public ProcessingTLSPlaintext run() throws ActionFailed, IOException {
-        tlsPlaintext = context.factory.parser().parseTLSPlaintext(in);
+        tlsPlaintext = context.factory().parser().parseTLSPlaintext(in);
 
         ContentType type = tlsPlaintext.getType();
         if (expectedType != NO_TYPE_SPECIFIED && !expectedType.equals(type)) {

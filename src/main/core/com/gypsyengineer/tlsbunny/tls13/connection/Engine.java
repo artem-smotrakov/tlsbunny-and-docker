@@ -62,10 +62,9 @@ public class Engine {
     private final List<byte[]> storedData = new ArrayList<>();
 
     private Engine() {
-        context.group = NamedGroup.secp256r1;
-        context.scheme = SignatureScheme.ecdsa_secp256r1_sha256;
-        context.suite = CipherSuite.TLS_AES_128_GCM_SHA256;
-        context.factory = StructFactory.getDefault();
+        context.set(SignatureScheme.ecdsa_secp256r1_sha256);
+        context.set(CipherSuite.TLS_AES_128_GCM_SHA256);
+        context.set(StructFactory.getDefault());
     }
 
     public Context context() {
@@ -118,30 +117,24 @@ public class Engine {
     }
 
     public Engine set(StructFactory factory) {
-        this.context.factory = factory;
+        this.context.set(factory);
         return this;
     }
 
     public Engine set(SignatureScheme scheme) {
-        this.context.scheme = scheme;
-        return this;
-    }
-
-    public Engine set(NamedGroup group) {
-        this.context.group = group;
+        this.context.set(scheme);
         return this;
     }
 
     public Engine set(Negotiator negotiator) {
-        this.context.negotiator = negotiator;
-        this.context.group = negotiator.group();
+        this.context.set(negotiator);
         return this;
     }
 
     public Engine store() {
         actions.add(new ActionHolder()
                 .engine(this)
-                .factory(() -> new EmptyAction())
+                .factory(EmptyAction::new)
                 .type(ActionType.store));
         return this;
     }
@@ -149,7 +142,7 @@ public class Engine {
     public Engine restore() {
         actions.add(new ActionHolder()
                 .engine(this)
-                .factory(() -> new EmptyAction())
+                .factory(EmptyAction::new)
                 .type(ActionType.restore));
         return this;
     }
@@ -197,7 +190,7 @@ public class Engine {
     }
 
     public Engine connect() throws EngineException {
-        context.negotiator.set(output);
+        context.negotiator().set(output);
         status = Status.running;
 
         initConnection();
@@ -380,10 +373,10 @@ public class Engine {
 
     public static Engine init() throws NoSuchAlgorithmException, NegotiatorException {
         Engine engine = new Engine();
-        engine.context.negotiator = ECDHENegotiator.create(
-                (NamedGroup.Secp) engine.context.group, engine.context.factory);
-        engine.context.hkdf = HKDF.create(
-                engine.context.suite.hash(), engine.context.factory);
+        engine.context.set(ECDHENegotiator.create(
+                NamedGroup.secp256r1, engine.context.factory()));
+        engine.context.set(HKDF.create(
+                engine.context.suite().hash(), engine.context.factory()));
 
         return engine;
     }
