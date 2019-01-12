@@ -37,10 +37,10 @@ public class ProcessingEncryptedAlert extends AbstractAction {
         AEAD decryptor;
         switch (phase) {
             case handshake:
-                decryptor = context.handshakeDecryptor;
+                decryptor = context.handshakeDecryptor();
                 break;
             case application_data:
-                decryptor = context.applicationDataDecryptor;
+                decryptor = context.applicationDataDecryptor();
                 break;
             default:
                 throw new IllegalArgumentException();

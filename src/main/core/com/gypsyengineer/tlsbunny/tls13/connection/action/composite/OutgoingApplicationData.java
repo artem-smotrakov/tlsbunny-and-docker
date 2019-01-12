@@ -51,11 +51,11 @@ public class OutgoingApplicationData extends AbstractAction {
                 ContentType.application_data, data, NO_PADDING);
         byte[] plaintext = tlsInnerPlaintext.encoding();
 
-        context.applicationDataEncryptor.start();
-        context.applicationDataEncryptor.updateAAD(
+        context.applicationDataEncryptor().start();
+        context.applicationDataEncryptor().updateAAD(
                 AEAD.getAdditionalData(plaintext.length + AesGcm.TAG_LENGTH_IN_BYTES));
-        context.applicationDataEncryptor.update(plaintext);
+        context.applicationDataEncryptor().update(plaintext);
 
-        return context.applicationDataEncryptor.finish();
+        return context.applicationDataEncryptor().finish();
     }
 }

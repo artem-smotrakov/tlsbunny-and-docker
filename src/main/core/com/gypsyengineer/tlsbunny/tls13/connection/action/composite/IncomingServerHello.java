@@ -143,14 +143,14 @@ public class IncomingServerHello extends AbstractAction {
                 zero_hash_value,
                 context.hkdf().getHashLength()));
 
-        context.handshakeEncryptor = AEAD.createEncryptor(
+        context.handshakeEncryptor(AEAD.createEncryptor(
                 context.suite().cipher(),
                 context.client_handshake_write_key(),
-                context.client_handshake_write_iv());
-        context.handshakeDecryptor = AEAD.createDecryptor(
+                context.client_handshake_write_iv()));
+        context.handshakeDecryptor(AEAD.createDecryptor(
                 context.suite().cipher(),
                 context.server_handshake_write_key(),
-                context.server_handshake_write_iv());
+                context.server_handshake_write_iv()));
     }
 
 }

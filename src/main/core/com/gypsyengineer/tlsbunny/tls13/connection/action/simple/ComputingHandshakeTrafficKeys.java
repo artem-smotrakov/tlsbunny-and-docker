@@ -109,14 +109,14 @@ public class ComputingHandshakeTrafficKeys
                 zero_hash_value,
                 context.hkdf().getHashLength()));
 
-        context.handshakeEncryptor = AEAD.createEncryptor(
+        context.handshakeEncryptor(AEAD.createEncryptor(
                 context.suite().cipher(),
                 encryptorKey(),
-                encryptorIv());
-        context.handshakeDecryptor = AEAD.createDecryptor(
+                encryptorIv()));
+        context.handshakeDecryptor(AEAD.createDecryptor(
                 context.suite().cipher(),
                 decryptorKey(),
-                decryptorIv());
+                decryptorIv()));
 
         return this;
     }

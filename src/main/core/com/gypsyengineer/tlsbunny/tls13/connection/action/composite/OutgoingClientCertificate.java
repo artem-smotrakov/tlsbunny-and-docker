@@ -69,12 +69,12 @@ public class OutgoingClientCertificate extends AbstractAction {
                 ContentType.handshake, data, NO_PADDING);
         byte[] plaintext = tlsInnerPlaintext.encoding();
 
-        context.handshakeEncryptor.start();
-        context.handshakeEncryptor.updateAAD(
+        context.handshakeEncryptor().start();
+        context.handshakeEncryptor().updateAAD(
                 AEAD.getAdditionalData(plaintext.length + AesGcm.TAG_LENGTH_IN_BYTES));
-        context.handshakeEncryptor.update(plaintext);
+        context.handshakeEncryptor().update(plaintext);
 
-        return context.handshakeEncryptor.finish();
+        return context.handshakeEncryptor().finish();
     }
 
 }

@@ -101,7 +101,7 @@ public abstract class AbstractAction<T extends AbstractAction> implements Action
             throws AEADException, ActionFailed, IOException {
 
         return context.factory().parser().parseHandshake(
-                processEncrypted(context.handshakeDecryptor, ContentType.handshake));
+                processEncrypted(context.handshakeDecryptor(), ContentType.handshake));
     }
 
     protected Handshake toHandshake(HandshakeMessage message) throws IOException {

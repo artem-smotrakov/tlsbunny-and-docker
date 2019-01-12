@@ -81,9 +81,9 @@ public class ProcessingTLSCiphertext extends AbstractAction<ProcessingTLSCiphert
     private AEAD getDecryptor() {
         switch (phase) {
             case handshake:
-                return context.handshakeDecryptor;
+                return context.handshakeDecryptor();
             case application_data:
-                return context.applicationDataDecryptor;
+                return context.applicationDataDecryptor();
             default:
                 throw new IllegalArgumentException();
         }

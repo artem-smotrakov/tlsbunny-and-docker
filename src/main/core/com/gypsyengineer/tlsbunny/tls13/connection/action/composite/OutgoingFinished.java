@@ -63,14 +63,14 @@ public class OutgoingFinished extends AbstractAction {
 
         out = TLS13Utils.store(encrypt(handshake));
 
-        context.applicationDataEncryptor = AEAD.createEncryptor(
+        context.applicationDataEncryptor(AEAD.createEncryptor(
                 context.suite().cipher(),
                 context.client_application_write_key(),
-                context.client_application_write_iv());
-        context.applicationDataDecryptor = AEAD.createDecryptor(
+                context.client_application_write_iv()));
+        context.applicationDataDecryptor(AEAD.createDecryptor(
                 context.suite().cipher(),
                 context.server_application_write_key(),
-                context.server_application_write_iv());
+                context.server_application_write_iv()));
 
         return this;
     }
@@ -99,12 +99,12 @@ public class OutgoingFinished extends AbstractAction {
                 ContentType.handshake, data, NO_PADDING);
         byte[] plaintext = tlsInnerPlaintext.encoding();
 
-        context.handshakeEncryptor.start();
-        context.handshakeEncryptor.updateAAD(
+        context.handshakeEncryptor().start();
+        context.handshakeEncryptor().updateAAD(
                 AEAD.getAdditionalData(plaintext.length + AesGcm.TAG_LENGTH_IN_BYTES));
-        context.handshakeEncryptor.update(plaintext);
+        context.handshakeEncryptor().update(plaintext);
 
-        return context.handshakeEncryptor.finish();
+        return context.handshakeEncryptor().finish();
     }
 
 }

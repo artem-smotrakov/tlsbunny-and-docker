@@ -53,7 +53,6 @@ public class Context {
     private Negotiator negotiator;
     private HKDF hkdf;
 
-    // TODO: these fields should have private or package access
     private byte[] dh_shared_secret;
     private byte[] early_secret;
     private byte[] binder_key;
@@ -82,13 +81,57 @@ public class Context {
 
     private Alert alert;
 
-    // TODO: these fields should not be public
-    public AEAD handshakeEncryptor;
-    public AEAD handshakeDecryptor;
-    public AEAD applicationDataEncryptor;
-    public AEAD applicationDataDecryptor;
+    private  AEAD handshakeEncryptor;
+    private AEAD handshakeDecryptor;
+    private AEAD applicationDataEncryptor;
+    private AEAD applicationDataDecryptor;
 
-    public List<byte[]> applicationData = new ArrayList<>();
+    private  List<byte[]> applicationData = new ArrayList<>();
+
+    public AEAD handshakeEncryptor() {
+        return handshakeEncryptor;
+    }
+
+    public Context handshakeEncryptor(AEAD handshakeEncryptor) {
+        this.handshakeEncryptor = handshakeEncryptor;
+        return this;
+    }
+
+    public AEAD handshakeDecryptor() {
+        return handshakeDecryptor;
+    }
+
+    public Context handshakeDecryptor(AEAD handshakeDecryptor) {
+        this.handshakeDecryptor = handshakeDecryptor;
+        return this;
+    }
+
+    public AEAD applicationDataEncryptor() {
+        return applicationDataEncryptor;
+    }
+
+    public Context applicationDataEncryptor(AEAD applicationDataEncryptor) {
+        this.applicationDataEncryptor = applicationDataEncryptor;
+        return this;
+    }
+
+    public AEAD applicationDataDecryptor() {
+        return applicationDataDecryptor;
+    }
+
+    public Context applicationDataDecryptor(AEAD applicationDataDecryptor) {
+        this.applicationDataDecryptor = applicationDataDecryptor;
+        return this;
+    }
+
+    public List<byte[]> applicationData() {
+        return applicationData;
+    }
+
+    public Context applicationData(byte[] bytes) {
+        this.applicationData.add(bytes);
+        return this;
+    }
 
     public Context set(HKDF hkdf) {
         this.hkdf = hkdf;

@@ -17,7 +17,7 @@ public class IncomingNewSessionTicket extends AbstractAction {
 
     @Override
     public Action run() throws ActionFailed, AEADException, IOException {
-        byte[] content = processEncrypted(context.applicationDataDecryptor, ContentType.handshake);
+        byte[] content = processEncrypted(context.applicationDataDecryptor(), ContentType.handshake);
         Handshake handshake = context.factory().parser().parseHandshake(content);
         if (!handshake.containsNewSessionTicket()) {
             throw new ActionFailed("handshake message should contain NewSessionTicket");

@@ -82,14 +82,14 @@ public class ComputingApplicationTrafficKeys
                 zero_hash_value,
                 context.suite().ivLength()));
 
-        context.applicationDataEncryptor = AEAD.createEncryptor(
+        context.applicationDataEncryptor(AEAD.createEncryptor(
                 context.suite().cipher(),
                 encryptorKey(),
-                encryptorIv());
-        context.applicationDataDecryptor = AEAD.createDecryptor(
+                encryptorIv()));
+        context.applicationDataDecryptor(AEAD.createDecryptor(
                 context.suite().cipher(),
                 decryptorKey(),
-                decryptorIv());
+                decryptorIv()));
 
         return this;
     }

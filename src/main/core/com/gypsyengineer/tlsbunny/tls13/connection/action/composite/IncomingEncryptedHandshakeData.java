@@ -26,7 +26,7 @@ public class IncomingEncryptedHandshakeData extends AbstractAction {
         }
 
         TLSInnerPlaintext tlsInnerPlaintext = context.factory().parser().parseTLSInnerPlaintext(
-                context.handshakeDecryptor.decrypt(tlsPlaintext));
+                context.handshakeDecryptor().decrypt(tlsPlaintext));
 
         out = ByteBuffer.wrap(tlsInnerPlaintext.getContent());
 

@@ -44,10 +44,10 @@ public class WrappingIntoTLSCiphertext extends AbstractAction {
         AEAD encryptor;
         switch (phase) {
             case handshake:
-                encryptor = context.handshakeEncryptor;
+                encryptor = context.handshakeEncryptor();
                 break;
             case application_data:
-                encryptor = context.applicationDataEncryptor;
+                encryptor = context.applicationDataEncryptor();
                 break;
             default:
                 throw whatTheHell("unknown phase: %s", phase);

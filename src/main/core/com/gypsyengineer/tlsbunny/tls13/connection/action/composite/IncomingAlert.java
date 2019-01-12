@@ -24,7 +24,7 @@ public class IncomingAlert extends AbstractAction {
             alert = context.factory().parser().parseAlert(tlsPlaintext.getFragment());
         } else if (tlsPlaintext.containsApplicationData()) {
             TLSInnerPlaintext tlsInnerPlaintext = context.factory().parser().parseTLSInnerPlaintext(
-                    context.applicationDataDecryptor.decrypt(tlsPlaintext));
+                    context.applicationDataDecryptor().decrypt(tlsPlaintext));
 
             if (!tlsInnerPlaintext.containsAlert()) {
                 throw new ActionFailed("expected an alert");
