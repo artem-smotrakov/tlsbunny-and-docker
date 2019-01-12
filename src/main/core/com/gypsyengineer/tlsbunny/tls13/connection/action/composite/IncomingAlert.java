@@ -1,14 +1,13 @@
 package com.gypsyengineer.tlsbunny.tls13.connection.action.composite;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.action.AbstractAction;
-import com.gypsyengineer.tlsbunny.tls13.connection.action.Action;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.ActionFailed;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AEADException;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
 
 import java.io.IOException;
 
-public class IncomingAlert extends AbstractAction {
+public class IncomingAlert extends AbstractAction<IncomingAlert> {
 
     @Override
     public String name() {
@@ -16,7 +15,7 @@ public class IncomingAlert extends AbstractAction {
     }
 
     @Override
-    public Action run() throws ActionFailed, AEADException, IOException {
+    public IncomingAlert run() throws ActionFailed, AEADException, IOException {
         TLSPlaintext tlsPlaintext = context.factory().parser().parseTLSPlaintext(in);
 
         Alert alert;
@@ -43,6 +42,5 @@ public class IncomingAlert extends AbstractAction {
 
         return this;
     }
-
     
 }
