@@ -49,6 +49,14 @@ public class DeepHandshakeFuzzer extends StructFactoryWrapper
         this.output = output;
     }
 
+    @Override
+    public String toString() {
+        return String.format("%s (fuzzer = %s, mode = %s)",
+                getClass().getSimpleName(),
+                fuzzer.getClass().getSimpleName(),
+                mode);
+    }
+
     public Fuzzer<byte[]> fuzzer() {
         return fuzzer;
     }

@@ -19,6 +19,12 @@ public class SimpleVectorFuzzer<T> implements Fuzzer<Vector<T>> {
     private int state = 0;
     private Output output;
 
+    @Override
+    public String toString() {
+        return String.format("%s (generators = %d, state = %d)",
+                getClass().getSimpleName(), generators.length, state);
+    }
+
     public SimpleVectorFuzzer() {
         generators = new Generator[] {
                 (vector, output) -> new FuzzedVector(
