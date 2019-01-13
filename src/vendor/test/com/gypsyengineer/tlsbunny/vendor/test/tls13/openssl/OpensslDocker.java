@@ -23,7 +23,7 @@ public class OpensslDocker {
 
     protected static final String image = System.getProperty(
             "tlsbunny.openssl.docker.image",
-            "artemsmotrakov/tlsbunny_openssl_tls13_server:2018_11_17");
+            "artemsmotrakov/tlsbunny_openssl_tls13");
 
     protected static final String container_report_directory = "/var/reports";
 

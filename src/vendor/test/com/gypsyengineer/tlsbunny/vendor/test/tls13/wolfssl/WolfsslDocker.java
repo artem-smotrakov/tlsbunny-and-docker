@@ -18,7 +18,7 @@ public class WolfsslDocker {
 
     protected static final String image = System.getProperty(
             "tlsbunny.wolfssl.docker.image",
-            "artemsmotrakov/tlsbunny_wolfssl_tls13:2018_11_19");
+            "artemsmotrakov/tlsbunny_wolfssl_tls13");
 
     protected final String containerName = String.format("%s_%d",
             this.getClass().getSimpleName().toLowerCase(), System.currentTimeMillis());

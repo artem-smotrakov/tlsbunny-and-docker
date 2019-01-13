@@ -76,7 +76,7 @@ task buildAllDocker() {
     dependsOn 'buildOpensslDocker'
     dependsOn 'buildH2ODocker'
     dependsOn 'buildNssDocker'
-    dependsOn 'buildWolfSSLDocker'
+    dependsOn 'buildWolfsslDocker'
 }
 
 // run all servers
@@ -144,7 +144,7 @@ task buildOpensslDocker(type: Exec) {
             'build',
             '--no-cache',
             '--file', 'src/vendor/docker/openssl/Dockerfile',
-            '--tag',  'openssl/tls13',
+            '--tag',  'artemsmotrakov/tlsbunny_openssl_tls13',
             '.'
 }
 
@@ -164,7 +164,7 @@ task runOpensslServer {
                     '--name', 'openssl_server_tls13',
                     '-d',
                     '-p', '10101:10101',
-                    'openssl/tls13'
+                    'artemsmotrakov/tlsbunny_openssl_tls13'
         }
 
         // a little delay to let the server start
@@ -316,12 +316,12 @@ task runNssServer {
 // tasks for running tests for WolfSSL
 
 // builds a Docker images with WolfSSL server
-task buildWolfSSLDocker(type: Exec) {
+task buildWolfsslDocker(type: Exec) {
     commandLine 'docker',
             'build',
-            '--no-cache',
-            '--file', 'src/main/docker/wolfssl/Dockerfile',
-            '--tag',  'wolfssl/server/tls13',
+            //'--no-cache',
+            '--file', 'src/vendor/docker/wolfssl/Dockerfile',
+            '--tag',  'artemsmotrakov/tlsbunny_wolfssl_tls13',
             '.'
 }
 
@@ -343,7 +343,7 @@ task runWolfsslServer {
                     '--name', 'wolfssl_server_tls13',
                     '-d',
                     '-p', '40101:40101',
-                    'wolfssl/server/tls13'
+                    'artemsmotrakov/tlsbunny_wolfssl_tls13'
         }
 
         // a little delay to let the server start
@@ -351,4 +351,29 @@ task runWolfsslServer {
             commandLine 'sleep', '3'    // in seconds
         }
     }
+}
+
+task runWolfsslTests(type: Test) {
+    description = 'Runs tests for WolfSSL'
+    group = 'wolfssl'
+    testClassesDirs = sourceSets.vendor.output.classesDirs
+    classpath = sourceSets.vendor.runtimeClasspath
+    testLogging.showStandardStreams = true
+    ignoreFailures = true
+    outputs.upToDateWhen { false }
+
+    include 'com/gypsyengineer/tlsbunny/vendor/test/tls13/wolfssl/**/*Tests*'
+    exclude 'com/gypsyengineer/tlsbunny/vendor/test/tls13/wolfssl/**/*Fuzzing*'
+}
+
+task runWolfsslFuzzing(type: Test) {
+    description = 'Runs fuzzing for WolfSSL'
+    group = 'wolfssl'
+    testClassesDirs = sourceSets.vendor.output.classesDirs
+    classpath = sourceSets.vendor.runtimeClasspath
+    testLogging.showStandardStreams = true
+    ignoreFailures = true
+    outputs.upToDateWhen { false }
+
+    include 'com/gypsyengineer/tlsbunny/vendor/test/tls13/wolfssl/**/*Fuzzing*'
 }
