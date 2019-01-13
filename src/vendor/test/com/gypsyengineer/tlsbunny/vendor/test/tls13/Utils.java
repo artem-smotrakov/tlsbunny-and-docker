@@ -1,6 +1,5 @@
 package com.gypsyengineer.tlsbunny.vendor.test.tls13;
 
-import com.gypsyengineer.tlsbunny.vendor.test.tls13.openssl.OpensslServer;
 import com.gypsyengineer.tlsbunny.tls13.client.Client;
 import com.gypsyengineer.tlsbunny.tls13.server.Server;
 import com.gypsyengineer.tlsbunny.utils.Output;
@@ -15,8 +14,11 @@ import static com.gypsyengineer.tlsbunny.utils.Achtung.achtung;
 
 public class Utils {
 
-    public static final int delay = 500; // in millis
-    public static final int default_timeout = 3 * 60 * 1000; // 3 minutes, in millis
+    // in millis
+    public static final int delay = 500;
+    public static final int start_delay = 5 * 1000;
+    public static final int stop_delay  = 5 * 1000;
+    public static final int default_timeout = 3 * 60 * 1000; // 3 minutes
 
     public static void sleep(long millis) {
         try {
@@ -63,7 +65,7 @@ public class Utils {
 
         long start = System.currentTimeMillis();
         do {
-            Thread.sleep(delay);
+            Thread.sleep(start_delay);
             if (timeout > 0 && System.currentTimeMillis() - start > timeout) {
                 throw new IOException(
                         "timeout reached while waiting for the client to start");
@@ -101,7 +103,7 @@ public class Utils {
 
         long start = System.currentTimeMillis();
         do {
-            Thread.sleep(delay);
+            Thread.sleep(stop_delay);
             if (timeout > 0 && System.currentTimeMillis() - start > timeout) {
                 throw new IOException(
                         "timeout reached while waiting for the client to stop");
