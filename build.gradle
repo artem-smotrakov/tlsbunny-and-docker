@@ -325,34 +325,6 @@ task buildWolfsslDocker(type: Exec) {
             '.'
 }
 
-// kill an WolfSSL server (if running), remove an old Docker container,
-// and start a new one on specified port
-task runWolfsslServer {
-    doLast {
-        exec {
-            ignoreExitValue = true
-            commandLine 'docker', 'container', 'kill', 'wolfssl_server_tls13'
-        }
-        exec {
-            ignoreExitValue = true
-            commandLine 'docker', 'rm', 'wolfssl_server_tls13'
-        }
-        exec {
-            commandLine 'docker',
-                    'run',
-                    '--name', 'wolfssl_server_tls13',
-                    '-d',
-                    '-p', '40101:40101',
-                    'artemsmotrakov/tlsbunny_wolfssl_tls13'
-        }
-
-        // a little delay to let the server start
-        exec {
-            commandLine 'sleep', '3'    // in seconds
-        }
-    }
-}
-
 task runWolfsslTests(type: Test) {
     description = 'Runs tests for WolfSSL'
     group = 'wolfssl'
@@ -374,6 +346,7 @@ task runWolfsslFuzzing(type: Test) {
     testLogging.showStandardStreams = true
     ignoreFailures = true
     outputs.upToDateWhen { false }
+    systemProperty 'tlsbunny.fuzzer.full.configs', 'true'
 
     include 'com/gypsyengineer/tlsbunny/vendor/test/tls13/wolfssl/**/*Fuzzing*'
 }
