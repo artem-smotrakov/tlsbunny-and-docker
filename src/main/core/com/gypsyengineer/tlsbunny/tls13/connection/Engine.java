@@ -212,11 +212,19 @@ public class Engine {
                         output.info("send: %s", action.name());
                         init(action).run();
                         connection.send(action.out());
+                        if (connection.failed()) {
+                            output.achtung("could not send data, stop", connection.exception());
+                            break loop;
+                        }
                         break;
                     case receive:
                         action = actionFactory.create();
                         output.info("receive: %s", action.name());
                         read(connection, action);
+                        if (connection.failed()) {
+                            output.achtung("could not read data, stop", connection.exception());
+                            break loop;
+                        }
                         init(action).run();
                         combineData(action);
                         break;
@@ -225,6 +233,10 @@ public class Engine {
                         while (holder.condition.met(context)) {
                             output.info("receive (conditional): %s", action.name());
                             read(connection, action);
+                            if (connection.failed()) {
+                                output.achtung("could not read data, stop", connection.exception());
+                                break loop;
+                            }
                             init(action).run();
                             combineData(action);
                         }
