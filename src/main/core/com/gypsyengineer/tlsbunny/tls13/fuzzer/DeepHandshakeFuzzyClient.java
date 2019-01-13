@@ -1,6 +1,5 @@
 package com.gypsyengineer.tlsbunny.tls13.fuzzer;
 
-import com.gypsyengineer.tlsbunny.fuzzer.Ratio;
 import com.gypsyengineer.tlsbunny.tls13.client.Client;
 import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
@@ -16,14 +15,9 @@ import com.gypsyengineer.tlsbunny.utils.Utils;
 
 import java.io.IOException;
 import java.net.ConnectException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.gypsyengineer.tlsbunny.fuzzer.BitFlipFuzzer.newBitFlipFuzzer;
-import static com.gypsyengineer.tlsbunny.fuzzer.ByteFlipFuzzer.newByteFlipFuzzer;
-import static com.gypsyengineer.tlsbunny.tls13.fuzzer.DeepHandshakeFuzzer.deepHandshakeFuzzer;
 import static com.gypsyengineer.tlsbunny.utils.Achtung.achtung;
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
@@ -34,6 +28,8 @@ public class DeepHandshakeFuzzyClient implements Client {
 
     private Client client;
     private Output output;
+    private Check[] checks;
+    private Analyzer analyzer;
     private FuzzerConfig fuzzerConfig;
 
     private boolean strict = true;
@@ -100,12 +96,13 @@ public class DeepHandshakeFuzzyClient implements Client {
 
     @Override
     public DeepHandshakeFuzzyClient set(Check... checks) {
-        throw new UnsupportedOperationException("no check for you!");
+        this.checks = checks;
+        return this;
     }
 
     @Override
     public DeepHandshakeFuzzyClient set(Analyzer analyzer) {
-        fuzzerConfig.analyzer(analyzer);
+        this.analyzer = analyzer;
         return this;
     }
 
@@ -196,7 +193,8 @@ public class DeepHandshakeFuzzyClient implements Client {
                         client.set(deepHandshakeFuzzer)
                                 .set(fuzzerConfig)
                                 .set(output)
-                                .set(fuzzerConfig.checks())
+                                .set(checks)
+                                .set(analyzer)
                                 .connect();
 
                         break;
@@ -219,10 +217,6 @@ public class DeepHandshakeFuzzyClient implements Client {
 
                 output.flush();
                 deepHandshakeFuzzer.moveOn();
-            }
-
-            for (Engine engine : client.engines()) {
-                engine.apply(fuzzerConfig.analyzer());
             }
         } catch (Exception e) {
             output.achtung("what the hell? unexpected exception", e);

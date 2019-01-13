@@ -179,10 +179,6 @@ public class MutatedServer implements Server {
             fuzzer.moveOn();
         }
 
-        for (Engine engine : engines) {
-            engine.apply(fuzzerConfig.analyzer());
-        }
-
         running = false;
         output.info("stopped");
     }

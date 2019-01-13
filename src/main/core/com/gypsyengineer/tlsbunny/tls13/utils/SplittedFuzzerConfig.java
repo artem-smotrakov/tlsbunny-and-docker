@@ -1,6 +1,5 @@
 package com.gypsyengineer.tlsbunny.tls13.utils;
 
-import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.Config;
 
@@ -92,21 +91,6 @@ public class SplittedFuzzerConfig extends FuzzerConfig {
     @Override
     public FuzzerConfig parts(int parts) {
         throw new UnsupportedOperationException("what the hell? I can't set parts!");
-    }
-
-    @Override
-    public FuzzerConfig analyzer(Analyzer analyzer) {
-        return config.analyzer(analyzer);
-    }
-
-    @Override
-    public boolean hasAnalyzer() {
-        return config.hasAnalyzer();
-    }
-
-    @Override
-    public Analyzer analyzer() {
-        return config.analyzer();
     }
 
     @Override

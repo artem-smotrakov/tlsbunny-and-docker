@@ -27,6 +27,8 @@ public class MutatedClient implements Client {
 
     private Client client;
     private Output output;
+    private Analyzer analyzer;
+    private Check[] checks;
     private FuzzerConfig fuzzerConfig;
 
     private boolean strict = true;
@@ -85,12 +87,13 @@ public class MutatedClient implements Client {
 
     @Override
     public MutatedClient set(Check... checks) {
-        throw new UnsupportedOperationException("no check for you!");
+        this.checks = checks;
+        return this;
     }
 
     @Override
     public MutatedClient set(Analyzer analyzer) {
-        fuzzerConfig.analyzer(analyzer);
+        this.analyzer = analyzer;
         return this;
     }
 
@@ -131,6 +134,7 @@ public class MutatedClient implements Client {
             client.set(StructFactory.getDefault())
                     .set(fuzzerConfig)
                     .set(output)
+                    .set(analyzer)
                     .set(new SuccessCheck())
                     .set(new NoAlertCheck())
                     .connect();
@@ -158,7 +162,8 @@ public class MutatedClient implements Client {
         client.set(fuzzyStructFactory)
                 .set(fuzzerConfig)
                 .set(output)
-                .set(fuzzerConfig.checks());
+                .set(analyzer)
+                .set(checks);
 
         try {
             fuzzyStructFactory.currentTest(fuzzerConfig.startTest());
@@ -190,10 +195,6 @@ public class MutatedClient implements Client {
                 }
 
                 fuzzyStructFactory.moveOn();
-            }
-
-            for (Engine engine : client.engines()) {
-                engine.apply(fuzzerConfig.analyzer());
             }
         } catch (Exception e) {
             output.achtung("what the hell? unexpected exception", e);

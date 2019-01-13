@@ -59,14 +59,6 @@ public class Runner {
 
             int index = 0;
             for (FuzzerConfig fuzzerConfig : fuzzerConfigs) {
-                if (analyzer != null) {
-                    fuzzerConfig.analyzer(analyzer);
-                }
-
-                if (checks != null) {
-                    fuzzerConfig.set(checks);
-                }
-
                 for (FuzzerConfig subConfig : split(fuzzerConfig)) {
                     output.prefix(String.format("part-%d", index++));
                     executor.submit(fuzzerFactory.create(subConfig, output));

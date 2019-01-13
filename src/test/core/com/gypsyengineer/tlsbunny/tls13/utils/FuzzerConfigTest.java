@@ -65,10 +65,6 @@ public class FuzzerConfigTest {
 
         assertTrue(firstConfig.targetFilter().isEmpty());
 
-        assertArrayEquals(
-                firstConfig.set(new AlertCheck()).checks(),
-                new Check[] { new AlertCheck()} );
-
         assertEquals(firstConfig.serverKey("test").serverKey(), "test");
         assertEquals(firstConfig.serverCertificate("test").serverCertificate(), "test");
         assertEquals(firstConfig.clientKey("test").clientKey(), "test");

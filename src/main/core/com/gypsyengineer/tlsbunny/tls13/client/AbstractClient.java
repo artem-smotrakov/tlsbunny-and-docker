@@ -50,6 +50,9 @@ public abstract class AbstractClient implements Client, AutoCloseable {
         } finally {
             synchronized (this) {
                 running = false;
+                if (analyzer != null) {
+                    analyzer.add(engines.toArray(new Engine[0]));
+                }
             }
         }
     }
