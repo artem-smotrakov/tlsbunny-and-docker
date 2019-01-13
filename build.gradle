@@ -319,7 +319,7 @@ task runNssServer {
 task buildWolfsslDocker(type: Exec) {
     commandLine 'docker',
             'build',
-            //'--no-cache',
+            '--no-cache',
             '--file', 'src/vendor/docker/wolfssl/Dockerfile',
             '--tag',  'artemsmotrakov/tlsbunny_wolfssl_tls13',
             '.'
