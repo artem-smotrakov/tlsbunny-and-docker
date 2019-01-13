@@ -124,12 +124,11 @@ public class MutatedServerTest {
 
             for (int i = 0; i < n; i++) {
                 client.connect();
+                assertEquals(1, client.engines().length);
+                for (Engine engine : client.engines()) {
+                    assertFalse(engine.context().hasAlert());
+                }
             }
-        }
-
-        assertEquals(n, client.engines().length);
-        for (Engine engine : client.engines()) {
-            assertFalse(engine.context().hasAlert());
         }
 
         assertEquals(n, server.engines().length);
