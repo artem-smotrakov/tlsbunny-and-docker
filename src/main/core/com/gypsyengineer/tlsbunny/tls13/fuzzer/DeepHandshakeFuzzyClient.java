@@ -152,6 +152,10 @@ public class DeepHandshakeFuzzyClient implements Client {
                 throw whatTheHell("no engines!");
             }
 
+            if (analyzer != null) {
+                analyzer.add(engines);
+            }
+
             for (Engine engine : engines) {
                 engine.run(new SuccessCheck());
             }
