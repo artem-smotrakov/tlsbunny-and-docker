@@ -258,9 +258,16 @@ public class Engine {
                                 String.format("unknown action type: %s", holder.type));
                 }
 
-                if (fatalAlertOccurred()) {
-                    output.info("stop, fatal alert occurred: %s", context.getAlert());
-                    break;
+                if (context.hasAlert()) {
+                    if (context.getAlert().isFatal()) {
+                        output.info("stop, fatal alert occurred: %s", context.getAlert());
+                        break;
+                    }
+
+                    if (stopIfAlert) {
+                        output.info("stop, alert occurred: %s", context.getAlert());
+                        break;
+                    }
                 }
 
                 output.flush();
@@ -405,18 +412,6 @@ public class Engine {
         action.applicationData(applicationData);
 
         return action;
-    }
-
-    private boolean fatalAlertOccurred() {
-        if (!stopIfAlert) {
-            return false;
-        }
-
-        if (!context.hasAlert()) {
-            return false;
-        }
-
-        return context.getAlert().isFatal();
     }
 
     private void initConnection() throws EngineException {
