@@ -79,16 +79,6 @@ task buildAllDocker() {
     dependsOn 'buildWolfsslDocker'
 }
 
-// run all servers
-task runAllServers() {
-    dependsOn 'runNssServer'
-    dependsOn 'runH2OServer'
-    dependsOn 'runOpensslServer'
-    dependsOn 'runGnutlsServer'
-    dependsOn 'runPicotlsServer'
-    dependsOn 'runWolfsslServer'
-}
-
 // check for crashes
 task checkCrashes(type: Exec) {
     commandLine 'bash', 'scripts/check_logs_for_crashes.sh',
@@ -111,32 +101,6 @@ task buildGnutlsDocker(type: Exec) {
             '.'
 }
 
-task runGnutlsServer {
-    doLast {
-        exec {
-            ignoreExitValue = true
-            commandLine 'docker', 'container', 'kill', 'gnutls_server_tls13'
-        }
-        exec {
-            ignoreExitValue = true
-            commandLine 'docker', 'rm', 'gnutls_server_tls13'
-        }
-        exec {
-            commandLine 'docker',
-                    'run',
-                    '--name', 'gnutls_server_tls13',
-                    '-d',
-                    '-p', '50101:50101',
-                    'gnutls/server/tls13'
-        }
-
-        // a little delay to let the server start
-        exec {
-            commandLine 'sleep', '3'
-        }
-    }
-}
-
 // tasks for running tests for OpenSSL
 
 task buildOpensslDocker(type: Exec) {
@@ -146,32 +110,6 @@ task buildOpensslDocker(type: Exec) {
             '--file', 'src/vendor/docker/openssl/Dockerfile',
             '--tag',  'artemsmotrakov/tlsbunny_openssl_tls13',
             '.'
-}
-
-task runOpensslServer {
-    doLast {
-        exec {
-            ignoreExitValue = true
-            commandLine 'docker', 'container', 'kill', 'openssl_server_tls13'
-        }
-        exec {
-            ignoreExitValue = true
-            commandLine 'docker', 'rm', 'openssl_server_tls13'
-        }
-        exec {
-            commandLine 'docker',
-                    'run',
-                    '--name', 'openssl_server_tls13',
-                    '-d',
-                    '-p', '10101:10101',
-                    'artemsmotrakov/tlsbunny_openssl_tls13'
-        }
-
-        // a little delay to let the server start
-        exec {
-            commandLine 'sleep', '3'
-        }
-    }
 }
 
 task runOpensslTests(type: Test) {
@@ -210,32 +148,6 @@ task buildPicotlsDocker(type: Exec) {
             '.'
 }
 
-task runPicotlsServer {
-    doLast {
-        exec {
-            ignoreExitValue = true
-            commandLine 'docker', 'container', 'kill', 'picotls_server_tls13'
-        }
-        exec {
-            ignoreExitValue = true
-            commandLine 'docker', 'rm', 'picotls_server_tls13'
-        }
-        exec {
-            commandLine 'docker',
-                    'run',
-                    '--name', 'picotls_server_tls13',
-                    '-d',
-                    '-p', '20101:20101',
-                    'picotls/server/tls13'
-        }
-
-        // a little delay to let the server start
-        exec {
-            commandLine 'sleep', '3'
-        }
-    }
-}
-
 // tasks for running tests for h2o + picotls
 
 task buildH2ODocker(type: Exec) {
@@ -245,32 +157,6 @@ task buildH2ODocker(type: Exec) {
             '--file', 'src/main/docker/h2o/Dockerfile',
             '--tag',  'h2o/server/tls13',
             '.'
-}
-
-task runH2OServer {
-    doLast {
-        exec {
-            ignoreExitValue = true
-            commandLine 'docker', 'container', 'kill', 'h2o_server_tls13'
-        }
-        exec {
-            ignoreExitValue = true
-            commandLine 'docker', 'rm', 'h2o_server_tls13'
-        }
-        exec {
-            commandLine 'docker',
-                    'run',
-                    '--name', 'h2o_server_tls13',
-                    '-d',
-                    '-p', '30101:30101',
-                    'h2o/server/tls13'
-        }
-
-        // a little delay to let the server start
-        exec {
-            commandLine 'sleep', '3'
-        }
-    }
 }
 
 // tasks for running tests for NSS
@@ -283,34 +169,6 @@ task buildNssDocker(type: Exec) {
             '--file', 'src/main/docker/nss/Dockerfile',
             '--tag',  'nss/server/tls13',
             '.'
-}
-
-// kill an NSS server (if running), remove an old Docker container,
-// and start a new one on specified port
-task runNssServer {
-    doLast {
-        exec {
-            ignoreExitValue = true
-            commandLine 'docker', 'container', 'kill', 'nss_server_tls13'
-        }
-        exec {
-            ignoreExitValue = true
-            commandLine 'docker', 'rm', 'nss_server_tls13'
-        }
-        exec {
-            commandLine 'docker',
-                    'run',
-                    '--name', 'nss_server_tls13',
-                    '-d',
-                    '-p', '60101:60101',
-                    'nss/server/tls13'
-        }
-
-        // a little delay to let the server start
-        exec {
-            commandLine 'sleep', '3'    // in seconds
-        }
-    }
 }
 
 // tasks for running tests for WolfSSL
