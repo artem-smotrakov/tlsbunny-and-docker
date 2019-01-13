@@ -223,6 +223,8 @@ public class DeepHandshakeFuzzyClient implements Client {
                         output.info("connection failed: %s ", cause.getMessage());
                         output.info("let's wait a bit and try again (attempt %d)", attempt);
                         Utils.sleep(delay);
+                    } finally {
+                        output.flush();
                     }
                 }
 
