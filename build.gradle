@@ -204,6 +204,8 @@ task runWolfsslTests(type: Test) {
     ignoreFailures = true
     outputs.upToDateWhen { false }
 
+    systemProperty 'tlsbunny.output.enable.highlighting', 'false'
+
     include 'com/gypsyengineer/tlsbunny/vendor/test/tls13/wolfssl/**/*Tests*'
     exclude 'com/gypsyengineer/tlsbunny/vendor/test/tls13/wolfssl/**/*Fuzzing*'
 }
@@ -220,7 +222,9 @@ task runWolfsslFuzzing(type: Test) {
     testLogging.showStandardStreams = true
     ignoreFailures = true
     outputs.upToDateWhen { false }
+
     systemProperty 'tlsbunny.fuzzer.full.configs', 'true'
+    systemProperty 'tlsbunny.output.enable.highlighting', 'false'
 
     include 'com/gypsyengineer/tlsbunny/vendor/test/tls13/wolfssl/**/*Fuzzing*'
 }

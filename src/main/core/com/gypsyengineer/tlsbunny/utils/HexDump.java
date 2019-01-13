@@ -2,9 +2,23 @@ package com.gypsyengineer.tlsbunny.utils;
 
 public class HexDump {
 
-    public static final String ANSI_RED = "\u001B[31m";
-    public static final String ANSI_RESET = "\u001B[0m";
-    public static final int WIDTH = 16;
+    public static final int width = 16;
+
+    public static final String ansi_red ;
+    public static final String ansi_reset;
+    static {
+        boolean enableDiffHighlighting = Boolean.valueOf(
+                System.getProperty("tlsbunny.output.enable.highlighting", "true"));
+        if (enableDiffHighlighting) {
+            System.out.println("HexDump: enable highlighting");
+            ansi_red = "\u001B[31m";
+            ansi_reset = "\u001B[0m";
+        } else {
+            System.out.println("HexDump: disable highlighting");
+            ansi_red = "";
+            ansi_reset = "";
+        }
+    }
 
     public static String printHex(byte[] array) {
         return printHex(array, 0, array.length);
@@ -13,10 +27,10 @@ public class HexDump {
     public static String printHex(byte[] array, int offset, int length) {
         StringBuilder builder = new StringBuilder();
 
-        for (int rowOffset = offset; rowOffset < offset + length; rowOffset += WIDTH) {
+        for (int rowOffset = offset; rowOffset < offset + length; rowOffset += width) {
             builder.append(String.format("%04x:  ", rowOffset));
 
-            for (int index = 0; index < WIDTH; index++) {
+            for (int index = 0; index < width; index++) {
                 int k = rowOffset + index;
                 if (k < array.length) {
                     builder.append(String.format("%02x ", array[k]));
@@ -38,14 +52,14 @@ public class HexDump {
     public static String printHexDiff(byte[] array, byte[] original, int offset, int length) {
         StringBuilder builder = new StringBuilder();
 
-        for (int rowOffset = offset; rowOffset < offset + length; rowOffset += WIDTH) {
+        for (int rowOffset = offset; rowOffset < offset + length; rowOffset += width) {
             builder.append(String.format("%04x:  ", rowOffset));
 
-            for (int index = 0; index < WIDTH; index++) {
+            for (int index = 0; index < width; index++) {
                 int k = rowOffset + index;
                 if (k < array.length) {
                     if (k >= original.length || array[k] != original[k]) {
-                        builder.append(String.format("%s%02x%s ", ANSI_RED, array[k], ANSI_RESET));
+                        builder.append(String.format("%s%02x%s ", ansi_red, array[k], ansi_reset));
                     } else {
                         builder.append(String.format("%02x ", array[k]));
                     }

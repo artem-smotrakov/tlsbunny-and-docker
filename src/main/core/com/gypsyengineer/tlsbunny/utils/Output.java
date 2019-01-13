@@ -11,8 +11,22 @@ public class Output implements AutoCloseable {
     private static boolean onlyAchtung = Boolean.valueOf(
             System.getProperty("tlsbunny.output.only.achtung", "false"));
 
-    public static final String ansi_red = "\u001B[31m";
-    public static final String ansi_reset = "\u001B[0m";
+    public static final String ansi_red ;
+    public static final String ansi_reset;
+    static {
+        boolean enableHighlighting = Boolean.valueOf(
+                System.getProperty("tlsbunny.output.enable.highlighting", "true"));
+        if (enableHighlighting) {
+            System.out.println("Output: enable highlighting");
+            ansi_red = "\u001B[31m";
+            ansi_reset = "\u001B[0m";
+        } else {
+            System.out.println("Output: disable highlighting");
+            ansi_red = "";
+            ansi_reset = "";
+        }
+    }
+
     public static final String tlsbunny = "[tlsbunny] ";
     public static final int indent_step = 4;
 
@@ -21,14 +35,6 @@ public class Output implements AutoCloseable {
     private int index = 0;
     private String indent = "";
     private final List<OutputListener> listeners = Collections.synchronizedList(new ArrayList<>());
-
-    public static Output newOutput() {
-        return new Output();
-    }
-
-    public static Output newOutput(String prefix) {
-        return new Output(prefix);
-    }
 
     public static void printOnlyAchtung(boolean onlyAchtung) {
         synchronized (Output.class) {
