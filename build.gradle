@@ -115,8 +115,12 @@ task buildOpensslDocker(type: Exec) {
 task runOpensslTests(type: Test) {
     description = 'Runs tests for OpenSSL'
     group = 'openssl'
-    testClassesDirs = sourceSets.vendor.output.classesDirs
-    classpath = sourceSets.vendor.runtimeClasspath
+
+    testClassesDirs += sourceSets.vendor.output.classesDirs
+    testClassesDirs += sourceSets.test.output.classesDirs
+    classpath += sourceSets.vendor.runtimeClasspath
+    classpath += sourceSets.test.runtimeClasspath
+
     testLogging.showStandardStreams = true
     ignoreFailures = true
     outputs.upToDateWhen { false }
@@ -128,8 +132,12 @@ task runOpensslTests(type: Test) {
 task runOpensslFuzzing(type: Test) {
     description = 'Runs fuzzing for OpenSSL'
     group = 'openssl'
-    testClassesDirs = sourceSets.vendor.output.classesDirs
-    classpath = sourceSets.vendor.runtimeClasspath
+
+    testClassesDirs += sourceSets.vendor.output.classesDirs
+    testClassesDirs += sourceSets.test.output.classesDirs
+    classpath += sourceSets.vendor.runtimeClasspath
+    classpath += sourceSets.test.runtimeClasspath
+
     testLogging.showStandardStreams = true
     ignoreFailures = true
     outputs.upToDateWhen { false }
@@ -186,8 +194,12 @@ task buildWolfsslDocker(type: Exec) {
 task runWolfsslTests(type: Test) {
     description = 'Runs tests for WolfSSL'
     group = 'wolfssl'
-    testClassesDirs = sourceSets.vendor.output.classesDirs
-    classpath = sourceSets.vendor.runtimeClasspath
+
+    testClassesDirs += sourceSets.vendor.output.classesDirs
+    testClassesDirs += sourceSets.test.output.classesDirs
+    classpath += sourceSets.vendor.runtimeClasspath
+    classpath += sourceSets.test.runtimeClasspath
+
     testLogging.showStandardStreams = true
     ignoreFailures = true
     outputs.upToDateWhen { false }
@@ -199,8 +211,12 @@ task runWolfsslTests(type: Test) {
 task runWolfsslFuzzing(type: Test) {
     description = 'Runs fuzzing for WolfSSL'
     group = 'wolfssl'
-    testClassesDirs = sourceSets.vendor.output.classesDirs
-    classpath = sourceSets.vendor.runtimeClasspath
+
+    testClassesDirs += sourceSets.vendor.output.classesDirs
+    testClassesDirs += sourceSets.test.output.classesDirs
+    classpath += sourceSets.vendor.runtimeClasspath
+    classpath += sourceSets.test.runtimeClasspath
+
     testLogging.showStandardStreams = true
     ignoreFailures = true
     outputs.upToDateWhen { false }
