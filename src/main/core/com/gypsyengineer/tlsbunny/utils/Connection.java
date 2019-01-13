@@ -20,6 +20,7 @@ public class Connection implements AutoCloseable {
     private final InputStream is;
     private final OutputStream os;
     private final long readTimeout;
+    private Throwable exception;
 
     private Connection(Socket socket, long readTimeout) throws IOException {
         this.socket = socket;
@@ -28,17 +29,29 @@ public class Connection implements AutoCloseable {
         this.readTimeout = readTimeout;
     }
 
+    public Throwable exception() {
+        return exception;
+    }
+
+    public boolean failed() {
+        return exception != null;
+    }
+
     public boolean isClosed() {
         return socket.isClosed();
     }
 
-    public void send(ByteBuffer buffer) throws IOException {
+    public void send(ByteBuffer buffer) {
         send(buffer.array());
     }
 
-    public void send(byte[] data) throws IOException {
-        os.write(data);
-        os.flush();
+    public void send(byte[] data) {
+        try {
+            os.write(data);
+            os.flush();
+        } catch (IOException e) {
+            exception = e;
+        }
     }
 
     public void send(Struct... objects) throws IOException {
@@ -47,20 +60,25 @@ public class Connection implements AutoCloseable {
         }
     }
 
-    public byte[] read() throws IOException {
-        long start = System.currentTimeMillis();
-        while (is.available() == 0) {
-            Utils.sleep(read_delay);
+    public byte[] read() {
+        try {
+            long start = System.currentTimeMillis();
+            while (is.available() == 0) {
+                Utils.sleep(read_delay);
 
-            if (System.currentTimeMillis() - start > readTimeout) {
-                return new byte[0];
+                if (System.currentTimeMillis() - start > readTimeout) {
+                    return new byte[0];
+                }
             }
+
+            byte[] bytes = new byte[is.available()];
+            is.read(bytes);
+
+            return bytes;
+        } catch (IOException e) {
+            exception = e;
+            return new byte[0];
         }
-
-        byte[] bytes = new byte[is.available()];
-        is.read(bytes);
-
-        return bytes;
     }
 
     @Override
