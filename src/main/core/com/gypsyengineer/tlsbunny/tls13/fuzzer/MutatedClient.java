@@ -178,8 +178,15 @@ public class MutatedClient implements Client {
                     } catch (EngineException e) {
                         Throwable cause = e.getCause();
                         if (cause instanceof ConnectException == false) {
-                            throw e;
+                            // an EngineException may occur due to multiple reasons
+                            // if the exception was not caused by ConnectException
+                            // we tolerate EngineException here to let the fuzzer to continue
+                            output.achtung("an exception occurred, but we continue fuzzing", e);
+                            break;
                         }
+
+                        // if the exception was caused by ConnectException
+                        // then we try again several times
 
                         if (attempt == max_attempts) {
                             throw new IOException("looks like the server closed connection");
@@ -194,6 +201,7 @@ public class MutatedClient implements Client {
                     }
                 }
 
+                output.flush();
                 fuzzyStructFactory.moveOn();
             }
         } catch (Exception e) {
