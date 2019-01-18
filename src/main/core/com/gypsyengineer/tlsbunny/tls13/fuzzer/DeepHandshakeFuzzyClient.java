@@ -189,7 +189,7 @@ public class DeepHandshakeFuzzyClient implements Client {
             deepHandshakeFuzzer.fuzzing();
             deepHandshakeFuzzer.currentTest(fuzzerConfig.startTest());
             while (shouldRun(deepHandshakeFuzzer)) {
-                output.info("test %d", deepHandshakeFuzzer.currentTest());
+                output.info("test #%d", deepHandshakeFuzzer.currentTest());
 
                 int attempt = 0;
                 while (true) {

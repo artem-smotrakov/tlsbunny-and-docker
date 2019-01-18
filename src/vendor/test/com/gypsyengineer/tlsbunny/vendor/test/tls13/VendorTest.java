@@ -17,6 +17,13 @@ public class VendorTest {
     private Client client;
     private Server server;
 
+    private String label = "";
+
+    public VendorTest label(String label) {
+        this.label = label;
+        return this;
+    }
+
     public VendorTest set(Client client) {
         this.client = client;
         return this;
@@ -45,8 +52,8 @@ public class VendorTest {
 
         Thread serverThread = null;
         Thread clientThread;
-        try (Output clientOutput = new Output("client");
-             Output serverOutput = new Output("server")) {
+        try (Output clientOutput = new Output("client", label);
+             Output serverOutput = new Output("server", label)) {
 
             // start the server if it's not running
             if (!server.running()) {

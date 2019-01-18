@@ -1,18 +1,33 @@
 package com.gypsyengineer.tlsbunny.utils;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
+import java.io.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
+import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
+
 public class Output implements AutoCloseable {
+
+    private static final boolean printToFile;
+    private static final String dirName;
+    static {
+        printToFile = Boolean.valueOf(System.getProperty("tlsbunny.output.to.file", "false"));
+        dirName = String.format("logs/%s",
+                new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(new Date()));
+        boolean success = new File(dirName).mkdirs();
+        if (!success) {
+            throw whatTheHell("could not create directories");
+        }
+    }
 
     private static boolean onlyAchtung = Boolean.valueOf(
             System.getProperty("tlsbunny.output.only.achtung", "false"));
 
-    public static final String ansi_red ;
-    public static final String ansi_reset;
+    private static final String ansi_red ;
+    private static final String ansi_reset;
     static {
         boolean enableHighlighting = Boolean.valueOf(
                 System.getProperty("tlsbunny.output.enable.highlighting", "true"));
@@ -27,14 +42,16 @@ public class Output implements AutoCloseable {
         }
     }
 
-    public static final String tlsbunny = "[tlsbunny] ";
-    public static final int indent_step = 4;
+    private static final String tlsbunny = "[tlsbunny] ";
+    private static final int indent_step = 4;
 
     private final List<String> strings = new ArrayList<>();
     private String prefix = tlsbunny;
     private int index = 0;
     private String indent = "";
     private final List<OutputListener> listeners = Collections.synchronizedList(new ArrayList<>());
+    private final String fileName;
+    private Writer fileWriter;
 
     public static void printOnlyAchtung(boolean onlyAchtung) {
         synchronized (Output.class) {
@@ -54,18 +71,30 @@ public class Output implements AutoCloseable {
         }
     }
 
-    public static boolean onlyAchtungs() {
-        synchronized (Output.class) {
-            return onlyAchtung;
-        }
-    }
-
     public Output() {
-
+        this("", "output");
     }
 
     public Output(String prefix) {
+        this(prefix, "output");
+    }
+
+    public Output(String prefix, String label) {
+        this.fileName = String.format("%s/%s_%s_%d.log",
+                dirName, prefix, label, System.currentTimeMillis());
         prefix(prefix);
+    }
+
+    private Writer createFileWriter() {
+        if (printToFile) {
+            try {
+                return new BufferedWriter(new FileWriter(fileName));
+            } catch (IOException e) {
+                throw whatTheHell("unexpected exception", e);
+            }
+        }
+
+        return null;
     }
 
     public Output add(OutputListener listener) {
@@ -106,7 +135,7 @@ public class Output implements AutoCloseable {
         for (OutputListener listener : listeners) {
             listener.receivedInfo(lines);
         }
-        if (onlyAchtungs()) {
+        if (onlyAchtung) {
             return;
         }
         for (String line : lines) {
@@ -139,10 +168,6 @@ public class Output implements AutoCloseable {
         strings.addAll(output.strings);
     }
 
-    synchronized public void reset() {
-        index = 0;
-    }
-
     synchronized public List<String> strings() {
         return Collections.unmodifiableList(strings);
     }
@@ -158,10 +183,33 @@ public class Output implements AutoCloseable {
     }
 
     synchronized public void flush() {
-        synchronized (System.out) {
-            while (index < strings.size()) {
-                System.out.print(strings.get(index));
-                index++;
+        // create a FileWriter only if we have something to print
+        // to avoid creating empty files
+        if (printToFile && strings.size() > 0 && fileWriter == null) {
+            fileWriter = createFileWriter();
+        }
+
+        while (index < strings.size()) {
+            String string = strings.get(index);
+            System.out.print(string);
+
+            // print to a file if required
+            if (fileWriter != null) {
+                try {
+                    fileWriter.append(string);
+                } catch (IOException e) {
+                    throw whatTheHell("could not write to file writer", e);
+                }
+            }
+
+            index++;
+        }
+
+        if (fileWriter != null) {
+            try {
+                fileWriter.flush();
+            } catch (IOException e) {
+                throw whatTheHell("could not flush to file writer", e);
             }
         }
     }
@@ -169,6 +217,14 @@ public class Output implements AutoCloseable {
     @Override
     synchronized public void close() {
         flush();
+
+        if (fileWriter != null) {
+            try {
+                fileWriter.close();
+            } catch (IOException e) {
+                throw whatTheHell("could not close file writer", e);
+            }
+        }
     }
 
 }

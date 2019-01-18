@@ -34,6 +34,7 @@ public abstract class FuzzingForServer {
     @Test
     public void ccs() throws Exception {
         new VendorTest()
+                .label("mutated_client_ccs")
                 .set(multiConfigClient()
                         .of(mutatedClient().of(httpsClient()))
                         .configs(ccsConfigs(mainConfig)))
@@ -44,6 +45,7 @@ public abstract class FuzzingForServer {
     @Test
     public void tlsPlaintext() throws Exception {
         new VendorTest()
+                .label("mutated_client_tls_plaintext")
                 .set(multiConfigClient()
                         .of(mutatedClient().of(httpsClient()))
                         .configs(tlsPlaintextConfigs(mainConfig)))
@@ -54,6 +56,7 @@ public abstract class FuzzingForServer {
     @Test
     public void handshake() throws Exception {
         new VendorTest()
+                .label("mutated_client_handshake")
                 .set(multiConfigClient()
                         .of(mutatedClient().of(httpsClient()))
                         .configs(handshakeConfigs(mainConfig)))
@@ -64,6 +67,7 @@ public abstract class FuzzingForServer {
     @Test
     public void clientHello() throws Exception {
         new VendorTest()
+                .label("mutated_client_client_hello")
                 .set(multiConfigClient()
                         .of(mutatedClient().of(httpsClient()))
                         .configs(clientHelloConfigs(mainConfig)))
@@ -74,6 +78,7 @@ public abstract class FuzzingForServer {
     @Test
     public void finished() throws Exception {
         new VendorTest()
+                .label("mutated_client_finished")
                 .set(multiConfigClient()
                         .of(mutatedClient().of(httpsClient()))
                         .configs(finishedConfigs(mainConfig)))
@@ -84,6 +89,7 @@ public abstract class FuzzingForServer {
     @Test
     public void cipherSuites() throws Exception {
         new VendorTest()
+                .label("mutated_client_cipher_suites")
                 .set(multiConfigClient()
                         .of(mutatedClient().of(httpsClient()))
                         .configs(cipherSuitesConfigs(mainConfig)))
@@ -94,6 +100,7 @@ public abstract class FuzzingForServer {
     @Test
     public void extensionVector() throws Exception {
         new VendorTest()
+                .label("mutated_client_extension_vector")
                 .set(multiConfigClient()
                         .of(mutatedClient().of(httpsClient()))
                         .configs(extensionVectorConfigs(mainConfig)))
@@ -104,6 +111,7 @@ public abstract class FuzzingForServer {
     @Test
     public void legacyCompressionMethods() throws Exception {
         new VendorTest()
+                .label("mutated_client_legacy_compression_methods")
                 .set(multiConfigClient()
                         .of(mutatedClient().of(httpsClient()))
                         .configs(legacyCompressionMethodsConfigs(mainConfig)))
@@ -114,6 +122,7 @@ public abstract class FuzzingForServer {
     @Test
     public void legacySessionId() throws Exception {
         new VendorTest()
+                .label("mutated_client_legacy_session_id")
                 .set(multiConfigClient()
                         .of(mutatedClient().of(httpsClient()))
                         .configs(legacySessionIdConfigs(mainConfig)))
@@ -124,6 +133,7 @@ public abstract class FuzzingForServer {
     @Test
     public void deepHandshakeFuzzer() throws Exception {
         new VendorTest()
+                .label("mutated_client_deep_handshake_fuzzer")
                 .set(multiConfigClient()
                         .of(deepHandshakeFuzzyClient().of(httpsClient()))
                         .configs(DeepHandshakeFuzzerConfigs.noClientAuth(mainConfig)))

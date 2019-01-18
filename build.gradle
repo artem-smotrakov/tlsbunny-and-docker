@@ -40,7 +40,7 @@ sourceSets {
 
     test {
         java {
-            srcDirs 'src/test/core'
+            srcDirs 'src/test/core', 'src/vendor/test'
         }
 
         compileClasspath += sourceSets.main.output
@@ -223,7 +223,8 @@ task runWolfsslFuzzing(type: Test) {
     ignoreFailures = true
     outputs.upToDateWhen { false }
 
-    systemProperty 'tlsbunny.fuzzer.full.configs', 'true'
+    systemProperty 'tlsbunny.fuzzer.full.configs', 'false'
+    systemProperty 'tlsbunny.output.to.file', 'true'
     systemProperty 'tlsbunny.output.enable.highlighting', 'false'
 
     include 'com/gypsyengineer/tlsbunny/vendor/test/tls13/wolfssl/**/*Fuzzing*'

@@ -168,7 +168,7 @@ public class MutatedClient implements Client {
         try {
             fuzzyStructFactory.currentTest(fuzzerConfig.startTest());
             while (shouldRun(fuzzyStructFactory)) {
-                output.info("test %d", fuzzyStructFactory.currentTest());
+                output.info("test #%d", fuzzyStructFactory.currentTest());
 
                 int attempt = 0;
                 while (attempt <= max_attempts) {
