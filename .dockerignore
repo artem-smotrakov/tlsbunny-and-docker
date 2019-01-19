@@ -1,7 +1,12 @@
-.git
-.gitignore
+build.xml
+manifest.mf
+nbproject
+build
+dist
+openssl_src
 .idea
-openssl_report
-out
 tlsbunny.iml
-.travis.yml
+out
+.gradle
+openssl_report
+logs

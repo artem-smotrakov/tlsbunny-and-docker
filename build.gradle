@@ -40,7 +40,7 @@ sourceSets {
 
     test {
         java {
-            srcDirs 'src/test/core'
+            srcDirs 'src/test/core', 'src/vendor/test'
         }
 
         compileClasspath += sourceSets.main.output
@@ -76,17 +76,7 @@ task buildAllDocker() {
     dependsOn 'buildOpensslDocker'
     dependsOn 'buildH2ODocker'
     dependsOn 'buildNssDocker'
-    dependsOn 'buildWolfSSLDocker'
-}
-
-// run all servers
-task runAllServers() {
-    dependsOn 'runNssServer'
-    dependsOn 'runH2OServer'
-    dependsOn 'runOpensslServer'
-    dependsOn 'runGnutlsServer'
-    dependsOn 'runPicotlsServer'
-    dependsOn 'runWolfsslServer'
+    dependsOn 'buildWolfsslDocker'
 }
 
 // check for crashes
@@ -111,32 +101,6 @@ task buildGnutlsDocker(type: Exec) {
             '.'
 }
 
-task runGnutlsServer {
-    doLast {
-        exec {
-            ignoreExitValue = true
-            commandLine 'docker', 'container', 'kill', 'gnutls_server_tls13'
-        }
-        exec {
-            ignoreExitValue = true
-            commandLine 'docker', 'rm', 'gnutls_server_tls13'
-        }
-        exec {
-            commandLine 'docker',
-                    'run',
-                    '--name', 'gnutls_server_tls13',
-                    '-d',
-                    '-p', '50101:50101',
-                    'gnutls/server/tls13'
-        }
-
-        // a little delay to let the server start
-        exec {
-            commandLine 'sleep', '3'
-        }
-    }
-}
-
 // tasks for running tests for OpenSSL
 
 task buildOpensslDocker(type: Exec) {
@@ -144,41 +108,19 @@ task buildOpensslDocker(type: Exec) {
             'build',
             '--no-cache',
             '--file', 'src/vendor/docker/openssl/Dockerfile',
-            '--tag',  'openssl/tls13',
+            '--tag',  'artemsmotrakov/tlsbunny_openssl_tls13',
             '.'
-}
-
-task runOpensslServer {
-    doLast {
-        exec {
-            ignoreExitValue = true
-            commandLine 'docker', 'container', 'kill', 'openssl_server_tls13'
-        }
-        exec {
-            ignoreExitValue = true
-            commandLine 'docker', 'rm', 'openssl_server_tls13'
-        }
-        exec {
-            commandLine 'docker',
-                    'run',
-                    '--name', 'openssl_server_tls13',
-                    '-d',
-                    '-p', '10101:10101',
-                    'openssl/tls13'
-        }
-
-        // a little delay to let the server start
-        exec {
-            commandLine 'sleep', '3'
-        }
-    }
 }
 
 task runOpensslTests(type: Test) {
     description = 'Runs tests for OpenSSL'
     group = 'openssl'
-    testClassesDirs = sourceSets.vendor.output.classesDirs
-    classpath = sourceSets.vendor.runtimeClasspath
+
+    testClassesDirs += sourceSets.vendor.output.classesDirs
+    testClassesDirs += sourceSets.test.output.classesDirs
+    classpath += sourceSets.vendor.runtimeClasspath
+    classpath += sourceSets.test.runtimeClasspath
+
     testLogging.showStandardStreams = true
     ignoreFailures = true
     outputs.upToDateWhen { false }
@@ -190,8 +132,12 @@ task runOpensslTests(type: Test) {
 task runOpensslFuzzing(type: Test) {
     description = 'Runs fuzzing for OpenSSL'
     group = 'openssl'
-    testClassesDirs = sourceSets.vendor.output.classesDirs
-    classpath = sourceSets.vendor.runtimeClasspath
+
+    testClassesDirs += sourceSets.vendor.output.classesDirs
+    testClassesDirs += sourceSets.test.output.classesDirs
+    classpath += sourceSets.vendor.runtimeClasspath
+    classpath += sourceSets.test.runtimeClasspath
+
     testLogging.showStandardStreams = true
     ignoreFailures = true
     outputs.upToDateWhen { false }
@@ -210,32 +156,6 @@ task buildPicotlsDocker(type: Exec) {
             '.'
 }
 
-task runPicotlsServer {
-    doLast {
-        exec {
-            ignoreExitValue = true
-            commandLine 'docker', 'container', 'kill', 'picotls_server_tls13'
-        }
-        exec {
-            ignoreExitValue = true
-            commandLine 'docker', 'rm', 'picotls_server_tls13'
-        }
-        exec {
-            commandLine 'docker',
-                    'run',
-                    '--name', 'picotls_server_tls13',
-                    '-d',
-                    '-p', '20101:20101',
-                    'picotls/server/tls13'
-        }
-
-        // a little delay to let the server start
-        exec {
-            commandLine 'sleep', '3'
-        }
-    }
-}
-
 // tasks for running tests for h2o + picotls
 
 task buildH2ODocker(type: Exec) {
@@ -245,32 +165,6 @@ task buildH2ODocker(type: Exec) {
             '--file', 'src/main/docker/h2o/Dockerfile',
             '--tag',  'h2o/server/tls13',
             '.'
-}
-
-task runH2OServer {
-    doLast {
-        exec {
-            ignoreExitValue = true
-            commandLine 'docker', 'container', 'kill', 'h2o_server_tls13'
-        }
-        exec {
-            ignoreExitValue = true
-            commandLine 'docker', 'rm', 'h2o_server_tls13'
-        }
-        exec {
-            commandLine 'docker',
-                    'run',
-                    '--name', 'h2o_server_tls13',
-                    '-d',
-                    '-p', '30101:30101',
-                    'h2o/server/tls13'
-        }
-
-        // a little delay to let the server start
-        exec {
-            commandLine 'sleep', '3'
-        }
-    }
 }
 
 // tasks for running tests for NSS
@@ -285,70 +179,53 @@ task buildNssDocker(type: Exec) {
             '.'
 }
 
-// kill an NSS server (if running), remove an old Docker container,
-// and start a new one on specified port
-task runNssServer {
-    doLast {
-        exec {
-            ignoreExitValue = true
-            commandLine 'docker', 'container', 'kill', 'nss_server_tls13'
-        }
-        exec {
-            ignoreExitValue = true
-            commandLine 'docker', 'rm', 'nss_server_tls13'
-        }
-        exec {
-            commandLine 'docker',
-                    'run',
-                    '--name', 'nss_server_tls13',
-                    '-d',
-                    '-p', '60101:60101',
-                    'nss/server/tls13'
-        }
-
-        // a little delay to let the server start
-        exec {
-            commandLine 'sleep', '3'    // in seconds
-        }
-    }
-}
-
 // tasks for running tests for WolfSSL
 
 // builds a Docker images with WolfSSL server
-task buildWolfSSLDocker(type: Exec) {
+task buildWolfsslDocker(type: Exec) {
     commandLine 'docker',
             'build',
             '--no-cache',
-            '--file', 'src/main/docker/wolfssl/Dockerfile',
-            '--tag',  'wolfssl/server/tls13',
+            '--file', 'src/vendor/docker/wolfssl/Dockerfile',
+            '--tag',  'artemsmotrakov/tlsbunny_wolfssl_tls13',
             '.'
 }
 
-// kill an WolfSSL server (if running), remove an old Docker container,
-// and start a new one on specified port
-task runWolfsslServer {
-    doLast {
-        exec {
-            ignoreExitValue = true
-            commandLine 'docker', 'container', 'kill', 'wolfssl_server_tls13'
-        }
-        exec {
-            ignoreExitValue = true
-            commandLine 'docker', 'rm', 'wolfssl_server_tls13'
-        }
-        exec {
-            commandLine 'docker',
-                    'run',
-                    '--name', 'wolfssl_server_tls13',
-                    '-d',
-                    '-p', '40101:40101',
-                    'wolfssl/server/tls13'
-        }
+task runWolfsslTests(type: Test) {
+    description = 'Runs tests for WolfSSL'
+    group = 'wolfssl'
 
-        // a little delay to let the server start
-        exec {
-            commandLine 'sleep', '3'    // in seconds
-        }
-    }
+    testClassesDirs += sourceSets.vendor.output.classesDirs
+    testClassesDirs += sourceSets.test.output.classesDirs
+    classpath += sourceSets.vendor.runtimeClasspath
+    classpath += sourceSets.test.runtimeClasspath
+
+    testLogging.showStandardStreams = true
+    ignoreFailures = true
+    outputs.upToDateWhen { false }
+
+    systemProperty 'tlsbunny.output.enable.highlighting', 'false'
+
+    include 'com/gypsyengineer/tlsbunny/vendor/test/tls13/wolfssl/**/*Tests*'
+    exclude 'com/gypsyengineer/tlsbunny/vendor/test/tls13/wolfssl/**/*Fuzzing*'
+}
+
+task runWolfsslFuzzing(type: Test) {
+    description = 'Runs fuzzing for WolfSSL'
+    group = 'wolfssl'
+
+    testClassesDirs += sourceSets.vendor.output.classesDirs
+    testClassesDirs += sourceSets.test.output.classesDirs
+    classpath += sourceSets.vendor.runtimeClasspath
+    classpath += sourceSets.test.runtimeClasspath
+
+    testLogging.showStandardStreams = true
+    ignoreFailures = true
+    outputs.upToDateWhen { false }
+
+    systemProperty 'tlsbunny.fuzzer.full.configs', 'false'
+    systemProperty 'tlsbunny.output.to.file', 'true'
+    systemProperty 'tlsbunny.output.enable.highlighting', 'false'
+
+    include 'com/gypsyengineer/tlsbunny/vendor/test/tls13/wolfssl/**/*Fuzzing*'
 }

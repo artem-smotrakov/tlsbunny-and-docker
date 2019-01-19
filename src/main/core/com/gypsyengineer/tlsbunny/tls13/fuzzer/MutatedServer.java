@@ -160,7 +160,7 @@ public class MutatedServer implements Server {
         output.info("started on port %d", port());
         while (shouldRun(fuzzer)) {
             try (Connection connection = Connection.create(ssocket.accept())) {
-                output.info("test %d (accepted)", fuzzer.currentTest());
+                output.info("test #%d (accepted)", fuzzer.currentTest());
 
                 Engine engine = engineFactory.create()
                         .set(output)
@@ -177,10 +177,6 @@ public class MutatedServer implements Server {
             }
 
             fuzzer.moveOn();
-        }
-
-        for (Engine engine : engines) {
-            engine.apply(fuzzerConfig.analyzer());
         }
 
         running = false;

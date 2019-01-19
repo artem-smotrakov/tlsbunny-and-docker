@@ -51,6 +51,11 @@ public class GeneratingFinished extends AbstractAction {
             throw whatTheHell("side not specified! (null)");
         }
 
+        byte[] finished_key = context.finished_key();
+        if (finished_key == null || finished_key.length == 0) {
+            throw new ActionFailed("finished_key is empty!");
+        }
+
         try {
             byte[] verify_data = context.hkdf().hmac(
                     context.finished_key(),

@@ -1,18 +1,13 @@
 package com.gypsyengineer.tlsbunny.tls13.utils;
 
-import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
-import com.gypsyengineer.tlsbunny.tls13.connection.check.Check;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.Config;
 
-import java.util.Arrays;
 import java.util.Objects;
 
 public class FuzzerConfig implements Config {
 
     private Config mainConfig;
-    private Analyzer analyzer;
-    private Check[] checks;
     private StructFactory factory;
 
     public FuzzerConfig(Config mainConfig) {
@@ -22,8 +17,6 @@ public class FuzzerConfig implements Config {
     @Override
     synchronized public FuzzerConfig copy() {
         FuzzerConfig clone = new FuzzerConfig(mainConfig);
-        clone.analyzer = analyzer;
-        clone.checks = checks != null ? checks.clone() : null;
         clone.factory = factory;
 
         return clone;
@@ -176,28 +169,6 @@ public class FuzzerConfig implements Config {
         return this;
     }
 
-    synchronized public FuzzerConfig analyzer(Analyzer analyzer) {
-        this.analyzer = analyzer;
-        return this;
-    }
-
-    synchronized public boolean hasAnalyzer() {
-        return analyzer != null;
-    }
-
-    synchronized public Analyzer analyzer() {
-        return analyzer;
-    }
-
-    synchronized public FuzzerConfig set(Check... checks) {
-        this.checks = checks;
-        return this;
-    }
-
-    synchronized public Check[] checks() {
-        return checks;
-    }
-
     synchronized public boolean noFactory() {
         return factory == null;
     }
@@ -212,7 +183,7 @@ public class FuzzerConfig implements Config {
     }
 
     @Override
-    synchronized public boolean equals(Object o) {
+    public boolean equals(Object o) {
         if (this == o) {
             return true;
         }
@@ -221,17 +192,13 @@ public class FuzzerConfig implements Config {
             return false;
         }
 
-        FuzzerConfig that = (FuzzerConfig) o;
-        return Objects.equals(mainConfig, that.mainConfig) &&
-                Objects.equals(analyzer, that.analyzer) &&
-                Arrays.equals(checks, that.checks) &&
-                Objects.equals(factory, that.factory);
+        FuzzerConfig config = (FuzzerConfig) o;
+        return Objects.equals(mainConfig, config.mainConfig) &&
+                Objects.equals(factory, config.factory);
     }
 
     @Override
-    synchronized public int hashCode() {
-        int result = Objects.hash(mainConfig, analyzer, factory);
-        result = 31 * result + Arrays.hashCode(checks);
-        return result;
+    public int hashCode() {
+        return Objects.hash(mainConfig, factory);
     }
 }

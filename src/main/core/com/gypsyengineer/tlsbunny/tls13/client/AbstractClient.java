@@ -43,12 +43,16 @@ public abstract class AbstractClient implements Client, AutoCloseable {
     public final Client connect() throws Exception {
         synchronized (this) {
             running = true;
+            engines = new ArrayList<>();
         }
         try {
             return connectImpl();
         } finally {
             synchronized (this) {
                 running = false;
+                if (analyzer != null) {
+                    analyzer.add(engines.toArray(new Engine[0]));
+                }
             }
         }
     }
@@ -115,7 +119,7 @@ public abstract class AbstractClient implements Client, AutoCloseable {
 
     @Override
     public Engine[] engines() {
-        return engines.toArray(new Engine[engines.size()]);
+        return engines.toArray(new Engine[0]);
     }
 
 }

@@ -4,6 +4,9 @@ import com.gypsyengineer.tlsbunny.fuzzer.Fuzzer;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 public abstract class FuzzyStructFactory<T> extends StructFactoryWrapper
         implements StructFactory, Fuzzer<T> {
 
@@ -14,6 +17,14 @@ public abstract class FuzzyStructFactory<T> extends StructFactoryWrapper
     public FuzzyStructFactory(StructFactory factory, Output output) {
         super(factory);
         this.output = output;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s (targets = %s, fuzzer = %s)",
+                getClass().getSimpleName(),
+                Arrays.stream(targets).map(Object::toString).collect(Collectors.joining(",")),
+                fuzzer.getClass().getSimpleName());
     }
 
     synchronized public FuzzyStructFactory targets(Target... targets) {

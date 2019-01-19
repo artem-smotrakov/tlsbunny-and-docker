@@ -27,6 +27,8 @@ public class MutatedClient implements Client {
 
     private Client client;
     private Output output;
+    private Analyzer analyzer;
+    private Check[] checks;
     private FuzzerConfig fuzzerConfig;
 
     private boolean strict = true;
@@ -85,12 +87,13 @@ public class MutatedClient implements Client {
 
     @Override
     public MutatedClient set(Check... checks) {
-        throw new UnsupportedOperationException("no check for you!");
+        this.checks = checks;
+        return this;
     }
 
     @Override
     public MutatedClient set(Analyzer analyzer) {
-        fuzzerConfig.analyzer(analyzer);
+        this.analyzer = analyzer;
         return this;
     }
 
@@ -131,6 +134,7 @@ public class MutatedClient implements Client {
             client.set(StructFactory.getDefault())
                     .set(fuzzerConfig)
                     .set(output)
+                    .set(analyzer)
                     .set(new SuccessCheck())
                     .set(new NoAlertCheck())
                     .connect();
@@ -158,12 +162,13 @@ public class MutatedClient implements Client {
         client.set(fuzzyStructFactory)
                 .set(fuzzerConfig)
                 .set(output)
-                .set(fuzzerConfig.checks());
+                .set(analyzer)
+                .set(checks);
 
         try {
             fuzzyStructFactory.currentTest(fuzzerConfig.startTest());
             while (shouldRun(fuzzyStructFactory)) {
-                output.info("test %d", fuzzyStructFactory.currentTest());
+                output.info("test #%d", fuzzyStructFactory.currentTest());
 
                 int attempt = 0;
                 while (attempt <= max_attempts) {
@@ -173,8 +178,15 @@ public class MutatedClient implements Client {
                     } catch (EngineException e) {
                         Throwable cause = e.getCause();
                         if (cause instanceof ConnectException == false) {
-                            throw e;
+                            // an EngineException may occur due to multiple reasons
+                            // if the exception was not caused by ConnectException
+                            // we tolerate EngineException here to let the fuzzer to continue
+                            output.achtung("an exception occurred, but we continue fuzzing", e);
+                            break;
                         }
+
+                        // if the exception was caused by ConnectException
+                        // then we try again several times
 
                         if (attempt == max_attempts) {
                             throw new IOException("looks like the server closed connection");
@@ -189,11 +201,8 @@ public class MutatedClient implements Client {
                     }
                 }
 
+                output.flush();
                 fuzzyStructFactory.moveOn();
-            }
-
-            for (Engine engine : client.engines()) {
-                engine.apply(fuzzerConfig.analyzer());
             }
         } catch (Exception e) {
             output.achtung("what the hell? unexpected exception", e);

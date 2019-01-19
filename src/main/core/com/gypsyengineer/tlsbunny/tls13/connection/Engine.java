@@ -198,6 +198,11 @@ public class Engine {
             buffer = nothing;
 
             loop: for (ActionHolder holder : actions) {
+                if (connection.isClosed()) {
+                    output.achtung("connection is closed, stop");
+                    break;
+                }
+
                 ActionFactory actionFactory = holder.factory;
 
                 Action action;
@@ -207,11 +212,19 @@ public class Engine {
                         output.info("send: %s", action.name());
                         init(action).run();
                         connection.send(action.out());
+                        if (connection.failed()) {
+                            output.achtung("could not send data, stop", connection.exception());
+                            break loop;
+                        }
                         break;
                     case receive:
                         action = actionFactory.create();
                         output.info("receive: %s", action.name());
                         read(connection, action);
+                        if (connection.failed()) {
+                            output.achtung("could not read data, stop", connection.exception());
+                            break loop;
+                        }
                         init(action).run();
                         combineData(action);
                         break;
@@ -220,6 +233,10 @@ public class Engine {
                         while (holder.condition.met(context)) {
                             output.info("receive (conditional): %s", action.name());
                             read(connection, action);
+                            if (connection.failed()) {
+                                output.achtung("could not read data, stop", connection.exception());
+                                break loop;
+                            }
                             init(action).run();
                             combineData(action);
                         }
@@ -241,9 +258,16 @@ public class Engine {
                                 String.format("unknown action type: %s", holder.type));
                 }
 
-                if (stopIfAlert && context.hasAlert()) {
-                    output.info("stop, alert occurred: %s", context.getAlert());
-                    break;
+                if (context.hasAlert()) {
+                    if (context.getAlert().isFatal()) {
+                        output.info("stop, fatal alert occurred: %s", context.getAlert());
+                        break;
+                    }
+
+                    if (stopIfAlert) {
+                        output.info("stop, alert occurred: %s", context.getAlert());
+                        break;
+                    }
                 }
 
                 output.flush();
@@ -258,7 +282,7 @@ public class Engine {
                 try {
                     connection.close();
                 } catch (IOException e) {
-                    throw new EngineException("could not close connection", e);
+                    output.achtung("could not close connection", e);
                 }
             }
         }

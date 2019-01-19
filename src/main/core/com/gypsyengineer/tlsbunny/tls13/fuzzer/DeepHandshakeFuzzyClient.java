@@ -1,6 +1,5 @@
 package com.gypsyengineer.tlsbunny.tls13.fuzzer;
 
-import com.gypsyengineer.tlsbunny.fuzzer.Ratio;
 import com.gypsyengineer.tlsbunny.tls13.client.Client;
 import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
@@ -16,14 +15,9 @@ import com.gypsyengineer.tlsbunny.utils.Utils;
 
 import java.io.IOException;
 import java.net.ConnectException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.gypsyengineer.tlsbunny.fuzzer.BitFlipFuzzer.newBitFlipFuzzer;
-import static com.gypsyengineer.tlsbunny.fuzzer.ByteFlipFuzzer.newByteFlipFuzzer;
-import static com.gypsyengineer.tlsbunny.tls13.fuzzer.DeepHandshakeFuzzer.deepHandshakeFuzzer;
 import static com.gypsyengineer.tlsbunny.utils.Achtung.achtung;
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
@@ -34,6 +28,8 @@ public class DeepHandshakeFuzzyClient implements Client {
 
     private Client client;
     private Output output;
+    private Check[] checks;
+    private Analyzer analyzer;
     private FuzzerConfig fuzzerConfig;
 
     private boolean strict = true;
@@ -100,12 +96,13 @@ public class DeepHandshakeFuzzyClient implements Client {
 
     @Override
     public DeepHandshakeFuzzyClient set(Check... checks) {
-        throw new UnsupportedOperationException("no check for you!");
+        this.checks = checks;
+        return this;
     }
 
     @Override
     public DeepHandshakeFuzzyClient set(Analyzer analyzer) {
-        fuzzerConfig.analyzer(analyzer);
+        this.analyzer = analyzer;
         return this;
     }
 
@@ -155,6 +152,10 @@ public class DeepHandshakeFuzzyClient implements Client {
                 throw whatTheHell("no engines!");
             }
 
+            if (analyzer != null) {
+                analyzer.add(engines);
+            }
+
             for (Engine engine : engines) {
                 engine.run(new SuccessCheck());
             }
@@ -188,7 +189,7 @@ public class DeepHandshakeFuzzyClient implements Client {
             deepHandshakeFuzzer.fuzzing();
             deepHandshakeFuzzer.currentTest(fuzzerConfig.startTest());
             while (shouldRun(deepHandshakeFuzzer)) {
-                output.info("test %d", deepHandshakeFuzzer.currentTest());
+                output.info("test #%d", deepHandshakeFuzzer.currentTest());
 
                 int attempt = 0;
                 while (true) {
@@ -196,33 +197,39 @@ public class DeepHandshakeFuzzyClient implements Client {
                         client.set(deepHandshakeFuzzer)
                                 .set(fuzzerConfig)
                                 .set(output)
-                                .set(fuzzerConfig.checks())
+                                .set(checks)
+                                .set(analyzer)
                                 .connect();
 
                         break;
                     } catch (EngineException e) {
                         Throwable cause = e.getCause();
                         if (cause instanceof ConnectException == false) {
-                            throw e;
+                            // an EngineException may occur due to multiple reasons
+                            // if the exception was not caused by ConnectException
+                            // we tolerate EngineException here to let the fuzzer to continue
+                            output.achtung("an exception occurred, but we continue fuzzing", e);
+                            break;
                         }
 
+                        // if the exception was caused by ConnectException
+                        // then we try again several times
+
                         if (attempt == max_attempts) {
-                            throw new IOException("looks like the server closed connection");
+                            throw new IOException("looks like the server is not responding");
                         }
                         attempt++;
 
                         output.info("connection failed: %s ", cause.getMessage());
                         output.info("let's wait a bit and try again (attempt %d)", attempt);
                         Utils.sleep(delay);
+                    } finally {
+                        output.flush();
                     }
                 }
 
                 output.flush();
                 deepHandshakeFuzzer.moveOn();
-            }
-
-            for (Engine engine : client.engines()) {
-                engine.apply(fuzzerConfig.analyzer());
             }
         } catch (Exception e) {
             output.achtung("what the hell? unexpected exception", e);
