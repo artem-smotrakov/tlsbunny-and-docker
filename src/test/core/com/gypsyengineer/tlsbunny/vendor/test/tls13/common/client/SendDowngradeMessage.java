@@ -1,4 +1,4 @@
-package com.gypsyengineer.tlsbunny.tls13.server.downgrade;
+package com.gypsyengineer.tlsbunny.vendor.test.tls13.common.client;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.check.AlertCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.BaseEngineFactory;
@@ -26,6 +26,7 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup.secp256r1;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.*;
 import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp256r1_sha256;
 
+// TODO: it should be a test
 public class SendDowngradeMessage {
 
     // TODO: how can we avoid duplicating these strings?

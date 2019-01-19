@@ -36,7 +36,7 @@ public class UtilsTest {
         try (Output output = new Output()) {
             output.info("one");
             output.info("two");
-            output.achtung("warning");
+            output.achtung("AddressSanitizer");
             Utils.checkForASanFindings(output);
         }
     }
