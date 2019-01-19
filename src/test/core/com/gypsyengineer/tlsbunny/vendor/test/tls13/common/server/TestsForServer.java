@@ -121,6 +121,14 @@ public abstract class TestsForServer {
     }
 
     @Test
+    public void weakECDHE() throws Exception {
+        new VendorTest()
+                .set(new WeakECDHE())
+                .set(server)
+                .run();
+    }
+
+    @Test
     public void manyGroupsInClientHello() throws Exception {
         new VendorTest()
                 .set(new ManyGroupsInClientHello())
