@@ -182,7 +182,7 @@ public class Utils {
 
     public static void checkForASanFindings(Output output) {
         for (String string : output.strings()) {
-            if (string.contains("AddressSanitizer")) {
+            if (string.contains("ERROR: AddressSanitizer:")) {
                 throw achtung("hey, AddressSanitizer found something!");
             }
         }
