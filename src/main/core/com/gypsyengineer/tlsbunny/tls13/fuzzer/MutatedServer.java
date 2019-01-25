@@ -138,29 +138,36 @@ public class MutatedServer implements Server {
             throw whatTheHell("expected %s",
                     FuzzyStructFactory.class.getSimpleName());
         }
-        FuzzyStructFactory fuzzer = (FuzzyStructFactory) factory;
-        fuzzer.currentTest(fuzzerConfig.startTest());
+        FuzzyStructFactory fuzzyStructFactory = (FuzzyStructFactory) factory;
+        fuzzyStructFactory.currentTest(fuzzerConfig.startTest());
 
         EngineFactory engineFactory = server.engineFactory();
-        engineFactory.set(fuzzer);
+        engineFactory.set(fuzzyStructFactory);
 
         output.info("run fuzzer config:");
         output.info("  targets    = %s",
-                Arrays.stream(fuzzer.targets())
+                Arrays.stream(fuzzyStructFactory.targets())
                         .map(Object::toString)
                         .collect(Collectors.joining(", ")));
         output.info("  fuzzer     = %s",
-                fuzzer.fuzzer() != null
-                        ? fuzzer.fuzzer().toString()
+                fuzzyStructFactory.fuzzer() != null
+                        ? fuzzyStructFactory.fuzzer().toString()
                         : "null");
         output.info("  start test = %d", fuzzerConfig.startTest());
         output.info("  end test   = %d", fuzzerConfig.endTest());
 
         running = true;
         output.info("started on port %d", port());
-        while (shouldRun(fuzzer)) {
+        while (shouldRun(fuzzyStructFactory)) {
             try (Connection connection = Connection.create(ssocket.accept())) {
-                output.info("test #%d (accepted)", fuzzer.currentTest());
+                String message = String.format("test #%d (accepted), %s/%s, targets: [%s]",
+                        fuzzyStructFactory.currentTest(),
+                        getClass().getSimpleName(),
+                        fuzzyStructFactory.fuzzer().getClass().getSimpleName(),
+                        Arrays.stream(fuzzyStructFactory.targets)
+                                .map(Enum::toString)
+                                .collect(Collectors.joining(", ")));
+                output.info(message);
 
                 Engine engine = engineFactory.create()
                         .set(output)
@@ -176,7 +183,7 @@ public class MutatedServer implements Server {
                 output.flush();
             }
 
-            fuzzer.moveOn();
+            fuzzyStructFactory.moveOn();
         }
 
         running = false;
