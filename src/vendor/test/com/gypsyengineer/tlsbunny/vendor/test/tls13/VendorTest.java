@@ -51,26 +51,32 @@ public class VendorTest {
         Thread.setDefaultUncaughtExceptionHandler(exceptionHandler);
 
         Thread serverThread = null;
-        Thread clientThread;
-        try (Output clientOutput = new Output("client", label);
-             Output serverOutput = new Output("server", label)) {
+        Thread clientThread = null;
 
+        Output clientOutput = null;
+        Output serverOutput = null;
+
+        try {
             // start the server if it's not running
             if (!server.running()) {
+                serverOutput = new Output("server", label);
                 server.set(serverOutput);
                 serverThread = server.start();
                 Utils.waitStart(server);
+            } else {
+                serverOutput = server.output();
             }
 
             // configure and run the client
-            if (client.running()) {
-                throw whatTheHell("client is already running!");
+            if (!client.running()) {
+                clientOutput = new Output("client", label);
+                client.set(clientOutput);
+                client.config().port(server.port());
+                clientThread = client.start();
+                sleep(delay);
+            } else {
+                clientOutput = client.output();
             }
-
-            client.config().port(server.port());
-            client.set(clientOutput);
-            clientThread = client.start();
-            sleep(delay);
 
             // wait for client or server to finish
             while (true) {
@@ -101,7 +107,7 @@ public class VendorTest {
                 Utils.sleep(delay);
             }
 
-            if (clientThread.isAlive()) {
+            if (clientThread != null && clientThread.isAlive()) {
                 throw whatTheHell("client thread is still running!");
             }
 
