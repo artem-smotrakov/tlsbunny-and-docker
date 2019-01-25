@@ -189,7 +189,13 @@ public class DeepHandshakeFuzzyClient implements Client {
             deepHandshakeFuzzer.fuzzing();
             deepHandshakeFuzzer.currentTest(fuzzerConfig.startTest());
             while (shouldRun(deepHandshakeFuzzer)) {
-                output.info("test #%d", deepHandshakeFuzzer.currentTest());
+                String message = String.format("test #%d, %s, targeted: [%s]",
+                        deepHandshakeFuzzer.currentTest(),
+                        getClass().getSimpleName(),
+                        Arrays.stream(deepHandshakeFuzzer.targeted())
+                                .map(type -> type.toString())
+                                .collect(Collectors.joining(", ")));
+                output.info(message);
 
                 int attempt = 0;
                 while (true) {
