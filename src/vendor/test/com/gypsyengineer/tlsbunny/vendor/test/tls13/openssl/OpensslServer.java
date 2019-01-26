@@ -1,5 +1,6 @@
 package com.gypsyengineer.tlsbunny.vendor.test.tls13.openssl;
 
+import com.gypsyengineer.tlsbunny.utils.SimpleOutput;
 import com.gypsyengineer.tlsbunny.vendor.test.tls13.Utils;
 import com.gypsyengineer.tlsbunny.tls13.connection.check.Check;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
@@ -7,7 +8,6 @@ import com.gypsyengineer.tlsbunny.tls13.connection.EngineFactory;
 import com.gypsyengineer.tlsbunny.tls13.server.Server;
 import com.gypsyengineer.tlsbunny.tls13.server.StopCondition;
 import com.gypsyengineer.tlsbunny.utils.Config;
-import com.gypsyengineer.tlsbunny.utils.Output;
 import com.gypsyengineer.tlsbunny.utils.OutputListener;
 
 import java.io.IOException;
@@ -51,7 +51,7 @@ public class OpensslServer extends OpensslDocker implements Server {
     }
 
     @Override
-    public OpensslServer set(Output output) {
+    public OpensslServer set(SimpleOutput output) {
         output.achtung("you can't set output for me!");
         return this;
     }
@@ -82,7 +82,7 @@ public class OpensslServer extends OpensslDocker implements Server {
     }
 
     @Override
-    public Output output() {
+    public SimpleOutput output() {
         return output;
     }
 

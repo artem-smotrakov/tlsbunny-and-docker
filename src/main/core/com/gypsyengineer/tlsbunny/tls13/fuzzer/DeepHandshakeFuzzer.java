@@ -4,7 +4,7 @@ import com.gypsyengineer.tlsbunny.fuzzer.Fuzzer;
 import com.gypsyengineer.tlsbunny.tls.Random;
 import com.gypsyengineer.tlsbunny.tls.Struct;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
-import com.gypsyengineer.tlsbunny.utils.Output;
+import com.gypsyengineer.tlsbunny.utils.SimpleOutput;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 public class DeepHandshakeFuzzer extends StructFactoryWrapper
         implements Fuzzer<HandshakeMessage> {
 
-    private Output output;
+    private SimpleOutput output;
     private Fuzzer<byte[]> fuzzer;
 
     private Mode mode;
@@ -31,20 +31,20 @@ public class DeepHandshakeFuzzer extends StructFactoryWrapper
     private int rounds = 10;
 
     public static DeepHandshakeFuzzer deepHandshakeFuzzer() {
-        return deepHandshakeFuzzer(StructFactory.getDefault(), new Output());
+        return deepHandshakeFuzzer(StructFactory.getDefault(), new SimpleOutput());
     }
 
-    public static DeepHandshakeFuzzer deepHandshakeFuzzer(Output output) {
+    public static DeepHandshakeFuzzer deepHandshakeFuzzer(SimpleOutput output) {
         return deepHandshakeFuzzer(StructFactory.getDefault(), output);
     }
 
     public static DeepHandshakeFuzzer deepHandshakeFuzzer(
-            StructFactory factory, Output output) {
+            StructFactory factory, SimpleOutput output) {
 
         return new DeepHandshakeFuzzer(factory, output);
     }
 
-    private DeepHandshakeFuzzer(StructFactory factory, Output output) {
+    private DeepHandshakeFuzzer(StructFactory factory, SimpleOutput output) {
         super(factory);
         this.output = output;
     }
@@ -305,13 +305,13 @@ public class DeepHandshakeFuzzer extends StructFactoryWrapper
     }
 
     @Override
-    public DeepHandshakeFuzzer set(Output output) {
+    public DeepHandshakeFuzzer set(SimpleOutput output) {
         this.output = output;
         return this;
     }
 
     @Override
-    public Output output() {
+    public SimpleOutput output() {
         return output;
     }
 

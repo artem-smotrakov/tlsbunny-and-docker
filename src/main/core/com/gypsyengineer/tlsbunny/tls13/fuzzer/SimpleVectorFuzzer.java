@@ -4,6 +4,7 @@ import com.gypsyengineer.tlsbunny.fuzzer.FuzzedVector;
 import com.gypsyengineer.tlsbunny.fuzzer.Fuzzer;
 import com.gypsyengineer.tlsbunny.tls.Vector;
 import com.gypsyengineer.tlsbunny.utils.Output;
+import com.gypsyengineer.tlsbunny.utils.SimpleOutput;
 
 import java.io.IOException;
 
@@ -17,7 +18,7 @@ public class SimpleVectorFuzzer<T> implements Fuzzer<Vector<T>> {
 
     private final Generator[] generators;
     private int state = 0;
-    private Output output;
+    private SimpleOutput output;
 
     @Override
     public String toString() {
@@ -113,13 +114,13 @@ public class SimpleVectorFuzzer<T> implements Fuzzer<Vector<T>> {
     }
 
     @Override
-    synchronized public SimpleVectorFuzzer set(Output output) {
+    synchronized public SimpleVectorFuzzer set(SimpleOutput output) {
         this.output = output;
         return this;
     }
 
     @Override
-    synchronized public Output output() {
+    synchronized public SimpleOutput output() {
         return output;
     }
 

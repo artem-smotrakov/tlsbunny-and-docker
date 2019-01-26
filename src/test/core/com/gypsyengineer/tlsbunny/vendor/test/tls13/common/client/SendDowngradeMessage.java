@@ -13,7 +13,7 @@ import com.gypsyengineer.tlsbunny.tls13.server.SingleThreadServer;
 import com.gypsyengineer.tlsbunny.tls13.server.OneConnectionReceived;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
 import com.gypsyengineer.tlsbunny.utils.Config;
-import com.gypsyengineer.tlsbunny.utils.Output;
+import com.gypsyengineer.tlsbunny.utils.SimpleOutput;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 
 import java.io.IOException;
@@ -42,7 +42,7 @@ public class SendDowngradeMessage {
         config.serverCertificate(serverCertificatePath);
         config.serverKey(serverKeyPath);
 
-        try (Output output = new Output("server");
+        try (SimpleOutput output = new SimpleOutput("server");
              Server server = server(output, config, version)) {
 
             server.start().join();
@@ -56,7 +56,7 @@ public class SendDowngradeMessage {
     }
 
     // TODO: max connections should be configurable
-    public static Server server(Output output, Config config, ProtocolVersion version)
+    public static Server server(SimpleOutput output, Config config, ProtocolVersion version)
             throws IOException {
 
         return new SingleThreadServer()

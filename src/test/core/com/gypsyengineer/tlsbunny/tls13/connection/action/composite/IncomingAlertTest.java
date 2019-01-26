@@ -14,6 +14,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.AlertDescription;
 import com.gypsyengineer.tlsbunny.tls13.struct.AlertLevel;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.Output;
+import com.gypsyengineer.tlsbunny.utils.SimpleOutput;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -30,7 +31,7 @@ public class IncomingAlertTest {
     public void notEncrypted()
             throws IOException, ActionFailed, AEADException, NegotiatorException {
 
-        try (Output output = new Output()) {
+        try (Output output = new SimpleOutput()) {
             Context context = context();
 
             ByteBuffer buffer = new GeneratingAlert()
@@ -68,7 +69,7 @@ public class IncomingAlertTest {
     public void encrypted()
             throws IOException, ActionFailed, AEADException, NegotiatorException {
 
-        try (Output output = new Output()) {
+        try (Output output = new SimpleOutput()) {
             Context context = context();
 
             ByteBuffer buffer = new GeneratingAlert()

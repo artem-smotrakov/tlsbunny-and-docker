@@ -13,7 +13,7 @@ import com.gypsyengineer.tlsbunny.tls13.handshake.NegotiatorException;
 import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.Config;
-import com.gypsyengineer.tlsbunny.utils.Output;
+import com.gypsyengineer.tlsbunny.utils.SimpleOutput;
 
 import java.io.IOException;
 
@@ -108,14 +108,14 @@ public class HttpsServer implements Server {
     }
 
     @Override
-    public HttpsServer set(Output output) {
+    public HttpsServer set(SimpleOutput output) {
         engineFactory.set(output);
         server.set(output);
         return this;
     }
 
     @Override
-    public Output output() {
+    public SimpleOutput output() {
         return server.output();
     }
 

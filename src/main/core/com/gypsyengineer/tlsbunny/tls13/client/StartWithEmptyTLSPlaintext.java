@@ -10,8 +10,8 @@ import com.gypsyengineer.tlsbunny.tls13.handshake.NegotiatorException;
 import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.Config;
+import com.gypsyengineer.tlsbunny.utils.SimpleOutput;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
-import com.gypsyengineer.tlsbunny.utils.Output;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
@@ -31,7 +31,7 @@ public class StartWithEmptyTLSPlaintext extends SingleConnectionClient {
         Config config = SystemPropertiesConfig.load();
         StructFactory factory = StructFactory.getDefault();
 
-        try (Output output = new Output()) {
+        try (SimpleOutput output = new SimpleOutput()) {
             /**
              * The TLS 1.3 spec says the following:
              *

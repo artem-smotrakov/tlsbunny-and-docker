@@ -7,7 +7,7 @@ import com.gypsyengineer.tlsbunny.tls13.connection.action.Side;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.*;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
-import com.gypsyengineer.tlsbunny.utils.Output;
+import com.gypsyengineer.tlsbunny.utils.SimpleOutput;
 
 import java.util.List;
 
@@ -24,7 +24,7 @@ public class MultipleCCS extends SingleConnectionClient {
     public static final int number_of_ccs = 10;
 
     public static void main(String[] args) throws Exception {
-        try (Output output = new Output()) {
+        try (SimpleOutput output = new SimpleOutput()) {
             new MultipleCCS()
                     .set(output)
                     .connect();

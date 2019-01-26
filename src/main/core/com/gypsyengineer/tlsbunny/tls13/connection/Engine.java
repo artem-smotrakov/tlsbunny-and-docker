@@ -11,6 +11,7 @@ import com.gypsyengineer.tlsbunny.tls13.handshake.NegotiatorException;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
 import com.gypsyengineer.tlsbunny.utils.Connection;
 import com.gypsyengineer.tlsbunny.utils.Output;
+import com.gypsyengineer.tlsbunny.utils.SimpleOutput;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -37,7 +38,7 @@ public class Engine {
     private Connection connection;
     private boolean createdConnection = false;
 
-    private Output output = new Output();
+    private SimpleOutput output = new SimpleOutput();
     private String host = "localhost";
     private int port = 443;
     private Status status = Status.not_started;
@@ -102,7 +103,7 @@ public class Engine {
         return label;
     }
 
-    public Output output() {
+    public SimpleOutput output() {
         return output;
     }
 
@@ -111,7 +112,7 @@ public class Engine {
         return this;
     }
 
-    public Engine set(Output output) {
+    public Engine set(SimpleOutput output) {
         this.output = output;
         return this;
     }

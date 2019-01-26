@@ -8,6 +8,7 @@ import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
 import com.gypsyengineer.tlsbunny.utils.Output;
+import com.gypsyengineer.tlsbunny.utils.SimpleOutput;
 import com.gypsyengineer.tlsbunny.utils.WhatTheHell;
 
 import java.lang.reflect.InvocationTargetException;
@@ -194,13 +195,13 @@ public class TestUtils {
         }
 
         @Override
-        public FakeVectorFuzzer set(Output output) {
+        public FakeVectorFuzzer set(SimpleOutput output) {
             return this;
         }
 
         @Override
-        public Output output() {
-            return new Output();
+        public SimpleOutput output() {
+            return new SimpleOutput();
         }
 
         @Override
@@ -242,13 +243,13 @@ public class TestUtils {
         }
 
         @Override
-        public FakeCompressionMethodFuzzer set(Output output) {
+        public FakeCompressionMethodFuzzer set(SimpleOutput output) {
             return this;
         }
 
         @Override
-        public Output output() {
-            return new Output();
+        public SimpleOutput output() {
+            return new SimpleOutput();
         }
 
         @Override
@@ -290,13 +291,13 @@ public class TestUtils {
         }
 
         @Override
-        public FakeCipherSuitesFuzzer set(Output output) {
+        public FakeCipherSuitesFuzzer set(SimpleOutput output) {
             return this;
         }
 
         @Override
-        public Output output() {
-            return new Output();
+        public SimpleOutput output() {
+            return new SimpleOutput();
         }
 
         @Override
@@ -338,13 +339,13 @@ public class TestUtils {
         }
 
         @Override
-        public FakeExtensionVectorFuzzer set(Output output) {
+        public FakeExtensionVectorFuzzer set(SimpleOutput output) {
             return this;
         }
 
         @Override
-        public Output output() {
-            return new Output();
+        public SimpleOutput output() {
+            return new SimpleOutput();
         }
 
         @Override

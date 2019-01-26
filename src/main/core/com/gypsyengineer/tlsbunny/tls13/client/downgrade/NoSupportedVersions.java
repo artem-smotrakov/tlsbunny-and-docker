@@ -7,8 +7,8 @@ import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.struct.CipherSuite;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.Config;
+import com.gypsyengineer.tlsbunny.utils.SimpleOutput;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
-import com.gypsyengineer.tlsbunny.utils.Output;
 
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.alert;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
@@ -21,12 +21,12 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp
 public class NoSupportedVersions extends SingleConnectionClient {
 
     public static void main(String[] args) throws Exception {
-        try (Output output = new Output()) {
+        try (SimpleOutput output = new SimpleOutput()) {
             run(output, SystemPropertiesConfig.load());
         }
     }
 
-    public static NoSupportedVersions run(Output output, Config config) throws Exception {
+    public static NoSupportedVersions run(SimpleOutput output, Config config) throws Exception {
         NoSupportedVersions client = (NoSupportedVersions) new NoSupportedVersions()
                 .set(config)
                 .set(StructFactory.getDefault())

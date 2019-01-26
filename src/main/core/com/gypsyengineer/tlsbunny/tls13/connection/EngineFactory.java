@@ -2,10 +2,11 @@ package com.gypsyengineer.tlsbunny.tls13.connection;
 
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.Output;
+import com.gypsyengineer.tlsbunny.utils.SimpleOutput;
 
 public interface EngineFactory {
     EngineFactory set(StructFactory factory);
-    EngineFactory set(Output output);
+    EngineFactory set(SimpleOutput output);
 
     StructFactory structFactory();
     Output output();

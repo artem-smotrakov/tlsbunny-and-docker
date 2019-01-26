@@ -6,7 +6,7 @@ import com.gypsyengineer.tlsbunny.tls13.connection.check.Check;
 import com.gypsyengineer.tlsbunny.tls13.server.Server;
 import com.gypsyengineer.tlsbunny.tls13.server.StopCondition;
 import com.gypsyengineer.tlsbunny.utils.Config;
-import com.gypsyengineer.tlsbunny.utils.Output;
+import com.gypsyengineer.tlsbunny.utils.SimpleOutput;
 import com.gypsyengineer.tlsbunny.utils.OutputListener;
 import com.gypsyengineer.tlsbunny.vendor.test.tls13.Utils;
 
@@ -51,7 +51,7 @@ public class WolfsslServer extends WolfsslDocker implements Server {
     }
 
     @Override
-    public WolfsslServer set(Output output) {
+    public WolfsslServer set(SimpleOutput output) {
         output.achtung("you can't set output for me!");
         return this;
     }
@@ -82,7 +82,7 @@ public class WolfsslServer extends WolfsslDocker implements Server {
     }
 
     @Override
-    public Output output() {
+    public SimpleOutput output() {
         return output;
     }
 

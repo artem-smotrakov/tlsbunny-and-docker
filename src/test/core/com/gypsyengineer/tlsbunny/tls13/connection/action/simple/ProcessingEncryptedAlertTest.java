@@ -2,7 +2,6 @@ package com.gypsyengineer.tlsbunny.tls13.connection.action.simple;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.action.ActionFailed;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.Phase;
-import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.IncomingAlert;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AEAD;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AEADException;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
@@ -12,6 +11,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.AlertDescription;
 import com.gypsyengineer.tlsbunny.tls13.struct.AlertLevel;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.Output;
+import com.gypsyengineer.tlsbunny.utils.SimpleOutput;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -39,7 +39,7 @@ public class ProcessingEncryptedAlertTest {
     public void encrypted(Phase phase)
             throws IOException, ActionFailed, AEADException, NegotiatorException {
 
-        try (Output output = new Output()) {
+        try (Output output = new SimpleOutput()) {
             Context context = context();
 
             ByteBuffer buffer = new GeneratingAlert()

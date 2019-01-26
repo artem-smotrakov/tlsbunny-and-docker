@@ -10,6 +10,7 @@ import com.gypsyengineer.tlsbunny.tls13.crypto.AEADException;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
 import com.gypsyengineer.tlsbunny.utils.Output;
+import com.gypsyengineer.tlsbunny.utils.SimpleOutput;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -23,8 +24,8 @@ import static org.junit.Assert.fail;
 public class IncomingCertificateRequestTest {
 
     @Test
-    public void basic() throws IOException, ActionFailed, AEADException {
-        try (Output output = new Output()) {
+    public void basic() throws Exception {
+        try (Output output = new SimpleOutput()) {
             Context context = context();
 
             byte[] expected_request_context = new byte[10];
@@ -68,8 +69,8 @@ public class IncomingCertificateRequestTest {
     }
 
     @Test
-    public void notCertificateRequest() throws IOException, AEADException {
-        try (Output output = new Output()) {
+    public void notCertificateRequest() throws Exception {
+        try (Output output = new SimpleOutput()) {
             Context context = context();
 
             byte[] expected_request_context = new byte[10];
@@ -112,8 +113,8 @@ public class IncomingCertificateRequestTest {
     }
 
     @Test
-    public void noSignatures() throws ActionFailed, AEADException {
-        try (Output output = new Output()) {
+    public void noSignatures() throws Exception {
+        try (Output output = new SimpleOutput()) {
             Context context = context();
 
             byte[] expected_request_context = new byte[10];

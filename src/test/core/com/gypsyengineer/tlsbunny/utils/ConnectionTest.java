@@ -15,8 +15,8 @@ public class ConnectionTest {
                     .getBytes();
 
     @Test
-    public void basic() throws IOException, InterruptedException {
-        try (Output output = new Output(); EchoServer server = new EchoServer()) {
+    public void basic() throws Exception {
+        try (Output output = new SimpleOutput(); EchoServer server = new EchoServer()) {
             server.set(output);
 
             new Thread(server).start();
@@ -36,7 +36,7 @@ public class ConnectionTest {
 
         private static final int FREE_PORT = 0;
 
-        private Output output = new Output();
+        private Output output = new SimpleOutput();
         private final ServerSocket serverSocket;
 
         public EchoServer() throws IOException {

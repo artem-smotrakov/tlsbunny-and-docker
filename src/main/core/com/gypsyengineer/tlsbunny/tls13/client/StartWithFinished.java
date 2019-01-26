@@ -8,7 +8,8 @@ import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.OutgoingChan
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.handshake.NegotiatorException;
-import com.gypsyengineer.tlsbunny.utils.Output;
+import com.gypsyengineer.tlsbunny.utils.SimpleOutput;
+
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
@@ -19,7 +20,7 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv12;
 public class StartWithFinished extends SingleConnectionClient {
 
     public static void main(String[] args) throws Exception {
-        try (Output output = new Output()) {
+        try (SimpleOutput output = new SimpleOutput()) {
             new StartWithFinished()
                     .set(output)
                     .connect();

@@ -8,7 +8,7 @@ import com.gypsyengineer.tlsbunny.tls13.handshake.ECDHENegotiator;
 import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
-import com.gypsyengineer.tlsbunny.utils.Output;
+import com.gypsyengineer.tlsbunny.utils.SimpleOutput;
 
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.application_data;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
@@ -25,7 +25,7 @@ public class SimpleReliability {
     public static void main(String[] args) throws Exception {
         SystemPropertiesConfig config = SystemPropertiesConfig.load();
 
-        try (Output output = new Output()) {
+        try (SimpleOutput output = new SimpleOutput()) {
             for (int i = 0; i < N; i++) {
                 output.info("test %d", i);
                 connect(config, output);
@@ -33,7 +33,7 @@ public class SimpleReliability {
         }
     }
 
-    private static void connect(SystemPropertiesConfig config, Output output) throws Exception {
+    private static void connect(SystemPropertiesConfig config, SimpleOutput output) throws Exception {
         ECDHENegotiator negotiator = ECDHENegotiator.create(
                 NamedGroup.Secp.secp256r1, StructFactory.getDefault());
         negotiator.strictValidation();

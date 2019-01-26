@@ -8,7 +8,7 @@ import com.gypsyengineer.tlsbunny.tls13.server.SingleThreadServer;
 import com.gypsyengineer.tlsbunny.tls13.struct.AlertDescription;
 import com.gypsyengineer.tlsbunny.tls13.struct.AlertLevel;
 import com.gypsyengineer.tlsbunny.utils.Config;
-import com.gypsyengineer.tlsbunny.utils.Output;
+import com.gypsyengineer.tlsbunny.utils.SimpleOutput;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 import org.junit.Test;
 
@@ -23,8 +23,8 @@ public class StartWithFinishedTest {
 
     @Test
     public void test() throws Exception {
-        Output serverOutput = new Output("server");
-        Output clientOutput = new Output("client");
+        SimpleOutput serverOutput = new SimpleOutput("server");
+        SimpleOutput clientOutput = new SimpleOutput("client");
 
         Config serverConfig = SystemPropertiesConfig.load();
         SingleThreadServer server = new SingleThreadServer()

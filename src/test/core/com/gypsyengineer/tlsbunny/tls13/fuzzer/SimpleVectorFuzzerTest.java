@@ -2,7 +2,7 @@ package com.gypsyengineer.tlsbunny.tls13.fuzzer;
 
 import com.gypsyengineer.tlsbunny.fuzzer.FuzzedVector;
 import com.gypsyengineer.tlsbunny.tls.Vector;
-import com.gypsyengineer.tlsbunny.utils.Output;
+import com.gypsyengineer.tlsbunny.utils.SimpleOutput;
 import com.gypsyengineer.tlsbunny.utils.WhatTheHell;
 import org.junit.Test;
 
@@ -16,7 +16,7 @@ public class SimpleVectorFuzzerTest {
 
     @Test
     public void iterate() {
-        try (Output output = new Output()) {
+        try (SimpleOutput output = new SimpleOutput()) {
             SimpleVectorFuzzer fuzzer = new SimpleVectorFuzzer();
 
             fuzzer.set(output);
@@ -53,7 +53,7 @@ public class SimpleVectorFuzzerTest {
 
     @Test
     public void set() {
-        try (Output output = new Output()) {
+        try (SimpleOutput output = new SimpleOutput()) {
             SimpleVectorFuzzer fuzzer = simpleVectorFuzzer();
             fuzzer.set(output);
 

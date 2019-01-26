@@ -1,6 +1,6 @@
 package com.gypsyengineer.tlsbunny.vendor.test.tls13.wolfssl;
 
-import com.gypsyengineer.tlsbunny.utils.Output;
+import com.gypsyengineer.tlsbunny.utils.SimpleOutput;
 import com.gypsyengineer.tlsbunny.vendor.test.tls13.Utils;
 
 import java.io.IOException;
@@ -23,7 +23,7 @@ public class WolfsslDocker {
     protected final String containerName = String.format("%s_%d",
             this.getClass().getSimpleName().toLowerCase(), System.currentTimeMillis());
 
-    protected final Output output = new Output(this.getClass().getSimpleName());
+    protected final SimpleOutput output = new SimpleOutput(this.getClass().getSimpleName());
 
     protected Map<String, String> dockerEnv = Collections.synchronizedMap(new HashMap<>());
 

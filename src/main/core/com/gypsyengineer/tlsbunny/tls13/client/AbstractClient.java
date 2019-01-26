@@ -8,8 +8,8 @@ import com.gypsyengineer.tlsbunny.tls13.handshake.NegotiatorException;
 import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.Config;
+import com.gypsyengineer.tlsbunny.utils.SimpleOutput;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
-import com.gypsyengineer.tlsbunny.utils.Output;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,7 +22,7 @@ public abstract class AbstractClient implements Client, AutoCloseable {
     protected Config config = SystemPropertiesConfig.load();
     protected StructFactory factory = StructFactory.getDefault();
     protected Negotiator negotiator;
-    protected Output output = new Output();
+    protected SimpleOutput output = new SimpleOutput();
     protected Analyzer analyzer;
     protected List<Engine> engines = new ArrayList<>();
     protected List<Check> checks = Collections.emptyList();
@@ -65,7 +65,7 @@ public abstract class AbstractClient implements Client, AutoCloseable {
     }
 
     @Override
-    public Output output() {
+    public SimpleOutput output() {
         return output;
     }
 
@@ -93,7 +93,7 @@ public abstract class AbstractClient implements Client, AutoCloseable {
     }
 
     @Override
-    public Client set(Output output) {
+    public Client set(SimpleOutput output) {
         this.output = output;
         return this;
     }
