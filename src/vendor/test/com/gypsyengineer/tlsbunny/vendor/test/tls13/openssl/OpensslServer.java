@@ -1,6 +1,6 @@
 package com.gypsyengineer.tlsbunny.vendor.test.tls13.openssl;
 
-import com.gypsyengineer.tlsbunny.utils.SimpleOutput;
+import com.gypsyengineer.tlsbunny.utils.OutputStorage;
 import com.gypsyengineer.tlsbunny.vendor.test.tls13.Utils;
 import com.gypsyengineer.tlsbunny.tls13.connection.check.Check;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
@@ -51,7 +51,7 @@ public class OpensslServer extends OpensslDocker implements Server {
     }
 
     @Override
-    public OpensslServer set(SimpleOutput output) {
+    public OpensslServer set(OutputStorage output) {
         output.achtung("you can't set output for me!");
         return this;
     }
@@ -82,7 +82,7 @@ public class OpensslServer extends OpensslDocker implements Server {
     }
 
     @Override
-    public SimpleOutput output() {
+    public OutputStorage output() {
         return output;
     }
 

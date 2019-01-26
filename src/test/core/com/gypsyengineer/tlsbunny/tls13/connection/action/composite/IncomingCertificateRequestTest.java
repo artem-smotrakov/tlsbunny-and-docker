@@ -10,7 +10,7 @@ import com.gypsyengineer.tlsbunny.tls13.crypto.AEADException;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
 import com.gypsyengineer.tlsbunny.utils.Output;
-import com.gypsyengineer.tlsbunny.utils.SimpleOutput;
+import com.gypsyengineer.tlsbunny.utils.OutputStorage;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -25,7 +25,7 @@ public class IncomingCertificateRequestTest {
 
     @Test
     public void basic() throws Exception {
-        try (Output output = new SimpleOutput()) {
+        try (Output output = new OutputStorage()) {
             Context context = context();
 
             byte[] expected_request_context = new byte[10];
@@ -70,7 +70,7 @@ public class IncomingCertificateRequestTest {
 
     @Test
     public void notCertificateRequest() throws Exception {
-        try (Output output = new SimpleOutput()) {
+        try (Output output = new OutputStorage()) {
             Context context = context();
 
             byte[] expected_request_context = new byte[10];
@@ -114,7 +114,7 @@ public class IncomingCertificateRequestTest {
 
     @Test
     public void noSignatures() throws Exception {
-        try (Output output = new SimpleOutput()) {
+        try (Output output = new OutputStorage()) {
             Context context = context();
 
             byte[] expected_request_context = new byte[10];

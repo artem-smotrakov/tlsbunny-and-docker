@@ -8,7 +8,7 @@ import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.tls13.utils.FuzzerConfig;
 import com.gypsyengineer.tlsbunny.utils.Config;
-import com.gypsyengineer.tlsbunny.utils.SimpleOutput;
+import com.gypsyengineer.tlsbunny.utils.OutputStorage;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 import org.junit.Test;
 
@@ -106,8 +106,8 @@ public class MutatedServerTest {
     public void test(FuzzerConfig fuzzerConfig, int expectedFuzzedMessages)
             throws Exception {
 
-        SimpleOutput serverOutput = new SimpleOutput("server");
-        SimpleOutput clientOutput = new SimpleOutput("client");
+        OutputStorage serverOutput = new OutputStorage("server");
+        OutputStorage clientOutput = new OutputStorage("client");
 
         Config clientConfig = SystemPropertiesConfig.load();
 

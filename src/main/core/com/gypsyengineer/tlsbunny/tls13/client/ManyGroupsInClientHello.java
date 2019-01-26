@@ -10,7 +10,7 @@ import com.gypsyengineer.tlsbunny.tls13.connection.check.NoExceptionCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.check.SuccessCheck;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
-import com.gypsyengineer.tlsbunny.utils.SimpleOutput;
+import com.gypsyengineer.tlsbunny.utils.OutputStorage;
 
 import java.util.List;
 
@@ -26,7 +26,7 @@ public class ManyGroupsInClientHello extends SingleConnectionClient {
     private int numberOfGroups = 30000;
 
     public static void main(String[] args) throws Exception {
-        try (SimpleOutput output = new SimpleOutput()) {
+        try (OutputStorage output = new OutputStorage()) {
             new ManyGroupsInClientHello()
                     .set(output)
                     .connect();

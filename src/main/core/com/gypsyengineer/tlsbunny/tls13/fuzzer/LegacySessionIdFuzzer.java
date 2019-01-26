@@ -3,7 +3,7 @@ package com.gypsyengineer.tlsbunny.tls13.fuzzer;
 import com.gypsyengineer.tlsbunny.tls.Random;
 import com.gypsyengineer.tlsbunny.tls.Vector;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
-import com.gypsyengineer.tlsbunny.utils.SimpleOutput;
+import com.gypsyengineer.tlsbunny.utils.OutputStorage;
 
 import java.io.IOException;
 import java.util.List;
@@ -19,10 +19,10 @@ public class LegacySessionIdFuzzer extends FuzzyStructFactory<Vector<Byte>> {
     }
 
     public LegacySessionIdFuzzer() {
-        this(StructFactory.getDefault(), new SimpleOutput());
+        this(StructFactory.getDefault(), new OutputStorage());
     }
 
-    public LegacySessionIdFuzzer(StructFactory factory, SimpleOutput output) {
+    public LegacySessionIdFuzzer(StructFactory factory, OutputStorage output) {
         super(factory, output);
         targets(client_hello, server_hello);
     }

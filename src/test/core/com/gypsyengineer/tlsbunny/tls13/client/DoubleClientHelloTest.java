@@ -13,7 +13,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.Alert;
 import com.gypsyengineer.tlsbunny.tls13.struct.AlertDescription;
 import com.gypsyengineer.tlsbunny.tls13.struct.AlertLevel;
 import com.gypsyengineer.tlsbunny.utils.Config;
-import com.gypsyengineer.tlsbunny.utils.SimpleOutput;
+import com.gypsyengineer.tlsbunny.utils.OutputStorage;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 import org.junit.Test;
 
@@ -29,8 +29,8 @@ public class DoubleClientHelloTest {
 
     @Test
     public void expectedAlertReceived() throws Exception {
-        SimpleOutput serverOutput = new SimpleOutput("server");
-        SimpleOutput clientOutput = new SimpleOutput("client");
+        OutputStorage serverOutput = new OutputStorage("server");
+        OutputStorage clientOutput = new OutputStorage("client");
 
         Config serverConfig = SystemPropertiesConfig.load();
         SingleThreadServer server = new SingleThreadServer()
@@ -61,8 +61,8 @@ public class DoubleClientHelloTest {
 
     @Test
     public void noExpectedAlertReceived() throws Exception {
-        SimpleOutput serverOutput = new SimpleOutput("server");
-        SimpleOutput clientOutput = new SimpleOutput("client");
+        OutputStorage serverOutput = new OutputStorage("server");
+        OutputStorage clientOutput = new OutputStorage("client");
 
         Config serverConfig = SystemPropertiesConfig.load();
         SingleThreadServer server = new SingleThreadServer()

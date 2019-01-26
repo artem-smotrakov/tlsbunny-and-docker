@@ -9,7 +9,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.MaxFragmentLength;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 import com.gypsyengineer.tlsbunny.tls13.client.SingleConnectionClient;
-import com.gypsyengineer.tlsbunny.utils.SimpleOutput;
+import com.gypsyengineer.tlsbunny.utils.OutputStorage;
 import com.gypsyengineer.tlsbunny.utils.Utils;
 
 import static com.gypsyengineer.tlsbunny.tls13.connection.action.simple.GeneratingClientHello.NO_MAX_FRAGMENT_LENGTH;
@@ -24,7 +24,7 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp
 public class AllMaxFragmentLengths {
 
     public static void main(String[] args) throws Exception {
-        try (SimpleOutput output = new SimpleOutput()) {
+        try (OutputStorage output = new OutputStorage()) {
             ClientImpl client =  (ClientImpl) new ClientImpl()
                     .set(SystemPropertiesConfig.load())
                     .set(StructFactory.getDefault())

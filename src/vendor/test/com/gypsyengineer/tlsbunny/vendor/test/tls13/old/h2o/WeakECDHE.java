@@ -8,7 +8,7 @@ import com.gypsyengineer.tlsbunny.tls13.handshake.Negotiator;
 import com.gypsyengineer.tlsbunny.tls13.handshake.WeakECDHENegotiator;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
-import com.gypsyengineer.tlsbunny.utils.SimpleOutput;
+import com.gypsyengineer.tlsbunny.utils.OutputStorage;
 
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.application_data;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
@@ -28,7 +28,7 @@ public class WeakECDHE {
         StructFactory factory = StructFactory.getDefault();
         Negotiator negotiator = WeakECDHENegotiator.create(secp256r1, factory);
 
-        try (SimpleOutput output = new SimpleOutput()) {
+        try (OutputStorage output = new OutputStorage()) {
             Engine.init()
                     .target(config.host())
                     .target(config.port())

@@ -10,7 +10,7 @@ import com.gypsyengineer.tlsbunny.tls13.handshake.Negotiator;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.tls13.utils.FuzzerConfig;
 import com.gypsyengineer.tlsbunny.utils.Config;
-import com.gypsyengineer.tlsbunny.utils.SimpleOutput;
+import com.gypsyengineer.tlsbunny.utils.OutputStorage;
 import com.gypsyengineer.tlsbunny.utils.Utils;
 
 import java.io.IOException;
@@ -27,7 +27,7 @@ public class DeepHandshakeFuzzyClient implements Client {
     private static final int delay = 3000; // in millis
 
     private Client client;
-    private SimpleOutput output;
+    private OutputStorage output;
     private Check[] checks;
     private Analyzer analyzer;
     private FuzzerConfig fuzzerConfig;
@@ -39,7 +39,7 @@ public class DeepHandshakeFuzzyClient implements Client {
     }
 
     public static DeepHandshakeFuzzyClient deepHandshakeFuzzyClient(
-            Client client, FuzzerConfig fuzzerConfig, SimpleOutput output) {
+            Client client, FuzzerConfig fuzzerConfig, OutputStorage output) {
 
         return new DeepHandshakeFuzzyClient(client, fuzzerConfig, output);
     }
@@ -47,7 +47,7 @@ public class DeepHandshakeFuzzyClient implements Client {
     private DeepHandshakeFuzzyClient() {}
 
     public DeepHandshakeFuzzyClient(
-            Client client, FuzzerConfig fuzzerConfig, SimpleOutput output) {
+            Client client, FuzzerConfig fuzzerConfig, OutputStorage output) {
 
         this.client = client;
         this.output = output;
@@ -60,7 +60,7 @@ public class DeepHandshakeFuzzyClient implements Client {
     }
 
     @Override
-    public SimpleOutput output() {
+    public OutputStorage output() {
         return output;
     }
 
@@ -89,7 +89,7 @@ public class DeepHandshakeFuzzyClient implements Client {
     }
 
     @Override
-    public DeepHandshakeFuzzyClient set(SimpleOutput output) {
+    public DeepHandshakeFuzzyClient set(OutputStorage output) {
         this.output = output;
         return this;
     }

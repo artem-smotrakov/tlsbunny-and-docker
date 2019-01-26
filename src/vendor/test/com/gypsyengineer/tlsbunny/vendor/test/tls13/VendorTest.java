@@ -2,7 +2,7 @@ package com.gypsyengineer.tlsbunny.vendor.test.tls13;
 
 import com.gypsyengineer.tlsbunny.tls13.client.Client;
 import com.gypsyengineer.tlsbunny.tls13.server.Server;
-import com.gypsyengineer.tlsbunny.utils.SimpleOutput;
+import com.gypsyengineer.tlsbunny.utils.OutputStorage;
 import com.gypsyengineer.tlsbunny.utils.UncaughtExceptionHandler;
 
 import static com.gypsyengineer.tlsbunny.vendor.test.tls13.Utils.checkForASanFindings;
@@ -53,13 +53,13 @@ public class VendorTest {
         Thread serverThread = null;
         Thread clientThread = null;
 
-        SimpleOutput clientOutput = null;
-        SimpleOutput serverOutput = null;
+        OutputStorage clientOutput = null;
+        OutputStorage serverOutput = null;
 
         try {
             // start the server if it's not running
             if (!server.running()) {
-                serverOutput = new SimpleOutput("server", label);
+                serverOutput = new OutputStorage("server");
                 server.set(serverOutput);
                 serverThread = server.start();
                 Utils.waitStart(server);
@@ -69,7 +69,7 @@ public class VendorTest {
 
             // configure and run the client
             if (!client.running()) {
-                clientOutput = new SimpleOutput("client", label);
+                clientOutput = new OutputStorage("client");
                 client.set(clientOutput);
                 client.config().port(server.port());
                 clientThread = client.start();

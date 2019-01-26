@@ -3,6 +3,16 @@ package com.gypsyengineer.tlsbunny.utils;
 import java.util.List;
 
 public interface Output extends AutoCloseable {
+
+    static Output console() {
+        return new ConsoleOutput(new OutputStorage());
+    }
+
+    static Output console(String prefix) {
+        return new ConsoleOutput(new OutputStorage(prefix));
+    }
+
+
     Output add(OutputListener listener);
 
     void increaseIndent();
@@ -19,11 +29,9 @@ public interface Output extends AutoCloseable {
 
     void achtung(String message, Throwable e);
 
-    void add(SimpleOutput output);
+    List<String> lines();
 
-    List<String> strings();
-
-    boolean contains(String phrase);
+    boolean contains(String line);
 
     void flush();
 

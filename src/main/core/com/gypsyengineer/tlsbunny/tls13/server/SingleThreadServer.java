@@ -9,7 +9,7 @@ import com.gypsyengineer.tlsbunny.tls13.connection.EngineFactory;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AEADException;
 import com.gypsyengineer.tlsbunny.tls13.handshake.NegotiatorException;
 import com.gypsyengineer.tlsbunny.utils.Config;
-import com.gypsyengineer.tlsbunny.utils.SimpleOutput;
+import com.gypsyengineer.tlsbunny.utils.OutputStorage;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 import com.gypsyengineer.tlsbunny.utils.Connection;
 
@@ -35,7 +35,7 @@ public class SingleThreadServer implements Server {
     private Config config = SystemPropertiesConfig.load();
     private EngineFactory factory;
     private StopCondition stopCondition = new NonStop();
-    private SimpleOutput output = new SimpleOutput("server");
+    private OutputStorage output = new OutputStorage("server");
     private Check check;
     private boolean failed = false;
     private boolean running = false;
@@ -55,7 +55,7 @@ public class SingleThreadServer implements Server {
     }
 
     @Override
-    public SimpleOutput output() {
+    public OutputStorage output() {
         return output;
     }
 
@@ -77,7 +77,7 @@ public class SingleThreadServer implements Server {
     }
 
     @Override
-    public SingleThreadServer set(SimpleOutput output) {
+    public SingleThreadServer set(OutputStorage output) {
         this.output = output;
         return this;
     }

@@ -8,7 +8,7 @@ import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
 import com.gypsyengineer.tlsbunny.utils.Output;
-import com.gypsyengineer.tlsbunny.utils.SimpleOutput;
+import com.gypsyengineer.tlsbunny.utils.OutputStorage;
 import com.gypsyengineer.tlsbunny.utils.WhatTheHell;
 
 import java.lang.reflect.InvocationTargetException;
@@ -195,13 +195,13 @@ public class TestUtils {
         }
 
         @Override
-        public FakeVectorFuzzer set(SimpleOutput output) {
+        public FakeVectorFuzzer set(OutputStorage output) {
             return this;
         }
 
         @Override
-        public SimpleOutput output() {
-            return new SimpleOutput();
+        public OutputStorage output() {
+            return new OutputStorage();
         }
 
         @Override
@@ -243,13 +243,13 @@ public class TestUtils {
         }
 
         @Override
-        public FakeCompressionMethodFuzzer set(SimpleOutput output) {
+        public FakeCompressionMethodFuzzer set(OutputStorage output) {
             return this;
         }
 
         @Override
-        public SimpleOutput output() {
-            return new SimpleOutput();
+        public OutputStorage output() {
+            return new OutputStorage();
         }
 
         @Override
@@ -291,13 +291,13 @@ public class TestUtils {
         }
 
         @Override
-        public FakeCipherSuitesFuzzer set(SimpleOutput output) {
+        public FakeCipherSuitesFuzzer set(OutputStorage output) {
             return this;
         }
 
         @Override
-        public SimpleOutput output() {
-            return new SimpleOutput();
+        public OutputStorage output() {
+            return new OutputStorage();
         }
 
         @Override
@@ -339,13 +339,13 @@ public class TestUtils {
         }
 
         @Override
-        public FakeExtensionVectorFuzzer set(SimpleOutput output) {
+        public FakeExtensionVectorFuzzer set(OutputStorage output) {
             return this;
         }
 
         @Override
-        public SimpleOutput output() {
-            return new SimpleOutput();
+        public OutputStorage output() {
+            return new OutputStorage();
         }
 
         @Override

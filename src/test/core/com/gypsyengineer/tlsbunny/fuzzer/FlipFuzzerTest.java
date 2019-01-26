@@ -1,6 +1,6 @@
 package com.gypsyengineer.tlsbunny.fuzzer;
 
-import com.gypsyengineer.tlsbunny.utils.SimpleOutput;
+import com.gypsyengineer.tlsbunny.utils.OutputStorage;
 import com.gypsyengineer.tlsbunny.utils.WhatTheHell;
 import org.junit.Test;
 
@@ -53,7 +53,7 @@ public class FlipFuzzerTest {
 
     @Test
     public void byteFlitFuzzerRatio() {
-        try (SimpleOutput output = new SimpleOutput()) {
+        try (OutputStorage output = new OutputStorage()) {
             ByteFlipFuzzer fuzzer = newByteFlipFuzzer();
             fuzzer.set(output);
 
@@ -140,7 +140,7 @@ public class FlipFuzzerTest {
     }
 
     private static void iterate(Fuzzer<byte[]> fuzzer) {
-        try (SimpleOutput output = new SimpleOutput()) {
+        try (OutputStorage output = new OutputStorage()) {
             fuzzer.set(output);
             assertEquals(output, fuzzer.output());
 
@@ -167,7 +167,7 @@ public class FlipFuzzerTest {
     }
 
     private static void consistencyOf(Fuzzer<byte[]> fuzzerOne, Fuzzer<byte[]> fuzzerTwo) {
-        try (SimpleOutput output = new SimpleOutput()) {
+        try (OutputStorage output = new OutputStorage()) {
             fuzzerOne.set(output);
             fuzzerTwo.set(output);
 
@@ -201,7 +201,7 @@ public class FlipFuzzerTest {
 
 
     private static void setTestIn(Fuzzer<byte[]> fuzzer) {
-        try (SimpleOutput output = new SimpleOutput()) {
+        try (OutputStorage output = new OutputStorage()) {
             output.info("setTest: fuzzer = %s", fuzzer.toString());
 
             fuzzer.set(output);
@@ -232,7 +232,7 @@ public class FlipFuzzerTest {
     }
 
     private static void oneByteArray(Fuzzer<byte[]> fuzzer) {
-        try (SimpleOutput output = new SimpleOutput()) {
+        try (OutputStorage output = new OutputStorage()) {
             fuzzer.set(output);
 
             byte[] array = new byte[] { 1 };

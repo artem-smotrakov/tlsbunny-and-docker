@@ -13,7 +13,7 @@ import com.gypsyengineer.tlsbunny.tls13.server.SingleThreadServer;
 import com.gypsyengineer.tlsbunny.tls13.server.OneConnectionReceived;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
 import com.gypsyengineer.tlsbunny.utils.Config;
-import com.gypsyengineer.tlsbunny.utils.SimpleOutput;
+import com.gypsyengineer.tlsbunny.utils.OutputStorage;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 
 import java.io.IOException;
@@ -29,7 +29,7 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp
 // TODO: it should be a test
 public class SendDowngradeMessage {
 
-    // TODO: how can we avoid duplicating these strings?
+    // TODO: how can we avoid duplicating these lines?
     private static final String serverCertificatePath = "certs/server_cert.der";
     private static final String serverKeyPath = "certs/server_key.pkcs8";
 
@@ -42,7 +42,7 @@ public class SendDowngradeMessage {
         config.serverCertificate(serverCertificatePath);
         config.serverKey(serverKeyPath);
 
-        try (SimpleOutput output = new SimpleOutput("server");
+        try (OutputStorage output = new OutputStorage("server");
              Server server = server(output, config, version)) {
 
             server.start().join();
@@ -56,7 +56,7 @@ public class SendDowngradeMessage {
     }
 
     // TODO: max connections should be configurable
-    public static Server server(SimpleOutput output, Config config, ProtocolVersion version)
+    public static Server server(OutputStorage output, Config config, ProtocolVersion version)
             throws IOException {
 
         return new SingleThreadServer()

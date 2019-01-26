@@ -7,14 +7,14 @@ import com.gypsyengineer.tlsbunny.tls13.connection.check.NoExceptionCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.check.SuccessCheck;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
-import com.gypsyengineer.tlsbunny.utils.SimpleOutput;
+import com.gypsyengineer.tlsbunny.utils.OutputStorage;
 
 import java.util.List;
 
 public class AnotherHttpsClient extends SingleConnectionClient {
 
     public static void main(String[] args) throws Exception {
-        try (SimpleOutput output = new SimpleOutput()) {
+        try (OutputStorage output = new OutputStorage()) {
             new AnotherHttpsClient()
                     .set(SystemPropertiesConfig.load())
                     .set(StructFactory.getDefault())

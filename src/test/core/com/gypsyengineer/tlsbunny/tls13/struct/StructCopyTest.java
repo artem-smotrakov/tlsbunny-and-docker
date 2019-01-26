@@ -14,7 +14,7 @@ import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.server.OneConnectionReceived;
 import com.gypsyengineer.tlsbunny.tls13.server.SingleThreadServer;
 import com.gypsyengineer.tlsbunny.utils.Config;
-import com.gypsyengineer.tlsbunny.utils.SimpleOutput;
+import com.gypsyengineer.tlsbunny.utils.OutputStorage;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 import org.junit.Test;
 
@@ -83,8 +83,8 @@ public class StructCopyTest {
         // instead of creating Struct objects manually we start a handshake process
         // and collect handshake messages which were created during handshaking
 
-        SimpleOutput serverOutput = new SimpleOutput("server");
-        SimpleOutput clientOutput = new SimpleOutput("client");
+        OutputStorage serverOutput = new OutputStorage("server");
+        OutputStorage clientOutput = new OutputStorage("client");
 
         Config serverConfig = SystemPropertiesConfig.load();
         SingleThreadServer server = new SingleThreadServer()

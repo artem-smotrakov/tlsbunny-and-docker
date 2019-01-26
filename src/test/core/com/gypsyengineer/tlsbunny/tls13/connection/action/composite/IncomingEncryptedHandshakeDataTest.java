@@ -11,7 +11,7 @@ import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.Output;
-import com.gypsyengineer.tlsbunny.utils.SimpleOutput;
+import com.gypsyengineer.tlsbunny.utils.OutputStorage;
 import org.junit.Test;
 
 import java.nio.ByteBuffer;
@@ -26,7 +26,7 @@ public class IncomingEncryptedHandshakeDataTest {
 
     @Test
     public void notEncrypted() throws Exception {
-        try (Output output = new SimpleOutput()) {
+        try (Output output = new OutputStorage()) {
             Context context = context();
 
             ByteBuffer buffer = new WrappingIntoTLSPlaintexts()
@@ -51,7 +51,7 @@ public class IncomingEncryptedHandshakeDataTest {
 
     @Test
     public void encrypted() throws Exception {
-        try (Output output = new SimpleOutput()) {
+        try (Output output = new OutputStorage()) {
             Context context = context();
 
             ByteBuffer buffer = new WrappingIntoHandshake()

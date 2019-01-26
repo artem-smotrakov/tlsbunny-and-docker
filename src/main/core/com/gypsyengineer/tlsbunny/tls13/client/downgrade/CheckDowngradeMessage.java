@@ -9,7 +9,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.CipherSuite;
 import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.Config;
-import com.gypsyengineer.tlsbunny.utils.SimpleOutput;
+import com.gypsyengineer.tlsbunny.utils.OutputStorage;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.alert;
@@ -25,7 +25,7 @@ public class CheckDowngradeMessage extends SingleConnectionClient {
     private ProtocolVersion version = TLSv12;
 
     public static void main(String[] args) {
-        try (SimpleOutput output = new SimpleOutput()) {
+        try (OutputStorage output = new OutputStorage()) {
             Config config = SystemPropertiesConfig.load();
             run(output, config, TLSv13);
             run(output, config, TLSv12);
@@ -34,7 +34,7 @@ public class CheckDowngradeMessage extends SingleConnectionClient {
         }
     }
 
-    public static Client run(SimpleOutput output, Config config, ProtocolVersion version) {
+    public static Client run(OutputStorage output, Config config, ProtocolVersion version) {
         return new CheckDowngradeMessage()
                         .expect(version)
                         .set(config)

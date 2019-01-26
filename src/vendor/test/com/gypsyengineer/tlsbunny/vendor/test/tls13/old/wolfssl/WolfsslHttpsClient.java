@@ -5,7 +5,7 @@ import com.gypsyengineer.tlsbunny.tls13.connection.check.NoAlertCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
-import com.gypsyengineer.tlsbunny.utils.SimpleOutput;
+import com.gypsyengineer.tlsbunny.utils.OutputStorage;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 import com.gypsyengineer.tlsbunny.tls13.client.SingleConnectionClient;
 
@@ -21,7 +21,7 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp
 public class WolfsslHttpsClient extends SingleConnectionClient {
 
     public static void main(String[] args) throws Exception {
-        try (SimpleOutput output = new SimpleOutput()) {
+        try (OutputStorage output = new OutputStorage()) {
             new WolfsslHttpsClient()
                     .set(output)
                     .set(SystemPropertiesConfig.load())

@@ -8,7 +8,7 @@ import com.gypsyengineer.tlsbunny.tls13.handshake.Negotiator;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.tls13.utils.FuzzerConfig;
 import com.gypsyengineer.tlsbunny.utils.Config;
-import com.gypsyengineer.tlsbunny.utils.SimpleOutput;
+import com.gypsyengineer.tlsbunny.utils.OutputStorage;
 
 import static com.gypsyengineer.tlsbunny.tls13.utils.FuzzerConfigUpdater.fuzzerConfigUpdater;
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
@@ -66,13 +66,13 @@ public class MultiConfigClient implements Client, AutoCloseable {
     }
 
     @Override
-    public MultiConfigClient set(SimpleOutput output) {
+    public MultiConfigClient set(OutputStorage output) {
         client.set(output);
         return this;
     }
 
     @Override
-    public SimpleOutput output() {
+    public OutputStorage output() {
         return client.output();
     }
 

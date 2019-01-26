@@ -10,7 +10,7 @@ import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.connection.check.AlertCheck;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.handshake.NegotiatorException;
-import com.gypsyengineer.tlsbunny.utils.SimpleOutput;
+import com.gypsyengineer.tlsbunny.utils.OutputStorage;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
@@ -34,7 +34,7 @@ public class InvalidCCS extends AbstractClient {
     private int end = max;
 
     public static void main(String[] args) throws Exception {
-        try (SimpleOutput output = new SimpleOutput()) {
+        try (OutputStorage output = new OutputStorage()) {
             new InvalidCCS()
                     .set(output)
                     .connect();

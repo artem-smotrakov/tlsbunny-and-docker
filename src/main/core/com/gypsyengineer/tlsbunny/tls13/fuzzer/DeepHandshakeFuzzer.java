@@ -4,7 +4,7 @@ import com.gypsyengineer.tlsbunny.fuzzer.Fuzzer;
 import com.gypsyengineer.tlsbunny.tls.Random;
 import com.gypsyengineer.tlsbunny.tls.Struct;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
-import com.gypsyengineer.tlsbunny.utils.SimpleOutput;
+import com.gypsyengineer.tlsbunny.utils.OutputStorage;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 public class DeepHandshakeFuzzer extends StructFactoryWrapper
         implements Fuzzer<HandshakeMessage> {
 
-    private SimpleOutput output;
+    private OutputStorage output;
     private Fuzzer<byte[]> fuzzer;
 
     private Mode mode;
@@ -31,20 +31,20 @@ public class DeepHandshakeFuzzer extends StructFactoryWrapper
     private int rounds = 10;
 
     public static DeepHandshakeFuzzer deepHandshakeFuzzer() {
-        return deepHandshakeFuzzer(StructFactory.getDefault(), new SimpleOutput());
+        return deepHandshakeFuzzer(StructFactory.getDefault(), new OutputStorage());
     }
 
-    public static DeepHandshakeFuzzer deepHandshakeFuzzer(SimpleOutput output) {
+    public static DeepHandshakeFuzzer deepHandshakeFuzzer(OutputStorage output) {
         return deepHandshakeFuzzer(StructFactory.getDefault(), output);
     }
 
     public static DeepHandshakeFuzzer deepHandshakeFuzzer(
-            StructFactory factory, SimpleOutput output) {
+            StructFactory factory, OutputStorage output) {
 
         return new DeepHandshakeFuzzer(factory, output);
     }
 
-    private DeepHandshakeFuzzer(StructFactory factory, SimpleOutput output) {
+    private DeepHandshakeFuzzer(StructFactory factory, OutputStorage output) {
         super(factory);
         this.output = output;
     }
@@ -305,13 +305,13 @@ public class DeepHandshakeFuzzer extends StructFactoryWrapper
     }
 
     @Override
-    public DeepHandshakeFuzzer set(SimpleOutput output) {
+    public DeepHandshakeFuzzer set(OutputStorage output) {
         this.output = output;
         return this;
     }
 
     @Override
-    public SimpleOutput output() {
+    public OutputStorage output() {
         return output;
     }
 

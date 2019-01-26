@@ -181,7 +181,7 @@ public class Utils {
     }
 
     public static void checkForASanFindings(Output output) {
-        for (String string : output.strings()) {
+        for (String string : output.lines()) {
             if (string.contains("ERROR: AddressSanitizer:")) {
                 throw achtung("hey, AddressSanitizer found something!");
             }

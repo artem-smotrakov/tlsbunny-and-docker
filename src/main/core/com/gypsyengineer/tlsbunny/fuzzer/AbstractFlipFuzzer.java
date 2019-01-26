@@ -1,6 +1,6 @@
 package com.gypsyengineer.tlsbunny.fuzzer;
 
-import com.gypsyengineer.tlsbunny.utils.SimpleOutput;
+import com.gypsyengineer.tlsbunny.utils.OutputStorage;
 
 import java.util.Random;
 
@@ -20,7 +20,7 @@ public abstract class AbstractFlipFuzzer implements Fuzzer<byte[]> {
     protected double minRatio;
     protected double maxRatio;
     protected final Random random;
-    protected SimpleOutput output;
+    protected OutputStorage output;
     protected long state = 0;
 
     public AbstractFlipFuzzer() {
@@ -114,13 +114,13 @@ public abstract class AbstractFlipFuzzer implements Fuzzer<byte[]> {
     }
 
     @Override
-    synchronized public Fuzzer<byte[]> set(SimpleOutput output) {
+    synchronized public Fuzzer<byte[]> set(OutputStorage output) {
         this.output = output;
         return this;
     }
 
     @Override
-    synchronized public SimpleOutput output() {
+    synchronized public OutputStorage output() {
         return output;
     }
 
