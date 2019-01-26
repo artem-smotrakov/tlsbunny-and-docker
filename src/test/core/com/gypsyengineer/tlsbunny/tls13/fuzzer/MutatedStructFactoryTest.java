@@ -6,7 +6,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
 import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
-import com.gypsyengineer.tlsbunny.utils.OutputStorage;
+import com.gypsyengineer.tlsbunny.utils.Output;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -23,7 +23,7 @@ public class MutatedStructFactoryTest {
 
     @Test
     public void checkConsistency() throws IOException {
-        try (OutputStorage output = new OutputStorage()) {
+        try (Output output = Output.console()) {
             output.info("check if %s is consistent",
                     MutatedStructFactory.class.getSimpleName());
 

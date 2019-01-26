@@ -10,7 +10,6 @@ import com.gypsyengineer.tlsbunny.tls13.connection.check.SuccessCheck;
 import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.Output;
-import com.gypsyengineer.tlsbunny.utils.OutputStorage;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 import org.junit.Test;
 
@@ -27,8 +26,8 @@ public class HandshakeTest extends BaseTest {
         serverConfig.serverCertificate(serverCertificatePath);
         serverConfig.serverKey(serverKeyPath);
 
-        Output serverOutput = new OutputStorage("server");
-        OutputStorage clientOutput = new OutputStorage("client");
+        Output serverOutput = Output.console("server");
+        Output clientOutput = Output.console("client");
 
         Client client = new HttpsClient()
                 .version(ProtocolVersion.TLSv13)

@@ -8,7 +8,7 @@ import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
 import com.gypsyengineer.tlsbunny.utils.Output;
-import com.gypsyengineer.tlsbunny.utils.OutputStorage;
+import com.gypsyengineer.tlsbunny.utils.Output;
 import com.gypsyengineer.tlsbunny.utils.WhatTheHell;
 
 import java.lang.reflect.InvocationTargetException;
@@ -195,13 +195,13 @@ public class TestUtils {
         }
 
         @Override
-        public FakeVectorFuzzer set(OutputStorage output) {
+        public FakeVectorFuzzer set(Output output) {
             return this;
         }
 
         @Override
-        public OutputStorage output() {
-            return new OutputStorage();
+        public Output output() {
+            return Output.console();
         }
 
         @Override
@@ -243,13 +243,13 @@ public class TestUtils {
         }
 
         @Override
-        public FakeCompressionMethodFuzzer set(OutputStorage output) {
+        public FakeCompressionMethodFuzzer set(Output output) {
             return this;
         }
 
         @Override
-        public OutputStorage output() {
-            return new OutputStorage();
+        public Output output() {
+            return Output.console();
         }
 
         @Override
@@ -291,13 +291,13 @@ public class TestUtils {
         }
 
         @Override
-        public FakeCipherSuitesFuzzer set(OutputStorage output) {
+        public FakeCipherSuitesFuzzer set(Output output) {
             return this;
         }
 
         @Override
-        public OutputStorage output() {
-            return new OutputStorage();
+        public Output output() {
+            return Output.console();
         }
 
         @Override
@@ -339,13 +339,13 @@ public class TestUtils {
         }
 
         @Override
-        public FakeExtensionVectorFuzzer set(OutputStorage output) {
+        public FakeExtensionVectorFuzzer set(Output output) {
             return this;
         }
 
         @Override
-        public OutputStorage output() {
-            return new OutputStorage();
+        public Output output() {
+            return Output.console();
         }
 
         @Override

@@ -6,7 +6,7 @@ import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.handshake.ECDHENegotiator;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
 import com.gypsyengineer.tlsbunny.utils.Output;
-import com.gypsyengineer.tlsbunny.utils.OutputStorage;
+import com.gypsyengineer.tlsbunny.utils.Output;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -29,7 +29,7 @@ public class ClientHelloTest {
                 NamedGroup.Secp.secp256r1, StructFactory.getDefault())
                     .strictValidation());
 
-        try (Output output = new OutputStorage()) {
+        try (Output output = Output.console()) {
             ByteBuffer buffer = new GeneratingClientHello()
                     .supportedVersions(TLSv13)
                     .groups(secp256r1)
@@ -71,7 +71,7 @@ public class ClientHelloTest {
             tooManyGroups[i] = secp256r1;
         }
 
-        try (Output output = new OutputStorage()) {
+        try (Output output = Output.console()) {
             ByteBuffer buffer = new GeneratingClientHello()
                     .supportedVersions(TLSv13)
                     .groups(tooManyGroups)

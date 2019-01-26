@@ -12,7 +12,6 @@ public interface Output extends AutoCloseable {
         return new ConsoleOutput(new OutputStorage(prefix));
     }
 
-
     Output add(OutputListener listener);
 
     void increaseIndent();

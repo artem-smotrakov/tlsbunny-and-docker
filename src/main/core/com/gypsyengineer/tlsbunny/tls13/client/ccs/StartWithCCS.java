@@ -8,7 +8,7 @@ import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.OutgoingChan
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.connection.check.AlertCheck;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
-import com.gypsyengineer.tlsbunny.utils.OutputStorage;
+import com.gypsyengineer.tlsbunny.utils.Output;
 
 import java.util.List;
 
@@ -23,7 +23,7 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp
 public class StartWithCCS extends SingleConnectionClient {
 
     public static void main(String[] args) throws Exception {
-        try (OutputStorage output = new OutputStorage()) {
+        try (Output output = Output.console()) {
             new StartWithCCS()
                     .set(output)
                     .connect();

@@ -2,7 +2,7 @@ package com.gypsyengineer.tlsbunny.tls13.fuzzer;
 
 import com.gypsyengineer.tlsbunny.tls.Random;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
-import com.gypsyengineer.tlsbunny.utils.OutputStorage;
+import com.gypsyengineer.tlsbunny.utils.Output;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -18,10 +18,10 @@ public class MutatedStructFactory extends FuzzyStructFactory<byte[]> {
     }
 
     public MutatedStructFactory() {
-        this(StructFactory.getDefault(), new OutputStorage());
+        this(StructFactory.getDefault(), Output.console());
     }
 
-    public MutatedStructFactory(StructFactory factory, OutputStorage output) {
+    public MutatedStructFactory(StructFactory factory, Output output) {
         super(factory, output);
         targets(tls_plaintext);
     }

@@ -7,7 +7,7 @@ import com.gypsyengineer.tlsbunny.tls13.server.HttpsServer;
 import com.gypsyengineer.tlsbunny.tls13.server.OneConnectionReceived;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.Output;
-import com.gypsyengineer.tlsbunny.utils.OutputStorage;
+import com.gypsyengineer.tlsbunny.utils.Output;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 import org.junit.Test;
 
@@ -19,8 +19,8 @@ public class ClientAuthTest {
 
     @Test
     public void httpsClient() throws Exception {
-        OutputStorage serverOutput = new OutputStorage("server");
-        OutputStorage clientOutput = new OutputStorage("client");
+        Output serverOutput = Output.console("server");
+        Output clientOutput = Output.console("client");
 
         Config serverConfig = SystemPropertiesConfig.load();
 

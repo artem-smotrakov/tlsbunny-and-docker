@@ -7,7 +7,7 @@ import com.gypsyengineer.tlsbunny.tls13.handshake.Negotiator;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.HasOutput;
-import com.gypsyengineer.tlsbunny.utils.OutputStorage;
+import com.gypsyengineer.tlsbunny.utils.Output;
 
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
@@ -19,7 +19,7 @@ public interface Client extends AutoCloseable, Runnable, HasOutput<Client> {
     Client set(Config config);
     Client set(StructFactory factory);
     Client set(Negotiator negotiator);
-    Client set(OutputStorage output);
+    Client set(Output output);
     Client set(Check... checks);
     Client set(Analyzer analyzer);
     Client connect() throws Exception;

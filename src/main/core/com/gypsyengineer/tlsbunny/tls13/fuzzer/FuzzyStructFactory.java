@@ -2,7 +2,7 @@ package com.gypsyengineer.tlsbunny.tls13.fuzzer;
 
 import com.gypsyengineer.tlsbunny.fuzzer.Fuzzer;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
-import com.gypsyengineer.tlsbunny.utils.OutputStorage;
+import com.gypsyengineer.tlsbunny.utils.Output;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -11,10 +11,10 @@ public abstract class FuzzyStructFactory<T> extends StructFactoryWrapper
         implements StructFactory, Fuzzer<T> {
 
     protected Target[] targets;
-    protected OutputStorage output;
+    protected Output output;
     protected Fuzzer<T> fuzzer;
 
-    public FuzzyStructFactory(StructFactory factory, OutputStorage output) {
+    public FuzzyStructFactory(StructFactory factory, Output output) {
         super(factory);
         this.output = output;
     }
@@ -56,13 +56,13 @@ public abstract class FuzzyStructFactory<T> extends StructFactoryWrapper
     // implement methods from Fuzzer
 
     @Override
-    synchronized public FuzzyStructFactory set(OutputStorage output) {
+    synchronized public FuzzyStructFactory set(Output output) {
         this.output = output;
         return this;
     }
 
     @Override
-    synchronized public OutputStorage output() {
+    synchronized public Output output() {
         return output;
     }
 

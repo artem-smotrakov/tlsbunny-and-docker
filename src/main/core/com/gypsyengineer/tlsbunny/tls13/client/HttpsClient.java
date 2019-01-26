@@ -11,7 +11,7 @@ import com.gypsyengineer.tlsbunny.tls13.connection.check.SuccessCheck;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.handshake.NegotiatorException;
 import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
-import com.gypsyengineer.tlsbunny.utils.OutputStorage;
+import com.gypsyengineer.tlsbunny.utils.Output;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
@@ -27,7 +27,7 @@ public class HttpsClient extends SingleConnectionClient {
     private ProtocolVersion protocolVersion = TLSv13;
 
     public static void main(String[] args) throws Exception {
-        try (OutputStorage output = new OutputStorage()) {
+        try (Output output = Output.console()) {
             new HttpsClient()
                     .set(output)
                     .connect();

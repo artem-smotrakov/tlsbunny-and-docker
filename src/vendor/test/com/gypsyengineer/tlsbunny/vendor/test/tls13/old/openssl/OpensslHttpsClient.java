@@ -5,7 +5,7 @@ import com.gypsyengineer.tlsbunny.tls13.connection.check.NoAlertCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
-import com.gypsyengineer.tlsbunny.utils.OutputStorage;
+import com.gypsyengineer.tlsbunny.utils.Output;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 import com.gypsyengineer.tlsbunny.tls13.client.SingleConnectionClient;
 
@@ -21,7 +21,7 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp
 public class OpensslHttpsClient extends SingleConnectionClient {
 
     public static void main(String[] args) throws Exception {
-        try (OutputStorage output = new OutputStorage()) {
+        try (Output output = Output.console()) {
             new OpensslHttpsClient()
                     .set(SystemPropertiesConfig.load())
                     .set(StructFactory.getDefault())

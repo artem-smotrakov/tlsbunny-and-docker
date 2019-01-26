@@ -3,14 +3,14 @@ package com.gypsyengineer.tlsbunny.tls13.connection;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.Output;
-import com.gypsyengineer.tlsbunny.utils.OutputStorage;
+import com.gypsyengineer.tlsbunny.utils.Output;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 
 public abstract class BaseEngineFactory implements EngineFactory {
 
     protected Config config = SystemPropertiesConfig.load();
     protected StructFactory structFactory = StructFactory.getDefault();
-    protected OutputStorage output = new OutputStorage(String.format("output-%s-%d",
+    protected Output output = Output.console(String.format("output-%s-%d",
             BaseEngineFactory.class.getSimpleName(), System.currentTimeMillis()));
 
     public BaseEngineFactory set(Config config) {
@@ -25,7 +25,7 @@ public abstract class BaseEngineFactory implements EngineFactory {
     }
 
     @Override
-    public BaseEngineFactory set(OutputStorage output) {
+    public BaseEngineFactory set(Output output) {
         this.output = output;
         return this;
     }

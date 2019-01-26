@@ -11,7 +11,7 @@ import com.gypsyengineer.tlsbunny.tls13.handshake.Negotiator;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.tls13.utils.FuzzerConfig;
-import com.gypsyengineer.tlsbunny.utils.OutputStorage;
+import com.gypsyengineer.tlsbunny.utils.Output;
 
 import java.io.IOException;
 import java.net.ConnectException;
@@ -26,7 +26,7 @@ public class MutatedClient implements Client {
     private static final int delay = 3000; // in millis
 
     private Client client;
-    private OutputStorage output;
+    private Output output;
     private Analyzer analyzer;
     private Check[] checks;
     private FuzzerConfig fuzzerConfig;
@@ -39,7 +39,7 @@ public class MutatedClient implements Client {
 
     private MutatedClient() {}
 
-    public MutatedClient(Client client, OutputStorage output, FuzzerConfig fuzzerConfig) {
+    public MutatedClient(Client client, Output output, FuzzerConfig fuzzerConfig) {
         this.client = client;
         this.output = output;
         this.fuzzerConfig = fuzzerConfig;
@@ -51,7 +51,7 @@ public class MutatedClient implements Client {
     }
 
     @Override
-    public OutputStorage output() {
+    public Output output() {
         return output;
     }
 
@@ -80,7 +80,7 @@ public class MutatedClient implements Client {
     }
 
     @Override
-    public MutatedClient set(OutputStorage output) {
+    public MutatedClient set(Output output) {
         this.output = output;
         return this;
     }

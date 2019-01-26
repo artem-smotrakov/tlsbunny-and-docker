@@ -7,7 +7,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.CipherSuite;
 import com.gypsyengineer.tlsbunny.tls13.struct.ClientHello;
 import com.gypsyengineer.tlsbunny.tls13.struct.CompressionMethod;
 import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
-import com.gypsyengineer.tlsbunny.utils.OutputStorage;
+import com.gypsyengineer.tlsbunny.utils.Output;
 import org.junit.Test;
 
 import java.util.List;
@@ -22,7 +22,7 @@ public class CipherSuitesFuzzerTest {
 
     @Test
     public void iterate() {
-        try (OutputStorage output = new OutputStorage()) {
+        try (Output output = Output.console()) {
             CipherSuitesFuzzer fuzzer = CipherSuitesFuzzer.cipherSuitesFuzzer();
             fuzzer.fuzzer(simpleVectorFuzzer());
 
@@ -58,7 +58,7 @@ public class CipherSuitesFuzzerTest {
 
     @Test
     public void consistency() {
-        try (OutputStorage output = new OutputStorage()) {
+        try (Output output = Output.console()) {
             CipherSuitesFuzzer one = CipherSuitesFuzzer.cipherSuitesFuzzer();
             one.fuzzer(simpleVectorFuzzer());
             one.targets(client_hello);
@@ -95,7 +95,7 @@ public class CipherSuitesFuzzerTest {
 
     @Test
     public void clientHello() {
-        try (OutputStorage output = new OutputStorage()) {
+        try (Output output = Output.console()) {
             CipherSuitesFuzzer fuzzer = CipherSuitesFuzzer.cipherSuitesFuzzer();
             fuzzer.fuzzer(simpleVectorFuzzer());
             fuzzer.set(output);

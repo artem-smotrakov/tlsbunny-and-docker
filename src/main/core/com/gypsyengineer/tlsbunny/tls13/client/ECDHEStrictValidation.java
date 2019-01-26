@@ -13,7 +13,7 @@ import com.gypsyengineer.tlsbunny.tls13.handshake.ECDHENegotiator;
 import com.gypsyengineer.tlsbunny.tls13.handshake.NegotiatorException;
 import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
-import com.gypsyengineer.tlsbunny.utils.OutputStorage;
+import com.gypsyengineer.tlsbunny.utils.Output;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
@@ -31,7 +31,7 @@ public class ECDHEStrictValidation extends AbstractClient {
     private int n = 1;
 
     public static void main(String[] args) throws Exception {
-        try (OutputStorage output = new OutputStorage()) {
+        try (Output output = Output.console()) {
             new ECDHEStrictValidation()
                     .set(output)
                     .connect();

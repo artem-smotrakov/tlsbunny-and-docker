@@ -9,7 +9,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.tls13.utils.FuzzerConfig;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.Connection;
-import com.gypsyengineer.tlsbunny.utils.OutputStorage;
+import com.gypsyengineer.tlsbunny.utils.Output;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -32,7 +32,7 @@ public class MutatedServer implements Server {
     // TODO: synchronization
     private boolean running = false;
     private boolean failed = false;
-    private OutputStorage output;
+    private Output output;
     private FuzzerConfig fuzzerConfig;
 
     public static MutatedServer mutatedServer(
@@ -107,13 +107,13 @@ public class MutatedServer implements Server {
     }
 
     @Override
-    public MutatedServer set(OutputStorage output) {
+    public MutatedServer set(Output output) {
         this.output = output;
         return this;
     }
 
     @Override
-    public OutputStorage output() {
+    public Output output() {
         return output;
     }
 

@@ -4,7 +4,7 @@ import com.gypsyengineer.tlsbunny.fuzzer.Fuzzer;
 import com.gypsyengineer.tlsbunny.tls.Random;
 import com.gypsyengineer.tlsbunny.tls.Struct;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
-import com.gypsyengineer.tlsbunny.utils.OutputStorage;
+import com.gypsyengineer.tlsbunny.utils.Output;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 public class DeepHandshakeFuzzer extends StructFactoryWrapper
         implements Fuzzer<HandshakeMessage> {
 
-    private OutputStorage output;
+    private Output output;
     private Fuzzer<byte[]> fuzzer;
 
     private Mode mode;
@@ -31,20 +31,20 @@ public class DeepHandshakeFuzzer extends StructFactoryWrapper
     private int rounds = 10;
 
     public static DeepHandshakeFuzzer deepHandshakeFuzzer() {
-        return deepHandshakeFuzzer(StructFactory.getDefault(), new OutputStorage());
+        return deepHandshakeFuzzer(StructFactory.getDefault(), Output.console());
     }
 
-    public static DeepHandshakeFuzzer deepHandshakeFuzzer(OutputStorage output) {
+    public static DeepHandshakeFuzzer deepHandshakeFuzzer(Output output) {
         return deepHandshakeFuzzer(StructFactory.getDefault(), output);
     }
 
     public static DeepHandshakeFuzzer deepHandshakeFuzzer(
-            StructFactory factory, OutputStorage output) {
+            StructFactory factory, Output output) {
 
         return new DeepHandshakeFuzzer(factory, output);
     }
 
-    private DeepHandshakeFuzzer(StructFactory factory, OutputStorage output) {
+    private DeepHandshakeFuzzer(StructFactory factory, Output output) {
         super(factory);
         this.output = output;
     }
@@ -305,13 +305,13 @@ public class DeepHandshakeFuzzer extends StructFactoryWrapper
     }
 
     @Override
-    public DeepHandshakeFuzzer set(OutputStorage output) {
+    public DeepHandshakeFuzzer set(Output output) {
         this.output = output;
         return this;
     }
 
     @Override
-    public OutputStorage output() {
+    public Output output() {
         return output;
     }
 

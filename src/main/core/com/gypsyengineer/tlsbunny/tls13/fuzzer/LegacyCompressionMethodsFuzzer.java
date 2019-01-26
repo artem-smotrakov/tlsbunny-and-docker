@@ -3,7 +3,7 @@ package com.gypsyengineer.tlsbunny.tls13.fuzzer;
 import com.gypsyengineer.tlsbunny.tls.Random;
 import com.gypsyengineer.tlsbunny.tls.Vector;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
-import com.gypsyengineer.tlsbunny.utils.OutputStorage;
+import com.gypsyengineer.tlsbunny.utils.Output;
 
 import java.io.IOException;
 import java.util.List;
@@ -20,11 +20,11 @@ public class LegacyCompressionMethodsFuzzer
     }
 
     public LegacyCompressionMethodsFuzzer() {
-        this(StructFactory.getDefault(), new OutputStorage());
+        this(StructFactory.getDefault(), Output.console());
     }
 
     public LegacyCompressionMethodsFuzzer(StructFactory factory,
-                                          OutputStorage output) {
+                                          Output output) {
         super(factory, output);
         targets(client_hello, server_hello);
     }

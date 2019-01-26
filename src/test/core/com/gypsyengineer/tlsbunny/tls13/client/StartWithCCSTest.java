@@ -10,7 +10,7 @@ import com.gypsyengineer.tlsbunny.tls13.server.SingleThreadServer;
 import com.gypsyengineer.tlsbunny.tls13.struct.AlertDescription;
 import com.gypsyengineer.tlsbunny.tls13.struct.AlertLevel;
 import com.gypsyengineer.tlsbunny.utils.Config;
-import com.gypsyengineer.tlsbunny.utils.OutputStorage;
+import com.gypsyengineer.tlsbunny.utils.Output;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 import org.junit.Test;
 
@@ -24,8 +24,8 @@ public class StartWithCCSTest {
 
     @Test
     public void test() throws Exception {
-        OutputStorage serverOutput = new OutputStorage("server");
-        OutputStorage clientOutput = new OutputStorage("client");
+        Output serverOutput = Output.console("server");
+        Output clientOutput = Output.console("client");
 
         Config serverConfig = SystemPropertiesConfig.load();
         SingleThreadServer server = new SingleThreadServer()
