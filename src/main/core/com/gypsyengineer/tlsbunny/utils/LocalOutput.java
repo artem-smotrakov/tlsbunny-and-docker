@@ -26,7 +26,7 @@ public class LocalOutput implements Output {
     }
 
     @Override
-    public Output add(OutputListener listener) {
+    synchronized public Output add(OutputListener listener) {
         listeners.add(listener);
         return this;
     }
@@ -55,7 +55,11 @@ public class LocalOutput implements Output {
     @Override
     synchronized public void prefix(String prefix) {
         Objects.requireNonNull(prefix, "prefix can't be null!");
-        this.prefix = prefix;
+        if (prefix.isEmpty()) {
+            this.prefix = prefix;
+        } else {
+            this.prefix = String.format("[%s] ", prefix);
+        }
     }
 
     @Override

@@ -1,9 +1,6 @@
 package com.gypsyengineer.tlsbunny.utils;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintStream;
+import java.io.*;
 import java.util.*;
 
 public class InputStreamOutput implements Output {
@@ -17,12 +14,12 @@ public class InputStreamOutput implements Output {
     private InputStream is;
 
     public InputStreamOutput set(InputStream is) {
-        this.is = is;
+        this.is = new BufferedInputStream(is);
         return this;
     }
 
     @Override
-    public Output add(OutputListener listener) {
+    synchronized public Output add(OutputListener listener) {
         listeners.add(listener);
         return this;
     }
@@ -44,7 +41,11 @@ public class InputStreamOutput implements Output {
     @Override
     synchronized public void prefix(String prefix) {
         Objects.requireNonNull(prefix, "prefix can't be null!");
-        this.prefix = prefix;
+        if (prefix.isEmpty()) {
+            this.prefix = prefix;
+        } else {
+            this.prefix = String.format("[%s] ", prefix);
+        }
     }
 
     @Override
@@ -89,13 +90,13 @@ public class InputStreamOutput implements Output {
     }
 
     @Override
-    public List<String> lines() {
+    synchronized public List<String> lines() {
         update();
         return Collections.unmodifiableList(lines);
     }
 
     @Override
-    public boolean contains(String line) {
+    synchronized public boolean contains(String line) {
         for (String string : lines) {
             if (string.contains(line)) {
                 return true;
@@ -115,19 +116,15 @@ public class InputStreamOutput implements Output {
         // do nothing
     }
 
-    public InputStreamOutput update() {
-        for (String line : read()) {
-            info(line);
+    synchronized public InputStreamOutput update() {
+        if (is != null) {
+            info(read());
         }
 
         return this;
     }
 
-    private List<String> read() {
-        if (is == null) {
-            return Collections.emptyList();
-        }
-
+    private String read() {
         try {
             byte[] bytes = new byte[4096];
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -139,9 +136,9 @@ public class InputStreamOutput implements Output {
                 baos.write(bytes, 0, len);
             }
 
-            return Arrays.asList(new String(baos.toByteArray()).split("\\r?\\n"));
+            return new String(baos.toByteArray());
         } catch (IOException e) {
-            return List.of("achtung: could not read from input stream!");
+            return "achtung: could not read from input stream!";
         }
     }
 }

@@ -65,7 +65,7 @@ public class VendorTest {
         try {
             // start the server if it's not running
             if (!server.running()) {
-                serverOutput = Output.local("[server] ");
+                serverOutput = Output.local("server");
                 server.set(serverOutput);
                 serverThread = server.start();
                 Utils.waitStart(server);
@@ -75,7 +75,7 @@ public class VendorTest {
 
             // configure and run the client
             if (!client.running()) {
-                clientOutput = Output.local("[client] ");
+                clientOutput = Output.local("client");
                 client.set(clientOutput);
                 client.config().port(server.port());
                 clientThread = client.start();

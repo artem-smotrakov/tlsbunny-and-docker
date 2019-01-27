@@ -36,8 +36,8 @@ public class InvalidCCSTest {
 
     @Test
     public void run() throws Exception {
-        Output serverOutput = Output.console("[server] ");
-        Output clientOutput = Output.console("[client] ");
+        Output serverOutput = Output.console("server");
+        Output clientOutput = Output.console("client");
 
         Config serverConfig = SystemPropertiesConfig.load();
 
