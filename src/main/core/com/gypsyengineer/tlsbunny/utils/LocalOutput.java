@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-public class OutputStorage implements Output {
+public class LocalOutput implements Output {
 
     private static final String default_prefix = "";
     private static final int indent_step = 4;
@@ -17,11 +17,11 @@ public class OutputStorage implements Output {
     private final List<OutputListener> listeners
             = Collections.synchronizedList(new ArrayList<>());
 
-    public OutputStorage() {
+    public LocalOutput() {
 
     }
 
-    public OutputStorage(String prefix) {
+    public LocalOutput(String prefix) {
         prefix(prefix);
     }
 

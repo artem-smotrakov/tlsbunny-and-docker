@@ -50,7 +50,7 @@ public class SyncImpl implements Sync {
     public SyncImpl init() {
         Objects.requireNonNull(client, "client can't be null!");
         Objects.requireNonNull(server, "server can't be null!");
-        output = new ConsoleOutput(new OutputStorage());
+        output = new ConsoleOutput(new LocalOutput());
         output.prefix("");
         clientIndex = 0;
         serverIndex = 0;

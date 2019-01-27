@@ -5,19 +5,19 @@ import java.util.List;
 public interface Output extends AutoCloseable {
 
     static Output console() {
-        return new ConsoleOutput(new OutputStorage());
+        return new ConsoleOutput(new LocalOutput());
     }
 
     static Output console(String prefix) {
-        return new ConsoleOutput(new OutputStorage(prefix));
+        return new ConsoleOutput(new LocalOutput(prefix));
     }
 
     static Output local() {
-        return new OutputStorage();
+        return new LocalOutput();
     }
 
     static Output local(String prefix) {
-        return new OutputStorage(prefix);
+        return new LocalOutput(prefix);
     }
 
     Output add(OutputListener listener);
