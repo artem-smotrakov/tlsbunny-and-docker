@@ -32,8 +32,20 @@ public class FileOutput extends AbstractOutput {
             for (;index < lines.size(); index++) {
                 writer.write(lines.get(index));
             }
+            writer.flush();
         } catch (IOException e) {
             throw whatTheHell("could not write to a file", e);
+        }
+    }
+
+    @Override
+    public void close() {
+        flush();
+
+        try {
+            writer.close();
+        } catch (IOException e) {
+            throw whatTheHell("could not close file writer", e);
         }
     }
 }
