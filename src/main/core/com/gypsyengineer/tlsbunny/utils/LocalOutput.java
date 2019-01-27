@@ -60,7 +60,11 @@ public class LocalOutput implements Output {
 
     @Override
     synchronized public void info(String format, Object... values) {
-        String text = String.format(format, values);
+        String text = format;
+        if (values != null && values.length != 0) {
+            text = String.format(format, values);
+        }
+
         String[] lines = text.split("\\r?\\n");
 
         for (OutputListener listener : listeners) {
