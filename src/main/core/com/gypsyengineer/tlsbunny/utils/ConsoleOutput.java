@@ -11,6 +11,9 @@ public class ConsoleOutput extends AbstractOutput {
     private static final boolean enableHighlighting = Boolean.valueOf(
             System.getProperty("tlsbunny.output.enable.highlighting", "true"));
 
+    private static boolean onlyAchtung = Boolean.valueOf(
+            System.getProperty("tlsbunny.output.only.achtung", "false"));
+
     private int index = 0;
 
     public ConsoleOutput(Output output) {
@@ -23,16 +26,18 @@ public class ConsoleOutput extends AbstractOutput {
             output.flush();
 
             List<String> lines = output.lines();
-            while (index < lines.size()) {
+            for (;index < lines.size(); index++) {
                 String string = lines.get(index);
+
+                if (onlyAchtung && !string.contains("achtung")) {
+                    continue;
+                }
 
                 if (enableHighlighting && string.contains("achtung")) {
                     string = String.format("%s%s%s", ansi_red, string, ansi_reset);
                 }
 
                 System.out.print(string);
-
-                index++;
             }
         }
     }
