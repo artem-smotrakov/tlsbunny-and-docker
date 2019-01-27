@@ -1,15 +1,12 @@
 package com.gypsyengineer.tlsbunny.vendor.test.tls13.openssl;
 
-import com.gypsyengineer.tlsbunny.utils.Output;
-import com.gypsyengineer.tlsbunny.utils.Sync;
+import com.gypsyengineer.tlsbunny.utils.*;
 import com.gypsyengineer.tlsbunny.vendor.test.tls13.Utils;
 import com.gypsyengineer.tlsbunny.tls13.connection.check.Check;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.EngineFactory;
 import com.gypsyengineer.tlsbunny.tls13.server.Server;
 import com.gypsyengineer.tlsbunny.tls13.server.StopCondition;
-import com.gypsyengineer.tlsbunny.utils.Config;
-import com.gypsyengineer.tlsbunny.utils.OutputListener;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,7 +22,6 @@ public class OpensslServer extends OpensslDocker implements Server {
     private boolean failed = false;
     private int previousAcceptCounter = 0;
     private final OutputListenerImpl listener = new OutputListenerImpl();
-    private Sync sync = Sync.dummy();
 
     public static OpensslServer opensslServer() {
         return new OpensslServer();
@@ -33,10 +29,13 @@ public class OpensslServer extends OpensslDocker implements Server {
 
     private OpensslServer() {
         output.add(listener);
+        output.prefix("[openssl-server] ");
     }
 
     @Override
     public boolean ready() {
+        output.update();
+
         synchronized (this) {
             if (previousAcceptCounter != listener.acceptCounter) {
                 previousAcceptCounter = listener.acceptCounter;
@@ -70,7 +69,7 @@ public class OpensslServer extends OpensslDocker implements Server {
 
     @Override
     public OpensslServer set(Sync sync) {
-        this.sync = sync;
+        // do nothing
         return this;
     }
 
@@ -144,6 +143,8 @@ public class OpensslServer extends OpensslDocker implements Server {
         command.add(image);
 
         try {
+            Process process = Utils.exec(output, command);
+            output.set(process.getInputStream());
             int code = Utils.waitProcessFinish(output, command);
             if (code != 0) {
                 output.achtung("the server exited with a non-zero exit code (%d)", code);
@@ -188,6 +189,8 @@ public class OpensslServer extends OpensslDocker implements Server {
 
     @Override
     public boolean running() {
+        output.update();
+
         if (!listener.serverStarted) {
             return false;
         }
