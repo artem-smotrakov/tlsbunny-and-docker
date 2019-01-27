@@ -14,7 +14,6 @@ import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.Output;
-import com.gypsyengineer.tlsbunny.utils.Output;
 import com.gypsyengineer.tlsbunny.utils.Sync;
 
 import java.io.IOException;
@@ -26,7 +25,6 @@ public class HttpsServer implements Server {
 
     private final EngineFactoryImpl engineFactory;
     private final SingleThreadServer server;
-    private Sync sync = Sync.dummy();
 
     public static HttpsServer httpsServer()
             throws IOException, NegotiatorException {
@@ -70,7 +68,7 @@ public class HttpsServer implements Server {
 
     @Override
     public Server set(Sync sync) {
-        this.sync = sync;
+        // do nothing
         return this;
     }
 
