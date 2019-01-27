@@ -36,8 +36,8 @@ public class InvalidCCSTest {
 
     @Test
     public void run() throws Exception {
-        Output serverOutput = Output.console("server");
-        Output clientOutput = Output.console("client");
+        Output serverOutput = Output.console("[server] ");
+        Output clientOutput = Output.console("[client] ");
 
         Config serverConfig = SystemPropertiesConfig.load();
 
@@ -45,7 +45,7 @@ public class InvalidCCSTest {
 
         int start = 10;
         int end = 15;
-        int number_of_connections = end - start + 1;
+        int n = end - start + 1;
 
         SingleThreadServer server = new SingleThreadServer()
                 .set(new EngineFactoryImpl()
@@ -53,7 +53,7 @@ public class InvalidCCSTest {
                         .set(serverOutput))
                 .set(serverConfig)
                 .set(serverOutput)
-                .maxConnections(number_of_connections);
+                .maxConnections(n);
 
         try (client; server; clientOutput; serverOutput) {
             server.start();
@@ -65,13 +65,13 @@ public class InvalidCCSTest {
                     .connect();
         }
 
-        assertEquals(number_of_connections, client.engines().length);
+        assertEquals(n, client.engines().length);
         for (Engine engine : client.engines()) {
             assertTrue(engine.context().getAlert() != null
                     || engine.exception() != null);
         }
 
-        assertEquals(number_of_connections, server.engines().length);
+        assertEquals(n, server.engines().length);
     }
 
     private static class EngineFactoryImpl extends BaseEngineFactory {
