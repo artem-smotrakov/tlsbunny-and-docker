@@ -16,6 +16,11 @@ public class DummySync implements Sync {
     }
 
     @Override
+    public Sync logPrefix(String prefix) {
+        return this;
+    }
+
+    @Override
     public Sync init() {
         return this;
     }

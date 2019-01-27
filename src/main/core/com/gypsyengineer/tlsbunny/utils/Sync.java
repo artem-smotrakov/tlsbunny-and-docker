@@ -10,14 +10,19 @@ public interface Sync extends AutoCloseable {
     }
 
     static Sync between(Client client, Server server) {
-        return new SyncImpl()
+        Sync sync = new SyncImpl()
                 .set(client)
-                .set(server)
-                .init();
+                .set(server);
+
+        client.set(sync);
+        server.set(sync);
+
+        return sync;
     }
 
     Sync set(Client client);
     Sync set(Server server);
+    Sync logPrefix(String prefix);
     Sync init();
     Sync start();
     Sync end();

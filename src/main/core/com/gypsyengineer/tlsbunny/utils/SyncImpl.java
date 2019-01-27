@@ -16,21 +16,34 @@ public class SyncImpl implements Sync {
     private static final boolean printToFile;
     private static final String dirName;
     static {
-        printToFile = Boolean.valueOf(System.getProperty("tlsbunny.output.to.file", "false"));
+        printToFile = Boolean.valueOf(System.getProperty(
+                "tlsbunny.output.to.file", "false"));
         dirName = String.format("logs/%s",
                 new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(new Date()));
-        boolean success = new File(dirName).mkdirs();
-        if (!success) {
-            throw whatTheHell("could not create directories");
+
+        if (printToFile) {
+            boolean success = new File(dirName).mkdirs();
+            if (!success) {
+                throw whatTheHell("could not create directories");
+            }
         }
     }
 
     private Client client;
     private Server server;
     private Output output;
+    private Output consoleOutput;
+    private Output fileOutput;
     private int clientIndex;
     private int serverIndex;
+    private String logPrefix = "";
     private boolean initialized = false;
+
+    @Override
+    public Sync logPrefix(String logPrefix) {
+        this.logPrefix = logPrefix;
+        return this;
+    }
 
     @Override
     public SyncImpl set(Client client) {
@@ -50,8 +63,18 @@ public class SyncImpl implements Sync {
     public SyncImpl init() {
         Objects.requireNonNull(client, "client can't be null!");
         Objects.requireNonNull(server, "server can't be null!");
-        output = new ConsoleOutput(new LocalOutput());
-        output.prefix("");
+
+        output = new LocalOutput();
+        consoleOutput = new ConsoleOutput(output);
+        consoleOutput.prefix("");
+
+        if (printToFile) {
+            String filename = String.format("%s/%s_%d.log",
+                    dirName, logPrefix, System.currentTimeMillis());
+            fileOutput = new FileOutput(output, filename);
+            fileOutput.prefix("");
+        }
+
         clientIndex = 0;
         serverIndex = 0;
         initialized = true;
@@ -61,7 +84,7 @@ public class SyncImpl implements Sync {
     @Override
     public SyncImpl start() {
         checkInitialized();
-        output.info("[sync] start");
+        consoleOutput.info("[sync] start");
         return this;
     }
 
@@ -83,6 +106,11 @@ public class SyncImpl implements Sync {
 
         output.info("[sync] end");
         output.flush();
+
+        consoleOutput.flush();
+        if (printToFile) {
+            fileOutput.flush();
+        }
 
         return this;
     }
@@ -107,6 +135,6 @@ public class SyncImpl implements Sync {
 
     @Override
     public void close() {
-        output.close();
+        consoleOutput.close();
     }
 }

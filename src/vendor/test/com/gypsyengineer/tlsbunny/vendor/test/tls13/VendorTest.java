@@ -59,8 +59,16 @@ public class VendorTest {
         Output serverOutput;
 
         Sync sync = Sync.between(client, server);
-        client.set(sync);
-        server.set(sync);
+
+        if (label != null && !label.isEmpty()) {
+            sync.logPrefix(label);
+        } else {
+            sync.logPrefix(String.format("%s_%s",
+                    client.getClass().getSimpleName(),
+                    server.getClass().getSimpleName()));
+        }
+
+        sync.init();
 
         try {
             // start the server if it's not running
