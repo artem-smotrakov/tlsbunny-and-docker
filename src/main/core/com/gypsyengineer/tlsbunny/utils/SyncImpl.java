@@ -65,6 +65,7 @@ public class SyncImpl implements Sync {
         Objects.requireNonNull(server, "server can't be null!");
 
         output = new LocalOutput();
+
         consoleOutput = new ConsoleOutput(output);
         consoleOutput.prefix("");
 
@@ -75,8 +76,9 @@ public class SyncImpl implements Sync {
             fileOutput.prefix("");
         }
 
-        clientIndex = 0;
-        serverIndex = 0;
+        clientIndex = client.output().lines().size();
+        serverIndex = server.output().lines().size();
+
         initialized = true;
         return this;
     }
@@ -119,18 +121,6 @@ public class SyncImpl implements Sync {
         if (!initialized) {
             throw whatTheHell("Sync is not initialized!");
         }
-    }
-
-    private Writer createFileWriter(String fileName) {
-        if (printToFile) {
-            try {
-                return new BufferedWriter(new FileWriter(fileName));
-            } catch (IOException e) {
-                throw whatTheHell("unexpected exception", e);
-            }
-        }
-
-        return null;
     }
 
     @Override
