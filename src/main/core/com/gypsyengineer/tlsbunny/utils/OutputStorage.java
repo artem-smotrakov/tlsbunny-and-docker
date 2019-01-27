@@ -4,11 +4,11 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class OutputStorage implements Output {
 
-    public static final String default_prefix = "[tlsbunny] ";
-
+    private static final String default_prefix = "";
     private static final int indent_step = 4;
 
     private final List<String> lines = new ArrayList<>();
@@ -54,11 +54,8 @@ public class OutputStorage implements Output {
 
     @Override
     synchronized public void prefix(String prefix) {
-        if (prefix != null && !prefix.isEmpty()) {
-            this.prefix = String.format("%s%s: ", default_prefix, prefix);
-        } else {
-            this.prefix = String.format("%s: ", default_prefix);
-        }
+        Objects.requireNonNull(prefix, "prefix can't be null!");
+        this.prefix = prefix;
     }
 
     @Override

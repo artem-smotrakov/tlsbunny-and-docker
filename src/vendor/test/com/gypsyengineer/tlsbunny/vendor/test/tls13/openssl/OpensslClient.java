@@ -1,6 +1,7 @@
 package com.gypsyengineer.tlsbunny.vendor.test.tls13.openssl;
 
 import com.gypsyengineer.tlsbunny.utils.Output;
+import com.gypsyengineer.tlsbunny.utils.Sync;
 import com.gypsyengineer.tlsbunny.vendor.test.tls13.Utils;
 import com.gypsyengineer.tlsbunny.tls13.client.Client;
 import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
@@ -22,6 +23,7 @@ import java.util.Map;
 public class OpensslClient extends OpensslDocker implements Client {
 
     private final Config config = SystemPropertiesConfig.load();
+    private Sync sync = Sync.dummy();
 
     public OpensslClient() {
         dockerEnv.put("mode", "client");
@@ -62,6 +64,12 @@ public class OpensslClient extends OpensslDocker implements Client {
     @Override
     public OpensslClient set(Check... checks) {
         throw new UnsupportedOperationException("no checks for you!");
+    }
+
+    @Override
+    public OpensslClient set(Sync sync) {
+        this.sync = sync;
+        return this;
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.gypsyengineer.tlsbunny.vendor.test.tls13.openssl;
 
 import com.gypsyengineer.tlsbunny.utils.Output;
+import com.gypsyengineer.tlsbunny.utils.Sync;
 import com.gypsyengineer.tlsbunny.vendor.test.tls13.Utils;
 import com.gypsyengineer.tlsbunny.tls13.connection.check.Check;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
@@ -24,6 +25,7 @@ public class OpensslServer extends OpensslDocker implements Server {
     private boolean failed = false;
     private int previousAcceptCounter = 0;
     private final OutputListenerImpl listener = new OutputListenerImpl();
+    private Sync sync = Sync.dummy();
 
     public static OpensslServer opensslServer() {
         return new OpensslServer();
@@ -64,6 +66,12 @@ public class OpensslServer extends OpensslDocker implements Server {
     @Override
     public OpensslServer set(Check check) {
         throw new UnsupportedOperationException("no checks for you!");
+    }
+
+    @Override
+    public OpensslServer set(Sync sync) {
+        this.sync = sync;
+        return this;
     }
 
     @Override

@@ -8,6 +8,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.HasOutput;
 import com.gypsyengineer.tlsbunny.utils.Output;
+import com.gypsyengineer.tlsbunny.utils.Sync;
 
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
@@ -22,6 +23,7 @@ public interface Client extends AutoCloseable, Runnable, HasOutput<Client> {
     Client set(Output output);
     Client set(Check... checks);
     Client set(Analyzer analyzer);
+    Client set(Sync sync);
     Client connect() throws Exception;
 
     Engine[] engines();

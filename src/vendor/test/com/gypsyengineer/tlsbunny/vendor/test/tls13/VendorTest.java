@@ -3,6 +3,7 @@ package com.gypsyengineer.tlsbunny.vendor.test.tls13;
 import com.gypsyengineer.tlsbunny.tls13.client.Client;
 import com.gypsyengineer.tlsbunny.tls13.server.Server;
 import com.gypsyengineer.tlsbunny.utils.Output;
+import com.gypsyengineer.tlsbunny.utils.Sync;
 import com.gypsyengineer.tlsbunny.utils.UncaughtExceptionHandler;
 
 import static com.gypsyengineer.tlsbunny.vendor.test.tls13.Utils.checkForASanFindings;
@@ -17,6 +18,7 @@ public class VendorTest {
     private Client client;
     private Server server;
 
+    // TODO is it necessary?
     private String label = "";
 
     public VendorTest label(String label) {
@@ -53,13 +55,17 @@ public class VendorTest {
         Thread serverThread = null;
         Thread clientThread = null;
 
-        Output clientOutput = null;
-        Output serverOutput = null;
+        Output clientOutput;
+        Output serverOutput;
+
+        Sync sync = Sync.between(client, server);
+        client.set(sync);
+        server.set(sync);
 
         try {
             // start the server if it's not running
             if (!server.running()) {
-                serverOutput = Output.console("server");
+                serverOutput = Output.local("[server] ");
                 server.set(serverOutput);
                 serverThread = server.start();
                 Utils.waitStart(server);
@@ -69,7 +75,7 @@ public class VendorTest {
 
             // configure and run the client
             if (!client.running()) {
-                clientOutput = Output.console("client");
+                clientOutput = Output.local("[client] ");
                 client.set(clientOutput);
                 client.config().port(server.port());
                 clientThread = client.start();
@@ -130,6 +136,10 @@ public class VendorTest {
             if (client.running()) {
                 client.stop();
                 Utils.waitStop(client);
+            }
+
+            if (sync != null) {
+                sync.close();
             }
 
             checkForASanFindings(client.output());

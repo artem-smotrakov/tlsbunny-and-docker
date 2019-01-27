@@ -1,6 +1,5 @@
 package com.gypsyengineer.tlsbunny.vendor.test.tls13.wolfssl;
 
-import com.gypsyengineer.tlsbunny.utils.Output;
 import com.gypsyengineer.tlsbunny.vendor.test.tls13.Utils;
 
 import java.io.IOException;
@@ -23,8 +22,6 @@ public class WolfsslDocker {
     protected final String containerName = String.format("%s_%d",
             this.getClass().getSimpleName().toLowerCase(), System.currentTimeMillis());
 
-    protected final Output output = Output.console(this.getClass().getSimpleName());
-
     protected Map<String, String> dockerEnv = Collections.synchronizedMap(new HashMap<>());
 
     public WolfsslDocker dockerEnv(String name, String value) {
@@ -39,7 +36,7 @@ public class WolfsslDocker {
                     "-c",
                     String.format("docker container ps | grep %s", containerName)
             );
-            return Utils.exec(output, command).waitFor() == 0;
+            return Utils.exec(command).waitFor() == 0;
         } catch (InterruptedException | IOException e) {
             throw whatTheHell("unexpected exception", e);
         }

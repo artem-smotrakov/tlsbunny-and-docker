@@ -12,6 +12,14 @@ public interface Output extends AutoCloseable {
         return new ConsoleOutput(new OutputStorage(prefix));
     }
 
+    static Output local() {
+        return new OutputStorage();
+    }
+
+    static Output local(String prefix) {
+        return new OutputStorage(prefix);
+    }
+
     Output add(OutputListener listener);
 
     void increaseIndent();

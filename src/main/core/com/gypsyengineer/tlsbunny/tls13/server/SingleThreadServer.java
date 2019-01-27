@@ -34,6 +34,7 @@ public class SingleThreadServer implements Server {
     private StopCondition stopCondition = new NonStop();
     private Output output = Output.console("server");
     private Check check;
+    private Sync sync = Sync.dummy();
     private boolean failed = false;
     private boolean running = false;
 
@@ -82,6 +83,12 @@ public class SingleThreadServer implements Server {
     @Override
     public SingleThreadServer set(Check check) {
         this.check = check;
+        return this;
+    }
+
+    @Override
+    public Server set(Sync sync) {
+        this.sync = sync;
         return this;
     }
 

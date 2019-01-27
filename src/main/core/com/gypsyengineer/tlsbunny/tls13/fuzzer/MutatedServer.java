@@ -10,6 +10,7 @@ import com.gypsyengineer.tlsbunny.tls13.utils.FuzzerConfig;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.Connection;
 import com.gypsyengineer.tlsbunny.utils.Output;
+import com.gypsyengineer.tlsbunny.utils.Sync;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -34,6 +35,7 @@ public class MutatedServer implements Server {
     private boolean failed = false;
     private Output output;
     private FuzzerConfig fuzzerConfig;
+    private Sync sync = Sync.dummy();
 
     public static MutatedServer mutatedServer(
             Server server, FuzzerConfig fuzzerConfig) throws IOException {
@@ -66,6 +68,12 @@ public class MutatedServer implements Server {
     @Override
     public MutatedServer set(Check check) {
         throw whatTheHell("you can't set a check for me!");
+    }
+
+    @Override
+    public MutatedServer set(Sync sync) {
+        this.sync = sync;
+        return this;
     }
 
     @Override

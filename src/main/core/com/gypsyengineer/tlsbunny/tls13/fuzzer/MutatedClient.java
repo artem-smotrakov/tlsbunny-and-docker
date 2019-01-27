@@ -12,6 +12,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.tls13.utils.FuzzerConfig;
 import com.gypsyengineer.tlsbunny.utils.Output;
+import com.gypsyengineer.tlsbunny.utils.Sync;
 
 import java.io.IOException;
 import java.net.ConnectException;
@@ -30,6 +31,7 @@ public class MutatedClient implements Client {
     private Analyzer analyzer;
     private Check[] checks;
     private FuzzerConfig fuzzerConfig;
+    private Sync sync = Sync.dummy();
 
     private boolean strict = true;
 
@@ -94,6 +96,12 @@ public class MutatedClient implements Client {
     @Override
     public MutatedClient set(Analyzer analyzer) {
         this.analyzer = analyzer;
+        return this;
+    }
+
+    @Override
+    public MutatedClient set(Sync sync) {
+        this.sync = sync;
         return this;
     }
 
