@@ -43,8 +43,13 @@ public class WeakECDHE extends AbstractClient {
     @Override
     public WeakECDHE connectImpl() throws Exception {
         for (int i = 0; i < n; i++) {
-            output.info("test #%d", i);
-            engines.add(createEngine().connect().run(checks));
+            sync().start();
+            try {
+                output.info("test #%d", i);
+                engines.add(createEngine().connect().run(checks));
+            } finally {
+                sync().end();
+            }
         }
 
         return this;

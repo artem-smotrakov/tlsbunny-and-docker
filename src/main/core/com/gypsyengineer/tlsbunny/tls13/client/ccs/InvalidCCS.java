@@ -69,8 +69,10 @@ public class InvalidCCS extends AbstractClient {
             if (ccsValue == valid_value) {
                 continue;
             }
-            output.info("try CCS with %d", ccsValue);
+
+            sync().start();
             try {
+                output.info("try CCS with %d", ccsValue);
                 Engine engine = createEngine(ccsValue)
                         .connect()
                         .run(checks)
@@ -85,6 +87,8 @@ public class InvalidCCS extends AbstractClient {
                 } else {
                     throw e;
                 }
+            } finally {
+                sync().end();
             }
         }
         analyzer.run();

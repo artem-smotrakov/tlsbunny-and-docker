@@ -45,6 +45,7 @@ public abstract class AbstractClient implements Client, AutoCloseable {
             running = true;
             engines = new ArrayList<>();
         }
+
         try {
             return connectImpl();
         } finally {
@@ -111,9 +112,13 @@ public abstract class AbstractClient implements Client, AutoCloseable {
     }
 
     @Override
-    public Client set(Sync sync) {
+    synchronized public Client set(Sync sync) {
         this.sync = sync;
         return this;
+    }
+
+    synchronized public Sync sync() {
+        return sync;
     }
 
     @Override
