@@ -30,7 +30,7 @@ public class WolfsslServer extends WolfsslDocker implements Server {
 
     private WolfsslServer() {
         output.add(listener);
-        output.prefix("[wolfssl-server] ");
+        output.prefix("wolfssl-server");
     }
 
     @Override
@@ -38,8 +38,9 @@ public class WolfsslServer extends WolfsslDocker implements Server {
         output.update();
 
         synchronized (this) {
-            if (previousAcceptCounter != listener.acceptCounter) {
-                previousAcceptCounter = listener.acceptCounter;
+            int counter = listener.acceptCounter();
+            if (previousAcceptCounter != counter) {
+                previousAcceptCounter = counter;
                 return true;
             }
         }
@@ -138,7 +139,7 @@ public class WolfsslServer extends WolfsslDocker implements Server {
         try {
             Process process = Utils.exec(output, command);
             output.set(process.getInputStream());
-            int code = Utils.waitProcessFinish(output, command);
+            int code = process.waitFor();
             if (code != 0) {
                 output.achtung("the server exited with a non-zero exit code (%d)", code);
 
@@ -184,7 +185,7 @@ public class WolfsslServer extends WolfsslDocker implements Server {
     public boolean running() {
         output.update();
 
-        if (!listener.serverStarted) {
+        if (!listener.serverStarted()) {
             return false;
         }
 
@@ -211,6 +212,14 @@ public class WolfsslServer extends WolfsslDocker implements Server {
 
         private int acceptCounter = 0;
         private boolean serverStarted = false;
+
+        synchronized int acceptCounter() {
+            return acceptCounter;
+        }
+
+        synchronized boolean serverStarted() {
+            return serverStarted;
+        }
 
         @Override
         synchronized public void receivedInfo(String... strings) {

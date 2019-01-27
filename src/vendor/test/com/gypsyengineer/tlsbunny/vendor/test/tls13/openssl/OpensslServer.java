@@ -29,7 +29,7 @@ public class OpensslServer extends OpensslDocker implements Server {
 
     private OpensslServer() {
         output.add(listener);
-        output.prefix("[openssl-server] ");
+        output.prefix("openssl-server");
     }
 
     @Override
@@ -37,8 +37,9 @@ public class OpensslServer extends OpensslDocker implements Server {
         output.update();
 
         synchronized (this) {
-            if (previousAcceptCounter != listener.acceptCounter) {
-                previousAcceptCounter = listener.acceptCounter;
+            int counter = listener.acceptCounter();
+            if (previousAcceptCounter != counter) {
+                previousAcceptCounter = counter;
                 return true;
             }
         }
@@ -145,7 +146,7 @@ public class OpensslServer extends OpensslDocker implements Server {
         try {
             Process process = Utils.exec(output, command);
             output.set(process.getInputStream());
-            int code = Utils.waitProcessFinish(output, command);
+            int code = process.waitFor();
             if (code != 0) {
                 output.achtung("the server exited with a non-zero exit code (%d)", code);
 
@@ -191,7 +192,7 @@ public class OpensslServer extends OpensslDocker implements Server {
     public boolean running() {
         output.update();
 
-        if (!listener.serverStarted) {
+        if (!listener.serverStarted()) {
             return false;
         }
 
@@ -218,6 +219,14 @@ public class OpensslServer extends OpensslDocker implements Server {
 
         private int acceptCounter = 0;
         private boolean serverStarted = false;
+
+        synchronized int acceptCounter() {
+            return acceptCounter;
+        }
+
+        synchronized boolean serverStarted() {
+            return serverStarted;
+        }
 
         @Override
         synchronized public void receivedInfo(String... strings) {
