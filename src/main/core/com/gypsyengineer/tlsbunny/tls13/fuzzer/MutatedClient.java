@@ -100,9 +100,13 @@ public class MutatedClient implements Client {
     }
 
     @Override
-    public MutatedClient set(Sync sync) {
+    synchronized public MutatedClient set(Sync sync) {
         this.sync = sync;
         return this;
+    }
+
+    synchronized public Sync sync() {
+        return sync;
     }
 
     @Override
@@ -137,6 +141,7 @@ public class MutatedClient implements Client {
         FuzzyStructFactory fuzzyStructFactory = (FuzzyStructFactory) factory;
         fuzzyStructFactory.set(output);
 
+        sync().start();
         try {
             output.info("run a smoke test before fuzzing");
             client.set(StructFactory.getDefault())
@@ -146,14 +151,16 @@ public class MutatedClient implements Client {
                     .set(new SuccessCheck())
                     .set(new NoAlertCheck())
                     .connect();
+
+            output.info("smoke test passed, start fuzzing");
         } catch (Exception e) {
             reportError("smoke test failed", e);
             output.achtung("skip fuzzing");
             return;
         } finally {
             output.flush();
+            sync().end();
         }
-        output.info("smoke test passed, start fuzzing");
 
         output.info("run fuzzer config:");
         output.info("  targets    = %s",
@@ -176,53 +183,61 @@ public class MutatedClient implements Client {
         try {
             fuzzyStructFactory.currentTest(fuzzerConfig.startTest());
             while (shouldRun(fuzzyStructFactory)) {
-                String message = String.format("test #%d, %s/%s, targets: [%s]",
-                        fuzzyStructFactory.currentTest(),
-                        getClass().getSimpleName(),
-                        fuzzyStructFactory.fuzzer().getClass().getSimpleName(),
-                        Arrays.stream(fuzzyStructFactory.targets)
-                                .map(Enum::toString)
-                                .collect(Collectors.joining(", ")));
-                output.info(message);
-
-                int attempt = 0;
-                while (attempt <= max_attempts) {
-                    try {
-                        client.connect();
-                        break;
-                    } catch (EngineException e) {
-                        Throwable cause = e.getCause();
-                        if (cause instanceof ConnectException == false) {
-                            // an EngineException may occur due to multiple reasons
-                            // if the exception was not caused by ConnectException
-                            // we tolerate EngineException here to let the fuzzer to continue
-                            output.achtung("an exception occurred, but we continue fuzzing", e);
-                            break;
-                        }
-
-                        // if the exception was caused by ConnectException
-                        // then we try again several times
-
-                        if (attempt == max_attempts) {
-                            throw new IOException("looks like the server closed connection");
-                        }
-                        attempt++;
-
-                        output.achtung("connection failed: %s ", cause.getMessage());
-                        output.achtung("let's wait a bit and try again (attempt %d)", attempt);
-                        Thread.sleep(delay);
-                    } finally {
-                        output.flush();
-                    }
+                sync().start();
+                try {
+                    run(fuzzyStructFactory);
+                } finally {
+                    output.flush();
+                    sync().end();
+                    fuzzyStructFactory.moveOn();
                 }
-
-                output.flush();
-                fuzzyStructFactory.moveOn();
             }
         } catch (Exception e) {
             output.achtung("what the hell? unexpected exception", e);
         } finally {
             output.flush();
+        }
+    }
+
+    private void run(FuzzyStructFactory fuzzyStructFactory) throws Exception {
+        String message = String.format("test #%d, %s/%s, targets: [%s]",
+                fuzzyStructFactory.currentTest(),
+                getClass().getSimpleName(),
+                fuzzyStructFactory.fuzzer().getClass().getSimpleName(),
+                Arrays.stream(fuzzyStructFactory.targets)
+                        .map(Enum::toString)
+                        .collect(Collectors.joining(", ")));
+        output.info(message);
+
+        int attempt = 0;
+        while (attempt <= max_attempts) {
+            try {
+                client.connect();
+                break;
+            } catch (EngineException e) {
+                Throwable cause = e.getCause();
+                if (cause instanceof ConnectException == false) {
+                    // an EngineException may occur due to multiple reasons
+                    // if the exception was not caused by ConnectException
+                    // we tolerate EngineException here to let the fuzzer to continue
+                    output.achtung("an exception occurred, but we continue fuzzing", e);
+                    break;
+                }
+
+                // if the exception was caused by ConnectException
+                // then we try again several times
+
+                if (attempt == max_attempts) {
+                    throw new IOException("looks like the server closed connection");
+                }
+                attempt++;
+
+                output.achtung("connection failed: %s ", cause.getMessage());
+                output.achtung("let's wait a bit and try again (attempt %d)", attempt);
+                Thread.sleep(delay);
+            } finally {
+                output.flush();
+            }
         }
     }
 
