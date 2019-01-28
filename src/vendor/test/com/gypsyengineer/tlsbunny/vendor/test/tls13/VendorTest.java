@@ -58,6 +58,18 @@ public class VendorTest {
         Output clientOutput;
         Output serverOutput;
 
+        // set up an output for the server if necessary
+        if (!server.running() && server.output() == null) {
+            serverOutput = Output.local("server");
+            server.set(serverOutput);
+        }
+
+        // set up an output for the client if necessary
+        if (!client.running() && client.output() == null) {
+            clientOutput = Output.local("client");
+            client.set(clientOutput);
+        }
+
         Sync sync = Sync.between(client, server);
 
         if (label != null && !label.isEmpty()) {
@@ -73,23 +85,15 @@ public class VendorTest {
         try {
             // start the server if it's not running
             if (!server.running()) {
-                serverOutput = Output.local("server");
-                server.set(serverOutput);
                 serverThread = server.start();
                 Utils.waitStart(server);
-            } else {
-                serverOutput = server.output();
             }
 
             // configure and run the client
             if (!client.running()) {
-                clientOutput = Output.local("client");
-                client.set(clientOutput);
                 client.config().port(server.port());
                 clientThread = client.start();
                 sleep(delay);
-            } else {
-                clientOutput = client.output();
             }
 
             // wait for client or server to finish
@@ -146,9 +150,7 @@ public class VendorTest {
                 Utils.waitStop(client);
             }
 
-            if (sync != null) {
-                sync.close();
-            }
+            sync.close();
 
             checkForASanFindings(client.output());
             checkForASanFindings(server.output());
