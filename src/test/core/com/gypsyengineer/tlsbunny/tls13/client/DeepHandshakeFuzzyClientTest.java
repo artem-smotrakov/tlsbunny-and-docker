@@ -2,6 +2,8 @@ package com.gypsyengineer.tlsbunny.tls13.client;
 
 import com.gypsyengineer.tlsbunny.TestUtils;
 import com.gypsyengineer.tlsbunny.TestUtils.FakeTestAnalyzer;
+import com.gypsyengineer.tlsbunny.tls13.connection.check.NoAlertCheck;
+import com.gypsyengineer.tlsbunny.tls13.connection.check.SuccessCheck;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.DeepHandshakeFuzzerConfigs;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.DeepHandshakeFuzzyClient;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
@@ -52,6 +54,7 @@ public class DeepHandshakeFuzzyClientTest {
         HttpsServer server = httpsServer()
                 .set(serverConfig)
                 .set(serverOutput)
+                .set(new NoAlertCheck())
                 .maxConnections(n);
 
         DeepHandshakeFuzzyClient deepHandshakeFuzzyClient =
