@@ -37,7 +37,7 @@ public class ConsoleOutput extends AbstractOutput {
                     string = String.format("%s%s%s", ansi_red, string, ansi_reset);
                 }
 
-                System.out.print(string);
+                System.out.println(string);
             }
         }
     }

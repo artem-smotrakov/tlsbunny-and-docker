@@ -31,6 +31,7 @@ public class FileOutput extends AbstractOutput {
             List<String> lines = output.lines();
             for (;index < lines.size(); index++) {
                 writer.write(lines.get(index));
+                writer.write("\n");
             }
             writer.flush();
         } catch (IOException e) {

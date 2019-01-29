@@ -76,7 +76,7 @@ public class LocalOutput implements Output {
         }
 
         for (String line : lines) {
-            printf("%s%s%s%n", prefix, indent, line);
+            printf("%s%s%s", prefix, indent, line);
         }
     }
 
@@ -93,7 +93,7 @@ public class LocalOutput implements Output {
         for (OutputListener listener : listeners) {
             listener.receivedAchtung(line);
         }
-        printf("%sachtung: %s%n", prefix, line);
+        printf("%sachtung: %s", prefix, line);
     }
 
     @Override

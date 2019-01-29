@@ -3,18 +3,14 @@ package com.gypsyengineer.tlsbunny.utils;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 import static org.junit.Assert.*;
 
-public class FileOutputTest {
+public class LocalOutputTest {
 
     @Test
-    public void main() throws IOException {
-        Path path = Files.createTempFile(
-                "tlsbunny", "file_output_test");
-        try (Output output = new FileOutput(new LocalOutput(), path.toString())) {
+    public void main() {
+        try (Output output = new LocalOutput()) {
             output.prefix("test");
             output.achtung("foo");
             output.increaseIndent();
@@ -29,34 +25,26 @@ public class FileOutputTest {
                     "[test] test"
             };
 
-            String[] lines = Files.readAllLines(path).toArray(new String[0]);
+            String[] lines = output.lines().toArray(new String[0]);
             assertArrayEquals(expected, lines);
             assertTrue(output.contains("foo"));
-        } finally {
-            Files.delete(path);
         }
     }
 
     @Test
-    public void exception() throws IOException {
-        Path path = Files.createTempFile(
-                "tlsbunny", "file_output_test");
-        try (Output output = new FileOutput(new LocalOutput(), path.toString())) {
+    public void exception() {
+        try (Output output = new LocalOutput()) {
             output.prefix("test");
             output.info("error", new IOException("oops"));
             output.flush();
 
             assertTrue(output.contains("[test] java.io.IOException: oops"));
-        } finally {
-            Files.delete(path);
         }
     }
 
     @Test
-    public void listener() throws IOException {
-        Path path = Files.createTempFile(
-                "tlsbunny", "file_output_test");
-        try (Output output = new FileOutput(new LocalOutput(), path.toString())) {
+    public void listener() {
+        try (Output output = new LocalOutput()) {
 
             output.add(new OutputListener() {
 
@@ -78,8 +66,6 @@ public class FileOutputTest {
             output.flush();
 
             assertTrue(output.contains("[test] error"));
-        } finally {
-            Files.delete(path);
         }
     }
 }
