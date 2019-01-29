@@ -25,7 +25,7 @@ public class SimpleReliability {
     public static void main(String[] args) throws Exception {
         SystemPropertiesConfig config = SystemPropertiesConfig.load();
 
-        try (Output output = new Output()) {
+        try (Output output = Output.console()) {
             for (int i = 0; i < N; i++) {
                 output.info("test %d", i);
                 connect(config, output);

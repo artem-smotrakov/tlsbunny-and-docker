@@ -22,7 +22,7 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp
 public class GnutlsHttpsClient extends SingleConnectionClient {
 
     public static void main(String[] args) throws Exception {
-        try (Output output = new Output()) {
+        try (Output output = Output.console()) {
             new GnutlsHttpsClient()
                     .set(SystemPropertiesConfig.load())
                     .set(StructFactory.getDefault())

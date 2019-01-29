@@ -5,9 +5,7 @@ import com.gypsyengineer.tlsbunny.tls13.connection.EngineFactory;
 import com.gypsyengineer.tlsbunny.tls13.connection.check.Check;
 import com.gypsyengineer.tlsbunny.tls13.server.Server;
 import com.gypsyengineer.tlsbunny.tls13.server.StopCondition;
-import com.gypsyengineer.tlsbunny.utils.Config;
-import com.gypsyengineer.tlsbunny.utils.Output;
-import com.gypsyengineer.tlsbunny.utils.OutputListener;
+import com.gypsyengineer.tlsbunny.utils.*;
 import com.gypsyengineer.tlsbunny.vendor.test.tls13.Utils;
 
 import java.io.IOException;
@@ -23,6 +21,7 @@ public class WolfsslServer extends WolfsslDocker implements Server {
 
     private boolean failed = false;
     private int previousAcceptCounter = 0;
+    private final InputStreamOutput output = new InputStreamOutput();
     private final OutputListenerImpl listener = new OutputListenerImpl();
 
     public static WolfsslServer wolfsslServer() {
@@ -31,13 +30,17 @@ public class WolfsslServer extends WolfsslDocker implements Server {
 
     private WolfsslServer() {
         output.add(listener);
+        output.prefix("wolfssl-server");
     }
 
     @Override
     public boolean ready() {
+        output.update();
+
         synchronized (this) {
-            if (previousAcceptCounter != listener.acceptCounter) {
-                previousAcceptCounter = listener.acceptCounter;
+            int counter = listener.acceptCounter();
+            if (previousAcceptCounter != counter) {
+                previousAcceptCounter = counter;
                 return true;
             }
         }
@@ -59,6 +62,12 @@ public class WolfsslServer extends WolfsslDocker implements Server {
     @Override
     public WolfsslServer set(EngineFactory engineFactory) {
         throw new UnsupportedOperationException("no engine factories for you!");
+    }
+
+    @Override
+    public Server set(Sync sync) {
+        // do nothing
+        return this;
     }
 
     @Override
@@ -128,7 +137,9 @@ public class WolfsslServer extends WolfsslDocker implements Server {
         command.add(image);
 
         try {
-            int code = Utils.waitProcessFinish(output, command);
+            Process process = Utils.exec(output, command);
+            output.set(process.getInputStream());
+            int code = process.waitFor();
             if (code != 0) {
                 output.achtung("the server exited with a non-zero exit code (%d)", code);
 
@@ -172,7 +183,9 @@ public class WolfsslServer extends WolfsslDocker implements Server {
 
     @Override
     public boolean running() {
-        if (!listener.serverStarted) {
+        output.update();
+
+        if (!listener.serverStarted()) {
             return false;
         }
 
@@ -199,6 +212,14 @@ public class WolfsslServer extends WolfsslDocker implements Server {
 
         private int acceptCounter = 0;
         private boolean serverStarted = false;
+
+        synchronized int acceptCounter() {
+            return acceptCounter;
+        }
+
+        synchronized boolean serverStarted() {
+            return serverStarted;
+        }
 
         @Override
         synchronized public void receivedInfo(String... strings) {

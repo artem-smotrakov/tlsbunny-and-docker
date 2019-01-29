@@ -1,7 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls13.server;
 
 import com.gypsyengineer.tlsbunny.tls13.connection.action.ActionFailed;
-import com.gypsyengineer.tlsbunny.tls13.connection.action.Phase;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.GeneratingAlert;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.WrappingIntoTLSPlaintexts;
 import com.gypsyengineer.tlsbunny.tls13.connection.check.Check;
@@ -9,10 +8,7 @@ import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.EngineFactory;
 import com.gypsyengineer.tlsbunny.tls13.crypto.AEADException;
 import com.gypsyengineer.tlsbunny.tls13.handshake.NegotiatorException;
-import com.gypsyengineer.tlsbunny.utils.Config;
-import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
-import com.gypsyengineer.tlsbunny.utils.Connection;
-import com.gypsyengineer.tlsbunny.utils.Output;
+import com.gypsyengineer.tlsbunny.utils.*;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -36,7 +32,7 @@ public class SingleThreadServer implements Server {
     private Config config = SystemPropertiesConfig.load();
     private EngineFactory factory;
     private StopCondition stopCondition = new NonStop();
-    private Output output = new Output("server");
+    private Output output = Output.console("server");
     private Check check;
     private boolean failed = false;
     private boolean running = false;
@@ -86,6 +82,12 @@ public class SingleThreadServer implements Server {
     @Override
     public SingleThreadServer set(Check check) {
         this.check = check;
+        return this;
+    }
+
+    @Override
+    public Server set(Sync sync) {
+        // do nothing
         return this;
     }
 

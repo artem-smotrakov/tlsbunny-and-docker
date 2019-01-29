@@ -16,7 +16,7 @@ public class SimpleVectorFuzzerTest {
 
     @Test
     public void iterate() {
-        try (Output output = new Output()) {
+        try (Output output = Output.console()) {
             SimpleVectorFuzzer fuzzer = new SimpleVectorFuzzer();
 
             fuzzer.set(output);
@@ -53,7 +53,7 @@ public class SimpleVectorFuzzerTest {
 
     @Test
     public void set() {
-        try (Output output = new Output()) {
+        try (Output output = Output.console()) {
             SimpleVectorFuzzer fuzzer = simpleVectorFuzzer();
             fuzzer.set(output);
 

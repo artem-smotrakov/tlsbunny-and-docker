@@ -26,8 +26,8 @@ public class HandshakeTest extends BaseTest {
         serverConfig.serverCertificate(serverCertificatePath);
         serverConfig.serverKey(serverKeyPath);
 
-        Output serverOutput = new Output("server");
-        Output clientOutput = new Output("client");
+        Output serverOutput = Output.console("server");
+        Output clientOutput = Output.console("client");
 
         Client client = new HttpsClient()
                 .version(ProtocolVersion.TLSv13)

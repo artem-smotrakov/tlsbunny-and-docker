@@ -21,7 +21,7 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp
 public class WolfsslHttpsClient extends SingleConnectionClient {
 
     public static void main(String[] args) throws Exception {
-        try (Output output = new Output()) {
+        try (Output output = Output.console()) {
             new WolfsslHttpsClient()
                     .set(output)
                     .set(SystemPropertiesConfig.load())

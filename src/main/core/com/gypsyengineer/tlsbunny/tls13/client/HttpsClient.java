@@ -27,7 +27,7 @@ public class HttpsClient extends SingleConnectionClient {
     private ProtocolVersion protocolVersion = TLSv13;
 
     public static void main(String[] args) throws Exception {
-        try (Output output = new Output()) {
+        try (Output output = Output.console()) {
             new HttpsClient()
                     .set(output)
                     .connect();

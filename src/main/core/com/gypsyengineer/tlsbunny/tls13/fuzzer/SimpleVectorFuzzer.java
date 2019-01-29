@@ -4,6 +4,7 @@ import com.gypsyengineer.tlsbunny.fuzzer.FuzzedVector;
 import com.gypsyengineer.tlsbunny.fuzzer.Fuzzer;
 import com.gypsyengineer.tlsbunny.tls.Vector;
 import com.gypsyengineer.tlsbunny.utils.Output;
+import com.gypsyengineer.tlsbunny.utils.Output;
 
 import java.io.IOException;
 

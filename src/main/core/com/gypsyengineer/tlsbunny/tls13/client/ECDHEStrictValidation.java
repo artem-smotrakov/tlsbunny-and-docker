@@ -31,7 +31,7 @@ public class ECDHEStrictValidation extends AbstractClient {
     private int n = 1;
 
     public static void main(String[] args) throws Exception {
-        try (Output output = new Output()) {
+        try (Output output = Output.console()) {
             new ECDHEStrictValidation()
                     .set(output)
                     .connect();
@@ -51,8 +51,13 @@ public class ECDHEStrictValidation extends AbstractClient {
     @Override
     public ECDHEStrictValidation connectImpl() throws Exception {
         for (int i = 0; i < n; i++) {
-            output.info("test #%d", i);
-            engines.add(createEngine().connect().run(checks));
+            sync().start();
+            try {
+                output.info("test #%d", i);
+                engines.add(createEngine().connect().run(checks));
+            } finally {
+                sync().end();
+            }
         }
 
         return this;

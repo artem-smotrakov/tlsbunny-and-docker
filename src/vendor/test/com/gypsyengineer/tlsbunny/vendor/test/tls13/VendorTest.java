@@ -3,6 +3,7 @@ package com.gypsyengineer.tlsbunny.vendor.test.tls13;
 import com.gypsyengineer.tlsbunny.tls13.client.Client;
 import com.gypsyengineer.tlsbunny.tls13.server.Server;
 import com.gypsyengineer.tlsbunny.utils.Output;
+import com.gypsyengineer.tlsbunny.utils.Sync;
 import com.gypsyengineer.tlsbunny.utils.UncaughtExceptionHandler;
 
 import static com.gypsyengineer.tlsbunny.vendor.test.tls13.Utils.checkForASanFindings;
@@ -17,6 +18,7 @@ public class VendorTest {
     private Client client;
     private Server server;
 
+    // TODO is it necessary?
     private String label = "";
 
     public VendorTest label(String label) {
@@ -51,26 +53,48 @@ public class VendorTest {
         Thread.setDefaultUncaughtExceptionHandler(exceptionHandler);
 
         Thread serverThread = null;
-        Thread clientThread;
-        try (Output clientOutput = new Output("client", label);
-             Output serverOutput = new Output("server", label)) {
+        Thread clientThread = null;
 
+        Output clientOutput;
+        Output serverOutput;
+
+        // set up an output for the server if necessary
+        if (!server.running() && server.output() == null) {
+            serverOutput = Output.local("server");
+            server.set(serverOutput);
+        }
+
+        // set up an output for the client if necessary
+        if (!client.running() && client.output() == null) {
+            clientOutput = Output.local("client");
+            client.set(clientOutput);
+        }
+
+        Sync sync = Sync.between(client, server);
+
+        if (label != null && !label.isEmpty()) {
+            sync.logPrefix(label);
+        } else {
+            sync.logPrefix(String.format("%s_%s",
+                    client.getClass().getSimpleName(),
+                    server.getClass().getSimpleName()));
+        }
+
+        sync.init();
+
+        try {
             // start the server if it's not running
             if (!server.running()) {
-                server.set(serverOutput);
                 serverThread = server.start();
                 Utils.waitStart(server);
             }
 
             // configure and run the client
-            if (client.running()) {
-                throw whatTheHell("client is already running!");
+            if (!client.running()) {
+                client.config().port(server.port());
+                clientThread = client.start();
+                sleep(delay);
             }
-
-            client.config().port(server.port());
-            client.set(clientOutput);
-            clientThread = client.start();
-            sleep(delay);
 
             // wait for client or server to finish
             while (true) {
@@ -101,7 +125,7 @@ public class VendorTest {
                 Utils.sleep(delay);
             }
 
-            if (clientThread.isAlive()) {
+            if (clientThread != null && clientThread.isAlive()) {
                 throw whatTheHell("client thread is still running!");
             }
 
@@ -125,6 +149,8 @@ public class VendorTest {
                 client.stop();
                 Utils.waitStop(client);
             }
+
+            sync.close();
 
             checkForASanFindings(client.output());
             checkForASanFindings(server.output());

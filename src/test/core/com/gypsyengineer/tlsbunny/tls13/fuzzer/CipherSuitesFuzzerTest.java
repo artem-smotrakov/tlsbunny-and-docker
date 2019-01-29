@@ -22,7 +22,7 @@ public class CipherSuitesFuzzerTest {
 
     @Test
     public void iterate() {
-        try (Output output = new Output()) {
+        try (Output output = Output.console()) {
             CipherSuitesFuzzer fuzzer = CipherSuitesFuzzer.cipherSuitesFuzzer();
             fuzzer.fuzzer(simpleVectorFuzzer());
 
@@ -58,7 +58,7 @@ public class CipherSuitesFuzzerTest {
 
     @Test
     public void consistency() {
-        try (Output output = new Output()) {
+        try (Output output = Output.console()) {
             CipherSuitesFuzzer one = CipherSuitesFuzzer.cipherSuitesFuzzer();
             one.fuzzer(simpleVectorFuzzer());
             one.targets(client_hello);
@@ -95,7 +95,7 @@ public class CipherSuitesFuzzerTest {
 
     @Test
     public void clientHello() {
-        try (Output output = new Output()) {
+        try (Output output = Output.console()) {
             CipherSuitesFuzzer fuzzer = CipherSuitesFuzzer.cipherSuitesFuzzer();
             fuzzer.fuzzer(simpleVectorFuzzer());
             fuzzer.set(output);

@@ -5,9 +5,9 @@ import com.gypsyengineer.tlsbunny.tls13.connection.check.FailureCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
+import com.gypsyengineer.tlsbunny.utils.Output;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 import com.gypsyengineer.tlsbunny.tls13.client.SingleConnectionClient;
-import com.gypsyengineer.tlsbunny.utils.Output;
 
 import java.util.List;
 
@@ -25,7 +25,7 @@ public class UnexpectedClientHelloCookie extends SingleConnectionClient {
     public static final int ZERO_COOKIE_LENGTH = 32;
 
     public static void main(String[] args) throws Exception {
-        try (Output output = new Output()) {
+        try (Output output = Output.console()) {
             new UnexpectedClientHelloCookie()
                     .set(SystemPropertiesConfig.load())
                     .set(StructFactory.getDefault())

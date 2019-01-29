@@ -25,7 +25,7 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp
 public class DoubleClientHello extends SingleConnectionClient {
 
     public static void main(String[] args) throws Exception {
-        try (Output output = new Output()) {
+        try (Output output = Output.console()) {
             new DoubleClientHello()
                     .set(SystemPropertiesConfig.load())
                     .set(StructFactory.getDefault())

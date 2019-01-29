@@ -83,8 +83,8 @@ public class StructCopyTest {
         // instead of creating Struct objects manually we start a handshake process
         // and collect handshake messages which were created during handshaking
 
-        Output serverOutput = new Output("server");
-        Output clientOutput = new Output("client");
+        Output serverOutput = Output.console("server");
+        Output clientOutput = Output.console("client");
 
         Config serverConfig = SystemPropertiesConfig.load();
         SingleThreadServer server = new SingleThreadServer()

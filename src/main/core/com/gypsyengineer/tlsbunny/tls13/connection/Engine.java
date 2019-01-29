@@ -37,7 +37,7 @@ public class Engine {
     private Connection connection;
     private boolean createdConnection = false;
 
-    private Output output = new Output();
+    private Output output = Output.console();
     private String host = "localhost";
     private int port = 443;
     private Status status = Status.not_started;

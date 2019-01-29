@@ -19,7 +19,7 @@ public class CipherSuitesFuzzer extends FuzzyStructFactory<Vector<CipherSuite>> 
     }
 
     public CipherSuitesFuzzer() {
-        this(StructFactory.getDefault(), new Output());
+        this(StructFactory.getDefault(), Output.console());
     }
 
     public CipherSuitesFuzzer(StructFactory factory, Output output) {

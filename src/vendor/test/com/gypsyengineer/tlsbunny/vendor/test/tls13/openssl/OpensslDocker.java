@@ -1,7 +1,7 @@
 package com.gypsyengineer.tlsbunny.vendor.test.tls13.openssl;
 
+import com.gypsyengineer.tlsbunny.utils.InputStreamOutput;
 import com.gypsyengineer.tlsbunny.vendor.test.tls13.Utils;
-import com.gypsyengineer.tlsbunny.utils.Output;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -29,7 +29,7 @@ public class OpensslDocker {
 
     protected final String containerName = String.format("%s_%d",
             this.getClass().getSimpleName().toLowerCase(), System.currentTimeMillis());
-    protected final Output output = new Output(this.getClass().getSimpleName());
+    protected final InputStreamOutput output = new InputStreamOutput();
     protected Map<String, String> dockerEnv = Collections.synchronizedMap(new HashMap<>());
 
     public OpensslDocker dockerEnv(String name, String value) {

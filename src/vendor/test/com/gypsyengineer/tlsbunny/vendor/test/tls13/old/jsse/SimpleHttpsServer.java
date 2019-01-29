@@ -2,6 +2,7 @@ package com.gypsyengineer.tlsbunny.vendor.test.tls13.old.jsse;
 
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.Output;
+import com.gypsyengineer.tlsbunny.utils.Output;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 
 import javax.net.ssl.SSLServerSocket;
@@ -23,7 +24,7 @@ public class SimpleHttpsServer implements Runnable, AutoCloseable {
             "Connection: Closed\n\n%s", message.length(), message).getBytes();
 
     protected Config config = SystemPropertiesConfig.load();
-    protected Output output = new Output();
+    protected Output output = Output.console();
 
     // TODO: add synchronization
     private boolean running = false;

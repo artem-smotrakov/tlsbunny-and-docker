@@ -18,7 +18,7 @@ public class MutatedStructFactory extends FuzzyStructFactory<byte[]> {
     }
 
     public MutatedStructFactory() {
-        this(StructFactory.getDefault(), new Output());
+        this(StructFactory.getDefault(), Output.console());
     }
 
     public MutatedStructFactory(StructFactory factory, Output output) {
@@ -236,11 +236,11 @@ public class MutatedStructFactory extends FuzzyStructFactory<byte[]> {
     synchronized public byte[] fuzz(byte[] encoding) {
         byte[] fuzzed = fuzzer.fuzz(encoding);
 
-        output.info("original: %n");
+        output.info("original:");
         output.increaseIndent();
         output.info("%s%n", printHexDiff(encoding, fuzzed));
         output.decreaseIndent();
-        output.info("fuzzed: %n");
+        output.info("fuzzed:");
         output.increaseIndent();
         output.info("%s%n", printHexDiff(fuzzed, encoding));
         output.decreaseIndent();

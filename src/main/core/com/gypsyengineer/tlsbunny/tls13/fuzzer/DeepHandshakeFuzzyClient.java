@@ -11,11 +11,13 @@ import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.tls13.utils.FuzzerConfig;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.Output;
+import com.gypsyengineer.tlsbunny.utils.Sync;
 import com.gypsyengineer.tlsbunny.utils.Utils;
 
 import java.io.IOException;
 import java.net.ConnectException;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.gypsyengineer.tlsbunny.utils.Achtung.achtung;
@@ -31,6 +33,7 @@ public class DeepHandshakeFuzzyClient implements Client {
     private Check[] checks;
     private Analyzer analyzer;
     private FuzzerConfig fuzzerConfig;
+    private Sync sync = Sync.dummy();
 
     private boolean strict = true;
 
@@ -107,6 +110,13 @@ public class DeepHandshakeFuzzyClient implements Client {
     }
 
     @Override
+    synchronized public DeepHandshakeFuzzyClient set(Sync sync) {
+        Objects.requireNonNull(sync, "sync can't be null!");
+        this.sync = sync;
+        return this;
+    }
+
+    @Override
     public DeepHandshakeFuzzyClient connect() {
         run();
         return this;
@@ -124,6 +134,10 @@ public class DeepHandshakeFuzzyClient implements Client {
         }
     }
 
+    synchronized public Sync sync() {
+        return sync;
+    }
+
     @Override
     public void run() {
         if (fuzzerConfig.noFactory()) {
@@ -139,6 +153,7 @@ public class DeepHandshakeFuzzyClient implements Client {
         deepHandshakeFuzzer.set(output);
 
         deepHandshakeFuzzer.recording();
+        sync().start();
         try {
             output.info("run a smoke test before fuzzing");
             Engine[] engines = client.set(StructFactory.getDefault())
@@ -159,82 +174,100 @@ public class DeepHandshakeFuzzyClient implements Client {
             for (Engine engine : engines) {
                 engine.run(new SuccessCheck());
             }
+
+            output.info("smoke test passed, start fuzzing");
         } catch (Exception e) {
             reportError("smoke test failed", e);
             output.achtung("skip fuzzing");
             return;
         } finally {
             output.flush();
+            sync().end();
         }
-        output.info("smoke test passed, start fuzzing");
 
         if (deepHandshakeFuzzer.targeted().length == 0) {
             throw achtung("no targets found!");
         }
 
         String targets = Arrays.stream(deepHandshakeFuzzer.targeted())
-                .map(type -> type.toString())
+                .map(Object::toString)
                 .collect(Collectors.joining( ", " ));
 
         output.info("run fuzzer config:");
-        output.info("\ttargets    = %s", targets);
-        output.info("\tfuzzer     = %s",
+        output.increaseIndent();
+        output.info("targets    = %s", targets);
+        output.info("fuzzer     = %s",
                 deepHandshakeFuzzer.fuzzer() != null
                         ? deepHandshakeFuzzer.fuzzer().toString()
                         : "null");
-        output.info("\tstart test = %d", fuzzerConfig.startTest());
-        output.info("\tend test   = %d", fuzzerConfig.endTest());
+        output.info("start test = %d", fuzzerConfig.startTest());
+        output.info("end test   = %d", fuzzerConfig.endTest());
+        output.decreaseIndent();
 
         try {
             deepHandshakeFuzzer.fuzzing();
             deepHandshakeFuzzer.currentTest(fuzzerConfig.startTest());
             while (shouldRun(deepHandshakeFuzzer)) {
-                output.info("test #%d", deepHandshakeFuzzer.currentTest());
-
-                int attempt = 0;
-                while (true) {
-                    try {
-                        client.set(deepHandshakeFuzzer)
-                                .set(fuzzerConfig)
-                                .set(output)
-                                .set(checks)
-                                .set(analyzer)
-                                .connect();
-
-                        break;
-                    } catch (EngineException e) {
-                        Throwable cause = e.getCause();
-                        if (cause instanceof ConnectException == false) {
-                            // an EngineException may occur due to multiple reasons
-                            // if the exception was not caused by ConnectException
-                            // we tolerate EngineException here to let the fuzzer to continue
-                            output.achtung("an exception occurred, but we continue fuzzing", e);
-                            break;
-                        }
-
-                        // if the exception was caused by ConnectException
-                        // then we try again several times
-
-                        if (attempt == max_attempts) {
-                            throw new IOException("looks like the server is not responding");
-                        }
-                        attempt++;
-
-                        output.info("connection failed: %s ", cause.getMessage());
-                        output.info("let's wait a bit and try again (attempt %d)", attempt);
-                        Utils.sleep(delay);
-                    } finally {
-                        output.flush();
-                    }
+                sync().start();
+                try {
+                    run(deepHandshakeFuzzer);
+                } finally {
+                    output.flush();
+                    sync().end();
+                    deepHandshakeFuzzer.moveOn();
                 }
-
-                output.flush();
-                deepHandshakeFuzzer.moveOn();
             }
         } catch (Exception e) {
             output.achtung("what the hell? unexpected exception", e);
         } finally {
             output.flush();
+        }
+    }
+
+    private void run(DeepHandshakeFuzzer deepHandshakeFuzzer) throws Exception {
+        String message = String.format("test #%d, %s, targeted: [%s]",
+                deepHandshakeFuzzer.currentTest(),
+                getClass().getSimpleName(),
+                Arrays.stream(deepHandshakeFuzzer.targeted())
+                        .map(Object::toString)
+                        .collect(Collectors.joining(", ")));
+        output.info(message);
+
+        int attempt = 0;
+        while (true) {
+            try {
+                client.set(deepHandshakeFuzzer)
+                        .set(fuzzerConfig)
+                        .set(output)
+                        .set(checks)
+                        .set(analyzer)
+                        .connect();
+
+                break;
+            } catch (EngineException e) {
+                Throwable cause = e.getCause();
+                if (cause instanceof ConnectException == false) {
+                    // an EngineException may occur due to multiple reasons
+                    // if the exception was not caused by ConnectException
+                    // we tolerate EngineException here to let the fuzzer to continue
+                    output.achtung("an exception occurred, but we continue fuzzing", e);
+                    break;
+                }
+
+                // if the exception was caused by ConnectException
+                // then we try again several times
+
+                if (attempt == max_attempts) {
+                    throw new IOException("looks like the server is not responding");
+                }
+                attempt++;
+
+                output.info("connection failed: %s ", cause.getMessage());
+                output.info("let's wait a bit and try again (attempt %d)", attempt);
+                Utils.sleep(delay);
+            } finally {
+                output.flush();
+            }
         }
     }
 

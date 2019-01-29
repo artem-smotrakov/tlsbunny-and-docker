@@ -9,6 +9,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.AlertDescription;
 import com.gypsyengineer.tlsbunny.tls13.struct.AlertLevel;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.Output;
+import com.gypsyengineer.tlsbunny.utils.Output;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -26,7 +27,7 @@ public class ProcessingTLSPlaintextWithAlertTest {
     public void basic()
             throws IOException, ActionFailed, AEADException, NegotiatorException {
 
-        try (Output output = new Output()) {
+        try (Output output = Output.console()) {
             Context context = context();
 
             ByteBuffer buffer = new GeneratingAlert()
@@ -64,7 +65,7 @@ public class ProcessingTLSPlaintextWithAlertTest {
     public void notAlert()
             throws IOException, AEADException, NegotiatorException {
 
-        try (Output output = new Output()) {
+        try (Output output = Output.console()) {
             Context context = context();
 
             ByteBuffer buffer = new GeneratingAlert()

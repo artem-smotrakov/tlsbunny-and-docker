@@ -31,7 +31,7 @@ public class DeepHandshakeFuzzer extends StructFactoryWrapper
     private int rounds = 10;
 
     public static DeepHandshakeFuzzer deepHandshakeFuzzer() {
-        return deepHandshakeFuzzer(StructFactory.getDefault(), new Output());
+        return deepHandshakeFuzzer(StructFactory.getDefault(), Output.console());
     }
 
     public static DeepHandshakeFuzzer deepHandshakeFuzzer(Output output) {

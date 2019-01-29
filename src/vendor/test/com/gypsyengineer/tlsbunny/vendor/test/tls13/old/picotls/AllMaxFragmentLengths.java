@@ -24,7 +24,7 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp
 public class AllMaxFragmentLengths {
 
     public static void main(String[] args) throws Exception {
-        try (Output output = new Output()) {
+        try (Output output = Output.console()) {
             ClientImpl client =  (ClientImpl) new ClientImpl()
                     .set(SystemPropertiesConfig.load())
                     .set(StructFactory.getDefault())

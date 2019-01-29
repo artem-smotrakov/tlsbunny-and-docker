@@ -2,6 +2,7 @@ package com.gypsyengineer.tlsbunny.vendor.test.tls13;
 
 import com.gypsyengineer.tlsbunny.utils.Achtung;
 import com.gypsyengineer.tlsbunny.utils.Output;
+import com.gypsyengineer.tlsbunny.utils.Output;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -12,15 +13,9 @@ public class UtilsTest {
 
     private static boolean value;
 
-    @BeforeClass
-    public static void setUp() {
-        value = Output.printOnlyAchtung();
-        Output.printAll();
-    }
-
     @Test
     public void asanMessageFound() {
-        try (Output output = new Output()) {
+        try (Output output = Output.console()) {
             output.info("one");
             output.info("ERROR: AddressSanitizer: this is a test!");
             output.achtung("warning");
@@ -33,7 +28,7 @@ public class UtilsTest {
 
     @Test
     public void asanMessageNotFound() {
-        try (Output output = new Output()) {
+        try (Output output = Output.console()) {
             output.info("one");
             output.info("two");
             output.achtung("AddressSanitizer");
@@ -41,8 +36,4 @@ public class UtilsTest {
         }
     }
 
-    @AfterClass
-    public static void tearDown() {
-        Output.printOnlyAchtung(value);
-    }
 }

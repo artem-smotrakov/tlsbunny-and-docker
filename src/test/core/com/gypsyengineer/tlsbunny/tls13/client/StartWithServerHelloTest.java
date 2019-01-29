@@ -26,8 +26,8 @@ public class StartWithServerHelloTest {
 
     @Test
     public void test() throws Exception {
-        Output serverOutput = new Output("server");
-        Output clientOutput = new Output("client");
+        Output serverOutput = Output.console("server");
+        Output clientOutput = Output.console("client");
 
         Config serverConfig = SystemPropertiesConfig.load();
         SingleThreadServer server = new SingleThreadServer()

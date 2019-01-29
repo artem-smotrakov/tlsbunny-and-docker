@@ -4,21 +4,18 @@ import com.gypsyengineer.tlsbunny.tls13.client.Client;
 import com.gypsyengineer.tlsbunny.tls13.server.Server;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import static com.gypsyengineer.tlsbunny.utils.Achtung.achtung;
 
 public class Utils {
 
     // in millis
-    public static final int delay = 500;
-    public static final int start_delay = 5 * 1000;
-    public static final int stop_delay  = 5 * 1000;
-    public static final int default_timeout = 3 * 60 * 1000; // 3 minutes
+    private static final int delay = 500;
+    private static final int start_delay = 5 * 1000;
+    private static final int stop_delay  = 5 * 1000;
+    private static final int default_timeout = 3 * 60 * 1000; // 3 minutes
 
     public static void sleep(long millis) {
         try {
@@ -48,6 +45,13 @@ public class Utils {
         }
         output.info("run: %s", sb.toString());
 
+        ProcessBuilder pb = new ProcessBuilder(command);
+        pb.redirectErrorStream(true);
+
+        return pb.start();
+    }
+
+    public static Process exec(List<String> command) throws IOException {
         ProcessBuilder pb = new ProcessBuilder(command);
         pb.redirectErrorStream(true);
 
@@ -152,36 +156,18 @@ public class Utils {
     public static int waitProcessFinish(Output output, List<String> command)
             throws IOException, InterruptedException {
 
-        return waitProcessFinish(output, exec(output, command));
+        return exec(output, command).waitFor();
     }
 
     public static int waitProcessFinish(
             Output output, String template, Object... params)
                 throws IOException, InterruptedException {
 
-        return waitProcessFinish(output, exec(output, template, params));
-    }
-
-    public static int waitProcessFinish(Output output, Process process)
-            throws IOException, InterruptedException {
-
-        InputStream is = new BufferedInputStream(process.getInputStream());
-        byte[] bytes = new byte[4096];
-        do {
-            if (is.available() > 0) {
-                int len = is.read(bytes);
-                output.info("%s", new String(bytes, 0, len));
-                output.flush();
-            }
-        } while (!process.waitFor(delay, TimeUnit.MILLISECONDS));
-
-        output.flush();
-
-        return process.exitValue();
+        return exec(output, template, params).waitFor();
     }
 
     public static void checkForASanFindings(Output output) {
-        for (String string : output.strings()) {
+        for (String string : output.lines()) {
             if (string.contains("ERROR: AddressSanitizer:")) {
                 throw achtung("hey, AddressSanitizer found something!");
             }

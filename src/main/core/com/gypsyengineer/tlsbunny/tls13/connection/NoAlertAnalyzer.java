@@ -35,7 +35,6 @@ public class NoAlertAnalyzer implements Analyzer {
         for (Engine engine : engines) {
             if (!engine.context().hasAlert()) {
                 output.info("connection '%s' didn't result to an alert:", engine.label());
-                output.add(engine.output());
                 count++;
             }
         }

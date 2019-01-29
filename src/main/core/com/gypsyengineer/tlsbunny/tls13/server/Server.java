@@ -6,6 +6,7 @@ import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.EngineFactory;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.HasOutput;
+import com.gypsyengineer.tlsbunny.utils.Sync;
 
 public interface Server extends Runnable, AutoCloseable, HasOutput<Server> {
 
@@ -13,6 +14,7 @@ public interface Server extends Runnable, AutoCloseable, HasOutput<Server> {
 
     Server set(Config config);
     Server set(EngineFactory engineFactory);
+    Server set(Sync sync);
 
     // TODO it should accept multiple checks
     Server set(Check check);

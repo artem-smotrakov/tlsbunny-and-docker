@@ -1,7 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls13.fuzzer;
 
 import com.gypsyengineer.tlsbunny.TestUtils;
-import com.gypsyengineer.tlsbunny.fuzzer.AbstractFlipFuzzer;
 import com.gypsyengineer.tlsbunny.tls.Random;
 import com.gypsyengineer.tlsbunny.tls.Struct;
 import com.gypsyengineer.tlsbunny.tls13.client.HttpsClientAuth;
@@ -195,8 +194,8 @@ public class DeepHandshakeFuzzerTest {
 
     @Test
     public void handshake() throws Exception {
-        Output serverOutput = new Output("server");
-        Output clientOutput = new Output("client");
+        Output serverOutput = Output.console("server");
+        Output clientOutput = Output.console("client");
 
         Config serverConfig = SystemPropertiesConfig.load();
         SingleThreadServer server = new SingleThreadServer()

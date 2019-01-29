@@ -8,6 +8,7 @@ import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
 import com.gypsyengineer.tlsbunny.utils.Output;
+import com.gypsyengineer.tlsbunny.utils.Output;
 import com.gypsyengineer.tlsbunny.utils.WhatTheHell;
 
 import java.lang.reflect.InvocationTargetException;
@@ -200,7 +201,7 @@ public class TestUtils {
 
         @Override
         public Output output() {
-            return new Output();
+            return Output.console();
         }
 
         @Override
@@ -248,7 +249,7 @@ public class TestUtils {
 
         @Override
         public Output output() {
-            return new Output();
+            return Output.console();
         }
 
         @Override
@@ -296,7 +297,7 @@ public class TestUtils {
 
         @Override
         public Output output() {
-            return new Output();
+            return Output.console();
         }
 
         @Override
@@ -344,7 +345,7 @@ public class TestUtils {
 
         @Override
         public Output output() {
-            return new Output();
+            return Output.console();
         }
 
         @Override

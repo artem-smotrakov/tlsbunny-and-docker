@@ -29,7 +29,7 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp
 // TODO: it should be a test
 public class SendDowngradeMessage {
 
-    // TODO: how can we avoid duplicating these strings?
+    // TODO: how can we avoid duplicating these lines?
     private static final String serverCertificatePath = "certs/server_cert.der";
     private static final String serverKeyPath = "certs/server_key.pkcs8";
 
@@ -42,7 +42,7 @@ public class SendDowngradeMessage {
         config.serverCertificate(serverCertificatePath);
         config.serverKey(serverKeyPath);
 
-        try (Output output = new Output("server");
+        try (Output output = Output.console("server");
              Server server = server(output, config, version)) {
 
             server.start().join();
