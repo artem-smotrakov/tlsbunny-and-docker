@@ -1,7 +1,5 @@
 package com.gypsyengineer.tlsbunny.tls13.utils;
 
-import com.gypsyengineer.tlsbunny.tls13.connection.check.AlertCheck;
-import com.gypsyengineer.tlsbunny.tls13.connection.check.Check;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 import org.junit.Test;
@@ -28,19 +26,14 @@ public class FuzzerConfigTest {
         assertEquals(firstConfig, firstConfig);
         assertNotEquals(firstConfig, "wrong");
 
-        firstConfig.startTest(1);
-        firstConfig.endTest(10);
-        secondConfig.startTest(5);
-        secondConfig.endTest(15);
+        firstConfig.total(1);
+        secondConfig.total(5);
 
-        assertEquals(1, firstConfig.startTest());
-        assertEquals(10, firstConfig.endTest());
+        assertEquals(1, firstConfig.total());
+        firstConfig.total(2);
+        assertEquals(2, firstConfig.total());
 
-        firstConfig.startTest(2);
-        firstConfig.endTest(12);
-
-        assertEquals(5, secondConfig.startTest());
-        assertEquals(15, secondConfig.endTest());
+        assertEquals(5, secondConfig.total());
 
         assertNotEquals(firstConfig, secondConfig);
 
@@ -95,8 +88,7 @@ public class FuzzerConfigTest {
             assertNotEquals("a/b/key.pem", config.serverKey());
             assertNotEquals("c/d/cert.pem", config.clientCertificate());
             assertNotEquals("c/d/key.pem", config.clientKey());
-            assertNotEquals(123, config.startTest());
-            assertNotEquals(234, config.endTest());
+            assertNotEquals(123, config.total());
             assertNotEquals(42, config.parts());
         }
 
@@ -110,9 +102,8 @@ public class FuzzerConfigTest {
         updater.serverKey("a/b/key.pem");
         updater.clientCertificate("c/d/cert.pem");
         updater.clientKey("c/d/key.pem");
-        updater.startTest(123);
-        updater.endTest(234);
         updater.parts(42);
+        updater.total(43);
 
         for (Config config : configs) {
             assertEquals(42, config.port());
@@ -124,8 +115,7 @@ public class FuzzerConfigTest {
             assertEquals("a/b/key.pem", config.serverKey());
             assertEquals("c/d/cert.pem", config.clientCertificate());
             assertEquals("c/d/key.pem", config.clientKey());
-            assertEquals(123, config.startTest());
-            assertEquals(234, config.endTest());
+            assertEquals(43, config.total());
             assertEquals(42, config.parts());
         }
     }
@@ -142,8 +132,7 @@ public class FuzzerConfigTest {
         expectUnsupported(() -> updater.serverCertificate());
         expectUnsupported(() -> updater.clientKey());
         expectUnsupported(() -> updater.clientCertificate());
-        expectUnsupported(() -> updater.startTest());
-        expectUnsupported(() -> updater.endTest());
+        expectUnsupported(() -> updater.total());
         expectUnsupported(() -> updater.readTimeout());
     }
 

@@ -7,8 +7,7 @@ public interface Config {
     double maxRatio();
     int threads();
     int parts();
-    long startTest();
-    long endTest();
+    long total();
     String clientCertificate();
     String clientKey();
     String serverCertificate();
@@ -22,8 +21,7 @@ public interface Config {
     Config port(int port);
     Config minRatio(double minRatio);
     Config maxRatio(double maxRatio);
-    Config startTest(long test);
-    Config endTest(long test);
+    Config total(long n);
     Config parts(int parts);
     Config readTimeout(long timeout);
     Config clientCertificate(String path);

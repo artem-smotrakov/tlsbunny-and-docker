@@ -45,12 +45,7 @@ public class FuzzerConfigUpdater implements Config {
     }
 
     @Override
-    public long startTest() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public long endTest() {
+    public long total() {
         throw new UnsupportedOperationException();
     }
 
@@ -117,17 +112,9 @@ public class FuzzerConfigUpdater implements Config {
     }
 
     @Override
-    public Config startTest(long test) {
+    public Config total(long n) {
         for (Config config : configs) {
-            config.startTest(test);
-        }
-        return null;
-    }
-
-    @Override
-    public Config endTest(long test) {
-        for (Config config : configs) {
-            config.endTest(test);
+            config.total(n);
         }
         return null;
     }

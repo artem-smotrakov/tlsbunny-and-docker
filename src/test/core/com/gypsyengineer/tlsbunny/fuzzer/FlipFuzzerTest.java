@@ -154,7 +154,7 @@ public class FlipFuzzerTest {
             int m = 300;
             for (int i = 0; i < m; i++) {
                 assertTrue(fuzzer.canFuzz());
-                assertEquals(expectedState, fuzzer.currentTest());
+                assertEquals("0:-1:0.01:0.05:" + expectedState, fuzzer.state());
 
                 byte[] fuzzed = fuzzer.fuzz(array);
                 assertFalse(Arrays.equals(array, fuzzed));
@@ -184,8 +184,8 @@ public class FlipFuzzerTest {
                 assertTrue(fuzzerOne.canFuzz());
                 assertTrue(fuzzerTwo.canFuzz());
 
-                assertEquals(expectedState, fuzzerOne.currentTest());
-                assertEquals(expectedState, fuzzerTwo.currentTest());
+                assertEquals("0:-1:0.01:0.05:" + expectedState, fuzzerOne.state());
+                assertEquals("0:-1:0.01:0.05:" + expectedState, fuzzerTwo.state());
 
                 byte[] fuzzedOne = fuzzerOne.fuzz(array);
                 byte[] fuzzedTwo = fuzzerTwo.fuzz(array);
@@ -211,12 +211,13 @@ public class FlipFuzzerTest {
 
             int n = 100;
             byte[] array = new byte[n];
+            String prefix = "0:-1:0.01:0.3:";
 
             long expectedState = Long.MAX_VALUE - 50;
-            fuzzer.currentTest(expectedState);
+            fuzzer.state(prefix + expectedState);
             while (expectedState < Long.MAX_VALUE) {
                 assertTrue(fuzzer.canFuzz());
-                assertEquals(expectedState, fuzzer.currentTest());
+                assertEquals(prefix + expectedState, fuzzer.state());
 
                 byte[] fuzzed = fuzzer.fuzz(array);
                 assertFalse(Arrays.equals(array, fuzzed));
@@ -226,7 +227,7 @@ public class FlipFuzzerTest {
                 expectedState++;
             }
 
-            assertEquals(Long.MAX_VALUE, fuzzer.currentTest());
+            assertEquals(prefix + Long.MAX_VALUE, fuzzer.state());
             assertFalse(fuzzer.canFuzz());
         }
     }

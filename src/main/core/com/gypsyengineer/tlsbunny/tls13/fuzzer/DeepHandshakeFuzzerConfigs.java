@@ -16,8 +16,7 @@ public class DeepHandshakeFuzzerConfigs {
     // settings for minimized configs
     private static boolean fullConfigs = Boolean.valueOf(
             System.getProperty("tlsbunny.fuzzer.full.configs", "false"));
-    private static final int start = 5;
-    private static final int end = 7;
+    private static final int total = 3;
     private static final int parts = 1;
 
     private static final long long_read_timeout = 5000;
@@ -60,13 +59,13 @@ public class DeepHandshakeFuzzerConfigs {
                             () -> deepHandshakeFuzzer(),
                             new FuzzerConfig(config)
                                     .readTimeout(long_read_timeout)
-                                    .endTest(2000)
+                                    .total(2000)
                                     .parts(5)),
                     enumerateBitFlipRatios(
                             () -> deepHandshakeFuzzer(),
                             new FuzzerConfig(config)
                                     .readTimeout(long_read_timeout)
-                                    .endTest(2000)
+                                    .total(2000)
                                     .parts(5))
                 )
         );
@@ -79,13 +78,13 @@ public class DeepHandshakeFuzzerConfigs {
                             () -> deepHandshakeFuzzer(),
                             new FuzzerConfig(config)
                                     .readTimeout(long_read_timeout)
-                                    .endTest(2000)
+                                    .total(2000)
                                     .parts(5)),
                     enumerateBitFlipRatios(
                             () -> deepHandshakeFuzzer(),
                             new FuzzerConfig(config)
                                     .readTimeout(long_read_timeout)
-                                    .endTest(2000)
+                                    .total(2000)
                                     .parts(5))
                 )
         );
@@ -99,8 +98,7 @@ public class DeepHandshakeFuzzerConfigs {
         }
 
         for (FuzzerConfig config : configs) {
-            config.startTest(start);
-            config.endTest(end);
+            config.total(total);
             config.parts(parts);
         }
 

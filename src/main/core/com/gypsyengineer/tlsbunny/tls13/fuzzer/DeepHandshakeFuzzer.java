@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Scanner;
 
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.FuzzedStruct.fuzzedHandshakeMessage;
 import static com.gypsyengineer.tlsbunny.utils.HexDump.printHexDiff;
@@ -162,15 +163,22 @@ public class DeepHandshakeFuzzer extends StructFactoryWrapper
     }
 
     @Override
-    public long currentTest() {
-        // TODO: it should not just return fuzzer.currentTest()
-        return fuzzer.currentTest();
+    public String state() {
+        return String.format("%d:%d:%d:%d:%s",
+                currentHolderIndex, currentPathIndex,
+                rounds, round,
+                fuzzer.state());
     }
 
     @Override
-    public void currentTest(long test) {
-        // TODO: it should not just use fuzzer.currentTest()
-        fuzzer.currentTest(test);
+    public void state(String string) {
+        Scanner scanner = new Scanner(string);
+        currentHolderIndex = scanner.nextInt();
+        currentPathIndex = scanner.nextInt();
+        rounds = scanner.nextInt();
+        round = scanner.nextInt();
+        scanner.skip(":");
+        fuzzer.state(scanner.nextLine());
     }
 
     private void explain(String what, byte[] encoding, byte[] fuzzed) {

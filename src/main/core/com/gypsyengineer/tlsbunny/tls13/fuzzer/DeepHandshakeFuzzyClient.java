@@ -35,6 +35,8 @@ public class DeepHandshakeFuzzyClient implements Client {
     private FuzzerConfig fuzzerConfig;
     private Sync sync = Sync.dummy();
 
+    private long test = 0;
+
     private boolean strict = true;
 
     public static DeepHandshakeFuzzyClient deepHandshakeFuzzyClient() {
@@ -200,13 +202,15 @@ public class DeepHandshakeFuzzyClient implements Client {
                 deepHandshakeFuzzer.fuzzer() != null
                         ? deepHandshakeFuzzer.fuzzer().toString()
                         : "null");
-        output.info("start test = %d", fuzzerConfig.startTest());
-        output.info("end test   = %d", fuzzerConfig.endTest());
+        output.info("total tests = %d", fuzzerConfig.total());
         output.decreaseIndent();
 
         try {
             deepHandshakeFuzzer.fuzzing();
-            deepHandshakeFuzzer.currentTest(fuzzerConfig.startTest());
+
+            // TODO: set fuzzer state here
+
+            test = 0;
             while (shouldRun(deepHandshakeFuzzer)) {
                 sync().start();
                 try {
@@ -215,6 +219,7 @@ public class DeepHandshakeFuzzyClient implements Client {
                     output.flush();
                     sync().end();
                     deepHandshakeFuzzer.moveOn();
+                    test++;
                 }
             }
         } catch (Exception e) {
@@ -226,7 +231,7 @@ public class DeepHandshakeFuzzyClient implements Client {
 
     private void run(DeepHandshakeFuzzer deepHandshakeFuzzer) throws Exception {
         String message = String.format("test #%d, %s, targeted: [%s]",
-                deepHandshakeFuzzer.currentTest(),
+                test,
                 getClass().getSimpleName(),
                 Arrays.stream(deepHandshakeFuzzer.targeted())
                         .map(Object::toString)
@@ -279,7 +284,7 @@ public class DeepHandshakeFuzzyClient implements Client {
     }
 
     private boolean shouldRun(DeepHandshakeFuzzer fuzzer) {
-        return fuzzer.canFuzz() && fuzzer.currentTest() <= fuzzerConfig.endTest();
+        return fuzzer.canFuzz() && test < fuzzerConfig.total();
     }
 
 }

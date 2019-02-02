@@ -58,13 +58,8 @@ public class FuzzerConfig implements Config {
     }
 
     @Override
-    synchronized public long startTest() {
-        return mainConfig.startTest();
-    }
-
-    @Override
-    synchronized public long endTest() {
-        return mainConfig.endTest();
+    public long total() {
+        return mainConfig.total();
     }
 
     @Override
@@ -122,14 +117,8 @@ public class FuzzerConfig implements Config {
     }
 
     @Override
-    synchronized public FuzzerConfig startTest(long test) {
-        mainConfig.startTest(test);
-        return this;
-    }
-
-    @Override
-    synchronized public FuzzerConfig endTest(long test) {
-        mainConfig.endTest(test);
+    public FuzzerConfig total(long n) {
+        mainConfig.total(n);
         return this;
     }
 

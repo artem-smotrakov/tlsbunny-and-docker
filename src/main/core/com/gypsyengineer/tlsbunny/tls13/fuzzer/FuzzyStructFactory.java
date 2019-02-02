@@ -5,6 +5,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.*;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
 import java.util.Arrays;
+import java.util.Scanner;
 import java.util.stream.Collectors;
 
 public abstract class FuzzyStructFactory<T> extends StructFactoryWrapper
@@ -23,7 +24,9 @@ public abstract class FuzzyStructFactory<T> extends StructFactoryWrapper
     public String toString() {
         return String.format("%s (targets = %s, fuzzer = %s)",
                 getClass().getSimpleName(),
-                Arrays.stream(targets).map(Object::toString).collect(Collectors.joining(",")),
+                Arrays.stream(targets)
+                        .map(Object::toString)
+                        .collect(Collectors.joining(",")),
                 fuzzer.getClass().getSimpleName());
     }
 
@@ -67,13 +70,21 @@ public abstract class FuzzyStructFactory<T> extends StructFactoryWrapper
     }
 
     @Override
-    synchronized public long currentTest() {
-        return fuzzer.currentTest();
+    synchronized public String state() {
+        return String.format("%s:%s",
+                Arrays.stream(targets)
+                        .map(Enum::toString)
+                        .collect(Collectors.joining( "-")),
+                fuzzer.state());
     }
 
     @Override
-    synchronized public void currentTest(long test) {
-        fuzzer.currentTest(test);
+    synchronized public void state(String string) {
+        Scanner scanner = new Scanner(string);
+        scanner.useDelimiter(":");
+        targets(scanner.next().split("-"));
+        scanner.skip(":");
+        fuzzer.state(scanner.nextLine());
     }
 
     @Override

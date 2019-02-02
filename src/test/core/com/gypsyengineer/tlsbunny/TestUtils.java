@@ -8,7 +8,6 @@ import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
 import com.gypsyengineer.tlsbunny.utils.Output;
-import com.gypsyengineer.tlsbunny.utils.Output;
 import com.gypsyengineer.tlsbunny.utils.WhatTheHell;
 
 import java.lang.reflect.InvocationTargetException;
@@ -185,13 +184,13 @@ public class TestUtils {
         }
 
         @Override
-        public long currentTest() {
-            return test;
+        public String state() {
+            return String.valueOf(test);
         }
 
         @Override
-        public void currentTest(long test) {
-            this.test = test;
+        public void state(String string) {
+            test = Integer.parseInt(string);
         }
 
         @Override
@@ -233,13 +232,13 @@ public class TestUtils {
         }
 
         @Override
-        public long currentTest() {
-            return test;
+        public String state() {
+            return String.valueOf(test);
         }
 
         @Override
-        public void currentTest(long test) {
-            this.test = test;
+        public void state(String string) {
+            test = Integer.parseInt(string);
         }
 
         @Override
@@ -281,13 +280,13 @@ public class TestUtils {
         }
 
         @Override
-        public long currentTest() {
-            return test;
+        public String state() {
+            return String.valueOf(test);
         }
 
         @Override
-        public void currentTest(long test) {
-            this.test = test;
+        public void state(String string) {
+            test = Integer.parseInt(string);
         }
 
         @Override
@@ -329,13 +328,13 @@ public class TestUtils {
         }
 
         @Override
-        public long currentTest() {
-            return test;
+        public String state() {
+            return String.valueOf(test);
         }
 
         @Override
-        public void currentTest(long test) {
-            this.test = test;
+        public void state(String string) {
+            test = Integer.parseInt(string);
         }
 
         @Override
