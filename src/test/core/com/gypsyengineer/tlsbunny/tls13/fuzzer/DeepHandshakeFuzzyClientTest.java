@@ -1,7 +1,8 @@
-package com.gypsyengineer.tlsbunny.tls13.client;
+package com.gypsyengineer.tlsbunny.tls13.fuzzer;
 
 import com.gypsyengineer.tlsbunny.TestUtils;
 import com.gypsyengineer.tlsbunny.TestUtils.FakeTestAnalyzer;
+import com.gypsyengineer.tlsbunny.tls13.client.HttpsClient;
 import com.gypsyengineer.tlsbunny.tls13.connection.check.NoAlertCheck;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.DeepHandshakeFuzzerConfigs;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.DeepHandshakeFuzzyClient;
@@ -75,6 +76,8 @@ public class DeepHandshakeFuzzyClientTest {
                     .connect();
         }
 
+        assertEquals("0:0:10:1:0:-1:0.01:0.05:8", deepHandshakeFuzzer.state());
+
         assertArrayEquals(
                 deepHandshakeFuzzer.targeted(),
                 new HandshakeType[] { client_hello, finished });
@@ -90,6 +93,7 @@ public class DeepHandshakeFuzzyClientTest {
         FuzzerConfig config = configs[0];
         config.total(total);
         config.parts(parts);
+        config.state("0:0:10:0:0:-1:0.01:0.05:7");
 
         DeepHandshakeFuzzer factory = (DeepHandshakeFuzzer) config.factory();
         factory.fuzzer(new TestUtils.FakeFlipFuzzer());

@@ -234,13 +234,15 @@ public class DeepHandshakeFuzzyClient implements Client {
     }
 
     private void run(DeepHandshakeFuzzer deepHandshakeFuzzer) throws Exception {
-        String message = String.format("test #%d, %s, targeted: [%s]",
+        String message = String.format("test #%d, %s/%s, targeted: [%s]",
                 test,
-                getClass().getSimpleName(),
+                deepHandshakeFuzzer.getClass().getSimpleName(),
+                deepHandshakeFuzzer.fuzzer().getClass().getSimpleName(),
                 Arrays.stream(deepHandshakeFuzzer.targeted())
                         .map(Object::toString)
                         .collect(Collectors.joining(", ")));
         output.info(message);
+        output.info("state: %s", deepHandshakeFuzzer.state());
 
         int attempt = 0;
         while (true) {

@@ -173,6 +173,7 @@ public class DeepHandshakeFuzzer extends StructFactoryWrapper
     @Override
     public void state(String string) {
         Scanner scanner = new Scanner(string);
+        scanner.useDelimiter(":");
         currentHolderIndex = scanner.nextInt();
         currentPathIndex = scanner.nextInt();
         rounds = scanner.nextInt();

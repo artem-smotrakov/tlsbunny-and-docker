@@ -217,6 +217,7 @@ public class MutatedClient implements Client {
                         .map(Enum::toString)
                         .collect(Collectors.joining(", ")));
         output.info(message);
+        output.info("state: %s", fuzzyStructFactory.state());
 
         int attempt = 0;
         while (attempt <= max_attempts) {
