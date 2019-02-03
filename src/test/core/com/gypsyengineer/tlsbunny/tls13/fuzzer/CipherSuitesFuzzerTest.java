@@ -44,7 +44,7 @@ public class CipherSuitesFuzzerTest {
             int m = 10;
             for (int i = 0; i < m; i++) {
                 assertTrue(fuzzer.canFuzz());
-                assertEquals(expectedState, fuzzer.currentTest());
+                assertEquals("client_hello:" + expectedState, fuzzer.state());
 
                 Vector<CipherSuite> fuzzed = fuzzer.fuzz(cipherSuites);
                 assertNotEquals(fuzzed, cipherSuites);

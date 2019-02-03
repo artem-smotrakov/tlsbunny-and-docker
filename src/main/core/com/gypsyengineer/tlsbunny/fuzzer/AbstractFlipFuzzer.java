@@ -3,6 +3,7 @@ package com.gypsyengineer.tlsbunny.fuzzer;
 import com.gypsyengineer.tlsbunny.utils.Output;
 
 import java.util.Random;
+import java.util.Scanner;
 
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
@@ -16,12 +17,12 @@ public abstract class AbstractFlipFuzzer implements Fuzzer<byte[]> {
 
     protected int startIndex;
     protected int endIndex;
-
     protected double minRatio;
     protected double maxRatio;
+    protected long state = 0;
+
     protected final Random random;
     protected Output output;
-    protected long state = 0;
 
     public AbstractFlipFuzzer() {
         this(DEFAULT_MIN_RATIO, DEFAULT_MAX_RATIO, FROM_THE_BEGINNING, NOT_SPECIFIED);
@@ -84,13 +85,24 @@ public abstract class AbstractFlipFuzzer implements Fuzzer<byte[]> {
     }
 
     @Override
-    synchronized public long currentTest() {
-        return state;
+    synchronized public String state() {
+        return String.format("%d:%d:%s:%s:%d",
+                startIndex, endIndex, minRatio, maxRatio, state);
     }
 
     @Override
-    synchronized public void currentTest(long test) {
-        state = test;
+    synchronized public void state(String string) {
+        Scanner scanner = new Scanner(string);
+        scanner.useDelimiter(":");
+        startIndex = scanner.nextInt();
+        endIndex = scanner.nextInt();
+        minRatio = scanner.nextDouble();
+        maxRatio = scanner.nextDouble();
+        state = scanner.nextLong();
+
+        if (scanner.hasNext()) {
+            throw whatTheHell("state is too long!");
+        }
     }
 
     @Override

@@ -33,6 +33,9 @@ public class MutatedClient implements Client {
     private FuzzerConfig fuzzerConfig;
     private Sync sync = Sync.dummy();
 
+    private long test = 0;
+
+    // TODO: is it necessary?
     private boolean strict = true;
 
     public static MutatedClient mutatedClient() {
@@ -163,16 +166,17 @@ public class MutatedClient implements Client {
         }
 
         output.info("run fuzzer config:");
-        output.info("  targets    = %s",
+        output.info("  targets     = %s",
                 Arrays.stream(fuzzyStructFactory.targets())
                         .map(Object::toString)
                         .collect(Collectors.joining(", ")));
-        output.info("  fuzzer     = %s",
+        output.info("  fuzzer      = %s",
                 fuzzyStructFactory.fuzzer() != null
                         ? fuzzyStructFactory.fuzzer().toString()
                         : "null");
-        output.info("  start test = %d", fuzzerConfig.startTest());
-        output.info("  end test   = %d", fuzzerConfig.endTest());
+        output.info("  total tests = %d", fuzzerConfig.total());
+        output.info("  state       = %s",
+                fuzzerConfig.hasState() ? fuzzerConfig.state() : "not specified");
 
         client.set(fuzzyStructFactory)
                 .set(fuzzerConfig)
@@ -181,7 +185,11 @@ public class MutatedClient implements Client {
                 .set(checks);
 
         try {
-            fuzzyStructFactory.currentTest(fuzzerConfig.startTest());
+            if (fuzzerConfig.hasState()) {
+                fuzzyStructFactory.state(fuzzerConfig.state());
+            }
+
+            test = 0;
             while (shouldRun(fuzzyStructFactory)) {
                 sync().start();
                 try {
@@ -190,6 +198,7 @@ public class MutatedClient implements Client {
                     output.flush();
                     sync().end();
                     fuzzyStructFactory.moveOn();
+                    test++;
                 }
             }
         } catch (Exception e) {
@@ -201,13 +210,14 @@ public class MutatedClient implements Client {
 
     private void run(FuzzyStructFactory fuzzyStructFactory) throws Exception {
         String message = String.format("test #%d, %s/%s, targets: [%s]",
-                fuzzyStructFactory.currentTest(),
+                test,
                 getClass().getSimpleName(),
                 fuzzyStructFactory.fuzzer().getClass().getSimpleName(),
                 Arrays.stream(fuzzyStructFactory.targets)
                         .map(Enum::toString)
                         .collect(Collectors.joining(", ")));
         output.info(message);
+        output.info("state: %s", fuzzyStructFactory.state());
 
         int attempt = 0;
         while (attempt <= max_attempts) {
@@ -249,8 +259,7 @@ public class MutatedClient implements Client {
     }
 
     private boolean shouldRun(FuzzyStructFactory fuzzyStructFactory) {
-        return fuzzyStructFactory.canFuzz()
-                && fuzzyStructFactory.currentTest() <= fuzzerConfig.endTest();
+        return fuzzyStructFactory.canFuzz() && test < fuzzerConfig.total();
     }
 
 }

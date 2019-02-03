@@ -1,9 +1,9 @@
-package com.gypsyengineer.tlsbunny.tls13.client;
+package com.gypsyengineer.tlsbunny.tls13.fuzzer;
 
 import com.gypsyengineer.tlsbunny.TestUtils;
 import com.gypsyengineer.tlsbunny.TestUtils.FakeTestAnalyzer;
+import com.gypsyengineer.tlsbunny.tls13.client.HttpsClient;
 import com.gypsyengineer.tlsbunny.tls13.connection.check.NoAlertCheck;
-import com.gypsyengineer.tlsbunny.tls13.connection.check.SuccessCheck;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.DeepHandshakeFuzzerConfigs;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.DeepHandshakeFuzzyClient;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
@@ -22,12 +22,11 @@ import static org.junit.Assert.*;
 
 public class DeepHandshakeFuzzyClientTest {
 
-    private static final int start = 21;
-    private static final int end = 22;
+    private static final int total = 1;
     private static final int parts = 1;
 
     // number of connections during fuzzing (we don't forget a smoke test)
-    private static final int n = end - start + 2;
+    private static final int n = total + 1;
 
     private Config clientConfig = SystemPropertiesConfig.load();
 
@@ -45,6 +44,8 @@ public class DeepHandshakeFuzzyClientTest {
     public void test(FuzzerConfig fuzzerConfig) throws Exception {
         Output serverOutput = Output.console("server");
         Output clientOutput = Output.console("client");
+
+        fuzzerConfig.total(total);
 
         assertTrue(fuzzerConfig.factory() instanceof DeepHandshakeFuzzer);
         DeepHandshakeFuzzer deepHandshakeFuzzer = (DeepHandshakeFuzzer) fuzzerConfig.factory();
@@ -75,6 +76,8 @@ public class DeepHandshakeFuzzyClientTest {
                     .connect();
         }
 
+        assertEquals("0:0:10:1:0:-1:0.01:0.05:8", deepHandshakeFuzzer.state());
+
         assertArrayEquals(
                 deepHandshakeFuzzer.targeted(),
                 new HandshakeType[] { client_hello, finished });
@@ -88,9 +91,9 @@ public class DeepHandshakeFuzzyClientTest {
 
     private static FuzzerConfig[] minimized(FuzzerConfig[] configs) {
         FuzzerConfig config = configs[0];
-        config.startTest(start);
-        config.endTest(end);
+        config.total(total);
         config.parts(parts);
+        config.state("0:0:10:0:0:-1:0.01:0.05:7");
 
         DeepHandshakeFuzzer factory = (DeepHandshakeFuzzer) config.factory();
         factory.fuzzer(new TestUtils.FakeFlipFuzzer());

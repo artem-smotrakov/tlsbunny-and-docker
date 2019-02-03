@@ -28,7 +28,7 @@ public class SimpleVectorFuzzerTest {
             Vector<Byte> vector = Vector.wrap(1, new byte[] { 0, 1, 2});
             Set<Vector> previous = new HashSet<>();
             while (fuzzer.canFuzz()) {
-                assertEquals(expectedState, fuzzer.currentTest());
+                assertEquals(String.valueOf(expectedState), fuzzer.state());
 
                 Vector<Byte> fuzzed = fuzzer.fuzz(vector);
                 assertNotEquals(vector, fuzzed);
@@ -58,7 +58,7 @@ public class SimpleVectorFuzzerTest {
             fuzzer.set(output);
 
             try {
-                fuzzer.currentTest(Integer.MAX_VALUE / 2);
+                fuzzer.state(String.valueOf(Integer.MAX_VALUE / 2));
                 fail("expected an exception");
             } catch (WhatTheHell e) {
                 // good
@@ -66,13 +66,13 @@ public class SimpleVectorFuzzerTest {
 
             int expectedState = 10;
 
-            fuzzer.currentTest(expectedState);
-            assertEquals(expectedState, fuzzer.currentTest());
+            fuzzer.state(String.valueOf(expectedState));
+            assertEquals(String.valueOf(expectedState), fuzzer.state());
 
             Vector<Byte> vector = Vector.wrap(2, new byte[] {});
             Vector<Byte> previous = null;
             while (fuzzer.canFuzz()) {
-                assertEquals(expectedState, fuzzer.currentTest());
+                assertEquals(String.valueOf(expectedState), fuzzer.state());
 
                 Vector<Byte> fuzzed = fuzzer.fuzz(vector);
                 assertNotEquals(vector, fuzzed);

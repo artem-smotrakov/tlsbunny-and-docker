@@ -7,13 +7,13 @@ public interface Config {
     double maxRatio();
     int threads();
     int parts();
-    long startTest();
-    long endTest();
+    long total();
     String clientCertificate();
     String clientKey();
     String serverCertificate();
     String serverKey();
     String targetFilter();
+    String state();
 
     // timeout for reading incoming data (in millis)
     long readTimeout();
@@ -22,14 +22,16 @@ public interface Config {
     Config port(int port);
     Config minRatio(double minRatio);
     Config maxRatio(double maxRatio);
-    Config startTest(long test);
-    Config endTest(long test);
+    Config total(long n);
     Config parts(int parts);
     Config readTimeout(long timeout);
     Config clientCertificate(String path);
     Config clientKey(String path);
     Config serverCertificate(String path);
     Config serverKey(String path);
+    Config state(String state);
+
+    boolean hasState();
 
     /**
      * @return a copy of the config

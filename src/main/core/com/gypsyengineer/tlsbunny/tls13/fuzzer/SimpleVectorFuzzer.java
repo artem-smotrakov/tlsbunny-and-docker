@@ -4,7 +4,6 @@ import com.gypsyengineer.tlsbunny.fuzzer.FuzzedVector;
 import com.gypsyengineer.tlsbunny.fuzzer.Fuzzer;
 import com.gypsyengineer.tlsbunny.tls.Vector;
 import com.gypsyengineer.tlsbunny.utils.Output;
-import com.gypsyengineer.tlsbunny.utils.Output;
 
 import java.io.IOException;
 
@@ -125,13 +124,13 @@ public class SimpleVectorFuzzer<T> implements Fuzzer<Vector<T>> {
     }
 
     @Override
-    synchronized public long currentTest() {
-        return state;
+    synchronized public String state() {
+        return String.valueOf(state);
     }
 
     @Override
-    synchronized public void currentTest(long test) {
-        state = check(test);
+    synchronized public void state(String string) {
+        state = check(Integer.parseInt(string));
     }
 
     @Override

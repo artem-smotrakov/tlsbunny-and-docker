@@ -35,6 +35,8 @@ public class DeepHandshakeFuzzyClient implements Client {
     private FuzzerConfig fuzzerConfig;
     private Sync sync = Sync.dummy();
 
+    private long test = 0;
+
     private boolean strict = true;
 
     public static DeepHandshakeFuzzyClient deepHandshakeFuzzyClient() {
@@ -195,18 +197,24 @@ public class DeepHandshakeFuzzyClient implements Client {
 
         output.info("run fuzzer config:");
         output.increaseIndent();
-        output.info("targets    = %s", targets);
-        output.info("fuzzer     = %s",
+        output.info("targets     = %s", targets);
+        output.info("fuzzer      = %s",
                 deepHandshakeFuzzer.fuzzer() != null
                         ? deepHandshakeFuzzer.fuzzer().toString()
                         : "null");
-        output.info("start test = %d", fuzzerConfig.startTest());
-        output.info("end test   = %d", fuzzerConfig.endTest());
+        output.info("total tests = %d", fuzzerConfig.total());
+        output.info("state       = %s",
+                fuzzerConfig.hasState() ? fuzzerConfig.state() : "not specified");
         output.decreaseIndent();
 
         try {
             deepHandshakeFuzzer.fuzzing();
-            deepHandshakeFuzzer.currentTest(fuzzerConfig.startTest());
+
+            if (fuzzerConfig.hasState()) {
+                deepHandshakeFuzzer.state(fuzzerConfig.state());
+            }
+
+            test = 0;
             while (shouldRun(deepHandshakeFuzzer)) {
                 sync().start();
                 try {
@@ -215,6 +223,7 @@ public class DeepHandshakeFuzzyClient implements Client {
                     output.flush();
                     sync().end();
                     deepHandshakeFuzzer.moveOn();
+                    test++;
                 }
             }
         } catch (Exception e) {
@@ -225,13 +234,15 @@ public class DeepHandshakeFuzzyClient implements Client {
     }
 
     private void run(DeepHandshakeFuzzer deepHandshakeFuzzer) throws Exception {
-        String message = String.format("test #%d, %s, targeted: [%s]",
-                deepHandshakeFuzzer.currentTest(),
-                getClass().getSimpleName(),
+        String message = String.format("test #%d, %s/%s, targeted: [%s]",
+                test,
+                deepHandshakeFuzzer.getClass().getSimpleName(),
+                deepHandshakeFuzzer.fuzzer().getClass().getSimpleName(),
                 Arrays.stream(deepHandshakeFuzzer.targeted())
                         .map(Object::toString)
                         .collect(Collectors.joining(", ")));
         output.info(message);
+        output.info("state: %s", deepHandshakeFuzzer.state());
 
         int attempt = 0;
         while (true) {
@@ -279,7 +290,7 @@ public class DeepHandshakeFuzzyClient implements Client {
     }
 
     private boolean shouldRun(DeepHandshakeFuzzer fuzzer) {
-        return fuzzer.canFuzz() && fuzzer.currentTest() <= fuzzerConfig.endTest();
+        return fuzzer.canFuzz() && test < fuzzerConfig.total();
     }
 
 }

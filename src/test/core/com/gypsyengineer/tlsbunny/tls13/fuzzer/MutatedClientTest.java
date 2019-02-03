@@ -18,12 +18,11 @@ import static org.junit.Assert.assertFalse;
 
 public class MutatedClientTest {
 
-    private static final int start = 2;
-    private static final int end = 3;
+    private static final int total = 3;
     private static final int parts = 1;
 
     // number of connections during fuzzing (we don't forget a smoke test)
-    private static final int n = end - start + 2;
+    private static final int n = total + 1;
 
     private Config clientConfig = SystemPropertiesConfig.load();
 
@@ -116,8 +115,7 @@ public class MutatedClientTest {
 
     private static FuzzerConfig[] minimized(FuzzerConfig[] configs) {
         FuzzerConfig config = configs[0];
-        config.startTest(start);
-        config.endTest(end);
+        config.total(total);
         config.parts(parts);
 
         if (config.factory() instanceof MutatedStructFactory) {

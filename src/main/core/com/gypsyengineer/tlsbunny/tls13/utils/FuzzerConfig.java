@@ -58,13 +58,8 @@ public class FuzzerConfig implements Config {
     }
 
     @Override
-    synchronized public long startTest() {
-        return mainConfig.startTest();
-    }
-
-    @Override
-    synchronized public long endTest() {
-        return mainConfig.endTest();
+    public long total() {
+        return mainConfig.total();
     }
 
     @Override
@@ -90,6 +85,11 @@ public class FuzzerConfig implements Config {
     @Override
     synchronized public String targetFilter() {
         return mainConfig.targetFilter();
+    }
+
+    @Override
+    public String state() {
+        return mainConfig.state();
     }
 
     @Override
@@ -122,14 +122,8 @@ public class FuzzerConfig implements Config {
     }
 
     @Override
-    synchronized public FuzzerConfig startTest(long test) {
-        mainConfig.startTest(test);
-        return this;
-    }
-
-    @Override
-    synchronized public FuzzerConfig endTest(long test) {
-        mainConfig.endTest(test);
+    public FuzzerConfig total(long n) {
+        mainConfig.total(n);
         return this;
     }
 
@@ -167,6 +161,17 @@ public class FuzzerConfig implements Config {
     synchronized public Config serverKey(String path) {
         mainConfig.serverKey(path);
         return this;
+    }
+
+    @Override
+    public Config state(String state) {
+        mainConfig.state(state);
+        return this;
+    }
+
+    @Override
+    public boolean hasState() {
+        return mainConfig.hasState();
     }
 
     synchronized public boolean noFactory() {

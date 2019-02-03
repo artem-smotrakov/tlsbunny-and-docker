@@ -30,8 +30,7 @@ public class MutatedConfigs {
     // settings for minimized configs
     private static boolean fullConfigs = Boolean.valueOf(
             System.getProperty("tlsbunny.fuzzer.full.configs", "false"));
-    private static final int start = 5;
-    private static final int end = 7;
+    private static final int total = 3;
     private static final int parts = 1;
 
     public static final int tls_plaintext_header_length =
@@ -87,7 +86,7 @@ public class MutatedConfigs {
                                         .startIndex(0)
                                         .endIndex(tls_plaintext_header_length)))
                         .readTimeout(short_read_timeout)
-                        .endTest(200)
+                        .total(200)
                         .parts(2),
                 new FuzzerConfig(config)
                         .factory(mutatedStructFactory()
@@ -98,7 +97,7 @@ public class MutatedConfigs {
                                         .startIndex(0)
                                         .endIndex(tls_plaintext_header_length)))
                         .readTimeout(short_read_timeout)
-                        .endTest(200)
+                        .total(200)
                         .parts(2)
         );
     }
@@ -112,7 +111,7 @@ public class MutatedConfigs {
                                         .minRatio(0.01)
                                         .maxRatio(0.09)))
                         .readTimeout(long_read_timeout)
-                        .endTest(20),
+                        .total(20),
                 new FuzzerConfig(config)
                         .factory(mutatedStructFactory()
                                 .targets(ccs)
@@ -120,7 +119,7 @@ public class MutatedConfigs {
                                         .minRatio(0.01)
                                         .maxRatio(0.09)))
                         .readTimeout(long_read_timeout)
-                        .endTest(20)
+                        .total(20)
         );
     }
 
@@ -135,7 +134,7 @@ public class MutatedConfigs {
                                         .startIndex(0)
                                         .endIndex(handshake_header_length)))
                         .readTimeout(short_read_timeout)
-                        .endTest(2000)
+                        .total(2000)
                         .parts(5),
                 new FuzzerConfig(config)
                         .factory(mutatedStructFactory()
@@ -146,7 +145,7 @@ public class MutatedConfigs {
                                         .startIndex(0)
                                         .endIndex(handshake_header_length)))
                         .readTimeout(short_read_timeout)
-                        .endTest(2000)
+                        .total(2000)
                         .parts(5)
         );
     }
@@ -158,13 +157,13 @@ public class MutatedConfigs {
                             () -> mutatedStructFactory().targets(client_hello),
                             new FuzzerConfig(config)
                                     .readTimeout(long_read_timeout)
-                                    .endTest(2000)
+                                    .total(2000)
                                     .parts(5)),
                     enumerateBitFlipRatios(
                             () -> mutatedStructFactory().targets(client_hello),
                             new FuzzerConfig(config)
                                     .readTimeout(long_read_timeout)
-                                    .endTest(2000)
+                                    .total(2000)
                                     .parts(5))
                 )
         );
@@ -177,13 +176,13 @@ public class MutatedConfigs {
                             () -> mutatedStructFactory().targets(server_hello),
                             new FuzzerConfig(config)
                                     .readTimeout(long_read_timeout)
-                                    .endTest(2000)
+                                    .total(2000)
                                     .parts(5)),
                     enumerateBitFlipRatios(
                             () -> mutatedStructFactory().targets(server_hello),
                             new FuzzerConfig(config)
                                     .readTimeout(long_read_timeout)
-                                    .endTest(2000)
+                                    .total(2000)
                                     .parts(5))
                 )
         );
@@ -196,13 +195,13 @@ public class MutatedConfigs {
                             () -> mutatedStructFactory().targets(encrypted_extensions),
                             new FuzzerConfig(config)
                                     .readTimeout(long_read_timeout)
-                                    .endTest(2000)
+                                    .total(2000)
                                     .parts(5)),
                     enumerateBitFlipRatios(
                             () -> mutatedStructFactory().targets(encrypted_extensions),
                             new FuzzerConfig(config)
                                     .readTimeout(long_read_timeout)
-                                    .endTest(2000)
+                                    .total(2000)
                                     .parts(5))
                 )
         );
@@ -215,13 +214,13 @@ public class MutatedConfigs {
                             () -> mutatedStructFactory().targets(certificate),
                             new FuzzerConfig(config)
                                     .readTimeout(long_read_timeout)
-                                    .endTest(2000)
+                                    .total(2000)
                                     .parts(5)),
                     enumerateBitFlipRatios(
                             () -> mutatedStructFactory().targets(certificate),
                             new FuzzerConfig(config)
                                     .readTimeout(long_read_timeout)
-                                    .endTest(2000)
+                                    .total(2000)
                                     .parts(5))
                 )
         );
@@ -234,13 +233,13 @@ public class MutatedConfigs {
                             () -> mutatedStructFactory().targets(certificate_verify),
                             new FuzzerConfig(config)
                                     .readTimeout(long_read_timeout)
-                                    .endTest(2000)
+                                    .total(2000)
                                     .parts(5)),
                     enumerateBitFlipRatios(
                             () -> mutatedStructFactory().targets(certificate_verify),
                             new FuzzerConfig(config)
                                     .readTimeout(long_read_timeout)
-                                    .endTest(2000)
+                                    .total(2000)
                                     .parts(5))
                 )
         );
@@ -253,13 +252,13 @@ public class MutatedConfigs {
                             () -> mutatedStructFactory().targets(finished),
                             new FuzzerConfig(config)
                                     .readTimeout(long_read_timeout)
-                                    .endTest(2000)
+                                    .total(2000)
                                     .parts(5)),
                     enumerateBitFlipRatios(
                             () -> mutatedStructFactory().targets(finished),
                             new FuzzerConfig(config)
                                     .readTimeout(long_read_timeout)
-                                    .endTest(2000)
+                                    .total(2000)
                                     .parts(5))
                 )
         );
@@ -396,8 +395,7 @@ public class MutatedConfigs {
         }
 
         for (FuzzerConfig config : configs) {
-            config.startTest(start);
-            config.endTest(end);
+            config.total(total);
             config.parts(parts);
         }
 

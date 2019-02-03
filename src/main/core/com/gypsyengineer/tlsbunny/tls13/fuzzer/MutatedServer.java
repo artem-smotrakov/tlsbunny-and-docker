@@ -37,6 +37,8 @@ public class MutatedServer implements Server {
     private FuzzerConfig fuzzerConfig;
     private Sync sync = Sync.dummy();
 
+    private long test = 0;
+
     public static MutatedServer mutatedServer(
             Server server, FuzzerConfig fuzzerConfig) throws IOException {
 
@@ -147,29 +149,38 @@ public class MutatedServer implements Server {
                     FuzzyStructFactory.class.getSimpleName());
         }
         FuzzyStructFactory fuzzyStructFactory = (FuzzyStructFactory) factory;
-        fuzzyStructFactory.currentTest(fuzzerConfig.startTest());
+
+        // TODO: set fuzzer state here
 
         EngineFactory engineFactory = server.engineFactory();
         engineFactory.set(fuzzyStructFactory);
 
         output.info("run fuzzer config:");
-        output.info("  targets    = %s",
+        output.increaseIndent();
+        output.info("targets     = %s",
                 Arrays.stream(fuzzyStructFactory.targets())
                         .map(Object::toString)
                         .collect(Collectors.joining(", ")));
-        output.info("  fuzzer     = %s",
+        output.info("fuzzer      = %s",
                 fuzzyStructFactory.fuzzer() != null
                         ? fuzzyStructFactory.fuzzer().toString()
                         : "null");
-        output.info("  start test = %d", fuzzerConfig.startTest());
-        output.info("  end test   = %d", fuzzerConfig.endTest());
+        output.info("total tests = %d", fuzzerConfig.total());
+        output.info("state       = %s",
+                fuzzerConfig.hasState() ? fuzzerConfig.state() : "not specified");
+        output.decreaseIndent();
+
+        if (fuzzerConfig.hasState()) {
+            fuzzyStructFactory.state(fuzzerConfig.state());
+        }
 
         running = true;
         output.info("started on port %d", port());
+        test = 0;
         while (shouldRun(fuzzyStructFactory)) {
             try (Connection connection = Connection.create(ssocket.accept())) {
                 String message = String.format("test #%d (accepted), %s/%s, targets: [%s]",
-                        fuzzyStructFactory.currentTest(),
+                        test,
                         getClass().getSimpleName(),
                         fuzzyStructFactory.fuzzer().getClass().getSimpleName(),
                         Arrays.stream(fuzzyStructFactory.targets)
@@ -192,6 +203,7 @@ public class MutatedServer implements Server {
             }
 
             fuzzyStructFactory.moveOn();
+            test++;
         }
 
         running = false;
@@ -199,7 +211,6 @@ public class MutatedServer implements Server {
     }
 
     private boolean shouldRun(FuzzyStructFactory mutatedStructFactory) {
-        return mutatedStructFactory.canFuzz()
-                && mutatedStructFactory.currentTest() <= fuzzerConfig.endTest();
+        return mutatedStructFactory.canFuzz() && test < fuzzerConfig.total();
     }
 }

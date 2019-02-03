@@ -21,8 +21,7 @@ import static org.junit.Assert.*;
 
 public class MutatedServerTest {
 
-    private static final int start = 2;
-    private static final int end = 3;
+    private static final int total = 3;
     private static final int parts = 1;
 
     private static final int no_message_fuzzed = 0;
@@ -36,7 +35,7 @@ public class MutatedServerTest {
     private static final int expected_fuzzed_encrypted_extensions = 1;
 
     // number of connections during fuzzing
-    private static final int n = end - start + 1;
+    private static final int n = total;
 
     private Config serverConfig = SystemPropertiesConfig.load();
 
@@ -147,8 +146,7 @@ public class MutatedServerTest {
 
     private static FuzzerConfig[] minimized(FuzzerConfig[] configs) {
         FuzzerConfig config = configs[0];
-        config.startTest(start);
-        config.endTest(end);
+        config.total(total);
         config.parts(parts);
 
         if (config.factory() instanceof MutatedStructFactory) {
