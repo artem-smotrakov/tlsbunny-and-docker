@@ -35,7 +35,7 @@ public class MutatedServerTest {
     private static final int expected_fuzzed_encrypted_extensions = 1;
 
     // number of connections during fuzzing
-    private static final int n = total + 1;
+    private static final int n = total;
 
     private Config serverConfig = SystemPropertiesConfig.load();
 
