@@ -75,6 +75,11 @@ public class FuzzerConfigUpdater implements Config {
     }
 
     @Override
+    public String state() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public long readTimeout() {
         throw new UnsupportedOperationException();
     }
@@ -163,6 +168,14 @@ public class FuzzerConfigUpdater implements Config {
     public Config serverKey(String path) {
         for (Config config : configs) {
             config.serverKey(path);
+        }
+        return null;
+    }
+
+    @Override
+    public Config state(String state) {
+        for (Config config : configs) {
+            config.state(state);
         }
         return null;
     }

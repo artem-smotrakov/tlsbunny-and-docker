@@ -13,6 +13,7 @@ public interface Config {
     String serverCertificate();
     String serverKey();
     String targetFilter();
+    String state();
 
     // timeout for reading incoming data (in millis)
     long readTimeout();
@@ -28,6 +29,7 @@ public interface Config {
     Config clientKey(String path);
     Config serverCertificate(String path);
     Config serverKey(String path);
+    Config state(String state);
 
     /**
      * @return a copy of the config

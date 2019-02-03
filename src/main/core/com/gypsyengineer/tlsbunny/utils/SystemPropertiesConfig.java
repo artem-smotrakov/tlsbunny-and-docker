@@ -4,19 +4,19 @@ import java.util.Objects;
 
 public class SystemPropertiesConfig implements Config {
 
-    public static final int DEFAULT_PARTS = 1;
-    public static final int DEFAULT_TOTAL = 1000;
-    public static final double DEFAULT_MIN_RATIO = 0.01;
-    public static final double DEFAULT_MAX_RATIO = 0.05;
-    public static final int DEFAULT_PORT = 10101;
-    public static final String DEFAULT_HOST = "localhost";
-    public static final int DEFAULT_THREADS = 1;
+    public static final int default_parts = 1;
+    public static final int default_total = 1000;
+    public static final double default_min_ratio = 0.01;
+    public static final double default_max_ratio = 0.05;
+    public static final int default_port = 10101;
+    public static final String default_host = "localhost";
+    public static final int default_threads = 1;
     public static final String default_server_certificate = "certs/server_cert.der";
     public static final String default_server_key = "certs/server_key.pkcs8";
     public static final String default_client_certificate = "certs/client_cert.der";
     public static final String default_client_key = "certs/client_key.pkcs8";
-    public static final long DEFAULT_READ_TIMEOUT = 5000; // in millis
-    public static final String EMPTY_STRING = "";
+    public static final long default_read_timeout = 5000; // in millis
+    public static final String empty_string = "";
 
     private String host;
     private int port;
@@ -30,6 +30,8 @@ public class SystemPropertiesConfig implements Config {
     private String serverCertificate;
     private String serverKey;
     private long readTimeout;
+    private String state;
+    private String targetFilter;
 
     private SystemPropertiesConfig() {
 
@@ -50,6 +52,8 @@ public class SystemPropertiesConfig implements Config {
         clone.serverKey = serverKey;
         clone.readTimeout = readTimeout;
         clone.total = total;
+        clone.state = state;
+        clone.targetFilter = targetFilter;
 
         return clone;
     }
@@ -121,6 +125,12 @@ public class SystemPropertiesConfig implements Config {
     }
 
     @Override
+    public Config state(String state) {
+        this.state = state;
+        return this;
+    }
+
+    @Override
     synchronized public String host() {
         return host;
     }
@@ -182,7 +192,12 @@ public class SystemPropertiesConfig implements Config {
 
     @Override
     synchronized public String targetFilter() {
-        return System.getProperty("tlsbunny.target.filter", EMPTY_STRING).trim();
+        return targetFilter;
+    }
+
+    @Override
+    synchronized public String state() {
+        return state;
     }
 
     @Override
@@ -206,26 +221,29 @@ public class SystemPropertiesConfig implements Config {
                 Objects.equals(clientCertificate, that.clientCertificate) &&
                 Objects.equals(clientKey, that.clientKey) &&
                 Objects.equals(serverCertificate, that.serverCertificate) &&
-                Objects.equals(serverKey, that.serverKey);
+                Objects.equals(serverKey, that.serverKey) &&
+                Objects.equals(state, that.state) &&
+                Objects.equals(targetFilter, that.targetFilter);
     }
 
     @Override
     synchronized public int hashCode() {
         return Objects.hash(host, port, minRatio, maxRatio, threads, parts,
                 total, clientCertificate, clientKey,
-                serverCertificate, serverKey, readTimeout);
+                serverCertificate, serverKey, readTimeout, state, targetFilter);
     }
 
     public static SystemPropertiesConfig load() {
         SystemPropertiesConfig config = new SystemPropertiesConfig();
 
-        config.host = System.getProperty("tlsbunny.host", DEFAULT_HOST).trim();
-        config.port = Integer.getInteger("tlsbunny.port", DEFAULT_PORT);
-        config.minRatio = getDouble("tlsbunny.min.ratio", DEFAULT_MIN_RATIO);
-        config.maxRatio = getDouble("tlsbunny.max.ratio", DEFAULT_MAX_RATIO);
-        config.threads = Integer.getInteger("tlsbunny.threads", DEFAULT_THREADS);
-        config.parts = Integer.getInteger("tlsbunny.parts", DEFAULT_PARTS);
-        config.total = Long.getLong("tlsbunny.total", DEFAULT_TOTAL);
+        config.host = System.getProperty("tlsbunny.host", default_host).trim();
+        config.port = Integer.getInteger("tlsbunny.port", default_port);
+        config.minRatio = getDouble("tlsbunny.min.ratio", default_min_ratio);
+        config.maxRatio = getDouble("tlsbunny.max.ratio", default_max_ratio);
+        config.threads = Integer.getInteger("tlsbunny.threads", default_threads);
+        config.parts = Integer.getInteger("tlsbunny.parts", default_parts);
+        config.total = Long.getLong("tlsbunny.total", default_total);
+        config.state = System.getProperty("tlsbunny.state");
         config.serverCertificate = System.getProperty(
                 "tlsbunny.server.cert", default_server_certificate);
         config.serverKey = System.getProperty(
@@ -234,7 +252,8 @@ public class SystemPropertiesConfig implements Config {
                 "tlsbunny.client.cert", default_client_certificate);
         config.clientKey = System.getProperty(
                 "tlsbunny.client.key", default_client_key);
-        config.readTimeout = Long.getLong("tlsbunny.read.timeout", DEFAULT_READ_TIMEOUT);
+        config.readTimeout = Long.getLong("tlsbunny.read.timeout", default_read_timeout);
+        config.targetFilter = System.getProperty("tlsbunny.target.filter", empty_string).trim();
 
         return config;
     }

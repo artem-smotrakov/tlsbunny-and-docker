@@ -88,6 +88,11 @@ public class FuzzerConfig implements Config {
     }
 
     @Override
+    public String state() {
+        return mainConfig.state();
+    }
+
+    @Override
     synchronized public long readTimeout() {
         return mainConfig.readTimeout();
     }
@@ -155,6 +160,12 @@ public class FuzzerConfig implements Config {
     @Override
     synchronized public Config serverKey(String path) {
         mainConfig.serverKey(path);
+        return this;
+    }
+
+    @Override
+    public Config state(String state) {
+        mainConfig.state(state);
         return this;
     }
 
