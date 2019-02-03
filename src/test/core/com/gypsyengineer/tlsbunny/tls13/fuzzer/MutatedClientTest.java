@@ -22,7 +22,7 @@ public class MutatedClientTest {
     private static final int parts = 1;
 
     // number of connections during fuzzing (we don't forget a smoke test)
-    private static final int n = total + 2;
+    private static final int n = total + 1;
 
     private Config clientConfig = SystemPropertiesConfig.load();
 
