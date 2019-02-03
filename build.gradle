@@ -223,7 +223,7 @@ task runWolfsslFuzzing(type: Test) {
     ignoreFailures = true
     outputs.upToDateWhen { false }
 
-    systemProperty 'tlsbunny.fuzzer.full.configs', 'false'
+    systemProperty 'tlsbunny.fuzzer.full.configs', 'true'
     systemProperty 'tlsbunny.output.to.file', 'true'
     systemProperty 'tlsbunny.output.enable.highlighting', 'false'
 
