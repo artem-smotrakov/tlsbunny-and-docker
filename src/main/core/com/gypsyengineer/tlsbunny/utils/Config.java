@@ -31,6 +31,8 @@ public interface Config {
     Config serverKey(String path);
     Config state(String state);
 
+    boolean hasState();
+
     /**
      * @return a copy of the config
      */

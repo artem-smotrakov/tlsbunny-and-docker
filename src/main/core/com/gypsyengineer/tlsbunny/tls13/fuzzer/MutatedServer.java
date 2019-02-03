@@ -156,15 +156,23 @@ public class MutatedServer implements Server {
         engineFactory.set(fuzzyStructFactory);
 
         output.info("run fuzzer config:");
-        output.info("  targets    = %s",
+        output.increaseIndent();
+        output.info("targets     = %s",
                 Arrays.stream(fuzzyStructFactory.targets())
                         .map(Object::toString)
                         .collect(Collectors.joining(", ")));
-        output.info("  fuzzer     = %s",
+        output.info("fuzzer      = %s",
                 fuzzyStructFactory.fuzzer() != null
                         ? fuzzyStructFactory.fuzzer().toString()
                         : "null");
-        output.info("  total tests = %d", fuzzerConfig.total());
+        output.info("total tests = %d", fuzzerConfig.total());
+        output.info("state       = %s",
+                fuzzerConfig.hasState() ? fuzzerConfig.state() : "not specified");
+        output.decreaseIndent();
+
+        if (fuzzerConfig.hasState()) {
+            fuzzyStructFactory.state(fuzzerConfig.state());
+        }
 
         running = true;
         output.info("started on port %d", port());

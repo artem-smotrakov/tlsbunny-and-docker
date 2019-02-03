@@ -125,9 +125,14 @@ public class SystemPropertiesConfig implements Config {
     }
 
     @Override
-    public Config state(String state) {
+    synchronized public Config state(String state) {
         this.state = state;
         return this;
+    }
+
+    @Override
+    synchronized public boolean hasState() {
+        return state != null;
     }
 
     @Override

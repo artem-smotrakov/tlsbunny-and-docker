@@ -197,18 +197,22 @@ public class DeepHandshakeFuzzyClient implements Client {
 
         output.info("run fuzzer config:");
         output.increaseIndent();
-        output.info("targets    = %s", targets);
-        output.info("fuzzer     = %s",
+        output.info("targets     = %s", targets);
+        output.info("fuzzer      = %s",
                 deepHandshakeFuzzer.fuzzer() != null
                         ? deepHandshakeFuzzer.fuzzer().toString()
                         : "null");
         output.info("total tests = %d", fuzzerConfig.total());
+        output.info("state       = %s",
+                fuzzerConfig.hasState() ? fuzzerConfig.state() : "not specified");
         output.decreaseIndent();
 
         try {
             deepHandshakeFuzzer.fuzzing();
 
-            // TODO: set fuzzer state here
+            if (fuzzerConfig.hasState()) {
+                deepHandshakeFuzzer.state(fuzzerConfig.state());
+            }
 
             test = 0;
             while (shouldRun(deepHandshakeFuzzer)) {

@@ -169,6 +169,11 @@ public class FuzzerConfig implements Config {
         return this;
     }
 
+    @Override
+    public boolean hasState() {
+        return mainConfig.hasState();
+    }
+
     synchronized public boolean noFactory() {
         return factory == null;
     }

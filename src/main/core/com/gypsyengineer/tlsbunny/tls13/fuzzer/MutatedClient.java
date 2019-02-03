@@ -166,15 +166,17 @@ public class MutatedClient implements Client {
         }
 
         output.info("run fuzzer config:");
-        output.info("  targets    = %s",
+        output.info("  targets     = %s",
                 Arrays.stream(fuzzyStructFactory.targets())
                         .map(Object::toString)
                         .collect(Collectors.joining(", ")));
-        output.info("  fuzzer     = %s",
+        output.info("  fuzzer      = %s",
                 fuzzyStructFactory.fuzzer() != null
                         ? fuzzyStructFactory.fuzzer().toString()
                         : "null");
         output.info("  total tests = %d", fuzzerConfig.total());
+        output.info("  state       = %s",
+                fuzzerConfig.hasState() ? fuzzerConfig.state() : "not specified");
 
         client.set(fuzzyStructFactory)
                 .set(fuzzerConfig)
@@ -183,7 +185,9 @@ public class MutatedClient implements Client {
                 .set(checks);
 
         try {
-            // TODO: set state before fuzzing
+            if (fuzzerConfig.hasState()) {
+                fuzzyStructFactory.state(fuzzerConfig.state());
+            }
 
             test = 0;
             while (shouldRun(fuzzyStructFactory)) {

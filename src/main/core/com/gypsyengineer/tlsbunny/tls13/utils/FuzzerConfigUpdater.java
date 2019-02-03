@@ -181,6 +181,11 @@ public class FuzzerConfigUpdater implements Config {
     }
 
     @Override
+    public boolean hasState() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public Config copy() {
         throw new UnsupportedOperationException();
     }
