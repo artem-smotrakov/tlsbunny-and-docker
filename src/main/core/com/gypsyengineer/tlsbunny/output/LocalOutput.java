@@ -1,5 +1,7 @@
 package com.gypsyengineer.tlsbunny.output;
 
+import com.gypsyengineer.tlsbunny.utils.Utils;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -7,6 +9,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static com.gypsyengineer.tlsbunny.output.Level.achtung;
+import static com.gypsyengineer.tlsbunny.output.Level.important;
 import static com.gypsyengineer.tlsbunny.output.Level.info;
 
 public class LocalOutput implements Output {
@@ -85,9 +88,30 @@ public class LocalOutput implements Output {
 
     @Override
     synchronized public void info(String message, Throwable e) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        e.printStackTrace(new PrintStream(baos, true));
-        info(String.format("%s%n%s", message, new String(baos.toByteArray())));
+        info(String.format("%s%n%s", message, Utils.toString(e)));
+    }
+
+    @Override
+    public void important(String format, Object... values) {
+        String text = format;
+        if (values != null && values.length != 0) {
+            text = String.format(format, values);
+        }
+
+        String[] lines = text.split("\\r?\\n");
+
+        for (OutputListener listener : listeners) {
+            listener.receivedImportant(lines);
+        }
+
+        for (String line : lines) {
+            printf(important,"%s%s%s", prefix, indent, line);
+        }
+    }
+
+    @Override
+    public void important(String message, Throwable e) {
+        important(String.format("%s%n%s", message, Utils.toString(e)));
     }
 
     @Override
@@ -101,9 +125,7 @@ public class LocalOutput implements Output {
 
     @Override
     synchronized public void achtung(String message, Throwable e) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        e.printStackTrace(new PrintStream(baos, true));
-        achtung(String.format("%s%n%s", message, new String(baos.toByteArray())));
+        achtung(String.format("%s%n%s", message, Utils.toString(e)));
     }
 
     @Override

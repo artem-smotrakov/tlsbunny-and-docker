@@ -1,6 +1,7 @@
 package com.gypsyengineer.tlsbunny.output;
 
 import java.util.List;
+import java.util.Objects;
 
 public interface Output extends AutoCloseable {
 
@@ -35,6 +36,10 @@ public interface Output extends AutoCloseable {
     void info(String format, Object... values);
 
     void info(String message, Throwable e);
+
+    void important(String format, Object... values);
+
+    void important(String message, Throwable e);
 
     void achtung(String format, Object... values);
 

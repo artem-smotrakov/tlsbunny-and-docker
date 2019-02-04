@@ -248,6 +248,11 @@ public class OpensslServer extends OpensslDocker implements Server {
         }
 
         @Override
+        public void receivedImportant(String... strings) {
+            // do nothing
+        }
+
+        @Override
         synchronized public void receivedAchtung(String... strings) {
             // do nothing
         }

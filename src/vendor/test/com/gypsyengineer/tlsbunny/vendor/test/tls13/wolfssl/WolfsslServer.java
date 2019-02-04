@@ -242,6 +242,11 @@ public class WolfsslServer extends WolfsslDocker implements Server {
         }
 
         @Override
+        public void receivedImportant(String... strings) {
+            // do nothing
+        }
+
+        @Override
         synchronized public void receivedAchtung(String... strings) {
             // do nothing
         }

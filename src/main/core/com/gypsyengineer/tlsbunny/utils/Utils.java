@@ -1,7 +1,10 @@
 package com.gypsyengineer.tlsbunny.utils;
 
 import com.gypsyengineer.tlsbunny.tls.Struct;
+
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -142,5 +145,11 @@ public class Utils {
         }
 
         return true;
+    }
+
+    public static String toString(Throwable e) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        e.printStackTrace(new PrintStream(baos, true));
+        return new String(baos.toByteArray());
     }
 }

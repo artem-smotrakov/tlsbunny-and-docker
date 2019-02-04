@@ -29,12 +29,14 @@ public class OutputWrapperTest {
             wrapper.info("error", new RuntimeException("oops"));
             wrapper.achtung("%s%n", "foo");
             wrapper.achtung("error", new RuntimeException("oops"));
+            wrapper.important("%s%n", "foo");
+            wrapper.important("error", new RuntimeException("oops"));
             wrapper.lines();
             wrapper.contains("oops");
             wrapper.flush();
         }
 
-        assertEquals(13, checker.counter);
+        assertEquals(15, checker.counter);
     }
 
     private static class TestWrapperOutput extends OutputWrapper {
@@ -76,6 +78,16 @@ public class OutputWrapperTest {
 
         @Override
         public void info(String message, Throwable e) {
+            counter++;
+        }
+
+        @Override
+        public void important(String format, Object... values) {
+            counter++;
+        }
+
+        @Override
+        public void important(String message, Throwable e) {
             counter++;
         }
 

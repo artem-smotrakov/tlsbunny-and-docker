@@ -59,6 +59,11 @@ public class LocalOutputTest {
                 }
 
                 @Override
+                public void receivedImportant(String... strings) {
+                    fail("should not be here!");
+                }
+
+                @Override
                 public void receivedAchtung(String... strings) {
                     fail("should not be here!");
                 }

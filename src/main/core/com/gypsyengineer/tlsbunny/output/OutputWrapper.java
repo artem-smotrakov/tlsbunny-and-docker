@@ -82,4 +82,13 @@ public abstract class OutputWrapper implements Output {
         output.add(line);
     }
 
+    @Override
+    public void important(String format, Object... values) {
+        output.important(format, values);
+    }
+
+    @Override
+    public void important(String message, Throwable e) {
+        output.important(message, e);
+    }
 }
