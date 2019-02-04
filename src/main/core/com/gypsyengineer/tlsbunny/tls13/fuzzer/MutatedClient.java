@@ -165,6 +165,10 @@ public class MutatedClient implements Client {
             sync().end();
         }
 
+        if (fuzzerConfig.hasState()) {
+            fuzzyStructFactory.state(fuzzerConfig.state());
+        }
+
         output.info("run fuzzer config:");
         output.info("  targets     = %s",
                 Arrays.stream(fuzzyStructFactory.targets())
@@ -185,10 +189,6 @@ public class MutatedClient implements Client {
                 .set(checks);
 
         try {
-            if (fuzzerConfig.hasState()) {
-                fuzzyStructFactory.state(fuzzerConfig.state());
-            }
-
             test = 0;
             while (shouldRun(fuzzyStructFactory)) {
                 sync().start();

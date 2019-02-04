@@ -187,6 +187,10 @@ public class DeepHandshakeFuzzyClient implements Client {
             sync().end();
         }
 
+        if (fuzzerConfig.hasState()) {
+            deepHandshakeFuzzer.state(fuzzerConfig.state());
+        }
+
         if (deepHandshakeFuzzer.targeted().length == 0) {
             throw achtung("no targets found!");
         }
@@ -209,10 +213,6 @@ public class DeepHandshakeFuzzyClient implements Client {
 
         try {
             deepHandshakeFuzzer.fuzzing();
-
-            if (fuzzerConfig.hasState()) {
-                deepHandshakeFuzzer.state(fuzzerConfig.state());
-            }
 
             test = 0;
             while (shouldRun(deepHandshakeFuzzer)) {
