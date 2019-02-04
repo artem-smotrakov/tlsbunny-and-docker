@@ -2,16 +2,16 @@ package com.gypsyengineer.tlsbunny.output;
 
 import java.util.List;
 
-public abstract class AbstractOutput implements Output {
+public abstract class OutputWrapper implements Output {
 
     protected final Output output;
     protected final Level level;
 
-    public AbstractOutput(Output output) {
+    public OutputWrapper(Output output) {
         this(output, Output.level);
     }
 
-    public AbstractOutput(Output output, Level level) {
+    public OutputWrapper(Output output, Level level) {
         this.output = output;
         this.level = level;
     }

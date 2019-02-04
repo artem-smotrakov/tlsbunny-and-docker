@@ -27,6 +27,6 @@ addons:
 
 script:
   - ./gradlew test --info -Ptlsbunny.test.exclude=com/gypsyengineer/tlsbunny/vendor/test/tls13/**
-  - ./gradlew test --info -Ptlsbunny.test.include=com/gypsyengineer/tlsbunny/vendor/test/tls13/** -Dtlsbunny.output.only.achtung=true
+  - ./gradlew test --info -Ptlsbunny.test.include=com/gypsyengineer/tlsbunny/vendor/test/tls13/** -Dtlsbunny.output.console.level=important
   - sonar-scanner
 

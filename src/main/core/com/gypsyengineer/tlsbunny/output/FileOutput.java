@@ -8,7 +8,7 @@ import java.util.List;
 
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
-public class FileOutput extends AbstractOutput {
+public class FileOutput extends OutputWrapper {
 
     private static Level level = Level.valueOf(
             System.getProperty("tlsbunny.output.file.level",

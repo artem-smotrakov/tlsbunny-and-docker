@@ -2,7 +2,7 @@ package com.gypsyengineer.tlsbunny.output;
 
 import java.util.List;
 
-public class ConsoleOutput extends AbstractOutput {
+public class ConsoleOutput extends OutputWrapper {
 
     private static Level level = Level.valueOf(
             System.getProperty("tlsbunny.output.console.level",
@@ -14,9 +14,6 @@ public class ConsoleOutput extends AbstractOutput {
     private static final String ansi_reset = "\u001B[0m";
     private static final boolean enableHighlighting = Boolean.valueOf(
             System.getProperty("tlsbunny.output.enable.highlighting", "true"));
-
-    private static boolean onlyAchtung = Boolean.valueOf(
-            System.getProperty("tlsbunny.output.only.achtung", "false"));
 
     private int index = 0;
 
@@ -38,10 +35,6 @@ public class ConsoleOutput extends AbstractOutput {
                 }
 
                 String string = line.value();
-
-                if (onlyAchtung && !string.contains("achtung")) {
-                    continue;
-                }
 
                 if (enableHighlighting && string.contains("achtung")) {
                     string = String.format("%s%s%s", ansi_red, string, ansi_reset);

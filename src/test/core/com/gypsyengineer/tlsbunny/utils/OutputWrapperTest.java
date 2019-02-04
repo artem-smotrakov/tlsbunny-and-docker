@@ -1,6 +1,6 @@
 package com.gypsyengineer.tlsbunny.utils;
 
-import com.gypsyengineer.tlsbunny.output.AbstractOutput;
+import com.gypsyengineer.tlsbunny.output.OutputWrapper;
 import com.gypsyengineer.tlsbunny.output.Line;
 import com.gypsyengineer.tlsbunny.output.Output;
 import com.gypsyengineer.tlsbunny.output.OutputListener;
@@ -11,7 +11,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-public class AbstractOutputTest {
+public class OutputWrapperTest {
 
     private static final Line null_line = null;
     private static final OutputListener null_listener = null;
@@ -37,7 +37,7 @@ public class AbstractOutputTest {
         assertEquals(13, checker.counter);
     }
 
-    private static class TestWrapperOutput extends AbstractOutput {
+    private static class TestWrapperOutput extends OutputWrapper {
 
         public TestWrapperOutput(Output output) {
             super(output);
