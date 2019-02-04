@@ -3,11 +3,14 @@ package com.gypsyengineer.tlsbunny.output;
 import java.io.*;
 import java.util.*;
 
+import static com.gypsyengineer.tlsbunny.output.Level.achtung;
+import static com.gypsyengineer.tlsbunny.output.Level.info;
+
 public class InputStreamOutput implements Output {
 
     private static final String default_prefix = "";
 
-    private final List<String> lines = new ArrayList<>();
+    private final List<Line> lines = new ArrayList<>();
     private String prefix = default_prefix;
     private final List<OutputListener> listeners
             = Collections.synchronizedList(new ArrayList<>());
@@ -34,8 +37,8 @@ public class InputStreamOutput implements Output {
         // do nothing
     }
 
-    synchronized private void printf(String format, Object... params) {
-        lines.add(String.format(format, params));
+    synchronized private void printf(Level level, String format, Object... params) {
+        lines.add(new Line(level, String.format(format, params)));
     }
 
     @Override
@@ -62,7 +65,7 @@ public class InputStreamOutput implements Output {
         }
 
         for (String line : lines) {
-            printf("%s%s%n", prefix, line);
+            printf(info, "%s%s%n", prefix, line);
         }
     }
 
@@ -79,7 +82,7 @@ public class InputStreamOutput implements Output {
         for (OutputListener listener : listeners) {
             listener.receivedAchtung(line);
         }
-        printf("%sachtung: %s%n", prefix, line);
+        printf(achtung, "%sachtung: %s%n", prefix, line);
     }
 
     @Override
@@ -90,15 +93,20 @@ public class InputStreamOutput implements Output {
     }
 
     @Override
-    synchronized public List<String> lines() {
+    public void add(Line line) {
+        lines.add(line);
+    }
+
+    @Override
+    synchronized public List<Line> lines() {
         update();
         return Collections.unmodifiableList(lines);
     }
 
     @Override
-    synchronized public boolean contains(String line) {
-        for (String string : lines) {
-            if (string.contains(line)) {
+    synchronized public boolean contains(String string) {
+        for (Line line : lines) {
+            if (line.contains(string)) {
                 return true;
             }
         }

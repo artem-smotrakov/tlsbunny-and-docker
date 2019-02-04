@@ -6,12 +6,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import static com.gypsyengineer.tlsbunny.output.Level.achtung;
+import static com.gypsyengineer.tlsbunny.output.Level.info;
+
 public class LocalOutput implements Output {
 
     private static final String default_prefix = "";
     private static final int indent_step = 4;
 
-    private final List<String> lines = new ArrayList<>();
+    private final List<Line> lines = new ArrayList<>();
     private String prefix = default_prefix;
     private String indent = "";
     private final List<OutputListener> listeners
@@ -48,8 +51,8 @@ public class LocalOutput implements Output {
         indent = new String(new char[indentLength]).replace('\0', ' ');
     }
 
-    synchronized private void printf(String format, Object... params) {
-        lines.add(String.format(format, params));
+    synchronized private void printf(Level level, String format, Object... params) {
+        lines.add(new Line(level, String.format(format, params)));
     }
 
     @Override
@@ -76,7 +79,7 @@ public class LocalOutput implements Output {
         }
 
         for (String line : lines) {
-            printf("%s%s%s", prefix, indent, line);
+            printf(info,"%s%s%s", prefix, indent, line);
         }
     }
 
@@ -93,7 +96,7 @@ public class LocalOutput implements Output {
         for (OutputListener listener : listeners) {
             listener.receivedAchtung(line);
         }
-        printf("%sachtung: %s", prefix, line);
+        printf(achtung, "%sachtung: %s", prefix, line);
     }
 
     @Override
@@ -104,14 +107,19 @@ public class LocalOutput implements Output {
     }
 
     @Override
-    synchronized public List<String> lines() {
+    public void add(Line line) {
+        lines.add(line);
+    }
+
+    @Override
+    synchronized public List<Line> lines() {
         return Collections.unmodifiableList(lines);
     }
 
     @Override
     synchronized public boolean contains(String phrase) {
-        for (String string : lines) {
-            if (string.contains(phrase)) {
+        for (Line line : lines) {
+            if (line.contains(phrase)) {
                 return true;
             }
         }

@@ -4,6 +4,10 @@ import java.util.List;
 
 public class ConsoleOutput extends AbstractOutput {
 
+    private static Level level = Level.valueOf(
+            System.getProperty("tlsbunny.output.console.level",
+                    Level.info.name()));
+
     private static final Object consoleLock = new Object();
 
     private static final String ansi_red = "\u001B[31m";
@@ -17,7 +21,7 @@ public class ConsoleOutput extends AbstractOutput {
     private int index = 0;
 
     public ConsoleOutput(Output output) {
-        super(output);
+        super(output, level);
     }
 
     @Override
@@ -25,9 +29,15 @@ public class ConsoleOutput extends AbstractOutput {
         synchronized (consoleLock) {
             output.flush();
 
-            List<String> lines = output.lines();
+            List<Line> lines = output.lines();
             for (;index < lines.size(); index++) {
-                String string = lines.get(index);
+                Line line = lines.get(index);
+
+                if (!line.printable(level)) {
+                    continue;
+                }
+
+                String string = line.value();
 
                 if (onlyAchtung && !string.contains("achtung")) {
                     continue;

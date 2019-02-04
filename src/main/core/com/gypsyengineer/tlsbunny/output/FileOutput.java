@@ -10,11 +10,15 @@ import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public class FileOutput extends AbstractOutput {
 
+    private static Level level = Level.valueOf(
+            System.getProperty("tlsbunny.output.file.level",
+                    Level.important.name()));
+
     private final Writer writer;
     private int index = 0;
 
     public FileOutput(Output output, String filename) {
-        super(output);
+        super(output, level);
 
         try {
             writer = new BufferedWriter(new FileWriter(filename));
@@ -28,9 +32,15 @@ public class FileOutput extends AbstractOutput {
         output.flush();
 
         try {
-            List<String> lines = output.lines();
+            List<Line> lines = output.lines();
             for (;index < lines.size(); index++) {
-                writer.write(lines.get(index));
+                Line line = lines.get(index);
+
+                if (!line.printable(level)) {
+                    continue;
+                }
+
+                writer.write(line.value());
                 writer.write("\n");
             }
             writer.flush();

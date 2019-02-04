@@ -4,6 +4,10 @@ import java.util.List;
 
 public interface Output extends AutoCloseable {
 
+    // global output level
+    Level level = Level.valueOf(
+            System.getProperty("tlsbunny.output.level", Level.info.name()));
+
     static Output console() {
         return new ConsoleOutput(new LocalOutput());
     }
@@ -36,7 +40,9 @@ public interface Output extends AutoCloseable {
 
     void achtung(String message, Throwable e);
 
-    List<String> lines();
+    void add(Line line);
+
+    List<Line> lines();
 
     boolean contains(String line);
 

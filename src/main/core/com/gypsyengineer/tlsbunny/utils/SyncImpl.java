@@ -1,9 +1,6 @@
 package com.gypsyengineer.tlsbunny.utils;
 
-import com.gypsyengineer.tlsbunny.output.ConsoleOutput;
-import com.gypsyengineer.tlsbunny.output.FileOutput;
-import com.gypsyengineer.tlsbunny.output.LocalOutput;
-import com.gypsyengineer.tlsbunny.output.Output;
+import com.gypsyengineer.tlsbunny.output.*;
 import com.gypsyengineer.tlsbunny.tls13.client.Client;
 import com.gypsyengineer.tlsbunny.tls13.server.Server;
 
@@ -99,15 +96,15 @@ public class SyncImpl implements Sync {
         checkInitialized();
 
         output.info("[sync] client output");
-        List<String> clientLines = client.output().lines();
+        List<Line> clientLines = client.output().lines();
         for (;clientIndex < clientLines.size(); clientIndex++) {
-            output.info(clientLines.get(clientIndex));
+            output.add(clientLines.get(clientIndex));
         }
 
         output.info("[sync] server output");
-        List<String> serverLines = server.output().lines();
+        List<Line> serverLines = server.output().lines();
         for (;serverIndex < serverLines.size(); serverIndex++) {
-            output.info(serverLines.get(serverIndex));
+            output.add(serverLines.get(serverIndex));
         }
 
         output.info("[sync] end");

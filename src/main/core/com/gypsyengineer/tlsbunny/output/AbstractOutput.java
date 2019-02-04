@@ -5,9 +5,15 @@ import java.util.List;
 public abstract class AbstractOutput implements Output {
 
     protected final Output output;
+    protected final Level level;
 
     public AbstractOutput(Output output) {
+        this(output, Output.level);
+    }
+
+    public AbstractOutput(Output output, Level level) {
         this.output = output;
+        this.level = level;
     }
 
     @Override
@@ -52,7 +58,7 @@ public abstract class AbstractOutput implements Output {
     }
 
     @Override
-    public List<String> lines() {
+    public List<Line> lines() {
         return output.lines();
     }
 
@@ -70,4 +76,10 @@ public abstract class AbstractOutput implements Output {
     public void close() {
         output.close();
     }
+
+    @Override
+    public void add(Line line) {
+        output.add(line);
+    }
+
 }

@@ -1,5 +1,6 @@
 package com.gypsyengineer.tlsbunny.vendor.test.tls13;
 
+import com.gypsyengineer.tlsbunny.output.Line;
 import com.gypsyengineer.tlsbunny.tls13.client.Client;
 import com.gypsyengineer.tlsbunny.tls13.server.Server;
 import com.gypsyengineer.tlsbunny.output.Output;
@@ -167,8 +168,8 @@ public class Utils {
     }
 
     public static void checkForASanFindings(Output output) {
-        for (String string : output.lines()) {
-            if (string.contains("ERROR: AddressSanitizer:")) {
+        for (Line line : output.lines()) {
+            if (line.contains("ERROR: AddressSanitizer:")) {
                 throw achtung("hey, AddressSanitizer found something!");
             }
         }
