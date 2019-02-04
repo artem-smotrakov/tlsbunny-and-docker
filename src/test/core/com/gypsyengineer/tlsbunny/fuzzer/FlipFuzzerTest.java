@@ -1,6 +1,6 @@
 package com.gypsyengineer.tlsbunny.fuzzer;
 
-import com.gypsyengineer.tlsbunny.utils.Output;
+import com.gypsyengineer.tlsbunny.output.Output;
 import com.gypsyengineer.tlsbunny.utils.WhatTheHell;
 import org.junit.Test;
 

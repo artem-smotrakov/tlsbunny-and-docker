@@ -8,7 +8,7 @@ import com.gypsyengineer.tlsbunny.tls13.connection.check.AlertCheck;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.handshake.NegotiatorException;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
-import com.gypsyengineer.tlsbunny.utils.Output;
+import com.gypsyengineer.tlsbunny.output.Output;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 
 import java.security.NoSuchAlgorithmException;

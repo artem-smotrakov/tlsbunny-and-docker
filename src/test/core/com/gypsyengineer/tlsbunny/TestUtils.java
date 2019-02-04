@@ -7,7 +7,7 @@ import com.gypsyengineer.tlsbunny.tls.Vector;
 import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
-import com.gypsyengineer.tlsbunny.utils.Output;
+import com.gypsyengineer.tlsbunny.output.Output;
 import com.gypsyengineer.tlsbunny.utils.WhatTheHell;
 
 import java.lang.reflect.InvocationTargetException;

@@ -10,8 +10,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.Alert;
 import com.gypsyengineer.tlsbunny.tls13.struct.AlertDescription;
 import com.gypsyengineer.tlsbunny.tls13.struct.AlertLevel;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
-import com.gypsyengineer.tlsbunny.utils.Output;
-import com.gypsyengineer.tlsbunny.utils.Output;
+import com.gypsyengineer.tlsbunny.output.Output;
 import org.junit.Test;
 
 import java.io.IOException;

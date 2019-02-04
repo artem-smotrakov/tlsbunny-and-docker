@@ -1,5 +1,7 @@
 package com.gypsyengineer.tlsbunny.vendor.test.tls13.openssl;
 
+import com.gypsyengineer.tlsbunny.output.Output;
+import com.gypsyengineer.tlsbunny.output.OutputListener;
 import com.gypsyengineer.tlsbunny.utils.*;
 import com.gypsyengineer.tlsbunny.vendor.test.tls13.Utils;
 import com.gypsyengineer.tlsbunny.tls13.connection.check.Check;

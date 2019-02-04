@@ -4,7 +4,7 @@ import com.gypsyengineer.tlsbunny.fuzzer.Fuzzer;
 import com.gypsyengineer.tlsbunny.tls.Random;
 import com.gypsyengineer.tlsbunny.tls.Struct;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
-import com.gypsyengineer.tlsbunny.utils.Output;
+import com.gypsyengineer.tlsbunny.output.Output;
 
 import java.io.IOException;
 import java.util.ArrayList;

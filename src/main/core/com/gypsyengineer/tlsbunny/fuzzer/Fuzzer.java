@@ -1,6 +1,6 @@
 package com.gypsyengineer.tlsbunny.fuzzer;
 
-import com.gypsyengineer.tlsbunny.utils.HasOutput;
+import com.gypsyengineer.tlsbunny.output.HasOutput;
 
 // TODO: setting seed(long)
 // TODO: add total()

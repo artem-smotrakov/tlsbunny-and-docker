@@ -7,7 +7,7 @@ import com.gypsyengineer.tlsbunny.tls13.connection.action.Side;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.composite.*;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
-import com.gypsyengineer.tlsbunny.utils.Output;
+import com.gypsyengineer.tlsbunny.output.Output;
 
 import java.util.List;
 

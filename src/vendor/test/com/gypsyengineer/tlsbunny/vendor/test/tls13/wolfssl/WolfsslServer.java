@@ -1,5 +1,8 @@
 package com.gypsyengineer.tlsbunny.vendor.test.tls13.wolfssl;
 
+import com.gypsyengineer.tlsbunny.output.InputStreamOutput;
+import com.gypsyengineer.tlsbunny.output.Output;
+import com.gypsyengineer.tlsbunny.output.OutputListener;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.EngineFactory;
 import com.gypsyengineer.tlsbunny.tls13.connection.check.Check;

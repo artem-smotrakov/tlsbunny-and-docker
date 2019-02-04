@@ -1,5 +1,8 @@
 package com.gypsyengineer.tlsbunny.utils;
 
+import com.gypsyengineer.tlsbunny.output.LocalOutput;
+import com.gypsyengineer.tlsbunny.output.Output;
+import com.gypsyengineer.tlsbunny.output.OutputListener;
 import org.junit.Test;
 
 import java.io.IOException;

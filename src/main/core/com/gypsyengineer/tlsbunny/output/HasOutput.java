@@ -1,4 +1,4 @@
-package com.gypsyengineer.tlsbunny.utils;
+package com.gypsyengineer.tlsbunny.output;
 
 /**
  * Indicates that an object can take an Output instance.

@@ -6,8 +6,8 @@ import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Negotiator;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.Config;
-import com.gypsyengineer.tlsbunny.utils.HasOutput;
-import com.gypsyengineer.tlsbunny.utils.Output;
+import com.gypsyengineer.tlsbunny.output.HasOutput;
+import com.gypsyengineer.tlsbunny.output.Output;
 import com.gypsyengineer.tlsbunny.utils.Sync;
 
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;

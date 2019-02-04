@@ -10,7 +10,7 @@ import com.gypsyengineer.tlsbunny.tls13.handshake.NegotiatorException;
 import com.gypsyengineer.tlsbunny.tls13.struct.ContentType;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.Config;
-import com.gypsyengineer.tlsbunny.utils.Output;
+import com.gypsyengineer.tlsbunny.output.Output;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 
 import java.security.NoSuchAlgorithmException;

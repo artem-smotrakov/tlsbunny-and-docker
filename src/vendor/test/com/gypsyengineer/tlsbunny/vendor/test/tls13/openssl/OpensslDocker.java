@@ -1,6 +1,6 @@
 package com.gypsyengineer.tlsbunny.vendor.test.tls13.openssl;
 
-import com.gypsyengineer.tlsbunny.utils.InputStreamOutput;
+import com.gypsyengineer.tlsbunny.output.InputStreamOutput;
 import com.gypsyengineer.tlsbunny.vendor.test.tls13.Utils;
 
 import java.io.IOException;

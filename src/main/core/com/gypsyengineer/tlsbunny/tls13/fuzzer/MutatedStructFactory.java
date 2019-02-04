@@ -2,7 +2,7 @@ package com.gypsyengineer.tlsbunny.tls13.fuzzer;
 
 import com.gypsyengineer.tlsbunny.tls.Random;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
-import com.gypsyengineer.tlsbunny.utils.Output;
+import com.gypsyengineer.tlsbunny.output.Output;
 
 import java.io.IOException;
 import java.util.Arrays;

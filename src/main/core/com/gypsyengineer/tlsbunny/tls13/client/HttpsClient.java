@@ -11,7 +11,7 @@ import com.gypsyengineer.tlsbunny.tls13.connection.check.SuccessCheck;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
 import com.gypsyengineer.tlsbunny.tls13.handshake.NegotiatorException;
 import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
-import com.gypsyengineer.tlsbunny.utils.Output;
+import com.gypsyengineer.tlsbunny.output.Output;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.List;

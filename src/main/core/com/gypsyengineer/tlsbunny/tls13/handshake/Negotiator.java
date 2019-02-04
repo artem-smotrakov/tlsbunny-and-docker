@@ -3,7 +3,7 @@ package com.gypsyengineer.tlsbunny.tls13.handshake;
 import com.gypsyengineer.tlsbunny.tls13.struct.KeyShareEntry;
 import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
-import com.gypsyengineer.tlsbunny.utils.Output;
+import com.gypsyengineer.tlsbunny.output.Output;
 
 public interface Negotiator {
 

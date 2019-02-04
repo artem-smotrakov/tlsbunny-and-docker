@@ -1,5 +1,9 @@
 package com.gypsyengineer.tlsbunny.utils;
 
+import com.gypsyengineer.tlsbunny.output.ConsoleOutput;
+import com.gypsyengineer.tlsbunny.output.FileOutput;
+import com.gypsyengineer.tlsbunny.output.LocalOutput;
+import com.gypsyengineer.tlsbunny.output.Output;
 import com.gypsyengineer.tlsbunny.tls13.client.Client;
 import com.gypsyengineer.tlsbunny.tls13.server.Server;
 

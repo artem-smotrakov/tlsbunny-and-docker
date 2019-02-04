@@ -8,7 +8,7 @@ import com.gypsyengineer.tlsbunny.tls13.handshake.ECDHENegotiator;
 import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
-import com.gypsyengineer.tlsbunny.utils.Output;
+import com.gypsyengineer.tlsbunny.output.Output;
 
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.application_data;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;

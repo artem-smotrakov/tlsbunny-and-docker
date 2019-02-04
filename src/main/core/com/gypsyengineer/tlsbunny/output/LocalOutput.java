@@ -1,21 +1,28 @@
-package com.gypsyengineer.tlsbunny.utils;
+package com.gypsyengineer.tlsbunny.output;
 
 import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
-public class InputStreamOutput implements Output {
+public class LocalOutput implements Output {
 
     private static final String default_prefix = "";
+    private static final int indent_step = 4;
 
     private final List<String> lines = new ArrayList<>();
     private String prefix = default_prefix;
+    private String indent = "";
     private final List<OutputListener> listeners
             = Collections.synchronizedList(new ArrayList<>());
-    private InputStream is;
 
-    public InputStreamOutput set(InputStream is) {
-        this.is = new BufferedInputStream(is);
-        return this;
+    public LocalOutput() {
+
+    }
+
+    public LocalOutput(String prefix) {
+        prefix(prefix);
     }
 
     @Override
@@ -25,13 +32,20 @@ public class InputStreamOutput implements Output {
     }
 
     @Override
-    public void increaseIndent() {
-        // do nothing
+    synchronized public void increaseIndent() {
+        int indentLength = indent.length() + indent_step;
+        indent = new String(new char[indentLength]).replace('\0', ' ');
     }
 
     @Override
-    public void decreaseIndent() {
-        // do nothing
+    synchronized public void decreaseIndent() {
+        int indentLength = indent.length() - indent_step;
+
+        if (indentLength < 0) {
+            indentLength = 0;
+        }
+
+        indent = new String(new char[indentLength]).replace('\0', ' ');
     }
 
     synchronized private void printf(String format, Object... params) {
@@ -62,7 +76,7 @@ public class InputStreamOutput implements Output {
         }
 
         for (String line : lines) {
-            printf("%s%s%n", prefix, line);
+            printf("%s%s%s", prefix, indent, line);
         }
     }
 
@@ -79,7 +93,7 @@ public class InputStreamOutput implements Output {
         for (OutputListener listener : listeners) {
             listener.receivedAchtung(line);
         }
-        printf("%sachtung: %s%n", prefix, line);
+        printf("%sachtung: %s", prefix, line);
     }
 
     @Override
@@ -91,14 +105,13 @@ public class InputStreamOutput implements Output {
 
     @Override
     synchronized public List<String> lines() {
-        update();
         return Collections.unmodifiableList(lines);
     }
 
     @Override
-    synchronized public boolean contains(String line) {
+    synchronized public boolean contains(String phrase) {
         for (String string : lines) {
-            if (string.contains(line)) {
+            if (string.contains(phrase)) {
                 return true;
             }
         }
@@ -107,38 +120,13 @@ public class InputStreamOutput implements Output {
     }
 
     @Override
-    public void flush() {
+    synchronized public void flush() {
         // do nothing
     }
 
     @Override
-    public void close() {
-        // do nothing
+    synchronized public void close() {
+        flush();
     }
 
-    synchronized public InputStreamOutput update() {
-        if (is != null) {
-            info(read());
-        }
-
-        return this;
-    }
-
-    private String read() {
-        try {
-            byte[] bytes = new byte[4096];
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            while (is.available() > 0) {
-                int len = is.read(bytes);
-                if (len < 0) {
-                    break;
-                }
-                baos.write(bytes, 0, len);
-            }
-
-            return new String(baos.toByteArray());
-        } catch (IOException e) {
-            return "achtung: could not read from input stream!";
-        }
-    }
 }

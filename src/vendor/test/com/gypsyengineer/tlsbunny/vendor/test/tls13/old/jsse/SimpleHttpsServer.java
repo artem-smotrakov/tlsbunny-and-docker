@@ -1,8 +1,7 @@
 package com.gypsyengineer.tlsbunny.vendor.test.tls13.old.jsse;
 
 import com.gypsyengineer.tlsbunny.utils.Config;
-import com.gypsyengineer.tlsbunny.utils.Output;
-import com.gypsyengineer.tlsbunny.utils.Output;
+import com.gypsyengineer.tlsbunny.output.Output;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 
 import javax.net.ssl.SSLServerSocket;

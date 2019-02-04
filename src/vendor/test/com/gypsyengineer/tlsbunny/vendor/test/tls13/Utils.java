@@ -2,7 +2,7 @@ package com.gypsyengineer.tlsbunny.vendor.test.tls13;
 
 import com.gypsyengineer.tlsbunny.tls13.client.Client;
 import com.gypsyengineer.tlsbunny.tls13.server.Server;
-import com.gypsyengineer.tlsbunny.utils.Output;
+import com.gypsyengineer.tlsbunny.output.Output;
 
 import java.io.IOException;
 import java.util.List;
