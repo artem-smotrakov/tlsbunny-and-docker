@@ -169,17 +169,17 @@ public class MutatedClient implements Client {
             fuzzyStructFactory.state(fuzzerConfig.state());
         }
 
-        output.info("run fuzzer config:");
-        output.info("  targets     = %s",
+        output.important("run fuzzer config:");
+        output.important("  targets     = %s",
                 Arrays.stream(fuzzyStructFactory.targets())
                         .map(Object::toString)
                         .collect(Collectors.joining(", ")));
-        output.info("  fuzzer      = %s",
+        output.important("  fuzzer      = %s",
                 fuzzyStructFactory.fuzzer() != null
                         ? fuzzyStructFactory.fuzzer().toString()
                         : "null");
-        output.info("  total tests = %d", fuzzerConfig.total());
-        output.info("  state       = %s",
+        output.important("  total tests = %d", fuzzerConfig.total());
+        output.important("  state       = %s",
                 fuzzerConfig.hasState() ? fuzzerConfig.state() : "not specified");
 
         client.set(fuzzyStructFactory)
@@ -216,8 +216,8 @@ public class MutatedClient implements Client {
                 Arrays.stream(fuzzyStructFactory.targets)
                         .map(Enum::toString)
                         .collect(Collectors.joining(", ")));
-        output.info(message);
-        output.info("state: %s", fuzzyStructFactory.state());
+        output.important(message);
+        output.important("state: %s", fuzzyStructFactory.state());
 
         int attempt = 0;
         while (attempt <= max_attempts) {
@@ -242,8 +242,8 @@ public class MutatedClient implements Client {
                 }
                 attempt++;
 
-                output.achtung("connection failed: %s ", cause.getMessage());
-                output.achtung("let's wait a bit and try again (attempt %d)", attempt);
+                output.important("connection failed: %s ", cause.getMessage());
+                output.important("let's wait a bit and try again (attempt %d)", attempt);
                 Thread.sleep(delay);
             } finally {
                 output.flush();

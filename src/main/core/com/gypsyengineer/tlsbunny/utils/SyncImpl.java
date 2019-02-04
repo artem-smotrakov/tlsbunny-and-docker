@@ -87,7 +87,7 @@ public class SyncImpl implements Sync {
     @Override
     public SyncImpl start() {
         checkInitialized();
-        consoleOutput.info("[sync] start");
+        consoleOutput.important("[sync] start");
         return this;
     }
 
@@ -95,19 +95,19 @@ public class SyncImpl implements Sync {
     public SyncImpl end() {
         checkInitialized();
 
-        output.info("[sync] client output");
+        output.important("[sync] client output");
         List<Line> clientLines = client.output().lines();
         for (;clientIndex < clientLines.size(); clientIndex++) {
             output.add(clientLines.get(clientIndex));
         }
 
-        output.info("[sync] server output");
+        output.important("[sync] server output");
         List<Line> serverLines = server.output().lines();
         for (;serverIndex < serverLines.size(); serverIndex++) {
             output.add(serverLines.get(serverIndex));
         }
 
-        output.info("[sync] end");
+        output.important("[sync] end");
         output.flush();
 
         consoleOutput.flush();
