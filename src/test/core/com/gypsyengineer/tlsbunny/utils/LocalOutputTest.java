@@ -1,12 +1,12 @@
 package com.gypsyengineer.tlsbunny.utils;
 
-import com.gypsyengineer.tlsbunny.output.LocalOutput;
-import com.gypsyengineer.tlsbunny.output.Output;
-import com.gypsyengineer.tlsbunny.output.OutputListener;
+import com.gypsyengineer.tlsbunny.output.*;
 import org.junit.Test;
 
 import java.io.IOException;
 
+import static com.gypsyengineer.tlsbunny.output.Level.achtung;
+import static com.gypsyengineer.tlsbunny.output.Level.info;
 import static org.junit.Assert.*;
 
 public class LocalOutputTest {
@@ -22,13 +22,13 @@ public class LocalOutputTest {
             output.info("test");
             output.flush();
 
-            String[] expected = {
-                    "[test] achtung: foo",
-                    "[test]     bar",
-                    "[test] test"
+            Line[] expected = {
+                    new Line(achtung, "[test] achtung: foo"),
+                    new Line(info, "[test]     bar"),
+                    new Line(info, "[test] test")
             };
 
-            String[] lines = output.lines().toArray(new String[0]);
+            Line[] lines = output.lines().toArray(new Line[0]);
             assertArrayEquals(expected, lines);
             assertTrue(output.contains("foo"));
         }
