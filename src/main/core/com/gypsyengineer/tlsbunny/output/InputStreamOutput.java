@@ -24,6 +24,10 @@ public class InputStreamOutput implements Output {
         return this;
     }
 
+    synchronized public boolean initialized() {
+        return is != null;
+    }
+
     @Override
     synchronized public Output add(OutputListener listener) {
         listeners.add(listener);
@@ -68,7 +72,7 @@ public class InputStreamOutput implements Output {
         }
 
         for (String line : lines) {
-            printf(info, "%s%s%n", prefix, line);
+            printf(info, "%s%s", prefix, line);
         }
     }
 
@@ -91,7 +95,7 @@ public class InputStreamOutput implements Output {
         }
 
         for (String line : lines) {
-            printf(important, "%s%s%n", prefix, line);
+            printf(important, "%s%s", prefix, line);
         }
     }
 
@@ -106,7 +110,7 @@ public class InputStreamOutput implements Output {
         for (OutputListener listener : listeners) {
             listener.receivedAchtung(line);
         }
-        printf(achtung, "%sachtung: %s%n", prefix, line);
+        printf(achtung, "%sachtung: %s", prefix, line);
     }
 
     @Override
@@ -154,7 +158,7 @@ public class InputStreamOutput implements Output {
         return this;
     }
 
-    private String read() {
+    protected String read() {
         try {
             byte[] bytes = new byte[4096];
             ByteArrayOutputStream baos = new ByteArrayOutputStream();

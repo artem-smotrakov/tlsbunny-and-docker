@@ -9,6 +9,7 @@ import com.gypsyengineer.tlsbunny.tls13.connection.check.Check;
 import com.gypsyengineer.tlsbunny.tls13.server.Server;
 import com.gypsyengineer.tlsbunny.tls13.server.StopCondition;
 import com.gypsyengineer.tlsbunny.utils.*;
+import com.gypsyengineer.tlsbunny.vendor.test.tls13.AddressSanitizerWatcherOutput;
 import com.gypsyengineer.tlsbunny.vendor.test.tls13.Utils;
 
 import java.io.IOException;
@@ -24,7 +25,7 @@ public class WolfsslServer extends WolfsslDocker implements Server {
 
     private boolean failed = false;
     private int previousAcceptCounter = 0;
-    private final InputStreamOutput output = new InputStreamOutput();
+    private final InputStreamOutput output = new AddressSanitizerWatcherOutput();
     private final OutputListenerImpl listener = new OutputListenerImpl();
 
     public static WolfsslServer wolfsslServer() {
