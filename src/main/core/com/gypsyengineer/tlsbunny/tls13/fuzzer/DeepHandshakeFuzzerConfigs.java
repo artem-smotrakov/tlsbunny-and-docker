@@ -9,7 +9,6 @@ import java.util.List;
 
 import static com.gypsyengineer.tlsbunny.fuzzer.BitFlipFuzzer.newBitFlipFuzzer;
 import static com.gypsyengineer.tlsbunny.fuzzer.ByteFlipFuzzer.newByteFlipFuzzer;
-import static com.gypsyengineer.tlsbunny.tls13.fuzzer.DeepHandshakeFuzzer.deepHandshakeFuzzer;
 
 public class DeepHandshakeFuzzerConfigs {
 
@@ -56,13 +55,13 @@ public class DeepHandshakeFuzzerConfigs {
         return minimizeIfNecessary(
                 concatenate(
                     enumerateByteFlipRatios(
-                            () -> deepHandshakeFuzzer(),
+                            DeepHandshakeFuzzer::deepHandshakeFuzzer,
                             new FuzzerConfig(config)
                                     .readTimeout(long_read_timeout)
                                     .total(2000)
                                     .parts(5)),
                     enumerateBitFlipRatios(
-                            () -> deepHandshakeFuzzer(),
+                            DeepHandshakeFuzzer::deepHandshakeFuzzer,
                             new FuzzerConfig(config)
                                     .readTimeout(long_read_timeout)
                                     .total(2000)
@@ -75,13 +74,13 @@ public class DeepHandshakeFuzzerConfigs {
         return minimizeIfNecessary(
                 concatenate(
                     enumerateByteFlipRatios(
-                            () -> deepHandshakeFuzzer(),
+                            DeepHandshakeFuzzer::deepHandshakeFuzzer,
                             new FuzzerConfig(config)
                                     .readTimeout(long_read_timeout)
                                     .total(2000)
                                     .parts(5)),
                     enumerateBitFlipRatios(
-                            () -> deepHandshakeFuzzer(),
+                            DeepHandshakeFuzzer::deepHandshakeFuzzer,
                             new FuzzerConfig(config)
                                     .readTimeout(long_read_timeout)
                                     .total(2000)
@@ -106,40 +105,54 @@ public class DeepHandshakeFuzzerConfigs {
     }
 
     private static FuzzerConfig[] enumerateByteFlipRatios(
-            FuzzyStructFactoryBuilder builder, FuzzerConfig... configs) {
+            FuzzyStructFactoryBuilder builder, FuzzerConfig config) {
+
+        // don't enumerate if a state is set
+        if (config.hasState()) {
+            FuzzerConfig newConfig = config.copy();
+            DeepHandshakeFuzzer deepHandshakeFuzzer = builder.build();
+            deepHandshakeFuzzer.fuzzer(newByteFlipFuzzer());
+            newConfig.factory(deepHandshakeFuzzer);
+            return new FuzzerConfig[] { newConfig };
+        }
 
         List<FuzzerConfig> generatedConfigs = new ArrayList<>();
-        for (FuzzerConfig config : configs) {
-            for (Ratio ratio : byte_flip_ratios) {
-                FuzzerConfig newConfig = config.copy();
-                DeepHandshakeFuzzer deepHandshakeFuzzer = builder.build();
-                deepHandshakeFuzzer.fuzzer(newByteFlipFuzzer()
-                        .minRatio(ratio.min())
-                        .maxRatio(ratio.max()));
-                newConfig.factory(deepHandshakeFuzzer);
+        for (Ratio ratio : byte_flip_ratios) {
+            FuzzerConfig newConfig = config.copy();
+            DeepHandshakeFuzzer deepHandshakeFuzzer = builder.build();
+            deepHandshakeFuzzer.fuzzer(newByteFlipFuzzer()
+                    .minRatio(ratio.min())
+                    .maxRatio(ratio.max()));
+            newConfig.factory(deepHandshakeFuzzer);
 
-                generatedConfigs.add(newConfig);
-            }
+            generatedConfigs.add(newConfig);
         }
 
         return generatedConfigs.toArray(new FuzzerConfig[0]);
     }
 
     private static FuzzerConfig[] enumerateBitFlipRatios(
-            FuzzyStructFactoryBuilder builder, FuzzerConfig... configs) {
+            FuzzyStructFactoryBuilder builder, FuzzerConfig config) {
+
+        // don't enumerate if a state is set
+        if (config.hasState()) {
+            FuzzerConfig newConfig = config.copy();
+            DeepHandshakeFuzzer deepHandshakeFuzzer = builder.build();
+            deepHandshakeFuzzer.fuzzer(newBitFlipFuzzer());
+            newConfig.factory(deepHandshakeFuzzer);
+            return new FuzzerConfig[] { newConfig };
+        }
 
         List<FuzzerConfig> generatedConfigs = new ArrayList<>();
-        for (FuzzerConfig config : configs) {
-            for (Ratio ratio : bit_flip_ratios) {
-                FuzzerConfig newConfig = config.copy();
-                DeepHandshakeFuzzer deepHandshakeFuzzer = builder.build();
-                deepHandshakeFuzzer.fuzzer(newBitFlipFuzzer()
-                        .minRatio(ratio.min())
-                        .maxRatio(ratio.max()));
-                newConfig.factory(deepHandshakeFuzzer);
+        for (Ratio ratio : bit_flip_ratios) {
+            FuzzerConfig newConfig = config.copy();
+            DeepHandshakeFuzzer deepHandshakeFuzzer = builder.build();
+            deepHandshakeFuzzer.fuzzer(newBitFlipFuzzer()
+                    .minRatio(ratio.min())
+                    .maxRatio(ratio.max()));
+            newConfig.factory(deepHandshakeFuzzer);
 
-                generatedConfigs.add(newConfig);
-            }
+            generatedConfigs.add(newConfig);
         }
 
         return generatedConfigs.toArray(new FuzzerConfig[0]);
