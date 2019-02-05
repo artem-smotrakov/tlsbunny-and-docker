@@ -23,14 +23,16 @@ public class FileOutputTest {
             output.achtung("foo");
             output.increaseIndent();
             output.info("bar");
+            output.important("important");
             output.decreaseIndent();;
             output.info("test");
+            output.achtung("bar");
             output.flush();
 
             String[] expected = {
                     "[test] achtung: foo",
-                    "[test]     bar",
-                    "[test] test"
+                    "[test]     important",
+                    "[test] achtung: bar"
             };
 
             String[] lines = Files.readAllLines(path).toArray(new String[0]);
