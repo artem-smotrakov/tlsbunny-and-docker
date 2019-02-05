@@ -40,20 +40,20 @@ public class SystemPropertiesConfig implements Config {
     @Override
     synchronized public SystemPropertiesConfig copy() {
         SystemPropertiesConfig clone = new SystemPropertiesConfig();
-        clone.host = host;
-        clone.port = port;
-        clone.minRatio = minRatio;
-        clone.maxRatio = maxRatio;
-        clone.threads = threads;
-        clone.parts = parts;
-        clone.clientCertificate = clientCertificate;
-        clone.clientKey = clientKey;
-        clone.serverCertificate = serverCertificate;
-        clone.serverKey = serverKey;
-        clone.readTimeout = readTimeout;
-        clone.total = total;
-        clone.state = state;
-        clone.targetFilter = targetFilter;
+        clone.host = host.copy();
+        clone.port = port.copy();
+        clone.minRatio = minRatio.copy();
+        clone.maxRatio = maxRatio.copy();
+        clone.threads = threads.copy();
+        clone.parts = parts.copy();
+        clone.clientCertificate = clientCertificate.copy();
+        clone.clientKey = clientKey.copy();
+        clone.serverCertificate = serverCertificate.copy();
+        clone.serverKey = serverKey.copy();
+        clone.readTimeout = readTimeout.copy();
+        clone.total = total.copy();
+        clone.state = state.copy();
+        clone.targetFilter = targetFilter.copy();
 
         return clone;
     }
@@ -237,16 +237,7 @@ public class SystemPropertiesConfig implements Config {
         return new SystemPropertiesConfig();
     }
 
-    private static Double getDouble(String name, double defaultValue) {
-        String s = System.getProperty(name);
-        if (s == null) {
-            return defaultValue;
-        }
-
-        return Double.parseDouble(s);
-    }
-
-    private static class Value {
+    private abstract static class Value {
 
         final String property;
 
@@ -300,6 +291,10 @@ public class SystemPropertiesConfig implements Config {
         public int hashCode() {
             return Objects.hash(value);
         }
+
+        public IntegerValue copy() {
+            return new IntegerValue(property, value);
+        }
     }
 
     private static class LongValue extends Value {
@@ -343,6 +338,10 @@ public class SystemPropertiesConfig implements Config {
         public int hashCode() {
             return Objects.hash(value);
         }
+
+        public LongValue copy() {
+            return new LongValue(property, value);
+        }
     }
 
     private static class DoubleValue extends Value {
@@ -385,6 +384,10 @@ public class SystemPropertiesConfig implements Config {
         @Override
         public int hashCode() {
             return Objects.hash(value);
+        }
+
+        public DoubleValue copy() {
+            return new DoubleValue(property, value);
         }
     }
 
@@ -433,6 +436,10 @@ public class SystemPropertiesConfig implements Config {
         @Override
         public int hashCode() {
             return Objects.hash(value);
+        }
+
+        public StringValue copy() {
+            return new StringValue(property, value);
         }
     }
 
