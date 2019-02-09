@@ -60,7 +60,7 @@ test {
     }
 
     systemProperty 'tlsbunny.output.console.level',
-            System.getProperty('tlsbunny.output.console.level', 'info')
+            System.getProperty('tlsbunny.output.console.level', 'important')
 }
 
 jacocoTestReport {

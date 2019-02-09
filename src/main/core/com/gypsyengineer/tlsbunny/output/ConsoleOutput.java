@@ -7,6 +7,9 @@ public class ConsoleOutput extends OutputWrapper {
     private static Level level = Level.valueOf(
             System.getProperty("tlsbunny.output.console.level",
                     Level.info.name()));
+    static {
+        System.out.printf("[output] tlsbunny.output.console.level = %s%n", level);
+    }
 
     private static final Object consoleLock = new Object();
 
