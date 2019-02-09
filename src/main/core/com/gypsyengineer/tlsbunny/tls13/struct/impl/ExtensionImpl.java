@@ -22,12 +22,24 @@ public class ExtensionImpl implements Extension {
     }
     
     @Override
-    public ExtensionType getExtensionType() {
+    public ExtensionType extensionType() {
         return extension_type;
     }
-    
+
     @Override
-    public Vector<Byte> getExtensionData() {
+    public Extension extensionData(Vector<Byte> data) {
+        extension_data = data;
+        return this;
+    }
+
+    @Override
+    public Extension extensionType(ExtensionType type) {
+        extension_type = type;
+        return this;
+    }
+
+    @Override
+    public Vector<Byte> extensionData() {
         return extension_data;
     }
     

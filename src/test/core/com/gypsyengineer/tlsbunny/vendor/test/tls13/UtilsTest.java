@@ -1,10 +1,7 @@
 package com.gypsyengineer.tlsbunny.vendor.test.tls13;
 
 import com.gypsyengineer.tlsbunny.utils.Achtung;
-import com.gypsyengineer.tlsbunny.utils.Output;
-import com.gypsyengineer.tlsbunny.utils.Output;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import com.gypsyengineer.tlsbunny.output.Output;
 import org.junit.Test;
 
 import static org.junit.Assert.fail;

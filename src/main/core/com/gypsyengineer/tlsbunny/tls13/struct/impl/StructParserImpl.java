@@ -291,7 +291,7 @@ public class StructParserImpl implements StructParser {
     public Extension parseExtension(ByteBuffer buffer) {
         ExtensionType extension_type = parseExtensionType(buffer);
         Vector<Byte> extension_data = Vector.parseOpaqueVector(
-                buffer, Extension.EXTENSION_DATA_LENGTH_BYTES);
+                buffer, Extension.extension_data_length_bytes);
 
         return new ExtensionImpl(extension_type, extension_data);
     }
@@ -311,7 +311,7 @@ public class StructParserImpl implements StructParser {
         return new KeyShareEntryImpl(
                 parseNamedGroup(buffer),
                 Vector.parseOpaqueVector(
-                    buffer, KeyShareEntry.KEY_EXCHANGE_LENGTH_BYTES));
+                    buffer, KeyShareEntry.key_exchange_length_bytes));
     }
 
     @Override

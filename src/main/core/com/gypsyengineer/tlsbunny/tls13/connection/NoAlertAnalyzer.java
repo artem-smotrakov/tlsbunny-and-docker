@@ -1,6 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls13.connection;
 
-import com.gypsyengineer.tlsbunny.utils.Output;
+import com.gypsyengineer.tlsbunny.output.Output;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,8 +1,13 @@
-package com.gypsyengineer.tlsbunny.utils;
+package com.gypsyengineer.tlsbunny.output;
 
 import java.util.List;
+import java.util.Objects;
 
 public interface Output extends AutoCloseable {
+
+    // global output level
+    Level level = Level.valueOf(
+            System.getProperty("tlsbunny.output.level", Level.info.name()));
 
     static Output console() {
         return new ConsoleOutput(new LocalOutput());
@@ -32,11 +37,17 @@ public interface Output extends AutoCloseable {
 
     void info(String message, Throwable e);
 
+    void important(String format, Object... values);
+
+    void important(String message, Throwable e);
+
     void achtung(String format, Object... values);
 
     void achtung(String message, Throwable e);
 
-    List<String> lines();
+    void add(Line line);
+
+    List<Line> lines();
 
     boolean contains(String line);
 

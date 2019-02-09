@@ -17,12 +17,12 @@ public class ExtensionImplTest {
 
         assertTrue(ext.composite());
         assertEquals(ext.total(), 2);
-        assertEquals(ext.getExtensionType(), ext.element(0));
-        assertEquals(ext.getExtensionData(), ext.element(1));
+        assertEquals(ext.extensionType(), ext.element(0));
+        assertEquals(ext.extensionData(), ext.element(1));
 
 
         ext.element(0, ExtensionType.key_share);
-        assertEquals(ext.getExtensionType(), ext.element(0));
+        assertEquals(ext.extensionType(), ext.element(0));
         assertEquals(ExtensionType.key_share, ext.element(0));
     }
 

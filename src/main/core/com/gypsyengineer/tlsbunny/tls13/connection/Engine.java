@@ -10,7 +10,7 @@ import com.gypsyengineer.tlsbunny.tls13.handshake.Negotiator;
 import com.gypsyengineer.tlsbunny.tls13.handshake.NegotiatorException;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
 import com.gypsyengineer.tlsbunny.utils.Connection;
-import com.gypsyengineer.tlsbunny.utils.Output;
+import com.gypsyengineer.tlsbunny.output.Output;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -191,6 +191,7 @@ public class Engine {
 
     public Engine connect() throws EngineException {
         context.negotiator().set(output);
+        context.negotiator().set(context.factory());
         status = Status.running;
 
         initConnection();

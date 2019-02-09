@@ -72,4 +72,8 @@ public class UInt24 implements Struct {
         return new UInt24(value);
     }
 
+    @Override
+    public String toString() {
+        return String.format("UInt24 (%d)", value);
+    }
 }

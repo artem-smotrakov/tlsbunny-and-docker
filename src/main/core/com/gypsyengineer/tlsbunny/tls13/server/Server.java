@@ -5,7 +5,7 @@ import com.gypsyengineer.tlsbunny.tls13.connection.check.Check;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.EngineFactory;
 import com.gypsyengineer.tlsbunny.utils.Config;
-import com.gypsyengineer.tlsbunny.utils.HasOutput;
+import com.gypsyengineer.tlsbunny.output.HasOutput;
 import com.gypsyengineer.tlsbunny.utils.Sync;
 
 public interface Server extends Runnable, AutoCloseable, HasOutput<Server> {

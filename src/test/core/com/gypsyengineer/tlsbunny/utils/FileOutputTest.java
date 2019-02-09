@@ -1,5 +1,9 @@
 package com.gypsyengineer.tlsbunny.utils;
 
+import com.gypsyengineer.tlsbunny.output.FileOutput;
+import com.gypsyengineer.tlsbunny.output.LocalOutput;
+import com.gypsyengineer.tlsbunny.output.Output;
+import com.gypsyengineer.tlsbunny.output.OutputListener;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -19,14 +23,16 @@ public class FileOutputTest {
             output.achtung("foo");
             output.increaseIndent();
             output.info("bar");
+            output.important("important");
             output.decreaseIndent();;
             output.info("test");
+            output.achtung("bar");
             output.flush();
 
             String[] expected = {
                     "[test] achtung: foo",
-                    "[test]     bar",
-                    "[test] test"
+                    "[test]     important",
+                    "[test] achtung: bar"
             };
 
             String[] lines = Files.readAllLines(path).toArray(new String[0]);
@@ -65,6 +71,11 @@ public class FileOutputTest {
                     assertNotNull(strings);
                     assertEquals(1, strings.length);
                     assertEquals("error", strings[0]);
+                }
+
+                @Override
+                public void receivedImportant(String... strings) {
+                    fail("should not be here!");
                 }
 
                 @Override

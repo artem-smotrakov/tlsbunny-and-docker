@@ -2,9 +2,20 @@ package com.gypsyengineer.tlsbunny.fuzzer;
 
 import org.junit.Test;
 
+import static com.gypsyengineer.tlsbunny.TestUtils.expectWhatTheHell;
 import static org.junit.Assert.*;
 
 public class FuzzedVectorTest {
+
+    @Test
+    public void set() throws Exception {
+        FuzzedVector<Byte> vector = new FuzzedVector<>(
+                1, 3, new byte[] {0, 1, 2});
+        vector.set(0, (byte) 42);
+        assertArrayEquals(new byte[] {3, 42, 1, 2}, vector.encoding());
+
+        expectWhatTheHell(() -> vector.set(10, (byte) 42));
+    }
 
     @Test
     public void unsupported() {
@@ -14,7 +25,6 @@ public class FuzzedVectorTest {
         unsupported(() -> vector.get(0));
         unsupported(() -> vector.first());
         unsupported(() -> vector.add((byte) 0));
-        unsupported(() -> vector.set(0, (byte) 0));
         unsupported(() -> vector.clear());
         unsupported(() -> vector.toList());
 

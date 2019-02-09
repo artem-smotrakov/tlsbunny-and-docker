@@ -11,9 +11,9 @@ import java.util.Objects;
 
 public class HandshakeImpl implements Handshake {
 
-    private final HandshakeType msg_type;
-    private final UInt24 length;
-    private final Bytes body;
+    private HandshakeType msg_type;
+    private UInt24 length;
+    private Bytes body;
 
     HandshakeImpl(HandshakeType msg_type, UInt24 length, Bytes body) {
         this.msg_type = msg_type;
@@ -42,6 +42,12 @@ public class HandshakeImpl implements Handshake {
     @Override
     public HandshakeType getMessageType() {
         return msg_type;
+    }
+
+    @Override
+    public Handshake bodyLength(UInt24 length) {
+        this.length = length;
+        return this;
     }
 
     @Override

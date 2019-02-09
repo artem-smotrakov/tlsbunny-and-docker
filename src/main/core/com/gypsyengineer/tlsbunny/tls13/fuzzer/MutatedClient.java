@@ -11,7 +11,7 @@ import com.gypsyengineer.tlsbunny.tls13.handshake.Negotiator;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.tls13.utils.FuzzerConfig;
-import com.gypsyengineer.tlsbunny.utils.Output;
+import com.gypsyengineer.tlsbunny.output.Output;
 import com.gypsyengineer.tlsbunny.utils.Sync;
 
 import java.io.IOException;
@@ -165,17 +165,21 @@ public class MutatedClient implements Client {
             sync().end();
         }
 
-        output.info("run fuzzer config:");
-        output.info("  targets     = %s",
+        if (fuzzerConfig.hasState()) {
+            fuzzyStructFactory.state(fuzzerConfig.state());
+        }
+
+        output.important("run fuzzer config:");
+        output.important("  targets     = %s",
                 Arrays.stream(fuzzyStructFactory.targets())
                         .map(Object::toString)
                         .collect(Collectors.joining(", ")));
-        output.info("  fuzzer      = %s",
+        output.important("  fuzzer      = %s",
                 fuzzyStructFactory.fuzzer() != null
                         ? fuzzyStructFactory.fuzzer().toString()
                         : "null");
-        output.info("  total tests = %d", fuzzerConfig.total());
-        output.info("  state       = %s",
+        output.important("  total tests = %d", fuzzerConfig.total());
+        output.important("  state       = %s",
                 fuzzerConfig.hasState() ? fuzzerConfig.state() : "not specified");
 
         client.set(fuzzyStructFactory)
@@ -185,10 +189,6 @@ public class MutatedClient implements Client {
                 .set(checks);
 
         try {
-            if (fuzzerConfig.hasState()) {
-                fuzzyStructFactory.state(fuzzerConfig.state());
-            }
-
             test = 0;
             while (shouldRun(fuzzyStructFactory)) {
                 sync().start();
@@ -216,8 +216,8 @@ public class MutatedClient implements Client {
                 Arrays.stream(fuzzyStructFactory.targets)
                         .map(Enum::toString)
                         .collect(Collectors.joining(", ")));
-        output.info(message);
-        output.info("state: %s", fuzzyStructFactory.state());
+        output.important(message);
+        output.important("state: %s", fuzzyStructFactory.state());
 
         int attempt = 0;
         while (attempt <= max_attempts) {
@@ -242,8 +242,8 @@ public class MutatedClient implements Client {
                 }
                 attempt++;
 
-                output.achtung("connection failed: %s ", cause.getMessage());
-                output.achtung("let's wait a bit and try again (attempt %d)", attempt);
+                output.important("connection failed: %s ", cause.getMessage());
+                output.important("let's wait a bit and try again (attempt %d)", attempt);
                 Thread.sleep(delay);
             } finally {
                 output.flush();

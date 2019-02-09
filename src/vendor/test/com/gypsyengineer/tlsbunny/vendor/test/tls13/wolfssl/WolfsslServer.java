@@ -1,11 +1,15 @@
 package com.gypsyengineer.tlsbunny.vendor.test.tls13.wolfssl;
 
+import com.gypsyengineer.tlsbunny.output.InputStreamOutput;
+import com.gypsyengineer.tlsbunny.output.Output;
+import com.gypsyengineer.tlsbunny.output.OutputListener;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.EngineFactory;
 import com.gypsyengineer.tlsbunny.tls13.connection.check.Check;
 import com.gypsyengineer.tlsbunny.tls13.server.Server;
 import com.gypsyengineer.tlsbunny.tls13.server.StopCondition;
 import com.gypsyengineer.tlsbunny.utils.*;
+import com.gypsyengineer.tlsbunny.vendor.test.tls13.AddressSanitizerWatcherOutput;
 import com.gypsyengineer.tlsbunny.vendor.test.tls13.Utils;
 
 import java.io.IOException;
@@ -21,7 +25,7 @@ public class WolfsslServer extends WolfsslDocker implements Server {
 
     private boolean failed = false;
     private int previousAcceptCounter = 0;
-    private final InputStreamOutput output = new InputStreamOutput();
+    private final InputStreamOutput output = new AddressSanitizerWatcherOutput();
     private final OutputListenerImpl listener = new OutputListenerImpl();
 
     public static WolfsslServer wolfsslServer() {
@@ -236,6 +240,11 @@ public class WolfsslServer extends WolfsslDocker implements Server {
                     acceptCounter++;
                 }
             }
+        }
+
+        @Override
+        public void receivedImportant(String... strings) {
+            // do nothing
         }
 
         @Override

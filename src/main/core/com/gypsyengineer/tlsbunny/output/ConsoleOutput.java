@@ -1,8 +1,15 @@
-package com.gypsyengineer.tlsbunny.utils;
+package com.gypsyengineer.tlsbunny.output;
 
 import java.util.List;
 
-public class ConsoleOutput extends AbstractOutput {
+public class ConsoleOutput extends OutputWrapper {
+
+    private static Level level = Level.valueOf(
+            System.getProperty("tlsbunny.output.console.level",
+                    Level.info.name()));
+    static {
+        System.out.printf("[output] tlsbunny.output.console.level = %s%n", level);
+    }
 
     private static final Object consoleLock = new Object();
 
@@ -11,13 +18,10 @@ public class ConsoleOutput extends AbstractOutput {
     private static final boolean enableHighlighting = Boolean.valueOf(
             System.getProperty("tlsbunny.output.enable.highlighting", "true"));
 
-    private static boolean onlyAchtung = Boolean.valueOf(
-            System.getProperty("tlsbunny.output.only.achtung", "false"));
-
     private int index = 0;
 
     public ConsoleOutput(Output output) {
-        super(output);
+        super(output, level);
     }
 
     @Override
@@ -25,13 +29,15 @@ public class ConsoleOutput extends AbstractOutput {
         synchronized (consoleLock) {
             output.flush();
 
-            List<String> lines = output.lines();
+            List<Line> lines = output.lines();
             for (;index < lines.size(); index++) {
-                String string = lines.get(index);
+                Line line = lines.get(index);
 
-                if (onlyAchtung && !string.contains("achtung")) {
+                if (!line.printable(level)) {
                     continue;
                 }
+
+                String string = line.value();
 
                 if (enableHighlighting && string.contains("achtung")) {
                     string = String.format("%s%s%s", ansi_red, string, ansi_reset);

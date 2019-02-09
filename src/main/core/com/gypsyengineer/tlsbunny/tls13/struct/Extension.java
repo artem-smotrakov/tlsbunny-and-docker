@@ -5,8 +5,11 @@ import com.gypsyengineer.tlsbunny.tls.Vector;
 
 public interface Extension extends Struct {
 
-    int EXTENSION_DATA_LENGTH_BYTES = 2;
+    int extension_data_length_bytes = 2;
 
-    Vector<Byte> getExtensionData();
-    ExtensionType getExtensionType();
+    Vector<Byte> extensionData();
+    ExtensionType extensionType();
+
+    Extension extensionData(Vector<Byte> data);
+    Extension extensionType(ExtensionType type);
 }

@@ -1,13 +1,19 @@
-package com.gypsyengineer.tlsbunny.utils;
+package com.gypsyengineer.tlsbunny.output;
+
+import com.gypsyengineer.tlsbunny.utils.Utils;
 
 import java.io.*;
 import java.util.*;
+
+import static com.gypsyengineer.tlsbunny.output.Level.achtung;
+import static com.gypsyengineer.tlsbunny.output.Level.important;
+import static com.gypsyengineer.tlsbunny.output.Level.info;
 
 public class InputStreamOutput implements Output {
 
     private static final String default_prefix = "";
 
-    private final List<String> lines = new ArrayList<>();
+    private final List<Line> lines = new ArrayList<>();
     private String prefix = default_prefix;
     private final List<OutputListener> listeners
             = Collections.synchronizedList(new ArrayList<>());
@@ -16,6 +22,10 @@ public class InputStreamOutput implements Output {
     public InputStreamOutput set(InputStream is) {
         this.is = new BufferedInputStream(is);
         return this;
+    }
+
+    synchronized public boolean initialized() {
+        return is != null;
     }
 
     @Override
@@ -34,8 +44,8 @@ public class InputStreamOutput implements Output {
         // do nothing
     }
 
-    synchronized private void printf(String format, Object... params) {
-        lines.add(String.format(format, params));
+    synchronized private void printf(Level level, String format, Object... params) {
+        lines.add(new Line(level, String.format(format, params)));
     }
 
     @Override
@@ -62,15 +72,36 @@ public class InputStreamOutput implements Output {
         }
 
         for (String line : lines) {
-            printf("%s%s%n", prefix, line);
+            printf(info, "%s%s", prefix, line);
         }
     }
 
     @Override
     synchronized public void info(String message, Throwable e) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        e.printStackTrace(new PrintStream(baos, true));
-        info(String.format("%s%n%s", message, new String(baos.toByteArray())));
+        info(String.format("%s%n%s", message, Utils.toString(e)));
+    }
+
+    @Override
+    public void important(String format, Object... values) {
+        String text = format;
+        if (values != null && values.length != 0) {
+            text = String.format(format, values);
+        }
+
+        String[] lines = text.split("\\r?\\n");
+
+        for (OutputListener listener : listeners) {
+            listener.receivedImportant(lines);
+        }
+
+        for (String line : lines) {
+            printf(important, "%s%s", prefix, line);
+        }
+    }
+
+    @Override
+    public void important(String message, Throwable e) {
+        important(String.format("%s%n%s", message, Utils.toString(e)));
     }
 
     @Override
@@ -79,26 +110,29 @@ public class InputStreamOutput implements Output {
         for (OutputListener listener : listeners) {
             listener.receivedAchtung(line);
         }
-        printf("%sachtung: %s%n", prefix, line);
+        printf(achtung, "%sachtung: %s", prefix, line);
     }
 
     @Override
     synchronized public void achtung(String message, Throwable e) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        e.printStackTrace(new PrintStream(baos, true));
-        achtung(String.format("%s%n%s", message, new String(baos.toByteArray())));
+        achtung(String.format("%s%n%s", message, Utils.toString(e)));
     }
 
     @Override
-    synchronized public List<String> lines() {
+    public void add(Line line) {
+        lines.add(line);
+    }
+
+    @Override
+    synchronized public List<Line> lines() {
         update();
         return Collections.unmodifiableList(lines);
     }
 
     @Override
-    synchronized public boolean contains(String line) {
-        for (String string : lines) {
-            if (string.contains(line)) {
+    synchronized public boolean contains(String string) {
+        for (Line line : lines) {
+            if (line.contains(string)) {
                 return true;
             }
         }
@@ -124,7 +158,7 @@ public class InputStreamOutput implements Output {
         return this;
     }
 
-    private String read() {
+    protected String read() {
         try {
             byte[] bytes = new byte[4096];
             ByteArrayOutputStream baos = new ByteArrayOutputStream();

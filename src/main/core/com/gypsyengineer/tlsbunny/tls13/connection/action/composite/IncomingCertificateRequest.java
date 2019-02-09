@@ -45,7 +45,7 @@ public class IncomingCertificateRequest extends AbstractAction {
         }
 
         SignatureSchemeList list = context.factory().parser().parseSignatureSchemeList(
-                extension.getExtensionData().bytes());
+                extension.extensionData().bytes());
 
         List<String> signature_algorithms = new ArrayList<>();
         for (SignatureScheme scheme : list.getSupportedSignatureAlgorithms().toList()) {

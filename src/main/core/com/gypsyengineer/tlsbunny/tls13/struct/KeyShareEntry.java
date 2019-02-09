@@ -5,8 +5,11 @@ import com.gypsyengineer.tlsbunny.tls.Vector;
 
 public interface KeyShareEntry extends Struct {
 
-    int KEY_EXCHANGE_LENGTH_BYTES = 2;
+    int key_exchange_length_bytes = 2;
 
-    Vector<Byte> getKeyExchange();
-    NamedGroup getNamedGroup();
+    Vector<Byte> keyExchange();
+    NamedGroup namedGroup();
+
+    KeyShareEntry keyExchange(Vector<Byte> bytes);
+    KeyShareEntry namedGroup(NamedGroup group);
 }

@@ -72,9 +72,9 @@ public class IncomingServerHello extends AbstractAction {
         // TODO: we look for only first key share, but there may be multiple key shares
         KeyShare.ServerHello keyShare = findKeyShare(context.factory(), serverHello);
         NamedGroup group = context.negotiator().group();
-        if (!group.equals(keyShare.getServerShare().getNamedGroup())) {
+        if (!group.equals(keyShare.getServerShare().namedGroup())) {
             output.info("expected groups: %s", group);
-            output.info("received groups: %s", keyShare.getServerShare().getNamedGroup());
+            output.info("received groups: %s", keyShare.getServerShare().namedGroup());
             throw new RuntimeException("unexpected groups");
         }
 

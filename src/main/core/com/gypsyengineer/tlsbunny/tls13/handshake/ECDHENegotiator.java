@@ -64,9 +64,9 @@ public class ECDHENegotiator extends AbstractNegotiator {
     
     @Override
     public void processKeyShareEntry(KeyShareEntry entry) throws NegotiatorException {
-        if (!group.equals(entry.getNamedGroup())) {
+        if (!group.equals(entry.namedGroup())) {
             output.achtung("expected groups: %s", group);
-            output.achtung("received groups: %s", entry.getNamedGroup());
+            output.achtung("received groups: %s", entry.namedGroup());
             throw new NegotiatorException("unexpected groups");
         }
 
@@ -96,7 +96,7 @@ public class ECDHENegotiator extends AbstractNegotiator {
         
         UncompressedPointRepresentation upr = 
                 factory.parser().parseUncompressedPointRepresentation(
-                        entry.getKeyExchange().bytes(), 
+                        entry.keyExchange().bytes(),
                         getCoordinateLength(group));
 
         return new ECPoint(

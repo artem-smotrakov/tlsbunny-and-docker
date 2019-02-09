@@ -1,13 +1,19 @@
-package com.gypsyengineer.tlsbunny.utils;
+package com.gypsyengineer.tlsbunny.output;
 
 import java.util.List;
 
-public abstract class AbstractOutput implements Output {
+public abstract class OutputWrapper implements Output {
 
     protected final Output output;
+    protected final Level level;
 
-    public AbstractOutput(Output output) {
+    public OutputWrapper(Output output) {
+        this(output, Output.level);
+    }
+
+    public OutputWrapper(Output output, Level level) {
         this.output = output;
+        this.level = level;
     }
 
     @Override
@@ -52,7 +58,7 @@ public abstract class AbstractOutput implements Output {
     }
 
     @Override
-    public List<String> lines() {
+    public List<Line> lines() {
         return output.lines();
     }
 
@@ -69,5 +75,20 @@ public abstract class AbstractOutput implements Output {
     @Override
     public void close() {
         output.close();
+    }
+
+    @Override
+    public void add(Line line) {
+        output.add(line);
+    }
+
+    @Override
+    public void important(String format, Object... values) {
+        output.important(format, values);
+    }
+
+    @Override
+    public void important(String message, Throwable e) {
+        output.important(message, e);
     }
 }

@@ -10,7 +10,7 @@ import com.gypsyengineer.tlsbunny.tls13.handshake.Negotiator;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.tls13.utils.FuzzerConfig;
 import com.gypsyengineer.tlsbunny.utils.Config;
-import com.gypsyengineer.tlsbunny.utils.Output;
+import com.gypsyengineer.tlsbunny.output.Output;
 import com.gypsyengineer.tlsbunny.utils.Sync;
 import com.gypsyengineer.tlsbunny.utils.Utils;
 
@@ -187,6 +187,10 @@ public class DeepHandshakeFuzzyClient implements Client {
             sync().end();
         }
 
+        if (fuzzerConfig.hasState()) {
+            deepHandshakeFuzzer.state(fuzzerConfig.state());
+        }
+
         if (deepHandshakeFuzzer.targeted().length == 0) {
             throw achtung("no targets found!");
         }
@@ -195,24 +199,20 @@ public class DeepHandshakeFuzzyClient implements Client {
                 .map(Object::toString)
                 .collect(Collectors.joining( ", " ));
 
-        output.info("run fuzzer config:");
+        output.important("run fuzzer config:");
         output.increaseIndent();
-        output.info("targets     = %s", targets);
-        output.info("fuzzer      = %s",
+        output.important("targets     = %s", targets);
+        output.important("fuzzer      = %s",
                 deepHandshakeFuzzer.fuzzer() != null
                         ? deepHandshakeFuzzer.fuzzer().toString()
                         : "null");
-        output.info("total tests = %d", fuzzerConfig.total());
-        output.info("state       = %s",
+        output.important("total tests = %d", fuzzerConfig.total());
+        output.important("state       = %s",
                 fuzzerConfig.hasState() ? fuzzerConfig.state() : "not specified");
         output.decreaseIndent();
 
         try {
             deepHandshakeFuzzer.fuzzing();
-
-            if (fuzzerConfig.hasState()) {
-                deepHandshakeFuzzer.state(fuzzerConfig.state());
-            }
 
             test = 0;
             while (shouldRun(deepHandshakeFuzzer)) {
@@ -241,8 +241,8 @@ public class DeepHandshakeFuzzyClient implements Client {
                 Arrays.stream(deepHandshakeFuzzer.targeted())
                         .map(Object::toString)
                         .collect(Collectors.joining(", ")));
-        output.info(message);
-        output.info("state: %s", deepHandshakeFuzzer.state());
+        output.important(message);
+        output.important("state: %s", deepHandshakeFuzzer.state());
 
         int attempt = 0;
         while (true) {
@@ -273,8 +273,8 @@ public class DeepHandshakeFuzzyClient implements Client {
                 }
                 attempt++;
 
-                output.info("connection failed: %s ", cause.getMessage());
-                output.info("let's wait a bit and try again (attempt %d)", attempt);
+                output.important("connection failed: %s ", cause.getMessage());
+                output.important("let's wait a bit and try again (attempt %d)", attempt);
                 Utils.sleep(delay);
             } finally {
                 output.flush();

@@ -139,6 +139,11 @@ public class MutatedStruct implements TLSPlaintext, Handshake, ChangeCipherSpec,
     }
 
     @Override
+    public Handshake bodyLength(UInt24 length) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public UInt16 getFragmentLength() {
         throw new UnsupportedOperationException();
     }
