@@ -29,7 +29,7 @@ public class NegotiatingServerDHSecret extends AbstractAction<NegotiatingServerD
 
         KeyShareEntry selectedKeyShareEntry = null;
         for (KeyShareEntry keyShareEntry : keyShare.getClientShares().toList()) {
-            if (context.negotiator().group().equals(keyShareEntry.getNamedGroup())) {
+            if (context.negotiator().group().equals(keyShareEntry.namedGroup())) {
                 selectedKeyShareEntry = keyShareEntry;
             }
         }

@@ -73,15 +73,15 @@ public class FFDHENegotiator extends AbstractNegotiator {
 
     @Override
     public void processKeyShareEntry(KeyShareEntry  entry) throws NegotiatorException {
-        if (!group.equals(entry.getNamedGroup())) {
+        if (!group.equals(entry.namedGroup())) {
             throw whatTheHell("expected a key share entry with group %s but received %s",
-                    group, entry.getNamedGroup());
+                    group, entry.namedGroup());
         }
 
         try {
             PublicKey key = KeyFactory.getInstance("DiffieHellman").generatePublic(
                     new DHPublicKeySpec(
-                            new BigInteger(1, entry.getKeyExchange().bytes()),
+                            new BigInteger(1, entry.keyExchange().bytes()),
                             ffdheParameters.spec.getP(),
                             ffdheParameters.spec.getG()));
 

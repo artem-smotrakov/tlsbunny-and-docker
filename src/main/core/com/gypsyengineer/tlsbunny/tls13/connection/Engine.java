@@ -191,6 +191,7 @@ public class Engine {
 
     public Engine connect() throws EngineException {
         context.negotiator().set(output);
+        context.negotiator().set(context.factory());
         status = Status.running;
 
         initConnection();

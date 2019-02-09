@@ -88,7 +88,7 @@ public class ServerHelloImpl implements ServerHello {
     @Override
     public Extension find(ExtensionType type) {
         for (Extension extension : extensions.toList()) {
-            if (type.equals(extension.getExtensionType())) {
+            if (type.equals(extension.extensionType())) {
                 return extension;
             }
         }

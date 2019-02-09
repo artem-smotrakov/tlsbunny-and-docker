@@ -24,7 +24,7 @@ public abstract class CertificateEntryImpl implements CertificateEntry {
     @Override
     public Extension getExtension(ExtensionType type) {
         for (Extension extension : extensions.toList()) {
-            if (type.equals(extension.getExtensionType())) {
+            if (type.equals(extension.extensionType())) {
                 return extension;
             }
         }

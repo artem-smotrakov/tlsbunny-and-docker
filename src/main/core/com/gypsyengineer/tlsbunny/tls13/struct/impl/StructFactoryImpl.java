@@ -178,7 +178,7 @@ public class StructFactoryImpl implements StructFactory {
     public Extension createExtension(ExtensionType type, byte[] bytes) {
         return new ExtensionImpl(
                 type, 
-                Vector.wrap(Extension.EXTENSION_DATA_LENGTH_BYTES, bytes));
+                Vector.wrap(Extension.extension_data_length_bytes, bytes));
     }
 
     @Override
@@ -299,7 +299,7 @@ public class StructFactoryImpl implements StructFactory {
     public KeyShareEntry createKeyShareEntry(NamedGroup group, byte[] bytes) {
         return new KeyShareEntryImpl(
                 group, 
-                Vector.wrap(KeyShareEntry.KEY_EXCHANGE_LENGTH_BYTES, bytes));
+                Vector.wrap(KeyShareEntry.key_exchange_length_bytes, bytes));
     }
 
     @Override

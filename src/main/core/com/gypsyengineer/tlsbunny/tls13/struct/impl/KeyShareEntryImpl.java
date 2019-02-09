@@ -10,8 +10,8 @@ import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
 
 public class KeyShareEntryImpl implements KeyShareEntry {
 
-    private final NamedGroup group;
-    private final Vector<Byte> key_exchange;
+    private NamedGroup group;
+    private Vector<Byte> key_exchange;
 
     KeyShareEntryImpl(NamedGroup group, Vector<Byte> key_exchange) {
         this.group = group;
@@ -19,12 +19,24 @@ public class KeyShareEntryImpl implements KeyShareEntry {
     }
 
     @Override
-    public NamedGroup getNamedGroup() {
+    public NamedGroup namedGroup() {
         return group;
     }
 
     @Override
-    public Vector<Byte> getKeyExchange() {
+    public KeyShareEntry keyExchange(Vector<Byte> bytes) {
+        key_exchange = bytes;
+        return this;
+    }
+
+    @Override
+    public KeyShareEntry namedGroup(NamedGroup group) {
+        this.group = group;
+        return this;
+    }
+
+    @Override
+    public Vector<Byte> keyExchange() {
         return key_exchange;
     }
 

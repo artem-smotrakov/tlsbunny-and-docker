@@ -28,7 +28,7 @@ public class TLS13Utils {
 
     public static Extension findExtension(ExtensionType type, List<Extension> extensions) {
         for (Extension extension : extensions) {
-            if (type.equals(extension.getExtensionType())) {
+            if (type.equals(extension.extensionType())) {
                 return extension;
             }
         }
@@ -42,7 +42,7 @@ public class TLS13Utils {
         return factory.parser()
                 .parseKeyShareFromClientHello(
                         hello.find(ExtensionType.key_share)
-                                .getExtensionData().bytes());
+                                .extensionData().bytes());
     }
 
     public static KeyShare.ServerHello findKeyShare(StructFactory factory, ServerHello hello)
@@ -55,7 +55,7 @@ public class TLS13Utils {
 
         return factory.parser()
                 .parseKeyShareFromServerHello(
-                        ext.getExtensionData().bytes());
+                        ext.extensionData().bytes());
     }
 
     public static SupportedVersions.ServerHello findSupportedVersion(
@@ -67,7 +67,7 @@ public class TLS13Utils {
         }
 
         return factory.parser().parseSupportedVersionsServerHello(
-                ext.getExtensionData().bytes());
+                ext.extensionData().bytes());
     }
 
     public static int getCoordinateLength(NamedGroup group) {

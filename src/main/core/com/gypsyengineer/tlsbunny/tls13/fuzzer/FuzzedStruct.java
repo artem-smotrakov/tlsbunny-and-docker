@@ -250,12 +250,22 @@ public class FuzzedStruct implements ClientHello, ServerHello,
     }
 
     @Override
-    public Vector<Byte> getExtensionData() {
+    public Vector<Byte> extensionData() {
         throw new UnsupportedOperationException("I can't do that!");
     }
 
     @Override
-    public ExtensionType getExtensionType() {
+    public ExtensionType extensionType() {
+        throw new UnsupportedOperationException("I can't do that!");
+    }
+
+    @Override
+    public Extension extensionData(Vector<Byte> data) {
+        throw new UnsupportedOperationException("I can't do that!");
+    }
+
+    @Override
+    public Extension extensionType(ExtensionType type) {
         throw new UnsupportedOperationException("I can't do that!");
     }
 
