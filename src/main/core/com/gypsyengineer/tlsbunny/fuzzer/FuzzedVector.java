@@ -9,6 +9,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
+
 public class FuzzedVector<T> implements Vector<T> {
 
     private final int lengthBytes;
@@ -117,5 +119,13 @@ public class FuzzedVector<T> implements Vector<T> {
         int result = Objects.hash(lengthBytes, length);
         result = 31 * result + Arrays.hashCode(content);
         return result;
+    }
+
+    public FuzzedVector<T> set(int i, byte b) {
+        if (i < 0 || i >= content.length) {
+            throw whatTheHell("wrong index! (%d)", i);
+        }
+        content[i] = b;
+        return this;
     }
 }
