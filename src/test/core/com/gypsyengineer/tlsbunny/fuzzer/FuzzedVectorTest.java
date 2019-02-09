@@ -12,7 +12,7 @@ public class FuzzedVectorTest {
         FuzzedVector<Byte> vector = new FuzzedVector<>(
                 1, 3, new byte[] {0, 1, 2});
         vector.set(0, (byte) 42);
-        assertEquals(42, (byte) vector.get(0));
+        assertArrayEquals(new byte[] {3, 42, 1, 2}, vector.encoding());
 
         expectWhatTheHell(() -> vector.set(10, (byte) 42));
     }
