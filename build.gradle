@@ -32,7 +32,7 @@ sourceSets {
 
     vendor {
         java {
-            srcDir 'src/vendor/test'
+            srcDir 'src/vendor/java'
         }
         compileClasspath += sourceSets.main.output + configurations.testRuntimeClasspath
         runtimeClasspath += output + compileClasspath
@@ -40,7 +40,7 @@ sourceSets {
 
     test {
         java {
-            srcDirs 'src/test/core', 'src/vendor/test'
+            srcDirs 'src/test/core', 'src/vendor/java'
         }
 
         compileClasspath += sourceSets.main.output
