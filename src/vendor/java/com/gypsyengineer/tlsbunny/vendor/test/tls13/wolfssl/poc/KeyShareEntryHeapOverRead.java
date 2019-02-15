@@ -5,15 +5,23 @@ import com.gypsyengineer.tlsbunny.output.Output;
 import com.gypsyengineer.tlsbunny.tls.Struct;
 import com.gypsyengineer.tlsbunny.tls.Vector;
 import com.gypsyengineer.tlsbunny.tls13.client.HttpsClient;
+import com.gypsyengineer.tlsbunny.tls13.fuzzer.DeepHandshakeFuzzer;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.FuzzyStructFactory;
 import com.gypsyengineer.tlsbunny.tls13.struct.KeyShareEntry;
 import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
+import com.gypsyengineer.tlsbunny.tls13.utils.FuzzerConfig;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 
 import java.io.IOException;
 
+import static com.gypsyengineer.tlsbunny.fuzzer.BitFlipFuzzer.newBitFlipFuzzer;
+import static com.gypsyengineer.tlsbunny.output.Output.console;
+import static com.gypsyengineer.tlsbunny.tls13.client.HttpsClient.httpsClient;
+import static com.gypsyengineer.tlsbunny.tls13.fuzzer.DeepHandshakeFuzzer.deepHandshakeFuzzer;
+import static com.gypsyengineer.tlsbunny.tls13.fuzzer.DeepHandshakeFuzzyClient.deepHandshakeFuzzyClient;
+import static com.gypsyengineer.tlsbunny.tls13.fuzzer.MultiConfigClient.multiConfigClient;
 import static com.gypsyengineer.tlsbunny.utils.HexDump.printHexDiff;
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
@@ -158,6 +166,24 @@ public class KeyShareEntryHeapOverRead {
         @Override
         public Object fuzz(Object object) {
             throw whatTheHell("you should not be here!");
+        }
+    }
+
+    public static void runFuzzer(String[] args) throws Exception {
+        try (Output output = console()) {
+            FuzzerConfig config = new FuzzerConfig(SystemPropertiesConfig.load());
+            DeepHandshakeFuzzer deepHandshakeFuzzer = deepHandshakeFuzzer();
+            deepHandshakeFuzzer.fuzzer(newBitFlipFuzzer());
+            config.factory(deepHandshakeFuzzer);
+            config.state("0:18:10:4:0:-1:0.01:0.02:1504");
+            config.port(40101);
+            config.total(1);
+
+            multiConfigClient()
+                    .of(deepHandshakeFuzzyClient().of(httpsClient()))
+                    .set(output)
+                    .configs(config)
+                    .connect();
         }
     }
 }
