@@ -1,5 +1,6 @@
 package com.gypsyengineer.tlsbunny.vendor.test.tls13.old.gnutls;
 
+import com.gypsyengineer.tlsbunny.tls13.client.Client;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.check.NoAlertCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
@@ -22,9 +23,10 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp
 public class GnutlsHttpsClient extends SingleConnectionClient {
 
     public static void main(String[] args) throws Exception {
-        try (Output output = Output.console()) {
-            new GnutlsHttpsClient()
-                    .set(SystemPropertiesConfig.load())
+        try (Output output = Output.console("client");
+             Client client = new GnutlsHttpsClient()) {
+
+            client.set(SystemPropertiesConfig.load())
                     .set(StructFactory.getDefault())
                     .set(output)
                     .connect();

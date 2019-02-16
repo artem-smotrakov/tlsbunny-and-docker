@@ -54,7 +54,6 @@ public class HandshakeTest extends BaseTest {
             }
 
             server.stop();
-            //server.await();
         }
     }
 

@@ -31,7 +31,7 @@ public class OpensslClient extends OpensslDocker implements Client {
     }
 
     @Override
-    synchronized public Config config() {
+    public synchronized Config config() {
         return config;
     }
 

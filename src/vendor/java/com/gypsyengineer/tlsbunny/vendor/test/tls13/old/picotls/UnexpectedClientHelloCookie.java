@@ -1,5 +1,6 @@
 package com.gypsyengineer.tlsbunny.vendor.test.tls13.old.picotls;
 
+import com.gypsyengineer.tlsbunny.tls13.client.Client;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.check.FailureCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
@@ -25,9 +26,10 @@ public class UnexpectedClientHelloCookie extends SingleConnectionClient {
     public static final int ZERO_COOKIE_LENGTH = 32;
 
     public static void main(String[] args) throws Exception {
-        try (Output output = Output.console()) {
-            new UnexpectedClientHelloCookie()
-                    .set(SystemPropertiesConfig.load())
+        try (Output output = Output.console("client");
+             Client client = new UnexpectedClientHelloCookie()) {
+
+            client.set(SystemPropertiesConfig.load())
                     .set(StructFactory.getDefault())
                     .set(output)
                     .connect();

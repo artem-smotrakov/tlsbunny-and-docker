@@ -4,6 +4,7 @@ import com.gypsyengineer.tlsbunny.fuzzer.FuzzedVector;
 import com.gypsyengineer.tlsbunny.output.Output;
 import com.gypsyengineer.tlsbunny.tls.Struct;
 import com.gypsyengineer.tlsbunny.tls.Vector;
+import com.gypsyengineer.tlsbunny.tls13.client.Client;
 import com.gypsyengineer.tlsbunny.tls13.client.HttpsClient;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.DeepHandshakeFuzzer;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.FuzzyStructFactory;
@@ -99,12 +100,11 @@ import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 public class KeyShareEntryHeapOverRead {
 
     public static void main(String[] args) throws Exception {
-        try (Output output = Output.console("client")) {
+        try (Output output = Output.console("client"); Client client = new HttpsClient()) {
             Config config = SystemPropertiesConfig.load();
             config.port(40101);
 
-            new HttpsClient()
-                    .set(new BadStructFactory(output))
+            client.set(new BadStructFactory(output))
                     .set(config)
                     .set(output)
                     .connect();
@@ -169,7 +169,7 @@ public class KeyShareEntryHeapOverRead {
         }
     }
 
-    public static void runFuzzer(String[] args) throws Exception {
+    public static void runFuzzer() throws Exception {
         try (Output output = console()) {
             FuzzerConfig config = new FuzzerConfig(SystemPropertiesConfig.load());
             DeepHandshakeFuzzer deepHandshakeFuzzer = deepHandshakeFuzzer();

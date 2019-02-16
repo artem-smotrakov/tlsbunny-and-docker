@@ -21,7 +21,7 @@ import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public class WolfsslServer extends WolfsslDocker implements Server {
 
-    public static final int port = 40101;
+    public static final int defaultPort = 40101;
 
     private boolean failed = false;
     private int previousAcceptCounter = 0;
@@ -101,11 +101,11 @@ public class WolfsslServer extends WolfsslDocker implements Server {
 
     @Override
     public int port() {
-        return port;
+        return defaultPort;
     }
 
     @Override
-    synchronized public boolean failed() {
+    public synchronized boolean failed() {
         return failed;
     }
 
@@ -127,7 +127,7 @@ public class WolfsslServer extends WolfsslDocker implements Server {
         command.add("docker");
         command.add("run");
         command.add("-p");
-        command.add(String.format("%d:%d", port, port));
+        command.add(String.format("%d:%d", defaultPort, defaultPort));
 
         if (!dockerEnv.isEmpty()) {
             for (Map.Entry entry : dockerEnv.entrySet()) {
@@ -226,7 +226,7 @@ public class WolfsslServer extends WolfsslDocker implements Server {
         }
 
         @Override
-        synchronized public void receivedInfo(String... strings) {
+        public synchronized void receivedInfo(String... strings) {
             if (!serverStarted) {
                 for (String string : strings) {
                     if (string.contains("wolfSSL Leaving SSL_new, return 0")) {
@@ -248,7 +248,7 @@ public class WolfsslServer extends WolfsslDocker implements Server {
         }
 
         @Override
-        synchronized public void receivedAchtung(String... strings) {
+        public synchronized void receivedAchtung(String... strings) {
             // do nothing
         }
     }

@@ -19,7 +19,7 @@ import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public class OpensslServer extends OpensslDocker implements Server {
 
-    public static final int port = 10101;
+    public static final int defaultPort = 10101;
 
     private boolean failed = false;
     private int previousAcceptCounter = 0;
@@ -98,11 +98,11 @@ public class OpensslServer extends OpensslDocker implements Server {
 
     @Override
     public int port() {
-        return port;
+        return defaultPort;
     }
 
     @Override
-    synchronized public boolean failed() {
+    public synchronized boolean failed() {
         return failed;
     }
 
@@ -126,7 +126,7 @@ public class OpensslServer extends OpensslDocker implements Server {
         command.add("docker");
         command.add("run");
         command.add("-p");
-        command.add(String.format("%d:%d", port, port));
+        command.add(String.format("%d:%d", defaultPort, defaultPort));
         command.add("-v");
         command.add(String.format("%s:%s",
                 host_report_directory, container_report_directory));
@@ -231,7 +231,7 @@ public class OpensslServer extends OpensslDocker implements Server {
         }
 
         @Override
-        synchronized public void receivedInfo(String... strings) {
+        public synchronized void receivedInfo(String... strings) {
             if (!serverStarted) {
                 for (String string : strings) {
                     if (string.contains("ACCEPT")) {
@@ -253,7 +253,7 @@ public class OpensslServer extends OpensslDocker implements Server {
         }
 
         @Override
-        synchronized public void receivedAchtung(String... strings) {
+        public synchronized void receivedAchtung(String... strings) {
             // do nothing
         }
     }

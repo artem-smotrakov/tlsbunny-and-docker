@@ -1,5 +1,7 @@
 package com.gypsyengineer.tlsbunny.vendor.test.tls13.old.picotls;
 
+import com.gypsyengineer.tlsbunny.output.Output;
+import com.gypsyengineer.tlsbunny.tls13.client.Client;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.check.NoAlertCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
@@ -21,10 +23,14 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp
 public class PicotlsClient extends SingleConnectionClient {
 
     public static void main(String[] args) throws Exception {
-        new PicotlsClient()
-                .set(SystemPropertiesConfig.load())
-                .set(StructFactory.getDefault())
-                .connect();
+        try (Output output = Output.console("client");
+             Client client = new PicotlsClient()) {
+
+            client.set(SystemPropertiesConfig.load())
+                    .set(StructFactory.getDefault())
+                    .set(output)
+                    .connect();
+        }
     }
 
     public PicotlsClient() {
