@@ -17,7 +17,7 @@ import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 
-import static com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext.NO_PADDING;
+import static com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext.no_padding;
 
 public class OutgoingClientCertificateVerify
         extends AbstractAction<OutgoingClientCertificateVerify> {
@@ -98,7 +98,7 @@ public class OutgoingClientCertificateVerify
     //       run other classes for outgoing handshake messages
     private byte[] encrypt(byte[] data) throws IOException, AEADException {
         TLSInnerPlaintext tlsInnerPlaintext = context.factory().createTLSInnerPlaintext(
-                ContentType.handshake, data, NO_PADDING);
+                ContentType.handshake, data, no_padding);
         byte[] plaintext = tlsInnerPlaintext.encoding();
 
         context.handshakeEncryptor().start();

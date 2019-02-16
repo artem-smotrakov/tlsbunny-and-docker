@@ -13,7 +13,7 @@ import com.gypsyengineer.tlsbunny.tls13.utils.TLS13Utils;
 
 import java.io.IOException;
 
-import static com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext.NO_PADDING;
+import static com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext.no_padding;
 
 public class OutgoingApplicationData extends AbstractAction {
 
@@ -48,7 +48,7 @@ public class OutgoingApplicationData extends AbstractAction {
 
     private byte[] encrypt(byte[] data) throws IOException, AEADException {
         TLSInnerPlaintext tlsInnerPlaintext = context.factory().createTLSInnerPlaintext(
-                ContentType.application_data, data, NO_PADDING);
+                ContentType.application_data, data, no_padding);
         byte[] plaintext = tlsInnerPlaintext.encoding();
 
         context.applicationDataEncryptor().start();

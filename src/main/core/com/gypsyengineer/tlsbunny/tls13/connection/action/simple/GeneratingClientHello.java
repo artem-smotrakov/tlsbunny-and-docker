@@ -13,6 +13,8 @@ import java.util.List;
 
 public class GeneratingClientHello extends AbstractAction<GeneratingClientHello> {
 
+    private static byte[] empty_session_id = new byte[0];
+
     public static final byte[] NO_COOKIE = null;
     public static final MaxFragmentLength NO_MAX_FRAGMENT_LENGTH = null;
 
@@ -117,7 +119,7 @@ public class GeneratingClientHello extends AbstractAction<GeneratingClientHello>
         ClientHello hello = context.factory().createClientHello(
                 legacyVersion,
                 createRandom(),
-                StructFactory.empty_session_id,
+                empty_session_id,
                 List.of(cipherSuites),
                 List.of(CompressionMethod.None),
                 extensions);

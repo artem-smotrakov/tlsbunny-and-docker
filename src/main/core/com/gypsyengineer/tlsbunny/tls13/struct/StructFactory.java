@@ -3,7 +3,6 @@ package com.gypsyengineer.tlsbunny.tls13.struct;
 import com.gypsyengineer.tlsbunny.tls.Random;
 import com.gypsyengineer.tlsbunny.tls.Vector;
 import com.gypsyengineer.tlsbunny.tls13.struct.impl.StructFactoryImpl;
-import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.util.List;
 
 public interface StructFactory {
@@ -11,8 +10,6 @@ public interface StructFactory {
     static StructFactory getDefault() {
         return new StructFactoryImpl();
     }
-
-    byte[] empty_session_id = Utils.empty_array;
 
     CompressionMethod createCompressionMethod(int code);
     CipherSuite createCipherSuite(int first, int second);

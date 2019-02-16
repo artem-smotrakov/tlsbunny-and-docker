@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import static com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext.NO_PADDING;
+import static com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext.no_padding;
 
 public class OutgoingClientCertificate extends AbstractAction {
 
@@ -66,7 +66,7 @@ public class OutgoingClientCertificate extends AbstractAction {
 
     private byte[] encrypt(byte[] data) throws IOException, AEADException {
         TLSInnerPlaintext tlsInnerPlaintext = context.factory().createTLSInnerPlaintext(
-                ContentType.handshake, data, NO_PADDING);
+                ContentType.handshake, data, no_padding);
         byte[] plaintext = tlsInnerPlaintext.encoding();
 
         context.handshakeEncryptor().start();

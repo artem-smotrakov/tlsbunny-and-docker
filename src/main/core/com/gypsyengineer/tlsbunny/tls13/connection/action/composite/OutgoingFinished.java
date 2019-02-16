@@ -15,7 +15,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext;
 
 import static com.gypsyengineer.tlsbunny.tls13.handshake.Constants.zero_hash_value;
-import static com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext.NO_PADDING;
+import static com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext.no_padding;
 
 import com.gypsyengineer.tlsbunny.tls13.struct.TLSPlaintext;
 import com.gypsyengineer.tlsbunny.tls13.utils.TLS13Utils;
@@ -96,7 +96,7 @@ public class OutgoingFinished extends AbstractAction {
 
     private byte[] encrypt(byte[] data) throws AEADException, IOException {
         TLSInnerPlaintext tlsInnerPlaintext = context.factory().createTLSInnerPlaintext(
-                ContentType.handshake, data, NO_PADDING);
+                ContentType.handshake, data, no_padding);
         byte[] plaintext = tlsInnerPlaintext.encoding();
 
         context.handshakeEncryptor().start();
