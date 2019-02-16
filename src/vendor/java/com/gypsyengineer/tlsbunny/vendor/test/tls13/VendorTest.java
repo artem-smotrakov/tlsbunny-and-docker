@@ -20,6 +20,9 @@ public class VendorTest {
     private Client client;
     private Server server;
 
+    private Thread serverThread;
+    private Thread clientThread;
+
     private String label = "";
 
     public VendorTest label(String label) {
@@ -53,46 +56,36 @@ public class VendorTest {
         sync.logPrefix(prefix());
         sync.init();
 
-        Thread serverThread = startServerIfNecessary();
-        Thread clientThread = startClientIfNecessary();
+        serverThread = startServerIfNecessary();
+        clientThread = startClientIfNecessary();
 
         try {
             // wait for client or server to finish
             while (true) {
                 if (!server.running()) {
                     // server stopped
-
                     // stop the client if we started it in this test
+                    // and then exit
                     client.stop();
                     Utils.waitStop(client);
-
-                    // and exit
                     break;
                 }
 
                 if (!client.running()) {
                     // client stopped
-
                     // stop the server if we started in this test
+                    // and then exit
                     if (serverThread != null) {
                         server.stop();
                         Utils.waitStop(server);
                     }
-
-                    // and exit
                     break;
                 }
 
                 Utils.sleep(delay);
             }
 
-            if (clientThread != null && clientThread.isAlive()) {
-                throw whatTheHell("client thread is still running!");
-            }
-
-            if (serverThread != null && serverThread.isAlive()) {
-                throw whatTheHell("server thread is still running!");
-            }
+            checkThreads();
 
             if (exceptionHandler.knowsSomething()) {
                 throw whatTheHell("unexpected exception",
@@ -179,6 +172,16 @@ public class VendorTest {
         }
 
         return null;
+    }
+
+    private void checkThreads() {
+        if (clientThread != null && clientThread.isAlive()) {
+            throw whatTheHell("client thread is still running!");
+        }
+
+        if (serverThread != null && serverThread.isAlive()) {
+            throw whatTheHell("server thread is still running!");
+        }
     }
 
 }
