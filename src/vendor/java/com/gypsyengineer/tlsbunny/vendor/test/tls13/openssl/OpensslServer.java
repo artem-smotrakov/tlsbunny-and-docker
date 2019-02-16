@@ -1,14 +1,9 @@
 package com.gypsyengineer.tlsbunny.vendor.test.tls13.openssl;
 
-import com.gypsyengineer.tlsbunny.output.Output;
 import com.gypsyengineer.tlsbunny.output.OutputListener;
-import com.gypsyengineer.tlsbunny.utils.*;
+import com.gypsyengineer.tlsbunny.vendor.test.tls13.BaseDockerServer;
 import com.gypsyengineer.tlsbunny.vendor.test.tls13.Utils;
-import com.gypsyengineer.tlsbunny.tls13.connection.check.Check;
-import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
-import com.gypsyengineer.tlsbunny.tls13.connection.EngineFactory;
 import com.gypsyengineer.tlsbunny.tls13.server.Server;
-import com.gypsyengineer.tlsbunny.tls13.server.StopCondition;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -17,11 +12,17 @@ import java.util.Map;
 
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
-public class OpensslServer extends OpensslDocker implements Server {
+public class OpensslServer extends BaseDockerServer implements Server {
 
     public static final int defaultPort = 10101;
 
-    private boolean failed = false;
+    protected static final String image = System.getProperty(
+            "tlsbunny.openssl.docker.image",
+            "artemsmotrakov/tlsbunny_openssl_tls13");
+
+    private static final String host_report_directory = String.format(
+            "%s/openssl_report", System.getProperty("user.dir"));
+
     private int previousAcceptCounter = 0;
     private final OutputListenerImpl listener = new OutputListenerImpl();
 
@@ -50,60 +51,8 @@ public class OpensslServer extends OpensslDocker implements Server {
     }
 
     @Override
-    public OpensslServer set(Config config) {
-        throw new UnsupportedOperationException("no configs for you!");
-    }
-
-    @Override
-    public OpensslServer set(Output output) {
-        output.achtung("you can't set output for me!");
-        return this;
-    }
-
-    @Override
-    public OpensslServer set(EngineFactory engineFactory) {
-        throw new UnsupportedOperationException("no engine factories for you!");
-    }
-
-    @Override
-    public OpensslServer set(Check check) {
-        throw new UnsupportedOperationException("no checks for you!");
-    }
-
-    @Override
-    public OpensslServer set(Sync sync) {
-        // do nothing
-        return this;
-    }
-
-    @Override
-    public OpensslServer stopWhen(StopCondition condition) {
-        throw new UnsupportedOperationException("no stop conditions for you!");
-    }
-
-    @Override
-    public EngineFactory engineFactory() {
-        throw new UnsupportedOperationException("no engine factories for you!");
-    }
-
-    @Override
-    public Engine[] engines() {
-        throw new UnsupportedOperationException("no engines for you!");
-    }
-
-    @Override
-    public Output output() {
-        return output;
-    }
-
-    @Override
     public int port() {
         return defaultPort;
-    }
-
-    @Override
-    public synchronized boolean failed() {
-        return failed;
     }
 
     @Override
@@ -112,7 +61,7 @@ public class OpensslServer extends OpensslDocker implements Server {
             throw whatTheHell("the server has already been started!");
         }
 
-        createReportDirectory();
+        createReportDirectory(host_report_directory);
 
         Thread thread = new Thread(this);
         thread.start();

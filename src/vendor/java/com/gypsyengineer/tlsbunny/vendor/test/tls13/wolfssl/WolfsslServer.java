@@ -1,15 +1,9 @@
 package com.gypsyengineer.tlsbunny.vendor.test.tls13.wolfssl;
 
-import com.gypsyengineer.tlsbunny.output.InputStreamOutput;
-import com.gypsyengineer.tlsbunny.output.Output;
 import com.gypsyengineer.tlsbunny.output.OutputListener;
-import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
-import com.gypsyengineer.tlsbunny.tls13.connection.EngineFactory;
-import com.gypsyengineer.tlsbunny.tls13.connection.check.Check;
 import com.gypsyengineer.tlsbunny.tls13.server.Server;
-import com.gypsyengineer.tlsbunny.tls13.server.StopCondition;
-import com.gypsyengineer.tlsbunny.utils.*;
 import com.gypsyengineer.tlsbunny.vendor.test.tls13.AddressSanitizerWatcherOutput;
+import com.gypsyengineer.tlsbunny.vendor.test.tls13.BaseDockerServer;
 import com.gypsyengineer.tlsbunny.vendor.test.tls13.Utils;
 
 import java.io.IOException;
@@ -17,15 +11,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
+public class WolfsslServer extends BaseDockerServer implements Server {
 
-public class WolfsslServer extends WolfsslDocker implements Server {
+    private static final int defaultPort = 40101;
 
-    public static final int defaultPort = 40101;
+    private static final String image = System.getProperty(
+            "tlsbunny.wolfssl.docker.image",
+            "artemsmotrakov/tlsbunny_wolfssl_tls13");
 
-    private boolean failed = false;
-    private int previousAcceptCounter = 0;
-    private final InputStreamOutput output = new AddressSanitizerWatcherOutput();
     private final OutputListenerImpl listener = new OutputListenerImpl();
 
     public static WolfsslServer wolfsslServer() {
@@ -33,6 +26,7 @@ public class WolfsslServer extends WolfsslDocker implements Server {
     }
 
     private WolfsslServer() {
+        output = new AddressSanitizerWatcherOutput();
         output.add(listener);
         output.prefix("wolfssl-server");
     }
@@ -53,72 +47,8 @@ public class WolfsslServer extends WolfsslDocker implements Server {
     }
 
     @Override
-    public WolfsslServer set(Config config) {
-        throw new UnsupportedOperationException("no configs for you!");
-    }
-
-    @Override
-    public WolfsslServer set(Output output) {
-        output.achtung("you can't set output for me!");
-        return this;
-    }
-
-    @Override
-    public WolfsslServer set(EngineFactory engineFactory) {
-        throw new UnsupportedOperationException("no engine factories for you!");
-    }
-
-    @Override
-    public Server set(Sync sync) {
-        // do nothing
-        return this;
-    }
-
-    @Override
-    public WolfsslServer set(Check check) {
-        throw new UnsupportedOperationException("no checks for you!");
-    }
-
-    @Override
-    public WolfsslServer stopWhen(StopCondition condition) {
-        throw new UnsupportedOperationException("no stop conditions for you!");
-    }
-
-    @Override
-    public EngineFactory engineFactory() {
-        throw new UnsupportedOperationException("no engine factories for you!");
-    }
-
-    @Override
-    public Engine[] engines() {
-        throw new UnsupportedOperationException("no engines for you!");
-    }
-
-    @Override
-    public Output output() {
-        return output;
-    }
-
-    @Override
     public int port() {
         return defaultPort;
-    }
-
-    @Override
-    public synchronized boolean failed() {
-        return failed;
-    }
-
-    @Override
-    public Thread start() {
-        if (running()) {
-            throw whatTheHell("the server has already been started!");
-        }
-
-        Thread thread = new Thread(this);
-        thread.start();
-
-        return thread;
     }
 
     @Override

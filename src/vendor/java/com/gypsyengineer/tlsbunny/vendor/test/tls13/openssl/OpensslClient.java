@@ -2,6 +2,7 @@ package com.gypsyengineer.tlsbunny.vendor.test.tls13.openssl;
 
 import com.gypsyengineer.tlsbunny.output.Output;
 import com.gypsyengineer.tlsbunny.utils.Sync;
+import com.gypsyengineer.tlsbunny.vendor.test.tls13.BaseDocker;
 import com.gypsyengineer.tlsbunny.vendor.test.tls13.Utils;
 import com.gypsyengineer.tlsbunny.tls13.client.Client;
 import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
@@ -20,7 +21,14 @@ import java.util.Map;
 /**
  * This TLS client is based on OpenSSL s_client.
  */
-public class OpensslClient extends OpensslDocker implements Client {
+public class OpensslClient extends BaseDocker implements Client {
+
+    private static final String image = System.getProperty(
+            "tlsbunny.openssl.docker.image",
+            "artemsmotrakov/tlsbunny_openssl_tls13");
+
+    private static final String host_report_directory = String.format(
+            "%s/openssl_report", System.getProperty("user.dir"));
 
     private final Config config = SystemPropertiesConfig.load();
     private Sync sync = Sync.dummy();
@@ -84,7 +92,7 @@ public class OpensslClient extends OpensslDocker implements Client {
 
     @Override
     public Thread start() {
-        createReportDirectory();
+        createReportDirectory(host_report_directory);
 
         Thread thread = new Thread(this);
         thread.start();
