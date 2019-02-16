@@ -1,5 +1,6 @@
 package com.gypsyengineer.tlsbunny.vendor.test.tls13.openssl;
 
+import com.gypsyengineer.tlsbunny.output.InputStreamOutput;
 import com.gypsyengineer.tlsbunny.output.Output;
 import com.gypsyengineer.tlsbunny.utils.Sync;
 import com.gypsyengineer.tlsbunny.vendor.test.tls13.BaseDocker;
@@ -34,6 +35,7 @@ public class OpensslClient extends BaseDocker implements Client {
     private Sync sync = Sync.dummy();
 
     public OpensslClient() {
+        super(new InputStreamOutput());
         dockerEnv.put("mode", "client");
         dockerEnv.put("options", "-tls1_3 -CAfile certs/root_cert.pem -curves prime256v1");
     }

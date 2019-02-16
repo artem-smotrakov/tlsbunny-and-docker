@@ -22,9 +22,13 @@ public class BaseDocker {
     protected final String containerName = String.format("%s_%d",
             this.getClass().getSimpleName().toLowerCase(), System.currentTimeMillis());
 
-    protected InputStreamOutput output = new InputStreamOutput();
+    protected final InputStreamOutput output;
 
     protected Map<String, String> dockerEnv = Collections.synchronizedMap(new HashMap<>());
+
+    public BaseDocker(InputStreamOutput output) {
+        this.output = output;
+    }
 
     public BaseDocker dockerEnv(String name, String value) {
         dockerEnv.put(name, value);

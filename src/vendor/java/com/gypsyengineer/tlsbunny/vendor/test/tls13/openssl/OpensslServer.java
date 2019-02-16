@@ -1,6 +1,5 @@
 package com.gypsyengineer.tlsbunny.vendor.test.tls13.openssl;
 
-import com.gypsyengineer.tlsbunny.output.OutputListener;
 import com.gypsyengineer.tlsbunny.vendor.test.tls13.BaseDockerServer;
 import com.gypsyengineer.tlsbunny.vendor.test.tls13.Utils;
 import com.gypsyengineer.tlsbunny.tls13.server.Server;
@@ -23,31 +22,13 @@ public class OpensslServer extends BaseDockerServer implements Server {
     private static final String host_report_directory = String.format(
             "%s/openssl_report", System.getProperty("user.dir"));
 
-    private int previousAcceptCounter = 0;
-    private final OutputListenerImpl listener = new OutputListenerImpl();
-
     public static OpensslServer opensslServer() {
         return new OpensslServer();
     }
 
     private OpensslServer() {
-        output.add(listener);
+        super(new OutputListenerImpl("ACCEPT", "tlsbunny: accept"));
         output.prefix("openssl-server");
-    }
-
-    @Override
-    public boolean ready() {
-        output.update();
-
-        synchronized (this) {
-            int counter = listener.acceptCounter();
-            if (previousAcceptCounter != counter) {
-                previousAcceptCounter = counter;
-                return true;
-            }
-        }
-
-        return false;
     }
 
     @Override
@@ -138,73 +119,4 @@ public class OpensslServer extends BaseDockerServer implements Server {
 
         return this;
     }
-
-    @Override
-    public boolean running() {
-        output.update();
-
-        if (!listener.serverStarted()) {
-            return false;
-        }
-
-        return containerRunning();
-    }
-
-    @Override
-    public void close() throws Exception {
-        stop();
-
-        Utils.waitStop(this);
-        output.info("server stopped");
-
-        int code = Utils.waitProcessFinish(output, remove_container_template, containerName);
-        if (code != 0) {
-            output.achtung("could not remove the container (exit code %d)", code);
-            failed = true;
-        }
-
-        output.flush();
-    }
-
-    private static class OutputListenerImpl implements OutputListener {
-
-        private int acceptCounter = 0;
-        private boolean serverStarted = false;
-
-        synchronized int acceptCounter() {
-            return acceptCounter;
-        }
-
-        synchronized boolean serverStarted() {
-            return serverStarted;
-        }
-
-        @Override
-        public synchronized void receivedInfo(String... strings) {
-            if (!serverStarted) {
-                for (String string : strings) {
-                    if (string.contains("ACCEPT")) {
-                        serverStarted = true;
-                    }
-                }
-            }
-
-            for (String string : strings) {
-                if (string.contains("tlsbunny: accept")) {
-                    acceptCounter++;
-                }
-            }
-        }
-
-        @Override
-        public void receivedImportant(String... strings) {
-            // do nothing
-        }
-
-        @Override
-        public synchronized void receivedAchtung(String... strings) {
-            // do nothing
-        }
-    }
-
 }

@@ -1,6 +1,8 @@
 package com.gypsyengineer.tlsbunny.vendor.test.tls13;
 
+import com.gypsyengineer.tlsbunny.output.InputStreamOutput;
 import com.gypsyengineer.tlsbunny.output.Output;
+import com.gypsyengineer.tlsbunny.output.OutputListener;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.EngineFactory;
 import com.gypsyengineer.tlsbunny.tls13.connection.check.Check;
@@ -15,6 +17,59 @@ public abstract class BaseDockerServer extends BaseDocker implements Server {
 
     protected boolean failed = false;
     protected int previousAcceptCounter = 0;
+    protected final OutputListenerImpl listener;
+
+    public BaseDockerServer(OutputListenerImpl listener, InputStreamOutput output) {
+        super(output);
+        this.listener = listener;
+        output.add(listener);
+    }
+
+    public BaseDockerServer(OutputListenerImpl listener) {
+        this(listener, new InputStreamOutput());
+    }
+
+    @Override
+    public boolean ready() {
+        output.update();
+
+        synchronized (this) {
+            int counter = listener.acceptCounter();
+            if (previousAcceptCounter != counter) {
+                previousAcceptCounter = counter;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean running() {
+        output.update();
+
+        if (!listener.serverStarted()) {
+            return false;
+        }
+
+        return containerRunning();
+    }
+
+    @Override
+    public void close() throws Exception {
+        stop();
+
+        Utils.waitStop(this);
+        output.info("server stopped");
+
+        int code = Utils.waitProcessFinish(output, remove_container_template, containerName);
+        if (code != 0) {
+            output.achtung("could not remove the container (exit code %d)", code);
+            failed = true;
+        }
+
+        output.flush();
+    }
 
     @Override
     public Server set(Config config) {
@@ -78,5 +133,54 @@ public abstract class BaseDockerServer extends BaseDocker implements Server {
         thread.start();
 
         return thread;
+    }
+
+    public static class OutputListenerImpl implements OutputListener {
+
+        private int acceptCounter = 0;
+        private boolean serverStarted = false;
+
+        private final String serverStartedString;
+        private final String acceptedString;
+
+        public OutputListenerImpl(String serverStartedString, String acceptedString) {
+            this.serverStartedString = serverStartedString;
+            this.acceptedString = acceptedString;
+        }
+
+        public synchronized int acceptCounter() {
+            return acceptCounter;
+        }
+
+        public synchronized boolean serverStarted() {
+            return serverStarted;
+        }
+
+        @Override
+        public synchronized void receivedInfo(String... strings) {
+            if (!serverStarted) {
+                for (String string : strings) {
+                    if (string.contains(serverStartedString)) {
+                        serverStarted = true;
+                    }
+                }
+            }
+
+            for (String string : strings) {
+                if (string.contains(acceptedString)) {
+                    acceptCounter++;
+                }
+            }
+        }
+
+        @Override
+        public void receivedImportant(String... strings) {
+            // do nothing
+        }
+
+        @Override
+        public synchronized void receivedAchtung(String... strings) {
+            // do nothing
+        }
     }
 }

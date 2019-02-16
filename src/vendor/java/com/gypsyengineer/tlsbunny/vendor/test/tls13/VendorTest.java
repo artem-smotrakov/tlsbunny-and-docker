@@ -56,8 +56,8 @@ public class VendorTest {
         sync.logPrefix(prefix());
         sync.init();
 
-        serverThread = startServerIfNecessary();
-        clientThread = startClientIfNecessary();
+        startServerIfNecessary();
+        startClientIfNecessary();
 
         try {
             // wait for client or server to finish
@@ -151,27 +151,21 @@ public class VendorTest {
                 server.getClass().getSimpleName());
     }
 
-    private Thread startServerIfNecessary() throws IOException, InterruptedException {
+    private void startServerIfNecessary() throws IOException, InterruptedException {
         // start the server if it's not running
         if (!server.running()) {
-            Thread serverThread = server.start();
+            serverThread = server.start();
             Utils.waitStart(server);
-            return serverThread;
         }
-
-        return null;
     }
 
-    private Thread startClientIfNecessary() {
+    private void startClientIfNecessary() {
         // configure and run the client
         if (!client.running()) {
             client.config().port(server.port());
-            Thread clientThread = client.start();
+            clientThread = client.start();
             sleep(delay);
-            return clientThread;
         }
-
-        return null;
     }
 
     private void checkThreads() {

@@ -1,6 +1,5 @@
 package com.gypsyengineer.tlsbunny.vendor.test.tls13.wolfssl;
 
-import com.gypsyengineer.tlsbunny.output.OutputListener;
 import com.gypsyengineer.tlsbunny.tls13.server.Server;
 import com.gypsyengineer.tlsbunny.vendor.test.tls13.AddressSanitizerWatcherOutput;
 import com.gypsyengineer.tlsbunny.vendor.test.tls13.BaseDockerServer;
@@ -19,31 +18,14 @@ public class WolfsslServer extends BaseDockerServer implements Server {
             "tlsbunny.wolfssl.docker.image",
             "artemsmotrakov/tlsbunny_wolfssl_tls13");
 
-    private final OutputListenerImpl listener = new OutputListenerImpl();
-
     public static WolfsslServer wolfsslServer() {
         return new WolfsslServer();
     }
 
     private WolfsslServer() {
-        output = new AddressSanitizerWatcherOutput();
-        output.add(listener);
+        super(new OutputListenerImpl("wolfSSL Leaving SSL_new, return 0", "wolfSSL Entering wolfSSL_SetHsDoneCb"),
+                new AddressSanitizerWatcherOutput());
         output.prefix("wolfssl-server");
-    }
-
-    @Override
-    public boolean ready() {
-        output.update();
-
-        synchronized (this) {
-            int counter = listener.acceptCounter();
-            if (previousAcceptCounter != counter) {
-                previousAcceptCounter = counter;
-                return true;
-            }
-        }
-
-        return false;
     }
 
     @Override
@@ -114,73 +96,4 @@ public class WolfsslServer extends BaseDockerServer implements Server {
 
         return this;
     }
-
-    @Override
-    public boolean running() {
-        output.update();
-
-        if (!listener.serverStarted()) {
-            return false;
-        }
-
-        return containerRunning();
-    }
-
-    @Override
-    public void close() throws Exception {
-        stop();
-
-        Utils.waitStop(this);
-        output.info("server stopped");
-
-        int code = Utils.waitProcessFinish(output, remove_container_template, containerName);
-        if (code != 0) {
-            output.achtung("could not remove the container (exit code %d)", code);
-            failed = true;
-        }
-
-        output.flush();
-    }
-
-    private static class OutputListenerImpl implements OutputListener {
-
-        private int acceptCounter = 0;
-        private boolean serverStarted = false;
-
-        synchronized int acceptCounter() {
-            return acceptCounter;
-        }
-
-        synchronized boolean serverStarted() {
-            return serverStarted;
-        }
-
-        @Override
-        public synchronized void receivedInfo(String... strings) {
-            if (!serverStarted) {
-                for (String string : strings) {
-                    if (string.contains("wolfSSL Leaving SSL_new, return 0")) {
-                        serverStarted = true;
-                    }
-                }
-            }
-
-            for (String string : strings) {
-                if (string.contains("wolfSSL Entering wolfSSL_SetHsDoneCb")) {
-                    acceptCounter++;
-                }
-            }
-        }
-
-        @Override
-        public void receivedImportant(String... strings) {
-            // do nothing
-        }
-
-        @Override
-        public synchronized void receivedAchtung(String... strings) {
-            // do nothing
-        }
-    }
-
 }
