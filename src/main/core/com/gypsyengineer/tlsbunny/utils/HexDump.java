@@ -10,11 +10,9 @@ public class HexDump {
         boolean enableDiffHighlighting = Boolean.valueOf(
                 System.getProperty("tlsbunny.output.enable.highlighting", "true"));
         if (enableDiffHighlighting) {
-            System.out.println("[hexdump] enable highlighting for diffs");
             ansi_red = "\u001B[31m";
             ansi_reset = "\u001B[0m";
         } else {
-            System.out.println("HexDump: disable highlighting");
             ansi_red = "";
             ansi_reset = "";
         }

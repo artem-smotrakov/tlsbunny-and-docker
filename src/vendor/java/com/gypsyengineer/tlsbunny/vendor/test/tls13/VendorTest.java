@@ -52,14 +52,14 @@ public class VendorTest {
 
         configureOutputs();
 
-        Sync sync = Sync.between(client, server);
-        sync.logPrefix(prefix());
-        sync.init();
+        try (Sync sync = Sync.between(client, server)) {
 
-        startServerIfNecessary();
-        startClientIfNecessary();
+            sync.logPrefix(prefix());
+            sync.init();
 
-        try {
+            startServerIfNecessary();
+            startClientIfNecessary();
+
             // wait for client or server to finish
             while (true) {
                 if (!server.running()) {
@@ -104,11 +104,6 @@ public class VendorTest {
                 client.stop();
                 Utils.waitStop(client);
             }
-
-            sync.close();
-
-            checkForASanFindings(client.output());
-            checkForASanFindings(server.output());
         }
 
         return this;

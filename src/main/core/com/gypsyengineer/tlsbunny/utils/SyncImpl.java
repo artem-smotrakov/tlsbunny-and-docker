@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
+import static com.gypsyengineer.tlsbunny.output.Level.important;
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public class SyncImpl implements Sync {
@@ -33,12 +34,13 @@ public class SyncImpl implements Sync {
     private Client client;
     private Server server;
     private Output output;
-    private Output consoleOutput;
+    private SyncConsoleOutput consoleOutput;
     private Output fileOutput;
     private int clientIndex;
     private int serverIndex;
     private String logPrefix = "";
     private boolean initialized = false;
+    private long dotCounter = 0;
 
     @Override
     public Sync logPrefix(String logPrefix) {
@@ -67,7 +69,7 @@ public class SyncImpl implements Sync {
 
         output = new LocalOutput();
 
-        consoleOutput = new ConsoleOutput(output);
+        consoleOutput = new SyncConsoleOutput();
         consoleOutput.prefix("");
 
         if (printToFile) {
@@ -87,7 +89,6 @@ public class SyncImpl implements Sync {
     @Override
     public SyncImpl start() {
         checkInitialized();
-        consoleOutput.important("[sync] start");
         return this;
     }
 
@@ -97,20 +98,47 @@ public class SyncImpl implements Sync {
 
         output.important("[sync] client output");
         List<Line> clientLines = client.output().lines();
-        for (;clientIndex < clientLines.size(); clientIndex++) {
+        int oldClientIndex = clientIndex;
+        for (; clientIndex < clientLines.size(); clientIndex++) {
             output.add(clientLines.get(clientIndex));
         }
 
         output.important("[sync] server output");
         List<Line> serverLines = server.output().lines();
-        for (;serverIndex < serverLines.size(); serverIndex++) {
-            output.add(serverLines.get(serverIndex));
+        int oldServerIndex = serverIndex;
+        boolean found = false;
+        for (; serverIndex < serverLines.size(); serverIndex++) {
+            Line line = serverLines.get(serverIndex);
+            if (line.value().contains("ERROR: AddressSanitizer:")) {
+                found = true;
+            }
+            output.add(line);
         }
 
         output.important("[sync] end");
         output.flush();
 
+        if (found) {
+            consoleOutput.important("oops!");
+            consoleOutput.important("Looks like AddressSanitizer found something");
+            consoleOutput.important("[sync] client output");
+            for (int i = oldClientIndex; i < clientIndex; i++) {
+                consoleOutput.add(clientLines.get(i));
+            }
+            consoleOutput.important("[sync] server output");
+            for (int i = oldServerIndex; i < serverIndex; i++) {
+                consoleOutput.add(serverLines.get(i));
+            }
+            dotCounter = 0;
+        } else {
+            consoleOutput.dot();
+            if (++dotCounter % 32 == 0) {
+                consoleOutput.important("");
+            }
+        }
+
         consoleOutput.flush();
+
         if (printToFile) {
             fileOutput.flush();
         }
@@ -127,5 +155,45 @@ public class SyncImpl implements Sync {
     @Override
     public void close() {
         consoleOutput.close();
+    }
+
+    private static class NoNewLine extends Line {
+
+        NoNewLine(Level level, String value) {
+            super(level, value);
+        }
+    }
+
+    private static class SyncConsoleOutput extends ConsoleOutput {
+
+        public SyncConsoleOutput dot() {
+            add(new NoNewLine(important, "."));
+            return this;
+        }
+
+        @Override
+        public void flush() {
+            synchronized (consoleLock) {
+                output.flush();
+
+                List<Line> lines = output.lines();
+                for (;index < lines.size(); index++) {
+                    Line line = lines.get(index);
+
+                    if (!line.printable(level)) {
+                        continue;
+                    }
+
+                    String string = line.value();
+                    if (line instanceof NoNewLine) {
+                        System.out.print(string);
+                    } else {
+                        System.out.println(string);
+                    }
+
+                    System.out.flush();
+                }
+            }
+        }
     }
 }

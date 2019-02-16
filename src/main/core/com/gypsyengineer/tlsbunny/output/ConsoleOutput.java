@@ -4,21 +4,25 @@ import java.util.List;
 
 public class ConsoleOutput extends OutputWrapper {
 
-    private static Level level = Level.valueOf(
+    protected static Level level = Level.valueOf(
             System.getProperty("tlsbunny.output.console.level",
                     Level.info.name()));
     static {
         System.out.printf("[output] tlsbunny.output.console.level = %s%n", level);
     }
 
-    private static final Object consoleLock = new Object();
+    protected static final Object consoleLock = new Object();
 
     private static final String ansi_red = "\u001B[31m";
     private static final String ansi_reset = "\u001B[0m";
     private static final boolean enableHighlighting = Boolean.valueOf(
             System.getProperty("tlsbunny.output.enable.highlighting", "true"));
 
-    private int index = 0;
+    protected int index = 0;
+
+    public ConsoleOutput() {
+        this(new LocalOutput());
+    }
 
     public ConsoleOutput(Output output) {
         super(output, level);
