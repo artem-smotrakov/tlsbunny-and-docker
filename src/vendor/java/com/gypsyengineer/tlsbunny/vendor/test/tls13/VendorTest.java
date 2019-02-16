@@ -6,6 +6,8 @@ import com.gypsyengineer.tlsbunny.output.Output;
 import com.gypsyengineer.tlsbunny.utils.Sync;
 import com.gypsyengineer.tlsbunny.utils.UncaughtExceptionHandler;
 
+import java.io.IOException;
+
 import static com.gypsyengineer.tlsbunny.vendor.test.tls13.Utils.checkForASanFindings;
 import static com.gypsyengineer.tlsbunny.vendor.test.tls13.Utils.sleep;
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
@@ -18,7 +20,6 @@ public class VendorTest {
     private Client client;
     private Server server;
 
-    // TODO is it necessary?
     private String label = "";
 
     public VendorTest label(String label) {
@@ -37,13 +38,7 @@ public class VendorTest {
     }
 
     public VendorTest run() throws Exception {
-        if (client == null) {
-            throw whatTheHell("client is not set! (null)");
-        }
-
-        if (server == null) {
-            throw whatTheHell("server is not set! (null)");
-        }
+        check();
 
         // it may be better to set a separate exception handler for client and server
         // threads, but it doesn't work for some reason
@@ -52,50 +47,16 @@ public class VendorTest {
         UncaughtExceptionHandler exceptionHandler = new UncaughtExceptionHandler();
         Thread.setDefaultUncaughtExceptionHandler(exceptionHandler);
 
-        Thread serverThread = null;
-        Thread clientThread = null;
-
-        Output clientOutput;
-        Output serverOutput;
-
-        // set up an output for the server if necessary
-        if (!server.running() && server.output() == null) {
-            serverOutput = Output.local("server");
-            server.set(serverOutput);
-        }
-
-        // set up an output for the client if necessary
-        if (!client.running() && client.output() == null) {
-            clientOutput = Output.local("client");
-            client.set(clientOutput);
-        }
+        configureOutputs();
 
         Sync sync = Sync.between(client, server);
-
-        if (label != null && !label.isEmpty()) {
-            sync.logPrefix(label);
-        } else {
-            sync.logPrefix(String.format("%s_%s",
-                    client.getClass().getSimpleName(),
-                    server.getClass().getSimpleName()));
-        }
-
+        sync.logPrefix(prefix());
         sync.init();
 
+        Thread serverThread = startServerIfNecessary();
+        Thread clientThread = startClientIfNecessary();
+
         try {
-            // start the server if it's not running
-            if (!server.running()) {
-                serverThread = server.start();
-                Utils.waitStart(server);
-            }
-
-            // configure and run the client
-            if (!client.running()) {
-                client.config().port(server.port());
-                clientThread = client.start();
-                sleep(delay);
-            }
-
             // wait for client or server to finish
             while (true) {
                 if (!server.running()) {
@@ -134,7 +95,8 @@ public class VendorTest {
             }
 
             if (exceptionHandler.knowsSomething()) {
-                throw whatTheHell("unexpected exception", exceptionHandler.exception());
+                throw whatTheHell("unexpected exception",
+                        exceptionHandler.exception());
             }
         } finally {
             // restore exception handler
@@ -157,6 +119,66 @@ public class VendorTest {
         }
 
         return this;
+    }
+
+    private void check() {
+        if (client == null) {
+            throw whatTheHell("client is not set! (null)");
+        }
+
+        if (server == null) {
+            throw whatTheHell("server is not set! (null)");
+        }
+    }
+
+    private void configureOutputs() {
+        Output clientOutput;
+        Output serverOutput;
+
+        // set up an output for the server if necessary
+        if (!server.running() && server.output() == null) {
+            serverOutput = Output.local("server");
+            server.set(serverOutput);
+        }
+
+        // set up an output for the client if necessary
+        if (!client.running() && client.output() == null) {
+            clientOutput = Output.local("client");
+            client.set(clientOutput);
+        }
+    }
+
+    private String prefix() {
+        if (label != null && !label.isEmpty()) {
+            return label;
+        }
+
+        return String.format("%s_%s",
+                client.getClass().getSimpleName(),
+                server.getClass().getSimpleName());
+    }
+
+    private Thread startServerIfNecessary() throws IOException, InterruptedException {
+        // start the server if it's not running
+        if (!server.running()) {
+            Thread serverThread = server.start();
+            Utils.waitStart(server);
+            return serverThread;
+        }
+
+        return null;
+    }
+
+    private Thread startClientIfNecessary() {
+        // configure and run the client
+        if (!client.running()) {
+            client.config().port(server.port());
+            Thread clientThread = client.start();
+            sleep(delay);
+            return clientThread;
+        }
+
+        return null;
     }
 
 }
