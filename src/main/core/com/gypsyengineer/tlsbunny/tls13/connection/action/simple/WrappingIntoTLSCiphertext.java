@@ -14,7 +14,7 @@ import java.io.IOException;
 
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.application_data;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv12;
-import static com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext.NO_PADDING;
+import static com.gypsyengineer.tlsbunny.tls13.struct.TLSInnerPlaintext.no_padding;
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public class WrappingIntoTLSCiphertext extends AbstractAction {
@@ -58,7 +58,7 @@ public class WrappingIntoTLSCiphertext extends AbstractAction {
         }
 
         TLSInnerPlaintext tlsInnerPlaintext = context.factory().createTLSInnerPlaintext(
-                type, content, NO_PADDING);
+                type, content, no_padding);
         byte[] plaintext = tlsInnerPlaintext.encoding();
 
         encryptor.start();

@@ -6,7 +6,7 @@ import com.gypsyengineer.tlsbunny.utils.Utils;
 
 public interface TLSInnerPlaintext extends Struct {
 
-    byte[] NO_PADDING = Utils.empty_array;
+    byte[] no_padding = Utils.empty_array;
 
     boolean containsAlert();
     boolean containsApplicationData();

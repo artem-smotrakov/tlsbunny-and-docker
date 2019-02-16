@@ -11,6 +11,8 @@ import java.util.List;
 
 public class OutgoingClientHello extends AbstractAction {
 
+    private static final byte[] empty_session_id = new byte[0];
+
     @Override
     public String name() {
         return "ClientHello";
@@ -28,7 +30,7 @@ public class OutgoingClientHello extends AbstractAction {
 
         ClientHello hello = context.factory().createClientHello(ProtocolVersion.TLSv12,
                 createRandom(),
-                StructFactory.empty_session_id,
+                empty_session_id,
                 List.of(CipherSuite.TLS_AES_128_GCM_SHA256),
                 List.of(context.factory().createCompressionMethod(0)),
                 extensions);
