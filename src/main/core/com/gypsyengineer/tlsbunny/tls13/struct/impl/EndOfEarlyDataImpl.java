@@ -8,17 +8,17 @@ public class EndOfEarlyDataImpl implements EndOfEarlyData {
 
     @Override
     public int encodingLength() {
-        throw new UnsupportedOperationException("no end of early data for you!");
+        throw new UnsupportedOperationException("no encoding length for you!");
     }
 
     @Override
     public byte[] encoding() throws IOException {
-        throw new UnsupportedOperationException("no end of early data for you!");
+        throw new UnsupportedOperationException("no encodings for you!");
     }
 
     @Override
     public EndOfEarlyDataImpl copy() {
-        throw new UnsupportedOperationException("no end of early data for you!");
+        throw new UnsupportedOperationException("no copies for you!");
     }
 
     @Override

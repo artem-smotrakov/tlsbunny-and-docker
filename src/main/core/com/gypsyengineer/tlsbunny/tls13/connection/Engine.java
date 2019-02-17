@@ -18,6 +18,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.gypsyengineer.tlsbunny.utils.Utils.cantDoThat;
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public class Engine {
@@ -505,12 +506,12 @@ public class Engine {
 
         @Override
         public Action in(ByteBuffer buffer) {
-            throw new UnsupportedOperationException("what the hell? I can't do that!");
+            throw cantDoThat();
         }
 
         @Override
         public ByteBuffer out() {
-            throw new UnsupportedOperationException("what the hell? I can't do that!");
+            throw cantDoThat();
         }
 
         @Override
@@ -520,7 +521,7 @@ public class Engine {
 
         @Override
         public ByteBuffer applicationData() {
-            throw new UnsupportedOperationException("what the hell? I can't do that!");
+            throw cantDoThat();
         }
     }
 

@@ -4,11 +4,11 @@ import java.util.List;
 
 public class StandardOutput extends OutputWrapper {
 
-    protected static Level level = Level.valueOf(
+    private static Level globalLevel = Level.valueOf(
             System.getProperty("tlsbunny.output.standard.level",
                     Level.info.name()));
     static {
-        System.out.printf("[output] tlsbunny.output.standard.level = %s%n", level);
+        System.out.printf("[output] tlsbunny.output.standard.level = %s%n", globalLevel);
     }
 
     protected static final Object consoleLock = new Object();
@@ -25,7 +25,7 @@ public class StandardOutput extends OutputWrapper {
     }
 
     public StandardOutput(Output output) {
-        super(output, level);
+        super(output, globalLevel);
     }
 
     @Override

@@ -18,6 +18,8 @@ import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public abstract class AbstractClient implements Client, AutoCloseable {
 
+    private static final Check[] no_checks = new Check[0];
+
     protected Config config = SystemPropertiesConfig.load();
     protected StructFactory factory = StructFactory.getDefault();
     protected Negotiator negotiator;

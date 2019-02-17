@@ -152,4 +152,8 @@ public class Utils {
         e.printStackTrace(new PrintStream(baos, true));
         return new String(baos.toByteArray());
     }
+
+    public static UnsupportedOperationException cantDoThat() {
+        return new UnsupportedOperationException("what the hell? I can't do that!");
+    }
 }

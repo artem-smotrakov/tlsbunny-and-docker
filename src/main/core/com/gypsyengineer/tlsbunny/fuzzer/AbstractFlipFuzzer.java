@@ -9,11 +9,11 @@ import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public abstract class AbstractFlipFuzzer implements Fuzzer<byte[]> {
 
-    public static final double DEFAULT_MIN_RATIO = 0.01;
-    public static final double DEFAULT_MAX_RATIO = 0.05;
+    static final double default_min_ratio = 0.01;
+    static final double default_max_ratio = 0.05;
 
-    static final int FROM_THE_BEGINNING = 0;
-    static final int NOT_SPECIFIED = -1;
+    static final int from_the_beginning = 0;
+    static final int not_specified = -1;
 
     protected int startIndex;
     protected int endIndex;
@@ -25,7 +25,7 @@ public abstract class AbstractFlipFuzzer implements Fuzzer<byte[]> {
     protected Output output;
 
     public AbstractFlipFuzzer() {
-        this(DEFAULT_MIN_RATIO, DEFAULT_MAX_RATIO, FROM_THE_BEGINNING, NOT_SPECIFIED);
+        this(default_min_ratio, default_max_ratio, from_the_beginning, not_specified);
     }
 
     public AbstractFlipFuzzer(double minRatio, double maxRatio,
@@ -69,7 +69,7 @@ public abstract class AbstractFlipFuzzer implements Fuzzer<byte[]> {
         }
 
         if (endIndex >= 0 && index >= endIndex) {
-            throw whatTheHell("start index is greater than end index!");
+            throw whatTheHell("start index should not be greater than end index!");
         }
 
         startIndex = index;
@@ -78,7 +78,7 @@ public abstract class AbstractFlipFuzzer implements Fuzzer<byte[]> {
 
     synchronized public AbstractFlipFuzzer endIndex(int index) {
         if (index > 0 && index < startIndex) {
-            throw whatTheHell("start index is greater than end index!");
+            throw whatTheHell("end index should not be less than start index!");
         }
         endIndex = index;
         return this;

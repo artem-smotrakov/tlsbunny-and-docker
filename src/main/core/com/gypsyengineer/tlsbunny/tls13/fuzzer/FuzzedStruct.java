@@ -8,6 +8,8 @@ import com.gypsyengineer.tlsbunny.tls13.struct.*;
 
 import java.util.List;
 
+import static com.gypsyengineer.tlsbunny.utils.Utils.cantDoThat;
+
 public class FuzzedStruct implements ClientHello, ServerHello, 
         HelloRetryRequest, EncryptedExtensions, EndOfEarlyData, Certificate, 
         CertificateRequest, CertificateVerify, Finished, 
@@ -49,248 +51,248 @@ public class FuzzedStruct implements ClientHello, ServerHello,
 
     @Override
     public HandshakeType type() {
-        throw new UnsupportedOperationException("I don't know my type!");
+        throw cantDoThat();
     }
 
     // implement interfaces of handshake messages
     
     @Override
     public Vector<CertificateEntry> getCertificateList() {
-        throw new UnsupportedOperationException("I can't do that!");
+        throw cantDoThat();
     }
 
     @Override
     public Vector<Byte> getCertificateRequestContext() {
-        throw new UnsupportedOperationException("I can't do that!");
+        throw cantDoThat();
     }
 
     @Override
     public Vector<Byte> certificateRequestContext() {
-        throw new UnsupportedOperationException("I can't do that!");
+        throw cantDoThat();
     }
 
     @Override
     public SignatureScheme getAlgorithm() {
-        throw new UnsupportedOperationException("I can't do that!");
+        throw cantDoThat();
     }
 
     @Override
     public Vector<Byte> getSignature() {
-        throw new UnsupportedOperationException("I can't do that!");
+        throw cantDoThat();
     }
 
     @Override
     public Vector<CipherSuite> cipherSuites() {
-        throw new UnsupportedOperationException("I can't do that!");
+        throw cantDoThat();
     }
 
     @Override
     public Vector<CompressionMethod> legacyCompressionMethods() {
-        throw new UnsupportedOperationException("I can't do that!");
+        throw cantDoThat();
     }
 
     @Override
     public Vector<Byte> legacySessionId() {
-        throw new UnsupportedOperationException("I can't do that!");
+        throw cantDoThat();
     }
 
     @Override
     public ProtocolVersion protocolVersion() {
-        throw new UnsupportedOperationException("I can't do that!");
+        throw cantDoThat();
     }
 
     @Override
     public Random random() {
-        throw new UnsupportedOperationException("I can't do that!");
+        throw cantDoThat();
     }
 
     @Override
     public void cipherSuites(Vector<CipherSuite> cipherSuites) {
-        throw new UnsupportedOperationException("I can't do that!");
+        throw cantDoThat();
     }
 
     @Override
     public void extensions(Vector<Extension> extensions) {
-        throw new UnsupportedOperationException("I can't do that!");
+        throw cantDoThat();
     }
 
     @Override
     public void legacySessionIdEcho(Vector<Byte> echo) {
-        throw new UnsupportedOperationException("I can't do that!");
+        throw cantDoThat();
     }
 
     @Override
     public void legacyCompressionMethods(Vector<CompressionMethod> compressionMethods) {
-        throw new UnsupportedOperationException("I can't do that!");
+        throw cantDoThat();
     }
 
     @Override
     public void legacySessionId(Vector<Byte> sessionId) {
-        throw new UnsupportedOperationException("I can't do that!");
+        throw cantDoThat();
     }
 
     @Override
     public Vector<Byte> legacySessionIdEcho() {
-        throw new UnsupportedOperationException("I can't do that!");
+        throw cantDoThat();
     }
 
     @Override
     public CipherSuite cipherSuite() {
-        throw new UnsupportedOperationException("I can't do that!");
+        throw cantDoThat();
     }
 
     @Override
     public CompressionMethod legacyCompressionMethod() {
-        throw new UnsupportedOperationException("I can't do that!");
+        throw cantDoThat();
     }
 
     @Override
     public Vector<Extension> extensions() {
-        throw new UnsupportedOperationException("I can't do that!");
+        throw cantDoThat();
     }
 
     @Override
     public Extension find(ExtensionType type) {
-        throw new UnsupportedOperationException("I can't do that!");
+        throw cantDoThat();
     }
 
     @Override
     public byte[] getVerifyData() {
-        throw new UnsupportedOperationException("I can't do that!");
+        throw cantDoThat();
     }
 
     @Override
     public int size() {
-        throw new UnsupportedOperationException("I can't do that!");
+        throw cantDoThat();
     }
 
     @Override
     public boolean isEmpty() {
-        throw new UnsupportedOperationException("I can't do that!");
+        throw cantDoThat();
     }
 
     @Override
     public Object get(int index) {
-        throw new UnsupportedOperationException("I can't do that!");
+        throw cantDoThat();
     }
 
     @Override
     public Object first() {
-        throw new UnsupportedOperationException("I can't do that!");
+        throw cantDoThat();
     }
 
     @Override
     public void add(Object object) {
-        throw new UnsupportedOperationException("I can't do that!");
+        throw cantDoThat();
     }
 
     @Override
     public void set(int index, Object object) {
-        throw new UnsupportedOperationException("I can't do that!");
+        throw cantDoThat();
     }
 
     @Override
     public void clear() {
-        throw new UnsupportedOperationException("I can't do that!");
+        throw cantDoThat();
     }
 
     @Override
     public List toList() {
-        throw new UnsupportedOperationException("I can't do that!");
+        throw cantDoThat();
     }
 
     @Override
     public int lengthBytes() {
-        throw new UnsupportedOperationException("I can't do that!");
+        throw cantDoThat();
     }
 
     @Override
     public byte[] bytes() {
-        throw new UnsupportedOperationException("I can't do that!");
+        throw cantDoThat();
     }
 
     @Override
     public AEAD.Method cipher() {
-        throw new UnsupportedOperationException("I can't do that!");
+        throw cantDoThat();
     }
 
     @Override
     public int getFirst() {
-        throw new UnsupportedOperationException("I can't do that!");
+        throw cantDoThat();
     }
 
     @Override
     public int getSecond() {
-        throw new UnsupportedOperationException("I can't do that!");
+        throw cantDoThat();
     }
 
     @Override
     public String hash() {
-        throw new UnsupportedOperationException("I can't do that!");
+        throw cantDoThat();
     }
 
     @Override
     public int hashLength() {
-        throw new UnsupportedOperationException("I can't do that!");
+        throw cantDoThat();
     }
 
     @Override
     public int ivLength() {
-        throw new UnsupportedOperationException("I can't do that!");
+        throw cantDoThat();
     }
 
     @Override
     public int keyLength() {
-        throw new UnsupportedOperationException("I can't do that!");
+        throw cantDoThat();
     }
 
     @Override
     public int getCode() {
-        throw new UnsupportedOperationException("I can't do that!");
+        throw cantDoThat();
     }
 
     @Override
     public Vector<Byte> extensionData() {
-        throw new UnsupportedOperationException("I can't do that!");
+        throw cantDoThat();
     }
 
     @Override
     public ExtensionType extensionType() {
-        throw new UnsupportedOperationException("I can't do that!");
+        throw cantDoThat();
     }
 
     @Override
     public Extension extensionData(Vector<Byte> data) {
-        throw new UnsupportedOperationException("I can't do that!");
+        throw cantDoThat();
     }
 
     @Override
     public Extension extensionType(ExtensionType type) {
-        throw new UnsupportedOperationException("I can't do that!");
+        throw cantDoThat();
     }
 
     @Override
     public int getMinor() {
-        throw new UnsupportedOperationException("I can't do that!");
+        throw cantDoThat();
     }
 
     @Override
     public int getMajor() {
-        throw new UnsupportedOperationException("I can't do that!");
+        throw cantDoThat();
     }
 
     @Override
     public byte[] getBytes() {
-        throw new UnsupportedOperationException("I can't do that!");
+        throw cantDoThat();
     }
 
     @Override
     public void setBytes(byte[] bytes) {
-        throw new UnsupportedOperationException("I can't do that!");
+        throw cantDoThat();
     }
 
     @Override
     public void setLastBytes(byte[] lastBytes) {
-        throw new UnsupportedOperationException("I can't do that!");
+        throw cantDoThat();
     }
 }

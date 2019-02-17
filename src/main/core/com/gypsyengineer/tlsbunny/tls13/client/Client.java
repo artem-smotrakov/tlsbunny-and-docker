@@ -14,8 +14,6 @@ import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public interface Client extends AutoCloseable, Runnable, HasOutput<Client> {
 
-    Check[] no_checks = new Check[0];
-
     Config config();
     Client set(Config config);
     Client set(StructFactory factory);

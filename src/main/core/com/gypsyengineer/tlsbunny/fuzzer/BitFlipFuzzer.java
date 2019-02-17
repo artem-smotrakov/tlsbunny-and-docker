@@ -9,11 +9,11 @@ public class BitFlipFuzzer extends AbstractFlipFuzzer {
     }
 
     public BitFlipFuzzer() {
-        this(DEFAULT_MIN_RATIO, DEFAULT_MAX_RATIO);
+        this(default_min_ratio, default_max_ratio);
     }
 
     public BitFlipFuzzer(double minRatio, double maxRatio) {
-        this(minRatio, maxRatio, FROM_THE_BEGINNING, NOT_SPECIFIED);
+        this(minRatio, maxRatio, from_the_beginning, not_specified);
     }
 
     public BitFlipFuzzer(double minRatio, double maxRatio, int start, int end) {

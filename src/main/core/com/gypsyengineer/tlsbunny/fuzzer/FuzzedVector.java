@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+import static com.gypsyengineer.tlsbunny.utils.Utils.cantDoThat;
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public class FuzzedVector<T> implements Vector<T> {
@@ -32,42 +33,42 @@ public class FuzzedVector<T> implements Vector<T> {
     
     @Override
     public int size() {
-        throw new UnsupportedOperationException("what the hell? I can't do that!");
+        throw cantDoThat();
     }
 
     @Override
     public boolean isEmpty() {
-        throw new UnsupportedOperationException("what the hell? I can't do that!");
+        throw cantDoThat();
     }
 
     @Override
     public T get(int index) {
-        throw new UnsupportedOperationException("what the hell? I can't do that!");
+        throw cantDoThat();
     }
 
     @Override
     public T first() {
-        throw new UnsupportedOperationException("what the hell? I can't do that!");
+        throw cantDoThat();
     }
 
     @Override
     public void add(T object) {
-        throw new UnsupportedOperationException("what the hell? I can't do that!");
+        throw cantDoThat();
     }
 
     @Override
     public void set(int index, T object) {
-        throw new UnsupportedOperationException("what the hell? I can't do that!");
+        throw cantDoThat();
     }
 
     @Override
     public void clear() {
-        throw new UnsupportedOperationException("what the hell? I can't do that!");
+        throw cantDoThat();
     }
 
     @Override
     public List<T> toList() {
-        throw new UnsupportedOperationException("what the hell? I can't do that!");
+        throw cantDoThat();
     }
 
     @Override
@@ -95,7 +96,7 @@ public class FuzzedVector<T> implements Vector<T> {
 
     @Override
     public Struct copy() {
-        throw new UnsupportedOperationException("what the hell? I can't do that!");
+        throw cantDoThat();
     }
 
     @Override
@@ -128,4 +129,5 @@ public class FuzzedVector<T> implements Vector<T> {
         content[i] = b;
         return this;
     }
+    
 }
