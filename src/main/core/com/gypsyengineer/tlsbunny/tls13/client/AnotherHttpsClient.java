@@ -14,9 +14,10 @@ import java.util.List;
 public class AnotherHttpsClient extends SingleConnectionClient {
 
     public static void main(String[] args) throws Exception {
-        try (Output output = Output.console()) {
-            new AnotherHttpsClient()
-                    .set(SystemPropertiesConfig.load())
+        try (Output output = Output.console("client");
+             AnotherHttpsClient client = new AnotherHttpsClient()) {
+
+            client.set(SystemPropertiesConfig.load())
                     .set(StructFactory.getDefault())
                     .set(output)
                     .connect();

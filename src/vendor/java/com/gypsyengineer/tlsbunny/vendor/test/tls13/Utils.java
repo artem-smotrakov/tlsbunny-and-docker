@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.List;
 
 import static com.gypsyengineer.tlsbunny.utils.Achtung.achtung;
+import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public class Utils {
 
@@ -22,7 +23,7 @@ public class Utils {
         try {
             Thread.sleep(millis);
         } catch (InterruptedException e) {
-            // ignore
+            throw whatTheHell("could not sleep well!", e);
         }
     }
 

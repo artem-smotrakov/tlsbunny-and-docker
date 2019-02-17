@@ -92,16 +92,17 @@ public abstract class AbstractFlipFuzzer implements Fuzzer<byte[]> {
 
     @Override
     synchronized public void state(String string) {
-        Scanner scanner = new Scanner(string);
-        scanner.useDelimiter(":");
-        startIndex = scanner.nextInt();
-        endIndex = scanner.nextInt();
-        minRatio = scanner.nextDouble();
-        maxRatio = scanner.nextDouble();
-        state = scanner.nextLong();
+        try (Scanner scanner = new Scanner(string)) {
+            scanner.useDelimiter(":");
+            startIndex = scanner.nextInt();
+            endIndex = scanner.nextInt();
+            minRatio = scanner.nextDouble();
+            maxRatio = scanner.nextDouble();
+            state = scanner.nextLong();
 
-        if (scanner.hasNext()) {
-            throw whatTheHell("state is too long!");
+            if (scanner.hasNext()) {
+                throw whatTheHell("state is too long!");
+            }
         }
     }
 

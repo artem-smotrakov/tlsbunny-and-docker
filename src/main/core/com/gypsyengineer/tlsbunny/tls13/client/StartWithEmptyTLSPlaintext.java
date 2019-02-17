@@ -31,7 +31,9 @@ public class StartWithEmptyTLSPlaintext extends SingleConnectionClient {
         Config config = SystemPropertiesConfig.load();
         StructFactory factory = StructFactory.getDefault();
 
-        try (Output output = Output.console()) {
+        try (Output output = Output.console("client");
+             StartWithEmptyTLSPlaintext client = new StartWithEmptyTLSPlaintext()) {
+
             /**
              * The TLS 1.3 spec says the following:
              *
@@ -40,12 +42,15 @@ public class StartWithEmptyTLSPlaintext extends SingleConnectionClient {
              *
              *  https://tools.ietf.org/html/draft-ietf-tls-tls13-28#section-5
              */
-            new StartWithEmptyTLSPlaintext()
-                    .set(change_cipher_spec)
+            client.set(change_cipher_spec)
                     .set(config)
                     .set(factory)
                     .set(output)
                     .connect();
+        }
+
+        try (Output output = Output.console("client");
+             StartWithEmptyTLSPlaintext client = new StartWithEmptyTLSPlaintext()) {
 
             /**
              * The TLS 1.3 spec says the following:
@@ -58,22 +63,27 @@ public class StartWithEmptyTLSPlaintext extends SingleConnectionClient {
              *  Should it expect an alert them
              *  after sending an empty TLSPlaintext message of handshake type?
              */
-            new StartWithEmptyTLSPlaintext()
-                    .set(handshake)
+            client.set(handshake)
                     .set(config)
                     .set(factory)
                     .set(output)
                     .connect();
+        }
 
-            new StartWithEmptyTLSPlaintext()
-                    .set(application_data)
+        try (Output output = Output.console("client");
+             StartWithEmptyTLSPlaintext client = new StartWithEmptyTLSPlaintext()) {
+
+            client.set(application_data)
                     .set(config)
                     .set(factory)
                     .set(output)
                     .connect();
+        }
 
-            new StartWithEmptyTLSPlaintext()
-                    .set(alert)
+        try (Output output = Output.console("client");
+             StartWithEmptyTLSPlaintext client = new StartWithEmptyTLSPlaintext()) {
+
+            client.set(alert)
                     .set(config)
                     .set(factory)
                     .set(output)

@@ -34,10 +34,10 @@ public class InvalidCCS extends AbstractClient {
     private int end = max;
 
     public static void main(String[] args) throws Exception {
-        try (Output output = Output.console()) {
-            new InvalidCCS()
-                    .set(output)
-                    .connect();
+        try (Output output = Output.console("client");
+             InvalidCCS client = new InvalidCCS()) {
+
+            client.set(output).connect();
         }
     }
 

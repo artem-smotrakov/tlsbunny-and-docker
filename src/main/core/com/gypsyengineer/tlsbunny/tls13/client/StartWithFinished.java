@@ -20,10 +20,10 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv12;
 public class StartWithFinished extends SingleConnectionClient {
 
     public static void main(String[] args) throws Exception {
-        try (Output output = Output.console()) {
-            new StartWithFinished()
-                    .set(output)
-                    .connect();
+        try (Output output = Output.console("client");
+             StartWithFinished client = new StartWithFinished()) {
+
+            client.set(output).connect();
         }
     }
 

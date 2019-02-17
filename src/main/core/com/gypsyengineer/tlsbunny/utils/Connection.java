@@ -72,7 +72,10 @@ public class Connection implements AutoCloseable {
             }
 
             byte[] bytes = new byte[is.available()];
-            is.read(bytes);
+            int read = is.read(bytes);
+            if (read < 0) {
+                return new byte[0];
+            }
 
             return bytes;
         } catch (IOException e) {
