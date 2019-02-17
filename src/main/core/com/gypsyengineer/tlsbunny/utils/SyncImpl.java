@@ -15,6 +15,7 @@ import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public class SyncImpl implements Sync {
 
+    private static final long n = 100;
     private static final boolean printToFile;
     private static final String dirName;
     static {
@@ -40,7 +41,9 @@ public class SyncImpl implements Sync {
     private int serverIndex;
     private String logPrefix = "";
     private boolean initialized = false;
-    private long dotCounter = 0;
+    private long tests = 0;
+    private long testStarted;
+    private long testsDuration = 0;
 
     @Override
     public Sync logPrefix(String logPrefix) {
@@ -89,12 +92,16 @@ public class SyncImpl implements Sync {
     @Override
     public SyncImpl start() {
         checkInitialized();
+        testStarted = System.nanoTime();
         return this;
     }
 
     @Override
     public SyncImpl end() {
         checkInitialized();
+
+        long time = System.nanoTime() - testStarted;
+        testsDuration += time;
 
         output.important("[sync] client output");
         List<Line> clientLines = client.output().lines();
@@ -129,15 +136,16 @@ public class SyncImpl implements Sync {
             for (int i = oldServerIndex; i < serverIndex; i++) {
                 consoleOutput.add(serverLines.get(i));
             }
-            dotCounter = 0;
+            consoleOutput.flush();
         } else {
-            consoleOutput.dot();
-            if (++dotCounter % 32 == 0) {
-                consoleOutput.important("");
+            if (++tests % n == 0) {
+                long speed = n * 60000000000L / testsDuration;
+                consoleOutput.important("%d tests done, %d tests / minute",
+                        tests, speed);
+                testsDuration = 0;
+                consoleOutput.flush();
             }
         }
-
-        consoleOutput.flush();
 
         if (printToFile) {
             fileOutput.flush();
