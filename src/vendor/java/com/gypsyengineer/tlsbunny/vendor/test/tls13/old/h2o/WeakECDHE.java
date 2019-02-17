@@ -28,7 +28,7 @@ public class WeakECDHE {
         StructFactory factory = StructFactory.getDefault();
         Negotiator negotiator = WeakECDHENegotiator.create(secp256r1, factory);
 
-        try (Output output = Output.console()) {
+        try (Output output = Output.standard()) {
             Engine.init()
                     .target(config.host())
                     .target(config.port())

@@ -25,7 +25,7 @@ public class IncomingEncryptedHandshakeDataTest {
 
     @Test
     public void notEncrypted() throws Exception {
-        try (Output output = Output.console()) {
+        try (Output output = Output.standard()) {
             Context context = context();
 
             ByteBuffer buffer = new WrappingIntoTLSPlaintexts()
@@ -50,7 +50,7 @@ public class IncomingEncryptedHandshakeDataTest {
 
     @Test
     public void encrypted() throws Exception {
-        try (Output output = Output.console()) {
+        try (Output output = Output.standard()) {
             Context context = context();
 
             ByteBuffer buffer = new WrappingIntoHandshake()

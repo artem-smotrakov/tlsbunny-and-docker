@@ -53,7 +53,7 @@ public class FlipFuzzerTest {
 
     @Test
     public void byteFlitFuzzerRatio() {
-        try (Output output = Output.console()) {
+        try (Output output = Output.standard()) {
             ByteFlipFuzzer fuzzer = newByteFlipFuzzer();
             fuzzer.set(output);
 
@@ -140,7 +140,7 @@ public class FlipFuzzerTest {
     }
 
     private static void iterate(Fuzzer<byte[]> fuzzer) {
-        try (Output output = Output.console()) {
+        try (Output output = Output.standard()) {
             fuzzer.set(output);
             assertEquals(output, fuzzer.output());
 
@@ -167,7 +167,7 @@ public class FlipFuzzerTest {
     }
 
     private static void consistencyOf(Fuzzer<byte[]> fuzzerOne, Fuzzer<byte[]> fuzzerTwo) {
-        try (Output output = Output.console()) {
+        try (Output output = Output.standard()) {
             fuzzerOne.set(output);
             fuzzerTwo.set(output);
 
@@ -201,7 +201,7 @@ public class FlipFuzzerTest {
 
 
     private static void setTestIn(Fuzzer<byte[]> fuzzer) {
-        try (Output output = Output.console()) {
+        try (Output output = Output.standard()) {
             output.info("setTest: fuzzer = %s", fuzzer.toString());
 
             fuzzer.set(output);
@@ -233,7 +233,7 @@ public class FlipFuzzerTest {
     }
 
     private static void oneByteArray(Fuzzer<byte[]> fuzzer) {
-        try (Output output = Output.console()) {
+        try (Output output = Output.standard()) {
             fuzzer.set(output);
 
             byte[] array = new byte[] { 1 };

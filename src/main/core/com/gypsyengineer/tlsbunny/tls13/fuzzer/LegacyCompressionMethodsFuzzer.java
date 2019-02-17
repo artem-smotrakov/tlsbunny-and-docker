@@ -20,7 +20,7 @@ public class LegacyCompressionMethodsFuzzer
     }
 
     public LegacyCompressionMethodsFuzzer() {
-        this(StructFactory.getDefault(), Output.console());
+        this(StructFactory.getDefault(), Output.standard());
     }
 
     public LegacyCompressionMethodsFuzzer(StructFactory factory,

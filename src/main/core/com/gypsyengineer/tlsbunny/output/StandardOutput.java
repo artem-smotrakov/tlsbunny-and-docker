@@ -2,13 +2,13 @@ package com.gypsyengineer.tlsbunny.output;
 
 import java.util.List;
 
-public class ConsoleOutput extends OutputWrapper {
+public class StandardOutput extends OutputWrapper {
 
     protected static Level level = Level.valueOf(
-            System.getProperty("tlsbunny.output.console.level",
+            System.getProperty("tlsbunny.output.standard.level",
                     Level.info.name()));
     static {
-        System.out.printf("[output] tlsbunny.output.console.level = %s%n", level);
+        System.out.printf("[output] tlsbunny.output.standard.level = %s%n", level);
     }
 
     protected static final Object consoleLock = new Object();
@@ -20,11 +20,11 @@ public class ConsoleOutput extends OutputWrapper {
 
     protected int index = 0;
 
-    public ConsoleOutput() {
+    public StandardOutput() {
         this(new LocalOutput());
     }
 
-    public ConsoleOutput(Output output) {
+    public StandardOutput(Output output) {
         super(output, level);
     }
 

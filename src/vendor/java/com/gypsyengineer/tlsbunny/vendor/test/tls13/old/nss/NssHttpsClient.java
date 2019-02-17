@@ -22,7 +22,7 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp
 public class NssHttpsClient extends SingleConnectionClient {
 
     public static void main(String[] args) throws Exception {
-        try (Output output = Output.console();
+        try (Output output = Output.standard();
              Client client = new NssHttpsClient()) {
 
             client.set(SystemPropertiesConfig.load())

@@ -24,7 +24,7 @@ public class CheckDowngradeMessage extends SingleConnectionClient {
     private ProtocolVersion version = TLSv12;
 
     public static void main(String[] args) throws Exception {
-        try (Output output = Output.console("client")) {
+        try (Output output = Output.standardClient()) {
             Config config = SystemPropertiesConfig.load();
             run(output, config, TLSv13);
             run(output, config, TLSv12);

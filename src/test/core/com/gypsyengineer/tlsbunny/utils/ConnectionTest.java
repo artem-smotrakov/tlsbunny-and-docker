@@ -17,7 +17,7 @@ public class ConnectionTest {
 
     @Test
     public void basic() throws Exception {
-        try (Output output = Output.console(); EchoServer server = new EchoServer()) {
+        try (Output output = Output.standard(); EchoServer server = new EchoServer()) {
             server.set(output);
 
             new Thread(server).start();
@@ -37,7 +37,7 @@ public class ConnectionTest {
 
         private static final int FREE_PORT = 0;
 
-        private Output output = Output.console();
+        private Output output = Output.standard();
         private final ServerSocket serverSocket;
 
         public EchoServer() throws IOException {

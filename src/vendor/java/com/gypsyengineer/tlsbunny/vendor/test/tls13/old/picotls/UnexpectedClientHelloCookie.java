@@ -26,7 +26,7 @@ public class UnexpectedClientHelloCookie extends SingleConnectionClient {
     public static final int ZERO_COOKIE_LENGTH = 32;
 
     public static void main(String[] args) throws Exception {
-        try (Output output = Output.console("client");
+        try (Output output = Output.standardClient();
              Client client = new UnexpectedClientHelloCookie()) {
 
             client.set(SystemPropertiesConfig.load())

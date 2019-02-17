@@ -18,7 +18,7 @@ import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 import java.io.IOException;
 
 import static com.gypsyengineer.tlsbunny.fuzzer.BitFlipFuzzer.newBitFlipFuzzer;
-import static com.gypsyengineer.tlsbunny.output.Output.console;
+import static com.gypsyengineer.tlsbunny.output.Output.standard;
 import static com.gypsyengineer.tlsbunny.tls13.client.HttpsClient.httpsClient;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.DeepHandshakeFuzzer.deepHandshakeFuzzer;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.DeepHandshakeFuzzyClient.deepHandshakeFuzzyClient;
@@ -100,7 +100,7 @@ import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 public class KeyShareEntryHeapOverRead {
 
     public static void main(String[] args) throws Exception {
-        try (Output output = Output.console("client"); Client client = new HttpsClient()) {
+        try (Output output = Output.standardClient(); Client client = new HttpsClient()) {
             Config config = SystemPropertiesConfig.load();
             config.port(40101);
 
@@ -170,7 +170,7 @@ public class KeyShareEntryHeapOverRead {
     }
 
     public static void runFuzzer() throws Exception {
-        try (Output output = console()) {
+        try (Output output = Output.standard()) {
             FuzzerConfig config = new FuzzerConfig(SystemPropertiesConfig.load());
             DeepHandshakeFuzzer deepHandshakeFuzzer = deepHandshakeFuzzer();
             deepHandshakeFuzzer.fuzzer(newBitFlipFuzzer());

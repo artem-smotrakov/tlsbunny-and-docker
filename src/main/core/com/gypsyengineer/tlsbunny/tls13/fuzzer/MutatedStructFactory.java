@@ -18,7 +18,7 @@ public class MutatedStructFactory extends FuzzyStructFactory<byte[]> {
     }
 
     public MutatedStructFactory() {
-        this(StructFactory.getDefault(), Output.console());
+        this(StructFactory.getDefault(), Output.standard());
     }
 
     public MutatedStructFactory(StructFactory factory, Output output) {

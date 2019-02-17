@@ -29,8 +29,8 @@ public class DoubleClientHelloTest {
 
     @Test
     public void expectedAlertReceived() throws Exception {
-        Output serverOutput = Output.console("server");
-        Output clientOutput = Output.console("client");
+        Output serverOutput = Output.standard("server");
+        Output clientOutput = Output.standardClient();
 
         Config serverConfig = SystemPropertiesConfig.load();
         SingleThreadServer server = new SingleThreadServer()
@@ -61,8 +61,8 @@ public class DoubleClientHelloTest {
 
     @Test
     public void noExpectedAlertReceived() throws Exception {
-        Output serverOutput = Output.console("server");
-        Output clientOutput = Output.console("client");
+        Output serverOutput = Output.standard("server");
+        Output clientOutput = Output.standardClient();
 
         Config serverConfig = SystemPropertiesConfig.load();
         SingleThreadServer server = new SingleThreadServer()

@@ -14,7 +14,7 @@ import java.util.List;
 public class AnotherHttpsClient extends SingleConnectionClient {
 
     public static void main(String[] args) throws Exception {
-        try (Output output = Output.console("client");
+        try (Output output = Output.standardClient();
              AnotherHttpsClient client = new AnotherHttpsClient()) {
 
             client.set(SystemPropertiesConfig.load())

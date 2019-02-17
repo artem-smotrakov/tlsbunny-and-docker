@@ -35,7 +35,7 @@ public class SyncImpl implements Sync {
     private Client client;
     private Server server;
     private Output output;
-    private SyncConsoleOutput consoleOutput;
+    private SyncStandardOutput consoleOutput;
     private Output fileOutput;
     private int clientIndex;
     private int serverIndex;
@@ -72,7 +72,7 @@ public class SyncImpl implements Sync {
 
         output = new LocalOutput();
 
-        consoleOutput = new SyncConsoleOutput();
+        consoleOutput = new SyncStandardOutput();
         consoleOutput.prefix("");
 
         if (printToFile) {
@@ -172,9 +172,9 @@ public class SyncImpl implements Sync {
         }
     }
 
-    private static class SyncConsoleOutput extends ConsoleOutput {
+    private static class SyncStandardOutput extends StandardOutput {
 
-        public SyncConsoleOutput dot() {
+        public SyncStandardOutput dot() {
             add(new NoNewLine(important, "."));
             return this;
         }

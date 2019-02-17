@@ -24,7 +24,7 @@ public class IncomingCertificateRequestTest {
 
     @Test
     public void basic() throws Exception {
-        try (Output output = Output.console()) {
+        try (Output output = Output.standard()) {
             Context context = context();
 
             byte[] expected_request_context = new byte[10];
@@ -69,7 +69,7 @@ public class IncomingCertificateRequestTest {
 
     @Test
     public void notCertificateRequest() throws Exception {
-        try (Output output = Output.console()) {
+        try (Output output = Output.standard()) {
             Context context = context();
 
             byte[] expected_request_context = new byte[10];
@@ -113,7 +113,7 @@ public class IncomingCertificateRequestTest {
 
     @Test
     public void noSignatures() throws Exception {
-        try (Output output = Output.console()) {
+        try (Output output = Output.standard()) {
             Context context = context();
 
             byte[] expected_request_context = new byte[10];

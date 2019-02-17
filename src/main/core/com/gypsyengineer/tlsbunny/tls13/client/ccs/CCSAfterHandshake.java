@@ -26,7 +26,7 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp
 public class CCSAfterHandshake extends SingleConnectionClient {
 
     public static void main(String[] args) throws Exception {
-        try (Output output = Output.console("client");
+        try (Output output = Output.standardClient();
              CCSAfterHandshake client = new CCSAfterHandshake()) {
 
             client.set(SystemPropertiesConfig.load())

@@ -39,8 +39,8 @@ public class DeepHandshakeFuzzyClientTest {
     }
 
     public void test(FuzzerConfig fuzzerConfig) throws Exception {
-        Output serverOutput = Output.console("server");
-        Output clientOutput = Output.console("client");
+        Output serverOutput = Output.standard("server");
+        Output clientOutput = Output.standardClient();
 
         fuzzerConfig.total(total);
 

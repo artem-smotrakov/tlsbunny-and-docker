@@ -26,7 +26,7 @@ public class ProcessingTLSPlaintextWithAlertTest {
     public void basic()
             throws IOException, ActionFailed, AEADException, NegotiatorException {
 
-        try (Output output = Output.console()) {
+        try (Output output = Output.standard()) {
             Context context = context();
 
             ByteBuffer buffer = new GeneratingAlert()
@@ -64,7 +64,7 @@ public class ProcessingTLSPlaintextWithAlertTest {
     public void notAlert()
             throws IOException, AEADException, NegotiatorException {
 
-        try (Output output = Output.console()) {
+        try (Output output = Output.standard()) {
             Context context = context();
 
             ByteBuffer buffer = new GeneratingAlert()

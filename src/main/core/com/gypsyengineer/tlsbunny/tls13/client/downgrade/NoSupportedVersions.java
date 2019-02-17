@@ -21,7 +21,7 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp
 public class NoSupportedVersions extends SingleConnectionClient {
 
     public static void main(String[] args) throws Exception {
-        try (Output output = Output.console("client")) {
+        try (Output output = Output.standardClient()) {
             run(output, SystemPropertiesConfig.load());
         }
     }

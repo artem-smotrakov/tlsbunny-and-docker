@@ -42,7 +42,7 @@ public class SendDowngradeMessage {
         config.serverCertificate(serverCertificatePath);
         config.serverKey(serverKeyPath);
 
-        try (Output output = Output.console("server");
+        try (Output output = Output.standard("server");
              Server server = server(output, config, version)) {
 
             server.start().join();

@@ -28,7 +28,7 @@ public class ClientHelloTest {
                 NamedGroup.Secp.secp256r1, StructFactory.getDefault())
                     .strictValidation());
 
-        try (Output output = Output.console()) {
+        try (Output output = Output.standard()) {
             ByteBuffer buffer = new GeneratingClientHello()
                     .supportedVersions(TLSv13)
                     .groups(secp256r1)
@@ -70,7 +70,7 @@ public class ClientHelloTest {
             tooManyGroups[i] = secp256r1;
         }
 
-        try (Output output = Output.console()) {
+        try (Output output = Output.standard()) {
             ByteBuffer buffer = new GeneratingClientHello()
                     .supportedVersions(TLSv13)
                     .groups(tooManyGroups)

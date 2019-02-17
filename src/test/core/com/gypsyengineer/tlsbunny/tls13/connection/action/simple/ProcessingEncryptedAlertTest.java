@@ -38,7 +38,7 @@ public class ProcessingEncryptedAlertTest {
     public void encrypted(Phase phase)
             throws IOException, ActionFailed, AEADException, NegotiatorException {
 
-        try (Output output = Output.console()) {
+        try (Output output = Output.standard()) {
             Context context = context();
 
             ByteBuffer buffer = new GeneratingAlert()

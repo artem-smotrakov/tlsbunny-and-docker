@@ -27,8 +27,8 @@ public class HandshakeTest extends BaseTest {
 
         try (HttpsClient client = new HttpsClient();
              SimpleHttpsServer server = SimpleHttpsServer.create();
-             Output serverOutput = Output.console("server");
-             Output clientOutput = Output.console("client")) {
+             Output serverOutput = Output.standard("server");
+             Output clientOutput = Output.standardClient()) {
 
             client.version(ProtocolVersion.TLSv13).set(clientOutput);
             server.set(serverConfig).set(serverOutput);

@@ -24,7 +24,7 @@ public class MultipleCCS extends SingleConnectionClient {
     public static final int number_of_ccs = 10;
 
     public static void main(String[] args) throws Exception {
-        try (Output output = Output.console("client");
+        try (Output output = Output.standardClient();
              MultipleCCS client = new MultipleCCS()) {
 
             client.set(output).connect();

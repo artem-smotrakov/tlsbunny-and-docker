@@ -26,7 +26,7 @@ public class ManyGroupsInClientHello extends SingleConnectionClient {
     private int numberOfGroups = 30000;
 
     public static void main(String[] args) throws Exception {
-        try (Output output = Output.console("client");
+        try (Output output = Output.standardClient();
              ManyGroupsInClientHello client = new ManyGroupsInClientHello()) {
 
             client.set(output).connect();

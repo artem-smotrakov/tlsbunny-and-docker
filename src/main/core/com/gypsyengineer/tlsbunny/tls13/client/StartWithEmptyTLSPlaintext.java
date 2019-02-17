@@ -31,7 +31,7 @@ public class StartWithEmptyTLSPlaintext extends SingleConnectionClient {
         Config config = SystemPropertiesConfig.load();
         StructFactory factory = StructFactory.getDefault();
 
-        try (Output output = Output.console("client");
+        try (Output output = Output.standardClient();
              StartWithEmptyTLSPlaintext client = new StartWithEmptyTLSPlaintext()) {
 
             /**
@@ -49,7 +49,7 @@ public class StartWithEmptyTLSPlaintext extends SingleConnectionClient {
                     .connect();
         }
 
-        try (Output output = Output.console("client");
+        try (Output output = Output.standardClient();
              StartWithEmptyTLSPlaintext client = new StartWithEmptyTLSPlaintext()) {
 
             /**
@@ -70,7 +70,7 @@ public class StartWithEmptyTLSPlaintext extends SingleConnectionClient {
                     .connect();
         }
 
-        try (Output output = Output.console("client");
+        try (Output output = Output.standardClient();
              StartWithEmptyTLSPlaintext client = new StartWithEmptyTLSPlaintext()) {
 
             client.set(application_data)
@@ -80,7 +80,7 @@ public class StartWithEmptyTLSPlaintext extends SingleConnectionClient {
                     .connect();
         }
 
-        try (Output output = Output.console("client");
+        try (Output output = Output.standardClient();
              StartWithEmptyTLSPlaintext client = new StartWithEmptyTLSPlaintext()) {
 
             client.set(alert)

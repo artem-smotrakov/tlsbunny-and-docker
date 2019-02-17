@@ -9,7 +9,7 @@ public abstract class BaseEngineFactory implements EngineFactory {
 
     protected Config config = SystemPropertiesConfig.load();
     protected StructFactory structFactory = StructFactory.getDefault();
-    protected Output output = Output.console(String.format("output-%s-%d",
+    protected Output output = Output.standard(String.format("output-%s-%d",
             BaseEngineFactory.class.getSimpleName(), System.currentTimeMillis()));
 
     public BaseEngineFactory set(Config config) {

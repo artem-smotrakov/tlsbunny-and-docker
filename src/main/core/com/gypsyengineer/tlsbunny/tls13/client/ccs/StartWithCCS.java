@@ -23,7 +23,7 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp
 public class StartWithCCS extends SingleConnectionClient {
 
     public static void main(String[] args) throws Exception {
-        try (Output output = Output.console("client");
+        try (Output output = Output.standardClient();
              StartWithCCS client = new StartWithCCS()) {
 
             client.set(output).connect();
