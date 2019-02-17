@@ -15,7 +15,7 @@ public class StandardOutput extends OutputWrapper {
 
     private static final String ansi_red = "\u001B[31m";
     private static final String ansi_reset = "\u001B[0m";
-    private static final boolean enableHighlighting = Boolean.valueOf(
+    private static final boolean enableHighlighting = Boolean.parseBoolean(
             System.getProperty("tlsbunny.output.enable.highlighting", "true"));
 
     protected int index = 0;
