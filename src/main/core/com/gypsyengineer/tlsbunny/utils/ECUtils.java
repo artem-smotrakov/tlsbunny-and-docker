@@ -53,10 +53,10 @@ public class ECUtils {
         }
 
         // Check 0 <= x < p and 0 <= y < p.
-        if (x.signum() == -1 || x.compareTo(p) < 0) {
+        if (x.signum() == -1 || x.compareTo(p) >= 0) {
             throw new ECException("x is out of range [0, p-1]");
         }
-        if (y.signum() == -1 || y.compareTo(p) < 0) {
+        if (y.signum() == -1 || y.compareTo(p) >= 0) {
             throw new ECException("y is out of range [0, p-1]");
         }
 
