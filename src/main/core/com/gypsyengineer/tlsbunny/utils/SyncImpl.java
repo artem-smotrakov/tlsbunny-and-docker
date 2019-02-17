@@ -10,7 +10,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
-import static com.gypsyengineer.tlsbunny.output.Level.important;
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public class SyncImpl implements Sync {
@@ -35,7 +34,7 @@ public class SyncImpl implements Sync {
     private Client client;
     private Server server;
     private Output output;
-    private SyncStandardOutput consoleOutput;
+    private StandardOutput consoleOutput;
     private Output fileOutput;
     private int clientIndex;
     private int serverIndex;
@@ -72,7 +71,7 @@ public class SyncImpl implements Sync {
 
         output = new LocalOutput();
 
-        consoleOutput = new SyncStandardOutput();
+        consoleOutput = new StandardOutput();
         consoleOutput.prefix("");
 
         if (printToFile) {
@@ -165,43 +164,4 @@ public class SyncImpl implements Sync {
         consoleOutput.close();
     }
 
-    private static class NoNewLine extends Line {
-
-        NoNewLine(Level level, String value) {
-            super(level, value);
-        }
-    }
-
-    private static class SyncStandardOutput extends StandardOutput {
-
-        public SyncStandardOutput dot() {
-            add(new NoNewLine(important, "."));
-            return this;
-        }
-
-        @Override
-        public void flush() {
-            synchronized (consoleLock) {
-                output.flush();
-
-                List<Line> lines = output.lines();
-                for (;index < lines.size(); index++) {
-                    Line line = lines.get(index);
-
-                    if (!line.printable(level)) {
-                        continue;
-                    }
-
-                    String string = line.value();
-                    if (line instanceof NoNewLine) {
-                        System.out.print(string);
-                    } else {
-                        System.out.println(string);
-                    }
-
-                    System.out.flush();
-                }
-            }
-        }
-    }
 }
