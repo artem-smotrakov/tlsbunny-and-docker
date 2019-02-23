@@ -79,12 +79,12 @@ public class CertificateVerifyImpl implements CertificateVerify {
     }
 
     @Override
-    public SignatureScheme getAlgorithm() {
+    public SignatureScheme algorithm() {
         return algorithm;
     }
 
     @Override
-    public Vector<Byte> getSignature() {
+    public Vector<Byte> signature() {
         return signature;
     }
 

@@ -57,12 +57,7 @@ public class FuzzedStruct implements ClientHello, ServerHello,
     // implement interfaces of handshake messages
     
     @Override
-    public Vector<CertificateEntry> getCertificateList() {
-        throw cantDoThat();
-    }
-
-    @Override
-    public Vector<Byte> getCertificateRequestContext() {
+    public Vector<CertificateEntry> certificateList() {
         throw cantDoThat();
     }
 
@@ -72,12 +67,12 @@ public class FuzzedStruct implements ClientHello, ServerHello,
     }
 
     @Override
-    public SignatureScheme getAlgorithm() {
+    public SignatureScheme algorithm() {
         throw cantDoThat();
     }
 
     @Override
-    public Vector<Byte> getSignature() {
+    public Vector<Byte> signature() {
         throw cantDoThat();
     }
 

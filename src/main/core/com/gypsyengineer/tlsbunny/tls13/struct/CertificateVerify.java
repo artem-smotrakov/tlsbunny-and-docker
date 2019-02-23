@@ -6,6 +6,6 @@ public interface CertificateVerify extends HandshakeMessage {
 
     int signature_length_bytes = 2;
 
-    SignatureScheme getAlgorithm();
-    Vector<Byte> getSignature();
+    SignatureScheme algorithm();
+    Vector<Byte> signature();
 }

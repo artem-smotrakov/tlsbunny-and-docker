@@ -81,12 +81,12 @@ public class CertificateImpl implements Certificate {
     }
 
     @Override
-    public Vector<Byte> getCertificateRequestContext() {
+    public Vector<Byte> certificateRequestContext() {
         return certificate_request_context;
     }
 
     @Override
-    public Vector<CertificateEntry> getCertificateList() {
+    public Vector<CertificateEntry> certificateList() {
         return certificate_list;
     }
 

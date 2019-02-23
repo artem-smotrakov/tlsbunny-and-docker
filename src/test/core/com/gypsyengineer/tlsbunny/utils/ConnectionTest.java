@@ -1,12 +1,14 @@
 package com.gypsyengineer.tlsbunny.utils;
 
 import com.gypsyengineer.tlsbunny.output.Output;
+import com.gypsyengineer.tlsbunny.tls13.struct.CipherSuite;
+import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.*;
 
 public class ConnectionTest {
 
@@ -17,6 +19,7 @@ public class ConnectionTest {
 
     @Test
     public void basic() throws Exception {
+        Connection connection;
         try (Output output = Output.standard(); EchoServer server = new EchoServer()) {
             server.set(output);
 
@@ -24,24 +27,32 @@ public class ConnectionTest {
             Thread.sleep(delay);
 
             output.info("[client] connect");
-            Connection connection = Connection.create("localhost", server.port());
+            connection = Connection.create("localhost", server.port());
+
             connection.send(message);
             byte[] data = connection.read();
             output.info("[client] received: " + new String(data));
-
             assertArrayEquals(message, data);
+
+            connection.send(CipherSuite.TLS_AES_128_GCM_SHA256);
+            data = connection.read();
+            CipherSuite suite = StructFactory.getDefault().parser().parseCipherSuite(data);
+            output.info("[client] received: " + suite);
+            assertEquals(suite, CipherSuite.TLS_AES_128_GCM_SHA256);
+
+            assertNull(connection.exception());
         }
     }
 
     private static class EchoServer implements Runnable, AutoCloseable {
 
-        private static final int FREE_PORT = 0;
+        private static final int free_port = 0;
 
         private Output output = Output.standard();
         private final ServerSocket serverSocket;
 
         public EchoServer() throws IOException {
-            this(FREE_PORT);
+            this(free_port);
         }
 
         public EchoServer(int port) throws IOException {

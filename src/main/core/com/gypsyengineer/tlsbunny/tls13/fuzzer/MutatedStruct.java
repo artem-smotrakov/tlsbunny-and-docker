@@ -241,22 +241,22 @@ public class MutatedStruct implements TLSPlaintext, Handshake, ChangeCipherSpec,
     }
 
     @Override
-    public Vector<CertificateEntry> getCertificateList() {
+    public Vector<CertificateEntry> certificateList() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Vector<Byte> getCertificateRequestContext() {
+    public Vector<Byte> certificateRequestContext() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public SignatureScheme getAlgorithm() {
+    public SignatureScheme algorithm() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Vector<Byte> getSignature() {
+    public Vector<Byte> signature() {
         throw new UnsupportedOperationException();
     }
 
