@@ -19,7 +19,6 @@ public class ConnectionTest {
 
     @Test
     public void basic() throws Exception {
-        Connection connection;
         try (Output output = Output.standard(); EchoServer server = new EchoServer()) {
             server.set(output);
 
@@ -27,13 +26,14 @@ public class ConnectionTest {
             Thread.sleep(delay);
 
             output.info("[client] connect");
-            connection = Connection.create("localhost", server.port());
+            Connection connection = Connection.create("localhost", server.port());
 
             connection.send(message);
             byte[] data = connection.read();
             output.info("[client] received: " + new String(data));
             assertArrayEquals(message, data);
 
+            connection = Connection.create("localhost", server.port());
             connection.send(CipherSuite.TLS_AES_128_GCM_SHA256);
             data = connection.read();
             CipherSuite suite = StructFactory.getDefault().parser().parseCipherSuite(data);
@@ -76,6 +76,7 @@ public class ConnectionTest {
         public void run() {
             output.info("server started on port %d", port());
             while (true) {
+                output.info("waiting for connections ...");
                 try (Connection connection = Connection.create(serverSocket.accept())) {
                     output.info("[server] accepted");
                     byte[] data = connection.read();
