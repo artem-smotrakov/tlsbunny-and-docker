@@ -21,12 +21,12 @@ public abstract class CertificateEntryImpl implements CertificateEntry {
     }
 
     @Override
-    public Vector<Extension> getExtensions() {
+    public Vector<Extension> extensions() {
         return extensions;
     }
 
     @Override
-    public Extension getExtension(ExtensionType type) {
+    public Extension extension(ExtensionType type) {
         for (Extension extension : extensions.toList()) {
             if (type.equals(extension.extensionType())) {
                 return extension;
@@ -68,7 +68,7 @@ public abstract class CertificateEntryImpl implements CertificateEntry {
         }
 
         @Override
-        public Vector<Byte> getCertData() {
+        public Vector<Byte> certData() {
             return cert_data;
         }
 
@@ -164,7 +164,7 @@ public abstract class CertificateEntryImpl implements CertificateEntry {
         }
 
         @Override
-        public Vector<Byte> getASN1SubjectPublicKeyInfo() {
+        public Vector<Byte> asn1SubjectPublicKeyInfo() {
             return ASN1_subjectPublicKeyInfo;
         }
 

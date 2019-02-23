@@ -5,22 +5,22 @@ import com.gypsyengineer.tlsbunny.tls.Vector;
 
 public interface CertificateEntry extends Struct {
 
-    int EXTENSIONS_LENGTH_BYTES = 2;
+    int extensions_length_bytes = 2;
 
-    Extension getExtension(ExtensionType type);
-    Vector<Extension> getExtensions();
+    Extension extension(ExtensionType type);
+    Vector<Extension> extensions();
     
-    public static interface X509 extends CertificateEntry {
+    interface X509 extends CertificateEntry {
     
-        public static final int LENGTH_BYTES = 3;
+        int length_bytes = 3;
 
-        public Vector<Byte> getCertData();
+        Vector<Byte> certData();
     }
 
-    public static interface RawPublicKey extends CertificateEntry {
+    interface RawPublicKey extends CertificateEntry {
     
-        public static final int LENGTH_BYTES = 3;
+        int length_bytes = 3;
         
-        public Vector<Byte> getASN1SubjectPublicKeyInfo();
+        Vector<Byte> asn1SubjectPublicKeyInfo();
     }
 }
