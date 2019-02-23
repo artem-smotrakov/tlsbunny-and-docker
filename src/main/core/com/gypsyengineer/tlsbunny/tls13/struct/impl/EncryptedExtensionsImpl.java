@@ -8,9 +8,12 @@ import com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType;
 import java.io.IOException;
 import java.util.Objects;
 
+import static com.gypsyengineer.tlsbunny.utils.Utils.cast;
+import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
+
 public class EncryptedExtensionsImpl implements EncryptedExtensions {
 
-    private final Vector<Extension> extensions;
+    private Vector<Extension> extensions;
 
     EncryptedExtensionsImpl(Vector<Extension> extensions) {
         this.extensions = extensions;
@@ -56,5 +59,39 @@ public class EncryptedExtensionsImpl implements EncryptedExtensions {
     @Override
     public int hashCode() {
         return Objects.hash(extensions);
+    }
+
+    @Override
+    public boolean composite() {
+        return true;
+    }
+
+    @Override
+    public int total() {
+        return 1;
+    }
+
+    @Override
+    public Struct element(int index) {
+        switch (index) {
+            case 0:
+                return extensions;
+            default:
+                throw whatTheHell("incorrect index %d!", index);
+        }
+    }
+
+    @Override
+    public void element(int index, Struct element) {
+        if (element == null) {
+            throw whatTheHell("element can't be null!");
+        }
+        switch (index) {
+            case 0:
+                extensions = cast(element, Vector.class);
+                break;
+            default:
+                throw whatTheHell("incorrect index %d!", index);
+        }
     }
 }
