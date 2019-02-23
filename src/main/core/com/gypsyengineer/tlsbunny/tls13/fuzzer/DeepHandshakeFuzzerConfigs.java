@@ -9,6 +9,7 @@ import java.util.List;
 
 import static com.gypsyengineer.tlsbunny.fuzzer.BitFlipFuzzer.newBitFlipFuzzer;
 import static com.gypsyengineer.tlsbunny.fuzzer.ByteFlipFuzzer.newByteFlipFuzzer;
+import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public class DeepHandshakeFuzzerConfigs {
 
@@ -20,36 +21,53 @@ public class DeepHandshakeFuzzerConfigs {
 
     private static final long long_read_timeout = 5000;
 
-    private static final Ratio[] byte_flip_ratios = {
-            new Ratio(0.01, 0.02),
-            new Ratio(0.02, 0.03),
-            new Ratio(0.03, 0.04),
-            new Ratio(0.04, 0.05),
-            new Ratio(0.05, 0.06),
-            new Ratio(0.06, 0.07),
-            new Ratio(0.07, 0.08),
-            new Ratio(0.08, 0.09),
-            new Ratio(0.1, 0.2),
-            new Ratio(0.2, 0.3),
-            new Ratio(0.3, 0.4),
-            new Ratio(0.4, 0.5),
-            new Ratio(0.5, 0.6),
-            new Ratio(0.6, 0.7),
-            new Ratio(0.7, 0.8),
-            new Ratio(0.8, 0.9),
-            new Ratio(0.9, 1.0),
-    };
+    private static List<Ratio> generateRatios(double start, double end, double step) {
+        if (start < 0) {
+            throw whatTheHell("start is negative!");
+        }
 
-    private static final Ratio[] bit_flip_ratios = {
-            new Ratio(0.01, 0.02),
-            new Ratio(0.02, 0.03),
-            new Ratio(0.03, 0.04),
-            new Ratio(0.04, 0.05),
-            new Ratio(0.05, 0.06),
-            new Ratio(0.06, 0.07),
-            new Ratio(0.07, 0.08),
-            new Ratio(0.08, 0.09),
-    };
+        if (end < 0) {
+            throw whatTheHell("end is negative!");
+        }
+
+        if (start >= end) {
+            throw whatTheHell("start is more than end!");
+        }
+
+        if (step <= 0 || step >= end - start) {
+            throw whatTheHell("wrong step!");
+        }
+
+        List<Ratio> ratios = new ArrayList<>();
+        double a = start;
+        double b = a + step;
+        while (b < end) {
+            ratios.add(new Ratio(a, b));
+            a = b;
+            b = a + step;
+        }
+
+        return ratios;
+    }
+
+    private static final List<Ratio> byte_flip_ratios = new ArrayList<>();
+    static {
+        if (fullConfigs) {
+            byte_flip_ratios.addAll(generateRatios(0.01, 0.5, 0.01));
+            byte_flip_ratios.addAll(generateRatios(0.5, 1.0, 0.1));
+        } else {
+            byte_flip_ratios.add(new Ratio(0.01, 0.02));
+        }
+    }
+
+    private static final List<Ratio> bit_flip_ratios = new ArrayList<>();
+    static {
+        if (fullConfigs) {
+            bit_flip_ratios.addAll(generateRatios(0.005, 0.25, 0.005));
+        } else {
+            bit_flip_ratios.add(new Ratio(0.01, 0.02));
+        }
+    }
 
     public static FuzzerConfig[] noClientAuth(Config config) {
         return minimizeIfNecessary(
