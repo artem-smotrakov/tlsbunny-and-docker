@@ -1,5 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls13.struct.impl;
 
+import com.gypsyengineer.tlsbunny.tls.Struct;
 import com.gypsyengineer.tlsbunny.tls.Vector;
 import com.gypsyengineer.tlsbunny.tls13.struct.Certificate;
 import com.gypsyengineer.tlsbunny.tls13.struct.CertificateEntry;
@@ -8,10 +9,13 @@ import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.io.IOException;
 import java.util.Objects;
 
+import static com.gypsyengineer.tlsbunny.utils.Utils.cast;
+import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
+
 public class CertificateImpl implements Certificate {
 
-    private final Vector<Byte> certificate_request_context;
-    private final Vector<CertificateEntry> certificate_list;
+    private Vector<Byte> certificate_request_context;
+    private Vector<CertificateEntry> certificate_list;
 
     CertificateImpl(Vector<Byte> certificate_request_context,
             Vector<CertificateEntry> certificate_list) {
@@ -35,6 +39,45 @@ public class CertificateImpl implements Certificate {
         return new CertificateImpl(
                 (Vector<Byte>) certificate_request_context.copy(),
                 (Vector<CertificateEntry>) certificate_list.copy());
+    }
+
+    @Override
+    public boolean composite() {
+        return true;
+    }
+
+    @Override
+    public int total() {
+        return 2;
+    }
+
+    @Override
+    public Struct element(int index) {
+        switch (index) {
+            case 0:
+                return certificate_request_context;
+            case 1:
+                return certificate_list;
+            default:
+                throw whatTheHell("incorrect index %d!", index);
+        }
+    }
+
+    @Override
+    public void element(int index, Struct element) {
+        if (element == null) {
+            throw whatTheHell("element can't be null!");
+        }
+        switch (index) {
+            case 0:
+                certificate_request_context = cast(element, Vector.class);
+                break;
+            case 1:
+                certificate_list = cast(element, Vector.class);
+                break;
+            default:
+                throw whatTheHell("incorrect index %d!", index);
+        }
     }
 
     @Override
