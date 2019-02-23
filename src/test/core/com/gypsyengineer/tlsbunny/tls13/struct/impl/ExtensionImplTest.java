@@ -20,7 +20,6 @@ public class ExtensionImplTest {
         assertEquals(ext.extensionType(), ext.element(0));
         assertEquals(ext.extensionData(), ext.element(1));
 
-
         ext.element(0, ExtensionType.key_share);
         assertEquals(ext.extensionType(), ext.element(0));
         assertEquals(ExtensionType.key_share, ext.element(0));
