@@ -7,12 +7,20 @@ import com.gypsyengineer.tlsbunny.vendor.test.tls13.Utils;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class WolfsslServer extends BaseDockerServer implements Server {
 
     private static final int defaultPort = 40101;
+
+    private static final String defaultServerCert = "certs/server-cert.pem";
+    private static final String defaultServerKey = "certs/server-key.pem";
+
+    private static final String NO_ARG = "";
+
+    private final Map<String, String> options = new HashMap<>();
 
     private static final String image = System.getProperty(
             "tlsbunny.wolfssl.docker.image",
@@ -26,6 +34,20 @@ public class WolfsslServer extends BaseDockerServer implements Server {
         super(new OutputListenerImpl("wolfSSL Leaving SSL_new, return 0", "wolfSSL Entering wolfSSL_SetHsDoneCb"),
                 new AddressSanitizerWatcherOutput());
         output.prefix("wolfssl-server");
+        options.put("-p", String.valueOf(defaultPort));
+        options.put("-v", "4"); // TLS 1.3 only
+        options.put("-d", NO_ARG); // no client auth
+        options.put("-i", NO_ARG);
+        options.put("-g", NO_ARG);
+        options.put("-b", NO_ARG);
+        options.put("-x", NO_ARG);
+        options.put("-c", defaultServerCert);
+        options.put("-k", defaultServerKey);
+    }
+
+    public WolfsslServer clientAuth() {
+        options.remove("-d");
+        return this;
     }
 
     @Override
@@ -40,6 +62,15 @@ public class WolfsslServer extends BaseDockerServer implements Server {
         command.add("run");
         command.add("-p");
         command.add(String.format("%d:%d", defaultPort, defaultPort));
+
+        StringBuilder sb = new StringBuilder();
+        for (Map.Entry<String, String> entry : options.entrySet()) {
+            sb.append(String.format("%s %s ", entry.getKey(), entry.getValue()));
+        }
+        if (dockerEnv.containsKey("options")) {
+            output.achtung("overwritten environment variable 'options'");
+        }
+        dockerEnv.put("options", sb.toString());
 
         if (!dockerEnv.isEmpty()) {
             for (Map.Entry entry : dockerEnv.entrySet()) {
