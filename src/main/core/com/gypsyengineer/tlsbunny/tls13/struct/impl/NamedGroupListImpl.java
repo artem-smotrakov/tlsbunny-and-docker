@@ -1,14 +1,18 @@
 package com.gypsyengineer.tlsbunny.tls13.struct.impl;
 
+import com.gypsyengineer.tlsbunny.tls.Struct;
 import com.gypsyengineer.tlsbunny.tls.Vector;
 import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
 import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroupList;
 import java.io.IOException;
 import java.util.Objects;
 
+import static com.gypsyengineer.tlsbunny.utils.Utils.cast;
+import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
+
 public class NamedGroupListImpl implements NamedGroupList {
 
-    private final Vector<NamedGroup> named_group_list;
+    private Vector<NamedGroup> named_group_list;
 
     NamedGroupListImpl(Vector<NamedGroup> named_group_list) {
         this.named_group_list = named_group_list;
@@ -44,5 +48,39 @@ public class NamedGroupListImpl implements NamedGroupList {
     @Override
     public int hashCode() {
         return Objects.hash(named_group_list);
+    }
+
+    @Override
+    public boolean composite() {
+        return true;
+    }
+
+    @Override
+    public int total() {
+        return 1;
+    }
+
+    @Override
+    public Struct element(int index) {
+        switch (index) {
+            case 0:
+                return named_group_list;
+            default:
+                throw whatTheHell("incorrect index %d!", index);
+        }
+    }
+
+    @Override
+    public void element(int index, Struct element) {
+        if (element == null) {
+            throw whatTheHell("element can't be null!");
+        }
+        switch (index) {
+            case 0:
+                named_group_list = cast(element, Vector.class);
+                break;
+            default:
+                throw whatTheHell("incorrect index %d!", index);
+        }
     }
 }
