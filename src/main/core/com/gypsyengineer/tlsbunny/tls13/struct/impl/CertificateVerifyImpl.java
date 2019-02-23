@@ -1,5 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls13.struct.impl;
 
+import com.gypsyengineer.tlsbunny.tls.Struct;
 import com.gypsyengineer.tlsbunny.tls.Vector;
 import com.gypsyengineer.tlsbunny.tls13.struct.CertificateVerify;
 import com.gypsyengineer.tlsbunny.tls13.struct.HandshakeType;
@@ -8,10 +9,13 @@ import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.io.IOException;
 import java.util.Objects;
 
+import static com.gypsyengineer.tlsbunny.utils.Utils.cast;
+import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
+
 public class CertificateVerifyImpl implements CertificateVerify {
 
-    private final SignatureScheme algorithm;
-    private final Vector<Byte> signature;
+    private SignatureScheme algorithm;
+    private Vector<Byte> signature;
 
     CertificateVerifyImpl(SignatureScheme algorithm, Vector<Byte> signature) {
         this.algorithm = algorithm;
@@ -33,6 +37,45 @@ public class CertificateVerifyImpl implements CertificateVerify {
         return new CertificateVerifyImpl(
                 (SignatureScheme) algorithm.copy(),
                 (Vector<Byte>) signature.copy());
+    }
+
+    @Override
+    public boolean composite() {
+        return true;
+    }
+
+    @Override
+    public int total() {
+        return 2;
+    }
+
+    @Override
+    public Struct element(int index) {
+        switch (index) {
+            case 0:
+                return algorithm;
+            case 1:
+                return signature;
+            default:
+                throw whatTheHell("incorrect index %d!", index);
+        }
+    }
+
+    @Override
+    public void element(int index, Struct element) {
+        if (element == null) {
+            throw whatTheHell("element can't be null!");
+        }
+        switch (index) {
+            case 0:
+                algorithm = cast(element, SignatureScheme.class);
+                break;
+            case 1:
+                signature = cast(element, Vector.class);
+                break;
+            default:
+                throw whatTheHell("incorrect index %d!", index);
+        }
     }
 
     @Override
