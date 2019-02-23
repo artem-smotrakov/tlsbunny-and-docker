@@ -1,5 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls13.struct.impl;
 
+import com.gypsyengineer.tlsbunny.tls.Struct;
 import com.gypsyengineer.tlsbunny.tls.Vector;
 import com.gypsyengineer.tlsbunny.tls13.struct.CertificateEntry;
 import com.gypsyengineer.tlsbunny.tls13.struct.Extension;
@@ -8,9 +9,12 @@ import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.io.IOException;
 import java.util.Objects;
 
+import static com.gypsyengineer.tlsbunny.utils.Utils.cast;
+import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
+
 public abstract class CertificateEntryImpl implements CertificateEntry {
 
-    final Vector<Extension> extensions;
+    Vector<Extension> extensions;
 
     CertificateEntryImpl(Vector<Extension> extensions) {
         this.extensions = extensions;
@@ -33,6 +37,11 @@ public abstract class CertificateEntryImpl implements CertificateEntry {
     }
 
     @Override
+    public boolean composite() {
+        return true;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -51,7 +60,7 @@ public abstract class CertificateEntryImpl implements CertificateEntry {
 
     public static class X509Impl extends CertificateEntryImpl implements X509 {
     
-        private final Vector<Byte> cert_data;
+        private Vector<Byte> cert_data;
         
         public X509Impl(Vector<Byte> cert_data, Vector<Extension> extensions) {
             super(extensions);
@@ -81,6 +90,40 @@ public abstract class CertificateEntryImpl implements CertificateEntry {
         }
 
         @Override
+        public int total() {
+            return 2;
+        }
+
+        @Override
+        public Struct element(int index) {
+            switch (index) {
+                case 0:
+                    return cert_data;
+                case 1:
+                    return extensions;
+                default:
+                    throw whatTheHell("incorrect index %d!", index);
+            }
+        }
+
+        @Override
+        public void element(int index, Struct element) {
+            if (element == null) {
+                throw whatTheHell("element can't be null!");
+            }
+            switch (index) {
+                case 0:
+                    cert_data = cast(element, Vector.class);
+                    break;
+                case 1:
+                    extensions = cast(element, Vector.class);
+                    break;
+                default:
+                    throw whatTheHell("incorrect index %d!", index);
+            }
+        }
+
+        @Override
         public boolean equals(Object o) {
             if (this == o) {
                 return true;
@@ -104,9 +147,9 @@ public abstract class CertificateEntryImpl implements CertificateEntry {
     public static class RawPublicKeyImpl extends CertificateEntryImpl 
             implements RawPublicKey {
     
-        private final Vector<Byte> ASN1_subjectPublicKeyInfo;
+        private Vector<Byte> ASN1_subjectPublicKeyInfo;
         
-        public RawPublicKeyImpl(Vector<Byte> ASN1_subjectPublicKeyInfo, 
+        RawPublicKeyImpl(Vector<Byte> ASN1_subjectPublicKeyInfo,
                 Vector<Extension> extensions) {
             
             super(extensions);
@@ -133,6 +176,40 @@ public abstract class CertificateEntryImpl implements CertificateEntry {
         @Override
         public byte[] encoding() throws IOException {
             return Utils.encoding(ASN1_subjectPublicKeyInfo, extensions);
+        }
+
+        @Override
+        public int total() {
+            return 2;
+        }
+
+        @Override
+        public Struct element(int index) {
+            switch (index) {
+                case 0:
+                    return ASN1_subjectPublicKeyInfo;
+                case 1:
+                    return extensions;
+                default:
+                    throw whatTheHell("incorrect index %d!", index);
+            }
+        }
+
+        @Override
+        public void element(int index, Struct element) {
+            if (element == null) {
+                throw whatTheHell("element can't be null!");
+            }
+            switch (index) {
+                case 0:
+                    ASN1_subjectPublicKeyInfo = cast(element, Vector.class);
+                    break;
+                case 1:
+                    extensions = cast(element, Vector.class);
+                    break;
+                default:
+                    throw whatTheHell("incorrect index %d!", index);
+            }
         }
 
         @Override
