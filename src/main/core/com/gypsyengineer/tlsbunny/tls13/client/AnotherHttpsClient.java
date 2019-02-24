@@ -13,7 +13,7 @@ import java.util.List;
 
 public class AnotherHttpsClient extends SingleConnectionClient {
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String... args) throws Exception {
         try (Output output = Output.standardClient();
              AnotherHttpsClient client = new AnotherHttpsClient()) {
 

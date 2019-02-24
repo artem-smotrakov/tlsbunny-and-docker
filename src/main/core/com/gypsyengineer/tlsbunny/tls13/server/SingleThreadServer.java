@@ -1,6 +1,7 @@
 package com.gypsyengineer.tlsbunny.tls13.server;
 
 import com.gypsyengineer.tlsbunny.output.Output;
+import com.gypsyengineer.tlsbunny.tls13.connection.EngineException;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.ActionFailed;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.GeneratingAlert;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.WrappingIntoTLSPlaintexts;
@@ -27,7 +28,7 @@ public class SingleThreadServer implements Server {
 
     public static final int free_port = 0;
 
-    private final ServerSocket serverSocket;
+    private ServerSocket serverSocket;
 
     // TODO: add synchronization
     private Config config = SystemPropertiesConfig.load();
@@ -40,16 +41,15 @@ public class SingleThreadServer implements Server {
 
     private final List<Engine> engines = Collections.synchronizedList(new ArrayList<>());
 
-    public SingleThreadServer() throws IOException {
+    public SingleThreadServer() {
         this(free_port);
     }
 
-    public SingleThreadServer(int port) throws IOException {
-        this(new ServerSocket(port));
-    }
-
-    private SingleThreadServer(ServerSocket serverSocket) {
-        this.serverSocket = serverSocket;
+    public SingleThreadServer(int n) {
+        if (config == null) {
+            throw whatTheHell("can't set a port because config is null");
+        }
+        config.port(n);
     }
 
     @Override
@@ -110,7 +110,7 @@ public class SingleThreadServer implements Server {
 
     @Override
     public int port() {
-        return serverSocket.getLocalPort();
+        return config.port();
     }
 
     @Override
@@ -126,41 +126,65 @@ public class SingleThreadServer implements Server {
 
         output.info("started on port %d", port());
         running = true;
-        while (stopCondition.shouldRun()) {
-            try (Connection connection = Connection.create(serverSocket.accept())) {
-                output.info("accepted");
-
-                Engine engine = factory.create();
-                engines.add(engine);
-
-                engine.set(output);
-                engine.set(connection);
-
-                try {
-                    engine.connect(); // TODO: rename connect -> run
-                } catch (Exception e) {
-                    connection.send(generateAlert(engine));
-                    failed = true;
-                }
-
-                if (check != null) {
-                    output.info("run check: %s", check.name());
-                    check.set(engine);
-                    check.set(engine.context());
-                    check.run();
-                    failed &= check.failed();
-                }
-
-                output.info("done");
-            } catch (Exception e) {
-                output.achtung("unexpected exception: ", e);
-                failed = true;
-                break;
+        try (ServerSocket serverSocket = new ServerSocket(config.port())) {
+            this.serverSocket = serverSocket;
+            while (shouldRun()) {
+                accept(serverSocket);
             }
+        } catch (IOException e) {
+            if (serverSocket.isClosed()) {
+                output.info(e.getMessage());
+            } else {
+                output.achtung("unexpected i/o exception", e);
+                failed = true;
+            }
+        } catch (Exception e) {
+            output.achtung("unexpected exception", e);
+            failed = true;
         }
 
         running = false;
         output.info("stopped");
+    }
+
+    private boolean shouldRun() {
+        if (serverSocket != null && serverSocket.isClosed()) {
+            return false;
+        }
+
+        return stopCondition.shouldRun();
+    }
+
+    private void accept(ServerSocket serverSocket)
+            throws IOException, EngineException, NegotiatorException, ActionFailed,
+            AEADException {
+
+        try (Connection connection = Connection.create(serverSocket.accept())) {
+            output.info("accepted");
+
+            Engine engine = factory.create();
+            engines.add(engine);
+
+            engine.set(output);
+            engine.set(connection);
+
+            try {
+                engine.connect(); // TODO: rename connect -> run
+            } catch (Exception e) {
+                connection.send(generateAlert(engine));
+                failed = true;
+            }
+
+            if (check != null) {
+                output.info("run check: %s", check.name());
+                check.set(engine);
+                check.set(engine.context());
+                check.run();
+                failed &= check.failed();
+            }
+
+            output.info("done");
+        }
     }
 
     @Override

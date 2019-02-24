@@ -4,7 +4,8 @@ import com.gypsyengineer.tlsbunny.tls13.connection.action.AbstractAction;
 
 import java.nio.ByteBuffer;
 
-public class RestoringEncryptedApplicationData extends AbstractAction<RestoringEncryptedApplicationData> {
+public class RestoringEncryptedApplicationData
+        extends AbstractAction<RestoringEncryptedApplicationData> {
 
     @Override
     public String name() {

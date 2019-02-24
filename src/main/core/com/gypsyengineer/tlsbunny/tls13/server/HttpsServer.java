@@ -32,8 +32,7 @@ public class HttpsServer implements Server {
         return httpsServer(SingleThreadServer.free_port);
     }
 
-    public static HttpsServer httpsServer(int port)
-            throws IOException, NegotiatorException {
+    public static HttpsServer httpsServer(int port) throws NegotiatorException {
 
         EngineFactoryImpl factory = new EngineFactoryImpl()
                 .set(secp256r1)
