@@ -53,8 +53,8 @@ public class BasicTest {
     }
 
     private static void test(Client client, NamedGroup group, int n) throws Exception {
-        Output serverOutput = Output.console("server");
-        Output clientOutput = Output.console("client");
+        Output serverOutput = Output.standard("server");
+        Output clientOutput = Output.standardClient();
 
         Config serverConfig = SystemPropertiesConfig.load();
         serverConfig.serverCertificate(serverCertificatePath);

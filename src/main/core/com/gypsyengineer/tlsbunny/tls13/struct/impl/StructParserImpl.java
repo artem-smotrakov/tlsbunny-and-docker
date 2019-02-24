@@ -118,11 +118,11 @@ public class StructParserImpl implements StructParser {
 
         return new CertificateImpl(
                 Vector.parse(buffer,
-                    Certificate.CONTEXT_LENGTH_BYTES,
+                    Certificate.context_length_bytes,
                     buf -> buf.get()),
                 Vector.parse(
                     buffer,
-                    Certificate.CERTIFICATE_LIST_LENGTH_BYTES,
+                    Certificate.certificate_list_length_bytes,
                     certificateEntityParser));
     }
 
@@ -245,10 +245,10 @@ public class StructParserImpl implements StructParser {
     @Override
     public CertificateEntry.X509 parseX509CertificateEntry(ByteBuffer buffer) {
         return new CertificateEntryImpl.X509Impl(
-                    Vector.parseOpaqueVector(buffer, CertificateEntry.X509.LENGTH_BYTES),
+                    Vector.parseOpaqueVector(buffer, CertificateEntry.X509.length_bytes),
                     Vector.parse(
                         buffer,
-                        CertificateEntry.X509.EXTENSIONS_LENGTH_BYTES,
+                        CertificateEntry.X509.extensions_length_bytes,
                         buf -> parseExtension(buf)));
     }
 
@@ -257,10 +257,10 @@ public class StructParserImpl implements StructParser {
         return new CertificateEntryImpl.RawPublicKeyImpl(
                     Vector.parseOpaqueVector(
                             buffer,
-                            CertificateEntry.RawPublicKey.LENGTH_BYTES),
+                            CertificateEntry.RawPublicKey.length_bytes),
                     Vector.parse(
                         buffer,
-                        CertificateEntry.RawPublicKey.EXTENSIONS_LENGTH_BYTES,
+                        CertificateEntry.RawPublicKey.extensions_length_bytes,
                         buf -> parseExtension(buf)));
     }
 

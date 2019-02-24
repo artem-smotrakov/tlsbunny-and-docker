@@ -16,15 +16,13 @@ public class TestForVendorTest {
 
     @Test
     public void test() throws Exception {
-        HttpsServer server = httpsServer()
-                .set(secp256r1)
-                .neverStop();
-        server.start();
-        Utils.waitStart(server);
-
         Config mainConfig = SystemPropertiesConfig.load();
-
+        HttpsServer server = httpsServer();
         try (server) {
+            server.set(mainConfig).set(secp256r1).neverStop().start();
+
+            Utils.waitStart(server);
+
             new VendorTest()
                     .set(multiConfigClient()
                             .of(deepHandshakeFuzzyClient().of(httpsClient()))

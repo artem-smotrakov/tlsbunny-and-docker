@@ -12,7 +12,7 @@ public class UtilsTest {
 
     @Test
     public void asanMessageFound() {
-        try (Output output = Output.console()) {
+        try (Output output = Output.standard()) {
             output.info("one");
             output.info("ERROR: AddressSanitizer: this is a test!");
             output.achtung("warning");
@@ -25,7 +25,7 @@ public class UtilsTest {
 
     @Test
     public void asanMessageNotFound() {
-        try (Output output = Output.console()) {
+        try (Output output = Output.standard()) {
             output.info("one");
             output.info("two");
             output.achtung("AddressSanitizer");

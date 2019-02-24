@@ -19,7 +19,7 @@ public class ExtensionVectorFuzzer extends FuzzyStructFactory<Vector<Extension>>
     }
 
     public ExtensionVectorFuzzer() {
-        this(StructFactory.getDefault(), Output.console());
+        this(StructFactory.getDefault(), Output.standard());
     }
 
     public ExtensionVectorFuzzer(StructFactory factory,

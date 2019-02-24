@@ -23,9 +23,10 @@ public class SendAlertAfterHello extends SingleConnectionClient {
     private ProtocolVersion protocolVersion = TLSv13;
 
     public static void main(String[] args) throws Exception {
-        try (Output output = Output.console()) {
-            new SendAlertAfterHello()
-                    .set(SystemPropertiesConfig.load())
+        try (Output output = Output.standardClient();
+             SendAlertAfterHello client = new SendAlertAfterHello()) {
+
+            client.set(SystemPropertiesConfig.load())
                     .set(StructFactory.getDefault())
                     .set(output)
                     .connect();

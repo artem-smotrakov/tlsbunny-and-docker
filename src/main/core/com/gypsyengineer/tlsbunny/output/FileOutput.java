@@ -10,15 +10,18 @@ import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public class FileOutput extends OutputWrapper {
 
-    private static Level level = Level.valueOf(
+    private static Level globalLevel = Level.valueOf(
             System.getProperty("tlsbunny.output.file.level",
                     Level.important.name()));
+    static {
+        System.out.printf("[output] tlsbunny.output.file.level = %s%n", globalLevel);
+    }
 
     private final Writer writer;
     private int index = 0;
 
     public FileOutput(Output output, String filename) {
-        super(output, level);
+        super(output, globalLevel);
 
         try {
             writer = new BufferedWriter(new FileWriter(filename));

@@ -23,7 +23,7 @@ public class MutatedStructFactoryTest {
 
     @Test
     public void checkConsistency() throws IOException {
-        try (Output output = Output.console()) {
+        try (Output output = Output.standard()) {
             output.info("check if %s is consistent",
                     MutatedStructFactory.class.getSimpleName());
 

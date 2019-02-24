@@ -59,8 +59,8 @@ test {
         include project.property('tlsbunny.test.include')
     }
 
-    systemProperty 'tlsbunny.output.console.level',
-            System.getProperty('tlsbunny.output.console.level', 'important')
+    systemProperty 'tlsbunny.output.standard.level',
+            System.getProperty('tlsbunny.output.standard.level', 'important')
 }
 
 jacocoTestReport {

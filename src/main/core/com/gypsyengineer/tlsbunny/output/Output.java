@@ -1,7 +1,6 @@
 package com.gypsyengineer.tlsbunny.output;
 
 import java.util.List;
-import java.util.Objects;
 
 public interface Output extends AutoCloseable {
 
@@ -9,12 +8,16 @@ public interface Output extends AutoCloseable {
     Level level = Level.valueOf(
             System.getProperty("tlsbunny.output.level", Level.info.name()));
 
-    static Output console() {
-        return new ConsoleOutput(new LocalOutput());
+    static Output standard() {
+        return new StandardOutput(local());
     }
 
-    static Output console(String prefix) {
-        return new ConsoleOutput(new LocalOutput(prefix));
+    static Output standard(String prefix) {
+        return new StandardOutput(local(prefix));
+    }
+
+    static Output standardClient() {
+        return standard("client");
     }
 
     static Output local() {

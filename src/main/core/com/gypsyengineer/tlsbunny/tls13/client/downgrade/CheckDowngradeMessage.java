@@ -1,6 +1,5 @@
 package com.gypsyengineer.tlsbunny.tls13.client.downgrade;
 
-import com.gypsyengineer.tlsbunny.tls13.client.Client;
 import com.gypsyengineer.tlsbunny.tls13.client.SingleConnectionClient;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.*;
@@ -24,8 +23,8 @@ public class CheckDowngradeMessage extends SingleConnectionClient {
 
     private ProtocolVersion version = TLSv12;
 
-    public static void main(String[] args) {
-        try (Output output = Output.console()) {
+    public static void main(String[] args) throws Exception {
+        try (Output output = Output.standardClient()) {
             Config config = SystemPropertiesConfig.load();
             run(output, config, TLSv13);
             run(output, config, TLSv12);
@@ -34,12 +33,16 @@ public class CheckDowngradeMessage extends SingleConnectionClient {
         }
     }
 
-    public static Client run(Output output, Config config, ProtocolVersion version) {
-        return new CheckDowngradeMessage()
-                        .expect(version)
-                        .set(config)
-                        .set(output)
-                        .set(StructFactory.getDefault());
+    public static void run(Output output, Config config, ProtocolVersion version)
+            throws Exception {
+
+        try (CheckDowngradeMessage client = new CheckDowngradeMessage()) {
+            client.expect(version)
+                    .set(config)
+                    .set(output)
+                    .set(StructFactory.getDefault())
+                    .connect();
+        }
     }
 
     public CheckDowngradeMessage expect(ProtocolVersion version) {

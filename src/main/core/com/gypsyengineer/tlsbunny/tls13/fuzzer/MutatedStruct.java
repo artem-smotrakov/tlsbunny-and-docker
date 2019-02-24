@@ -3,6 +3,8 @@ package com.gypsyengineer.tlsbunny.tls13.fuzzer;
 import com.gypsyengineer.tlsbunny.tls.*;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
 
+import static com.gypsyengineer.tlsbunny.utils.Utils.cantDoThat;
+
 public class MutatedStruct implements TLSPlaintext, Handshake, ChangeCipherSpec,
         ClientHello, ServerHello, EncryptedExtensions, Finished, Certificate,
         CertificateVerify {
@@ -43,24 +45,24 @@ public class MutatedStruct implements TLSPlaintext, Handshake, ChangeCipherSpec,
 
     @Override
     public Struct copy() {
-        throw new UnsupportedOperationException("I don't know how to do that!");
+        throw cantDoThat();
     }
 
     // TLSPlaintext
 
     @Override
     public boolean containsAlert() {
-        throw new UnsupportedOperationException("I don't know how to do that!");
+        throw cantDoThat();
     }
 
     @Override
     public boolean containsApplicationData() {
-        throw new UnsupportedOperationException("I don't know how to do that!");
+        throw cantDoThat();
     }
 
     @Override
     public boolean containsHandshake() {
-        throw new UnsupportedOperationException("I don't know how to do that!");
+        throw cantDoThat();
     }
 
     @Override
@@ -70,17 +72,17 @@ public class MutatedStruct implements TLSPlaintext, Handshake, ChangeCipherSpec,
 
     @Override
     public byte[] getFragment() {
-        throw new UnsupportedOperationException("I don't know how to do that!");
+        throw cantDoThat();
     }
 
     @Override
     public ProtocolVersion getLegacyRecordVersion() {
-        throw new UnsupportedOperationException("I don't know how to do that!");
+        throw cantDoThat();
     }
 
     @Override
     public ContentType getType() {
-        throw new UnsupportedOperationException("I don't know how to do that!");
+        throw cantDoThat();
     }
 
     @Override
@@ -239,22 +241,22 @@ public class MutatedStruct implements TLSPlaintext, Handshake, ChangeCipherSpec,
     }
 
     @Override
-    public Vector<CertificateEntry> getCertificateList() {
+    public Vector<CertificateEntry> certificateList() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Vector<Byte> getCertificateRequestContext() {
+    public Vector<Byte> certificateRequestContext() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public SignatureScheme getAlgorithm() {
+    public SignatureScheme algorithm() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Vector<Byte> getSignature() {
+    public Vector<Byte> signature() {
         throw new UnsupportedOperationException();
     }
 

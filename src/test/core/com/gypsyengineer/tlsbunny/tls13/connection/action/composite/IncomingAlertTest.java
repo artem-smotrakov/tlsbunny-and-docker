@@ -30,7 +30,7 @@ public class IncomingAlertTest {
     public void notEncrypted()
             throws IOException, ActionFailed, AEADException, NegotiatorException {
 
-        try (Output output = Output.console()) {
+        try (Output output = Output.standard()) {
             Context context = context();
 
             ByteBuffer buffer = new GeneratingAlert()
@@ -68,7 +68,7 @@ public class IncomingAlertTest {
     public void encrypted()
             throws IOException, ActionFailed, AEADException, NegotiatorException {
 
-        try (Output output = Output.console()) {
+        try (Output output = Output.standard()) {
             Context context = context();
 
             ByteBuffer buffer = new GeneratingAlert()

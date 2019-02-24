@@ -32,7 +32,7 @@ public class DeepHandshakeFuzzer extends StructFactoryWrapper
     private int rounds = 10;
 
     public static DeepHandshakeFuzzer deepHandshakeFuzzer() {
-        return deepHandshakeFuzzer(StructFactory.getDefault(), Output.console());
+        return deepHandshakeFuzzer(StructFactory.getDefault(), Output.standard());
     }
 
     public static DeepHandshakeFuzzer deepHandshakeFuzzer(Output output) {
@@ -172,14 +172,15 @@ public class DeepHandshakeFuzzer extends StructFactoryWrapper
 
     @Override
     public void state(String string) {
-        Scanner scanner = new Scanner(string);
-        scanner.useDelimiter(":");
-        currentHolderIndex = scanner.nextInt();
-        currentPathIndex = scanner.nextInt();
-        rounds = scanner.nextInt();
-        round = scanner.nextInt();
-        scanner.skip(":");
-        fuzzer.state(scanner.nextLine());
+        try (Scanner scanner = new Scanner(string)) {
+            scanner.useDelimiter(":");
+            currentHolderIndex = scanner.nextInt();
+            currentPathIndex = scanner.nextInt();
+            rounds = scanner.nextInt();
+            round = scanner.nextInt();
+            scanner.skip(":");
+            fuzzer.state(scanner.nextLine());
+        }
     }
 
     private void explain(String what, byte[] encoding, byte[] fuzzed) {

@@ -10,11 +10,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
-import static com.gypsyengineer.tlsbunny.output.Level.important;
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public class SyncImpl implements Sync {
 
+    private static final long n = 100;
     private static final boolean printToFile;
     private static final String dirName;
     static {
@@ -34,13 +34,15 @@ public class SyncImpl implements Sync {
     private Client client;
     private Server server;
     private Output output;
-    private SyncConsoleOutput consoleOutput;
+    private StandardOutput consoleOutput;
     private Output fileOutput;
     private int clientIndex;
     private int serverIndex;
     private String logPrefix = "";
     private boolean initialized = false;
-    private long dotCounter = 0;
+    private long tests = 0;
+    private long testStarted;
+    private long testsDuration = 0;
 
     @Override
     public Sync logPrefix(String logPrefix) {
@@ -69,7 +71,7 @@ public class SyncImpl implements Sync {
 
         output = new LocalOutput();
 
-        consoleOutput = new SyncConsoleOutput();
+        consoleOutput = new StandardOutput();
         consoleOutput.prefix("");
 
         if (printToFile) {
@@ -89,12 +91,16 @@ public class SyncImpl implements Sync {
     @Override
     public SyncImpl start() {
         checkInitialized();
+        testStarted = System.nanoTime();
         return this;
     }
 
     @Override
     public SyncImpl end() {
         checkInitialized();
+
+        long time = System.nanoTime() - testStarted;
+        testsDuration += time;
 
         output.important("[sync] client output");
         List<Line> clientLines = client.output().lines();
@@ -129,15 +135,16 @@ public class SyncImpl implements Sync {
             for (int i = oldServerIndex; i < serverIndex; i++) {
                 consoleOutput.add(serverLines.get(i));
             }
-            dotCounter = 0;
+            consoleOutput.flush();
         } else {
-            consoleOutput.dot();
-            if (++dotCounter % 32 == 0) {
-                consoleOutput.important("");
+            if (++tests % n == 0) {
+                long speed = n * 60000000000L / testsDuration;
+                consoleOutput.important("%d tests done, %d tests / minute",
+                        tests, speed);
+                testsDuration = 0;
+                consoleOutput.flush();
             }
         }
-
-        consoleOutput.flush();
 
         if (printToFile) {
             fileOutput.flush();
@@ -157,43 +164,4 @@ public class SyncImpl implements Sync {
         consoleOutput.close();
     }
 
-    private static class NoNewLine extends Line {
-
-        NoNewLine(Level level, String value) {
-            super(level, value);
-        }
-    }
-
-    private static class SyncConsoleOutput extends ConsoleOutput {
-
-        public SyncConsoleOutput dot() {
-            add(new NoNewLine(important, "."));
-            return this;
-        }
-
-        @Override
-        public void flush() {
-            synchronized (consoleLock) {
-                output.flush();
-
-                List<Line> lines = output.lines();
-                for (;index < lines.size(); index++) {
-                    Line line = lines.get(index);
-
-                    if (!line.printable(level)) {
-                        continue;
-                    }
-
-                    String string = line.value();
-                    if (line instanceof NoNewLine) {
-                        System.out.print(string);
-                    } else {
-                        System.out.println(string);
-                    }
-
-                    System.out.flush();
-                }
-            }
-        }
-    }
 }

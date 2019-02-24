@@ -24,10 +24,10 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp
 public class StartWithServerHello extends SingleConnectionClient {
 
     public static void main(String[] args) throws Exception {
-        try (Output output = Output.console()) {
-            new StartWithServerHello()
-                    .set(output)
-                    .connect();
+        try (Output output = Output.standardClient();
+             StartWithServerHello client = new StartWithServerHello()) {
+
+            client.set(output).connect();
         }
     }
 

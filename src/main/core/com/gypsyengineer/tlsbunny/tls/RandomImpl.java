@@ -11,7 +11,7 @@ public class RandomImpl implements Random {
     private byte[] bytes;
 
     RandomImpl(byte[] bytes) {
-        if (bytes.length != LENGTH) {
+        if (bytes.length != length) {
             throw new IllegalArgumentException();
         }
         
@@ -19,7 +19,7 @@ public class RandomImpl implements Random {
     }
 
     RandomImpl() {
-        this(new byte[LENGTH]);
+        this(new byte[length]);
     }
 
     @Override
@@ -29,7 +29,7 @@ public class RandomImpl implements Random {
 
     @Override
     public void setBytes(byte[] bytes) {
-        if (bytes.length != LENGTH) {
+        if (bytes.length != length) {
             throw new IllegalArgumentException();
         }
         
@@ -38,12 +38,12 @@ public class RandomImpl implements Random {
 
     @Override
     public int encodingLength() {
-        return LENGTH;
+        return length;
     }
 
     @Override
     public byte[] encoding() throws IOException {
-        return ByteBuffer.allocate(LENGTH).put(bytes).array();
+        return ByteBuffer.allocate(length).put(bytes).array();
     }
 
     @Override

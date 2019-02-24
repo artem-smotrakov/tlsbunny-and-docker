@@ -3,18 +3,20 @@ package com.gypsyengineer.tlsbunny.tls13.struct.impl;
 import com.gypsyengineer.tlsbunny.tls.Struct;
 import com.gypsyengineer.tlsbunny.tls.Vector;
 import com.gypsyengineer.tlsbunny.tls13.struct.KeyShare;
+import com.gypsyengineer.tlsbunny.tls13.struct.KeyShareEntry;
 import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
 import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import org.junit.Test;
 
 import java.io.IOException;
 
+import static com.gypsyengineer.tlsbunny.TestUtils.expectWhatTheHell;
 import static org.junit.Assert.*;
 
 public class KeyShareImplTest {
 
     @Test
-    public void clientHello() throws IOException {
+    public void clientHello() throws Exception {
         StructFactory factory = StructFactory.getDefault();
 
         KeyShare.ClientHello one = factory.createKeyShareForClientHello(
@@ -29,7 +31,7 @@ public class KeyShareImplTest {
         Struct struct = one.copy();
         assertTrue(struct instanceof KeyShare);
         KeyShare two = (KeyShare) struct;
-        assertFalse(one == two);
+        assertNotSame(one, two);
         assertEquals(one, two);
         assertEquals(one.hashCode(), two.hashCode());
         assertEquals(one.encodingLength(), two.encodingLength());
@@ -37,6 +39,18 @@ public class KeyShareImplTest {
 
         KeyShareImpl.ClientHelloImpl three = new KeyShareImpl.ClientHelloImpl();
         assertNotEquals(one, three);
+
+        assertTrue(three.composite());
+        assertEquals(1, three.total());
+        Vector<KeyShareEntry> entries = Vector.wrap(
+                1, StructFactory.getDefault().createKeyShareEntry(NamedGroup.secp256r1, new byte[16]));
+        Struct previous = three.element(0);
+        three.element(0, entries);
+        assertNotEquals(previous, three.element(0));
+        assertSame(entries, three.element(0));
+
+        expectWhatTheHell(() -> three.element(7));
+        expectWhatTheHell(() -> three.element(7, entries));
     }
 
     @Test
@@ -59,7 +73,7 @@ public class KeyShareImplTest {
         Struct struct = one.copy();
         assertTrue(struct instanceof KeyShare);
         KeyShare two = (KeyShare) struct;
-        assertFalse(one == two);
+        assertNotSame(one, two);
         assertEquals(one, two);
         assertEquals(one.hashCode(), two.hashCode());
         assertEquals(one.encodingLength(), two.encodingLength());
@@ -86,7 +100,7 @@ public class KeyShareImplTest {
         Struct struct = one.copy();
         assertTrue(struct instanceof KeyShare);
         KeyShare two = (KeyShare) struct;
-        assertFalse(one == two);
+        assertNotSame(one, two);
         assertEquals(one, two);
         assertEquals(one.hashCode(), two.hashCode());
         assertEquals(one.encodingLength(), two.encodingLength());

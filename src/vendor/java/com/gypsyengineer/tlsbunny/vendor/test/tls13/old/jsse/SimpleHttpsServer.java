@@ -23,7 +23,7 @@ public class SimpleHttpsServer implements Runnable, AutoCloseable {
             "Connection: Closed\n\n%s", message.length(), message).getBytes();
 
     protected Config config = SystemPropertiesConfig.load();
-    protected Output output = Output.console();
+    protected Output output = Output.standard();
 
     // TODO: add synchronization
     private boolean running = false;

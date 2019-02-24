@@ -16,8 +16,6 @@ import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.output.Output;
 import com.gypsyengineer.tlsbunny.utils.Sync;
 
-import java.io.IOException;
-
 import static com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup.secp256r1;
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
@@ -26,14 +24,11 @@ public class HttpsServer implements Server {
     private final EngineFactoryImpl engineFactory;
     private final SingleThreadServer server;
 
-    public static HttpsServer httpsServer()
-            throws IOException, NegotiatorException {
-
+    public static HttpsServer httpsServer() throws NegotiatorException {
         return httpsServer(SingleThreadServer.free_port);
     }
 
-    public static HttpsServer httpsServer(int port)
-            throws IOException, NegotiatorException {
+    public static HttpsServer httpsServer(int port) throws NegotiatorException {
 
         EngineFactoryImpl factory = new EngineFactoryImpl()
                 .set(secp256r1)

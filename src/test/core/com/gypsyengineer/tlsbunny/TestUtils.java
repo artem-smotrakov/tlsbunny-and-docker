@@ -200,7 +200,7 @@ public class TestUtils {
 
         @Override
         public Output output() {
-            return Output.console();
+            return Output.standard();
         }
 
         @Override
@@ -248,7 +248,7 @@ public class TestUtils {
 
         @Override
         public Output output() {
-            return Output.console();
+            return Output.standard();
         }
 
         @Override
@@ -296,7 +296,7 @@ public class TestUtils {
 
         @Override
         public Output output() {
-            return Output.console();
+            return Output.standard();
         }
 
         @Override
@@ -344,7 +344,7 @@ public class TestUtils {
 
         @Override
         public Output output() {
-            return Output.console();
+            return Output.standard();
         }
 
         @Override

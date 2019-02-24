@@ -1,10 +1,10 @@
 package com.gypsyengineer.tlsbunny.vendor.test.tls13.common.server;
 
+import com.gypsyengineer.tlsbunny.tls13.server.Server;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 import com.gypsyengineer.tlsbunny.vendor.test.tls13.Utils;
 import com.gypsyengineer.tlsbunny.vendor.test.tls13.VendorTest;
-import com.gypsyengineer.tlsbunny.vendor.test.tls13.openssl.OpensslServer;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,7 +20,7 @@ import static com.gypsyengineer.tlsbunny.vendor.test.tls13.Utils.checkForASanFin
 
 public abstract class FuzzingForServerWithClientAuth {
 
-    protected static OpensslServer server;
+    protected static Server server;
     protected static Config mainConfig = SystemPropertiesConfig.load();
 
     // provide setUp() method

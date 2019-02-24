@@ -80,11 +80,12 @@ public abstract class FuzzyStructFactory<T> extends StructFactoryWrapper
 
     @Override
     synchronized public void state(String string) {
-        Scanner scanner = new Scanner(string);
-        scanner.useDelimiter(":");
-        targets(scanner.next().split("-"));
-        scanner.skip(":");
-        fuzzer.state(scanner.nextLine());
+        try (Scanner scanner = new Scanner(string)) {
+            scanner.useDelimiter(":");
+            targets(scanner.next().split("-"));
+            scanner.skip(":");
+            fuzzer.state(scanner.nextLine());
+        }
     }
 
     @Override

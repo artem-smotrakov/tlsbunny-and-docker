@@ -18,6 +18,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.gypsyengineer.tlsbunny.utils.Utils.cantDoThat;
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public class Engine {
@@ -37,7 +38,7 @@ public class Engine {
     private Connection connection;
     private boolean createdConnection = false;
 
-    private Output output = Output.console();
+    private Output output = Output.standard();
     private String host = "localhost";
     private int port = 443;
     private Status status = Status.not_started;
@@ -505,12 +506,12 @@ public class Engine {
 
         @Override
         public Action in(ByteBuffer buffer) {
-            throw new UnsupportedOperationException("what the hell? I can't do that!");
+            throw cantDoThat();
         }
 
         @Override
         public ByteBuffer out() {
-            throw new UnsupportedOperationException("what the hell? I can't do that!");
+            throw cantDoThat();
         }
 
         @Override
@@ -520,7 +521,7 @@ public class Engine {
 
         @Override
         public ByteBuffer applicationData() {
-            throw new UnsupportedOperationException("what the hell? I can't do that!");
+            throw cantDoThat();
         }
     }
 

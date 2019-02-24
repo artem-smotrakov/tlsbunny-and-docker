@@ -2,30 +2,30 @@ package com.gypsyengineer.tlsbunny.output;
 
 import java.util.List;
 
-public class ConsoleOutput extends OutputWrapper {
+public class StandardOutput extends OutputWrapper {
 
-    protected static Level level = Level.valueOf(
-            System.getProperty("tlsbunny.output.console.level",
+    private static Level globalLevel = Level.valueOf(
+            System.getProperty("tlsbunny.output.standard.level",
                     Level.info.name()));
     static {
-        System.out.printf("[output] tlsbunny.output.console.level = %s%n", level);
+        System.out.printf("[output] tlsbunny.output.standard.level = %s%n", globalLevel);
     }
 
     protected static final Object consoleLock = new Object();
 
     private static final String ansi_red = "\u001B[31m";
     private static final String ansi_reset = "\u001B[0m";
-    private static final boolean enableHighlighting = Boolean.valueOf(
+    private static final boolean enableHighlighting = Boolean.parseBoolean(
             System.getProperty("tlsbunny.output.enable.highlighting", "true"));
 
     protected int index = 0;
 
-    public ConsoleOutput() {
+    public StandardOutput() {
         this(new LocalOutput());
     }
 
-    public ConsoleOutput(Output output) {
-        super(output, level);
+    public StandardOutput(Output output) {
+        super(output, globalLevel);
     }
 
     @Override

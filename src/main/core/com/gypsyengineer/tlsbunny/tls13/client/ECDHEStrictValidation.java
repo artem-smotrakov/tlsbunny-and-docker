@@ -31,10 +31,10 @@ public class ECDHEStrictValidation extends AbstractClient {
     private int n = 1;
 
     public static void main(String[] args) throws Exception {
-        try (Output output = Output.console()) {
-            new ECDHEStrictValidation()
-                    .set(output)
-                    .connect();
+        try (Output output = Output.standardClient();
+             ECDHEStrictValidation client = new ECDHEStrictValidation()) {
+
+            client.set(output).connect();
         }
     }
 

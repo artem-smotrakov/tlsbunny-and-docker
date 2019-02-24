@@ -27,8 +27,8 @@ public class MultipleCCSTest {
 
     @Test
     public void test() throws Exception {
-        Output serverOutput = Output.console("server");
-        Output clientOutput = Output.console("client");
+        Output serverOutput = Output.standard("server");
+        Output clientOutput = Output.standardClient();
 
         Config serverConfig = SystemPropertiesConfig.load();
         SingleThreadServer server = new SingleThreadServer()

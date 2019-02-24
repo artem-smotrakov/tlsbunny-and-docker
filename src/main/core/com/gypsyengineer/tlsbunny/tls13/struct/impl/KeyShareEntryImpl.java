@@ -1,5 +1,6 @@
 package com.gypsyengineer.tlsbunny.tls13.struct.impl;
 
+import com.gypsyengineer.tlsbunny.tls.Struct;
 import com.gypsyengineer.tlsbunny.tls.Vector;
 import com.gypsyengineer.tlsbunny.utils.Utils;
 import java.io.IOException;
@@ -7,6 +8,9 @@ import java.util.Objects;
 
 import com.gypsyengineer.tlsbunny.tls13.struct.KeyShareEntry;
 import com.gypsyengineer.tlsbunny.tls13.struct.NamedGroup;
+
+import static com.gypsyengineer.tlsbunny.utils.Utils.cast;
+import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public class KeyShareEntryImpl implements KeyShareEntry {
 
@@ -73,5 +77,44 @@ public class KeyShareEntryImpl implements KeyShareEntry {
     @Override
     public int hashCode() {
         return Objects.hash(group, key_exchange);
+    }
+
+    @Override
+    public boolean composite() {
+        return true;
+    }
+
+    @Override
+    public int total() {
+        return 2;
+    }
+
+    @Override
+    public Struct element(int index) {
+        switch (index) {
+            case 0:
+                return group;
+            case 1:
+                return key_exchange;
+            default:
+                throw whatTheHell("incorrect index %d!", index);
+        }
+    }
+
+    @Override
+    public void element(int index, Struct element) {
+        if (element == null) {
+            throw whatTheHell("element can't be null!");
+        }
+        switch (index) {
+            case 0:
+                group = cast(element, NamedGroup.class);
+                break;
+            case 1:
+                key_exchange = cast(element, Vector.class);
+                break;
+            default:
+                throw whatTheHell("incorrect index %d!", index);
+        }
     }
 }

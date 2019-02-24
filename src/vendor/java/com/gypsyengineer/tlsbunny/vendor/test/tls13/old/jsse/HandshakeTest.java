@@ -1,6 +1,5 @@
 package com.gypsyengineer.tlsbunny.vendor.test.tls13.old.jsse;
 
-import com.gypsyengineer.tlsbunny.tls13.client.Client;
 import com.gypsyengineer.tlsbunny.tls13.client.HttpsClient;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
 import com.gypsyengineer.tlsbunny.tls13.connection.NoAlertAnalyzer;
@@ -26,18 +25,14 @@ public class HandshakeTest extends BaseTest {
         serverConfig.serverCertificate(serverCertificatePath);
         serverConfig.serverKey(serverKeyPath);
 
-        Output serverOutput = Output.console("server");
-        Output clientOutput = Output.console("client");
+        try (HttpsClient client = new HttpsClient();
+             SimpleHttpsServer server = SimpleHttpsServer.create();
+             Output serverOutput = Output.standard("server");
+             Output clientOutput = Output.standardClient()) {
 
-        Client client = new HttpsClient()
-                .version(ProtocolVersion.TLSv13)
-                .set(clientOutput);
+            client.version(ProtocolVersion.TLSv13).set(clientOutput);
+            server.set(serverConfig).set(serverOutput);
 
-        SimpleHttpsServer server = SimpleHttpsServer.create()
-                .set(serverConfig)
-                .set(serverOutput);
-
-        try (client; server; clientOutput; serverOutput) {
             new Thread(server).start();
             Thread.sleep(delay);
 

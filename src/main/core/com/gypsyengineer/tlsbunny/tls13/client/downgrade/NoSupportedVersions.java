@@ -21,19 +21,18 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp
 public class NoSupportedVersions extends SingleConnectionClient {
 
     public static void main(String[] args) throws Exception {
-        try (Output output = Output.console()) {
+        try (Output output = Output.standardClient()) {
             run(output, SystemPropertiesConfig.load());
         }
     }
 
-    public static NoSupportedVersions run(Output output, Config config) throws Exception {
-        NoSupportedVersions client = (NoSupportedVersions) new NoSupportedVersions()
-                .set(config)
-                .set(StructFactory.getDefault())
-                .set(output);
-
-        client.connect();
-        return client;
+    public static void run(Output output, Config config) throws Exception {
+        try (NoSupportedVersions client = new NoSupportedVersions()) {
+            client.set(config)
+                    .set(StructFactory.getDefault())
+                    .set(output)
+                    .connect();
+        }
     }
 
     @Override
