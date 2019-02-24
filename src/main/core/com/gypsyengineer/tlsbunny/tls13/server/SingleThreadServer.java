@@ -126,10 +126,10 @@ public class SingleThreadServer implements Server {
 
         output.info("started on port %d", port());
         running = true;
-        try (ServerSocket serverSocket = new ServerSocket(config.port())) {
-            this.serverSocket = serverSocket;
+        try (ServerSocket socket = new ServerSocket(config.port())) {
+            serverSocket = socket;
             while (shouldRun()) {
-                accept(serverSocket);
+                accept(socket);
             }
         } catch (IOException e) {
             if (serverSocket.isClosed()) {
