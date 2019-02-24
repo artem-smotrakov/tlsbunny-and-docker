@@ -7,9 +7,9 @@ public interface KeyShareEntry extends Struct {
 
     int key_exchange_length_bytes = 2;
 
-    Vector<Byte> keyExchange();
     NamedGroup namedGroup();
+    Vector<Byte> keyExchange();
 
-    KeyShareEntry keyExchange(Vector<Byte> bytes);
     KeyShareEntry namedGroup(NamedGroup group);
+    KeyShareEntry keyExchange(Vector<Byte> bytes);
 }
