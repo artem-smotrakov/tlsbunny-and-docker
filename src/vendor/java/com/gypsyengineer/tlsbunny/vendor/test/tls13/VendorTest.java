@@ -153,12 +153,12 @@ public class VendorTest {
         }
     }
 
-    private void startClientIfNecessary() {
+    private void startClientIfNecessary() throws IOException, InterruptedException {
         // configure and run the client
         if (!client.running()) {
             client.config().port(server.port());
             clientThread = client.start();
-            sleep(delay);
+            Utils.waitStart(client);
         }
     }
 
