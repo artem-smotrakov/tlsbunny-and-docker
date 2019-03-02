@@ -1,6 +1,5 @@
 package com.gypsyengineer.tlsbunny.vendor.test.tls13.openssl.client;
 
-import com.gypsyengineer.tlsbunny.tls13.fuzzer.DeepHandshakeFuzzerConfigs;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.MutatedServer;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
@@ -20,7 +19,8 @@ public class FuzzingForOpensslClient {
         new VendorTest()
                 .label("mutated_server_ccs")
                 .set(new OpensslClient())
-                .set(MutatedServer.from(httpsServer(), ccsConfigs(mainConfig)))
+                .set(MutatedServer.from(httpsServer())
+                        .set(ccsConfigs(mainConfig)))
                 .run();
     }
 
@@ -29,7 +29,8 @@ public class FuzzingForOpensslClient {
         new VendorTest()
                 .label("mutated_server_tls_plaintext")
                 .set(new OpensslClient())
-                .set(MutatedServer.from(httpsServer(), tlsPlaintextConfigs(mainConfig)))
+                .set(MutatedServer.from(httpsServer())
+                        .set(tlsPlaintextConfigs(mainConfig)))
                 .run();
     }
 
@@ -38,7 +39,8 @@ public class FuzzingForOpensslClient {
         new VendorTest()
                 .label("mutated_server_handshake")
                 .set(new OpensslClient())
-                .set(MutatedServer.from(httpsServer(), handshakeConfigs(mainConfig)))
+                .set(MutatedServer.from(httpsServer())
+                        .set(handshakeConfigs(mainConfig)))
                 .run();
     }
 
@@ -47,7 +49,8 @@ public class FuzzingForOpensslClient {
         new VendorTest()
                 .label("mutated_server_server_hello")
                 .set(new OpensslClient())
-                .set(MutatedServer.from(httpsServer(), serverHelloConfigs(mainConfig)))
+                .set(MutatedServer.from(httpsServer())
+                        .set(serverHelloConfigs(mainConfig)))
                 .run();
     }
 
@@ -56,7 +59,8 @@ public class FuzzingForOpensslClient {
         new VendorTest()
                 .label("mutated_server_finished")
                 .set(new OpensslClient())
-                .set(MutatedServer.from(httpsServer(), finishedConfigs(mainConfig)))
+                .set(MutatedServer.from(httpsServer())
+                        .set(finishedConfigs(mainConfig)))
                 .run();
     }
 
@@ -65,16 +69,13 @@ public class FuzzingForOpensslClient {
         new VendorTest()
                 .label("mutated_server_extension_vector")
                 .set(new OpensslClient())
-                .set(MutatedServer.from(httpsServer(), extensionVectorConfigs(mainConfig)))
+                .set(MutatedServer.from(httpsServer())
+                        .set(extensionVectorConfigs(mainConfig)))
                 .run();
     }
 
-    //@Test
-    public void deepHandshakeFuzzer() throws Exception {
-        new VendorTest()
-                .label("mutated_server_deep_handshake_fuzzer")
-                .set(new OpensslClient())
-                .set(MutatedServer.from(httpsServer(), DeepHandshakeFuzzerConfigs.noClientAuth(mainConfig)))
-                .run();
-    }
+    // TODO: implement deep handshake fuzzing
+    // TODO: fuzz Certificate
+    // TODO: fuzz CertificateVerify
+    // TODO: fuzz CertificateRequest
 }

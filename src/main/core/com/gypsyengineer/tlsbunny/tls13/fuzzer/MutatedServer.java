@@ -40,6 +40,10 @@ public class MutatedServer implements Server {
 
     private long test = 0;
 
+    public static MutatedServer from(Server server) throws IOException {
+        return mutatedServer(server);
+    }
+
     public static MutatedServer from(Server server, FuzzerConfig... fuzzerConfigs)
             throws IOException {
 
@@ -57,7 +61,17 @@ public class MutatedServer implements Server {
     private MutatedServer(ServerSocket ssocket,
                           Server server, FuzzerConfig... fuzzerConfigs) {
 
-        // check all fuzzer configs early
+        this.engineFactory = server.engineFactory();
+        this.fuzzerConfigs = check(fuzzerConfigs);
+        this.ssocket = ssocket;
+    }
+
+    public MutatedServer set(FuzzerConfig... fuzzerConfigs) {
+        this.fuzzerConfigs = check(fuzzerConfigs);
+        return this;
+    }
+
+    private FuzzerConfig[] check(FuzzerConfig... fuzzerConfigs) {
         for (FuzzerConfig fuzzerConfig : fuzzerConfigs) {
             if (fuzzerConfig.noFactory()) {
                 throw whatTheHell("no factory specified!");
@@ -70,9 +84,7 @@ public class MutatedServer implements Server {
             }
         }
 
-        this.engineFactory = server.engineFactory();
-        this.fuzzerConfigs = fuzzerConfigs;
-        this.ssocket = ssocket;
+        return fuzzerConfigs;
     }
 
     @Override
