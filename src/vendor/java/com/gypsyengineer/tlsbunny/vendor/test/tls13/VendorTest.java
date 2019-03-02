@@ -67,6 +67,7 @@ public class VendorTest {
                     // and then exit
                     client.stop();
                     Utils.waitStop(client);
+                    Utils.waitStop(clientThread);
                     break;
                 }
 
@@ -77,6 +78,7 @@ public class VendorTest {
                     if (serverThread != null) {
                         server.stop();
                         Utils.waitStop(server);
+                        Utils.waitStop(serverThread);
                     }
                     break;
                 }
