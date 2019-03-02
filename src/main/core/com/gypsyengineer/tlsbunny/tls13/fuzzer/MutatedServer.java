@@ -32,7 +32,7 @@ public class MutatedServer implements Server {
     private final List<Engine> engines = Collections.synchronizedList(new ArrayList<>());
 
     // TODO: synchronization
-    private boolean running = false;
+    private Status status = Status.not_started;
     private boolean failed = false;
     private Output output;
     private FuzzerConfig[] fuzzerConfigs;
@@ -119,11 +119,6 @@ public class MutatedServer implements Server {
     }
 
     @Override
-    public boolean running() {
-        return running;
-    }
-
-    @Override
     public int port() {
         return ssocket.getLocalPort();
     }
@@ -152,6 +147,13 @@ public class MutatedServer implements Server {
     @Override
     public EngineFactory engineFactory() {
         throw whatTheHell("no engine factories for you!");
+    }
+
+    @Override
+    public Status status() {
+        synchronized (this) {
+            return status;
+        }
     }
 
     @Override
@@ -201,11 +203,16 @@ public class MutatedServer implements Server {
 
         try {
             test = 0;
-            running = true;
             output.info("started on port %d", port());
             while (shouldRun(fuzzer, fuzzerConfig)) {
                 sync().start();
+                synchronized (this) {
+                    status = Status.ready;
+                }
                 try (Connection connection = Connection.create(ssocket.accept())) {
+                    synchronized (this) {
+                        status = Status.accepted;
+                    }
                     run(connection, fuzzer);
                 } finally {
                     output.flush();
@@ -218,7 +225,7 @@ public class MutatedServer implements Server {
             output.achtung("what the hell? unexpected exception", e);
             failed = true;
         } finally {
-            running = false;
+            status = Status.done;
             output.info("stopped");
             output.flush();
         }

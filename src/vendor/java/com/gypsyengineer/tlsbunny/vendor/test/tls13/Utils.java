@@ -83,7 +83,7 @@ public class Utils {
             throws IOException, InterruptedException {
 
         long start = System.currentTimeMillis();
-        while (!client.running()) {
+        while (!client.done() && !client.running()) {
             Thread.sleep(start_delay);
             if (timeout > 0 && System.currentTimeMillis() - start > timeout) {
                 throw new IOException(
@@ -102,13 +102,13 @@ public class Utils {
             throws IOException, InterruptedException {
 
         long start = System.currentTimeMillis();
-        do {
+        while (!server.done() && !server.running()) {
             Thread.sleep(delay);
             if (timeout > 0 && System.currentTimeMillis() - start > timeout) {
                 throw new IOException(
                         "timeout reached while waiting for the server to start");
             }
-        } while (!server.running());
+        }
     }
 
     public static void waitStop(Client client)
@@ -121,13 +121,13 @@ public class Utils {
             throws InterruptedException, IOException {
 
         long start = System.currentTimeMillis();
-        do {
+        while (!client.done()) {
             Thread.sleep(stop_delay);
             if (timeout > 0 && System.currentTimeMillis() - start > timeout) {
                 throw new IOException(
                         "timeout reached while waiting for the client to stop");
             }
-        } while (client.running());
+        }
     }
 
     public static void waitStop(Server server)
@@ -140,13 +140,13 @@ public class Utils {
             throws InterruptedException, IOException {
 
         long start = System.currentTimeMillis();
-        do {
+        while (!server.done()) {
             Thread.sleep(delay);
             if (timeout > 0 && System.currentTimeMillis() - start > timeout) {
                 throw new IOException(
                         "timeout reached while waiting for the server to stop");
             }
-        } while (server.running());
+        };
     }
 
     public static void waitServerReady(Server server)
@@ -159,13 +159,13 @@ public class Utils {
             throws IOException, InterruptedException {
 
         long start = System.currentTimeMillis();
-        do {
+        while (!server.ready()) {
             Thread.sleep(delay);
             if (timeout > 0 && System.currentTimeMillis() - start > timeout) {
                 throw new IOException(
                         "timeout reached while waiting for the server to start");
             }
-        } while (!server.ready());
+        }
     }
 
     public static int waitProcessFinish(Output output, List<String> command)

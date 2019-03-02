@@ -10,6 +10,10 @@ import com.gypsyengineer.tlsbunny.utils.Sync;
 
 public interface Server extends Runnable, AutoCloseable, HasOutput<Server> {
 
+    enum Status {
+        not_started, ready, accepted, done
+    }
+
     Server set(Config config);
     Server set(EngineFactory engineFactory);
     Server set(Sync sync);
@@ -20,6 +24,7 @@ public interface Server extends Runnable, AutoCloseable, HasOutput<Server> {
     Server stopWhen(StopCondition condition);
 
     EngineFactory engineFactory();
+    Status status();
 
     /**
      * Stops the server.
@@ -29,14 +34,21 @@ public interface Server extends Runnable, AutoCloseable, HasOutput<Server> {
     /**
      * @return true if the server is running, false otherwise
      */
-    boolean running();
+    default boolean running() {
+        Status status = status();
+        return status == Status.ready || status == Status.accepted;
+    }
 
     /**
      * @return true if the server is ready to accept a connection,
      *         false otherwise
      */
     default boolean ready() {
-        throw new UnsupportedOperationException("not ready for you!");
+        return status() == Status.ready;
+    }
+
+    default boolean done() {
+        return status() == Status.done;
     }
 
     /**

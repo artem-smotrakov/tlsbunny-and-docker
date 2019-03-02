@@ -141,7 +141,9 @@ public class OpensslClient extends BaseDocker implements Client {
             status = Status.running;
         }
         try {
-            int code = Utils.waitProcessFinish(output, command);
+            Process process = Utils.exec(output, command);
+            output.set(process.getInputStream());
+            int code = process.waitFor();
             if (code != 0) {
                 output.achtung("the client exited with a non-zero exit code (%d)", code);
             }
@@ -177,10 +179,12 @@ public class OpensslClient extends BaseDocker implements Client {
         return this;
     }
 
+    /*
     @Override
     public boolean running() {
         return containerRunning();
     }
+    */
 
     @Override
     public void close() throws Exception {

@@ -61,8 +61,8 @@ public class VendorTest {
 
             // wait for client or server to finish
             while (true) {
-                if (!server.running()) {
-                    // server stopped
+                if (server.done()) {
+                    // server is done
                     // stop the client if we started it in this test
                     // and then exit
                     client.stop();
@@ -71,8 +71,8 @@ public class VendorTest {
                     break;
                 }
 
-                if (!client.running()) {
-                    // client stopped
+                if (client.done()) {
+                    // client is done
                     // stop the server if we started in this test
                     // and then exit
                     if (serverThread != null) {

@@ -29,7 +29,6 @@ public class HttpsServer implements Server {
     }
 
     public static HttpsServer httpsServer(int port) throws NegotiatorException {
-
         EngineFactoryImpl factory = new EngineFactoryImpl()
                 .set(secp256r1)
                 .set(StructFactory.getDefault());
@@ -107,6 +106,11 @@ public class HttpsServer implements Server {
     @Override
     public EngineFactory engineFactory() {
         return engineFactory;
+    }
+
+    @Override
+    public Status status() {
+        return server.status();
     }
 
     @Override

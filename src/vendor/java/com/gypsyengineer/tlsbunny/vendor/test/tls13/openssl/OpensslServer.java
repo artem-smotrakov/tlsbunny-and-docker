@@ -13,14 +13,16 @@ import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public class OpensslServer extends BaseDockerServer implements Server {
 
-    public static final int defaultPort = 10101;
+    private static final int defaultPort = 10101;
 
-    protected static final String image = System.getProperty(
+    private static final String image = System.getProperty(
             "tlsbunny.openssl.docker.image",
             "artemsmotrakov/tlsbunny_openssl_tls13");
 
     private static final String host_report_directory = String.format(
             "%s/openssl_report", System.getProperty("user.dir"));
+
+    private Status status = Status.not_started;
 
     public static OpensslServer opensslServer() {
         return new OpensslServer();
@@ -96,6 +98,13 @@ public class OpensslServer extends BaseDockerServer implements Server {
     }
 
     @Override
+    public Status status() {
+        synchronized (this) {
+            return status;
+        }
+    }
+
+    @Override
     public OpensslServer stop() {
         try {
             List<String> command = List.of(
@@ -107,10 +116,19 @@ public class OpensslServer extends BaseDockerServer implements Server {
                     "pidof openssl | xargs kill -SIGINT"
             );
 
-            int code = Utils.waitProcessFinish(output, command);
-            if (code != 0) {
-                output.achtung("could not stop the server (exit code %d)", code);
-                failed = true;
+            synchronized (this) {
+                status = Status.ready;
+            }
+            try {
+                int code = Utils.waitProcessFinish(output, command);
+                if (code != 0) {
+                    output.achtung("could not stop the server (exit code %d)", code);
+                    failed = true;
+                }
+            } finally {
+                synchronized (this) {
+                    status = Status.done;
+                }
             }
         } catch (InterruptedException | IOException e) {
             output.achtung("unexpected exception occurred", e);

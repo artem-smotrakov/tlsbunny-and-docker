@@ -37,7 +37,7 @@ public class SingleThreadServer implements Server {
     private Output output = Output.standard("server");
     private Check check;
     private boolean failed = false;
-    private boolean running = false;
+    private Status status = Status.not_started;
 
     private final List<Engine> engines = Collections.synchronizedList(new ArrayList<>());
 
@@ -119,13 +119,19 @@ public class SingleThreadServer implements Server {
     }
 
     @Override
+    public Status status() {
+        synchronized (this) {
+            return status;
+        }
+    }
+
+    @Override
     public void run() {
         if (factory == null) {
             throw whatTheHell("engine factory is not set! (null)");
         }
 
         output.info("started on port %d", port());
-        running = true;
         try (ServerSocket socket = new ServerSocket(config.port())) {
             serverSocket = socket;
             while (shouldRun()) {
@@ -141,9 +147,12 @@ public class SingleThreadServer implements Server {
         } catch (Exception e) {
             output.achtung("unexpected exception", e);
             failed = true;
+        } finally {
+            synchronized (this) {
+                status = Status.done;
+            }
         }
 
-        running = false;
         output.info("stopped");
     }
 
@@ -159,7 +168,14 @@ public class SingleThreadServer implements Server {
             throws IOException, EngineException, NegotiatorException, ActionFailed,
             AEADException {
 
+        synchronized (this) {
+            status = Status.ready;
+        }
+
         try (Connection connection = Connection.create(serverSocket.accept())) {
+            synchronized (this) {
+                status = Status.accepted;
+            }
             output.info("accepted");
 
             Engine engine = factory.create();
@@ -185,11 +201,6 @@ public class SingleThreadServer implements Server {
 
             output.info("done");
         }
-    }
-
-    @Override
-    public boolean running() {
-        return running;
     }
 
     @Override
