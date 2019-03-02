@@ -16,6 +16,11 @@ public class SyncImpl implements Sync {
 
     private static final int maxLines = 10000;
     private static final int n = 100;
+
+    private static Level standardOutputLevel = Level.valueOf(
+            System.getProperty("tlsbunny.sync.output.standard.level",
+                    Level.info.name()));
+
     private static final boolean printToFile;
     private static final String dirName;
     static {
@@ -72,7 +77,8 @@ public class SyncImpl implements Sync {
 
         output = new LocalOutput();
 
-        standardOutput = new StandardOutput();
+        standardOutput = new StandardOutput(output);
+        standardOutput.set(standardOutputLevel);
         standardOutput.prefix("");
 
         if (printToFile) {
@@ -136,16 +142,16 @@ public class SyncImpl implements Sync {
             for (int i = oldServerIndex; i < serverIndex; i++) {
                 standardOutput.add(serverLines.get(i));
             }
-            standardOutput.flush();
         } else {
             if (++tests % n == 0) {
                 long speed = n * 60000000000L / testsDuration;
                 standardOutput.important("%d tests done, %d tests / minute",
                         tests, speed);
                 testsDuration = 0;
-                standardOutput.flush();
             }
         }
+
+        standardOutput.flush();
 
         if (printToFile) {
             fileOutput.flush();
