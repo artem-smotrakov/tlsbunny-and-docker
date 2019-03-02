@@ -135,7 +135,7 @@ public abstract class FuzzingForServer {
         new VendorTest()
                 .label("mutated_client_deep_handshake_fuzzer")
                 .set(multiConfigClient()
-                        .from(deepHandshakeFuzzyClient().of(httpsClient()))
+                        .from(deepHandshakeFuzzyClient().from(httpsClient()))
                         .configs(DeepHandshakeFuzzerConfigs.noClientAuth(mainConfig)))
                 .set(server)
                 .run();

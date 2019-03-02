@@ -53,7 +53,7 @@ public class DeepHandshakeFuzzyClient extends AbstractFuzzyClient {
         this.fuzzerConfig = fuzzerConfig;
     }
 
-    public DeepHandshakeFuzzyClient of(Client client) {
+    public DeepHandshakeFuzzyClient from(Client client) {
         this.client = client;
         return this;
     }

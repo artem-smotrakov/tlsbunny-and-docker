@@ -180,7 +180,7 @@ public class KeyShareEntryHeapOverRead {
             config.total(1);
 
             multiConfigClient()
-                    .from(deepHandshakeFuzzyClient().of(httpsClient()))
+                    .from(deepHandshakeFuzzyClient().from(httpsClient()))
                     .set(output)
                     .configs(config)
                     .connect();
