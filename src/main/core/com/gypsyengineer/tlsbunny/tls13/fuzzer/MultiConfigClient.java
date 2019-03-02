@@ -37,7 +37,7 @@ public class MultiConfigClient implements Client, AutoCloseable {
         return this;
     }
 
-    public MultiConfigClient of(Client client) {
+    public MultiConfigClient from(Client client) {
         this.client = client;
         return this;
     }

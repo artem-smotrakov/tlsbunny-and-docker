@@ -34,7 +34,7 @@ public abstract class FuzzingForServerWithClientAuth {
     public void certificate() throws Exception {
         new VendorTest()
                 .set(multiConfigClient()
-                        .of(mutatedClient().of(httpsClientAuth()))
+                        .from(mutatedClient().from(httpsClientAuth()))
                         .configs(certificateConfigs(mainConfig)))
                 .set(server)
                 .run();
@@ -44,7 +44,7 @@ public abstract class FuzzingForServerWithClientAuth {
     public void certificateVerify() throws Exception {
         new VendorTest()
                 .set(multiConfigClient()
-                        .of(mutatedClient().of(httpsClientAuth()))
+                        .from(mutatedClient().from(httpsClientAuth()))
                         .configs(certificateVerifyConfigs(mainConfig)))
                 .set(server)
                 .run();

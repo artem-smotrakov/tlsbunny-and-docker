@@ -50,7 +50,7 @@ public class MutatedClient implements Client {
         this.fuzzerConfig = fuzzerConfig;
     }
 
-    public MutatedClient of(Client client) {
+    public MutatedClient from(Client client) {
         this.client = client;
         return this;
     }

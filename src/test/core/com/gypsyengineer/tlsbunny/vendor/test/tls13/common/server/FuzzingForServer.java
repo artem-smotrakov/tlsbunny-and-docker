@@ -36,7 +36,7 @@ public abstract class FuzzingForServer {
         new VendorTest()
                 .label("mutated_client_ccs")
                 .set(multiConfigClient()
-                        .of(mutatedClient().of(httpsClient()))
+                        .from(mutatedClient().from(httpsClient()))
                         .configs(ccsConfigs(mainConfig)))
                 .set(server)
                 .run();
@@ -47,7 +47,7 @@ public abstract class FuzzingForServer {
         new VendorTest()
                 .label("mutated_client_tls_plaintext")
                 .set(multiConfigClient()
-                        .of(mutatedClient().of(httpsClient()))
+                        .from(mutatedClient().from(httpsClient()))
                         .configs(tlsPlaintextConfigs(mainConfig)))
                 .set(server)
                 .run();
@@ -58,7 +58,7 @@ public abstract class FuzzingForServer {
         new VendorTest()
                 .label("mutated_client_handshake")
                 .set(multiConfigClient()
-                        .of(mutatedClient().of(httpsClient()))
+                        .from(mutatedClient().from(httpsClient()))
                         .configs(handshakeConfigs(mainConfig)))
                 .set(server)
                 .run();
@@ -69,7 +69,7 @@ public abstract class FuzzingForServer {
         new VendorTest()
                 .label("mutated_client_client_hello")
                 .set(multiConfigClient()
-                        .of(mutatedClient().of(httpsClient()))
+                        .from(mutatedClient().from(httpsClient()))
                         .configs(clientHelloConfigs(mainConfig)))
                 .set(server)
                 .run();
@@ -80,7 +80,7 @@ public abstract class FuzzingForServer {
         new VendorTest()
                 .label("mutated_client_finished")
                 .set(multiConfigClient()
-                        .of(mutatedClient().of(httpsClient()))
+                        .from(mutatedClient().from(httpsClient()))
                         .configs(finishedConfigs(mainConfig)))
                 .set(server)
                 .run();
@@ -91,7 +91,7 @@ public abstract class FuzzingForServer {
         new VendorTest()
                 .label("mutated_client_cipher_suites")
                 .set(multiConfigClient()
-                        .of(mutatedClient().of(httpsClient()))
+                        .from(mutatedClient().from(httpsClient()))
                         .configs(cipherSuitesConfigs(mainConfig)))
                 .set(server)
                 .run();
@@ -102,7 +102,7 @@ public abstract class FuzzingForServer {
         new VendorTest()
                 .label("mutated_client_extension_vector")
                 .set(multiConfigClient()
-                        .of(mutatedClient().of(httpsClient()))
+                        .from(mutatedClient().from(httpsClient()))
                         .configs(extensionVectorConfigs(mainConfig)))
                 .set(server)
                 .run();
@@ -113,7 +113,7 @@ public abstract class FuzzingForServer {
         new VendorTest()
                 .label("mutated_client_legacy_compression_methods")
                 .set(multiConfigClient()
-                        .of(mutatedClient().of(httpsClient()))
+                        .from(mutatedClient().from(httpsClient()))
                         .configs(legacyCompressionMethodsConfigs(mainConfig)))
                 .set(server)
                 .run();
@@ -124,7 +124,7 @@ public abstract class FuzzingForServer {
         new VendorTest()
                 .label("mutated_client_legacy_session_id")
                 .set(multiConfigClient()
-                        .of(mutatedClient().of(httpsClient()))
+                        .from(mutatedClient().from(httpsClient()))
                         .configs(legacySessionIdConfigs(mainConfig)))
                 .set(server)
                 .run();
@@ -135,7 +135,7 @@ public abstract class FuzzingForServer {
         new VendorTest()
                 .label("mutated_client_deep_handshake_fuzzer")
                 .set(multiConfigClient()
-                        .of(deepHandshakeFuzzyClient().of(httpsClient()))
+                        .from(deepHandshakeFuzzyClient().of(httpsClient()))
                         .configs(DeepHandshakeFuzzerConfigs.noClientAuth(mainConfig)))
                 .set(server)
                 .run();

@@ -25,7 +25,7 @@ public class TestForVendorTest {
 
             new VendorTest()
                     .set(multiConfigClient()
-                            .of(deepHandshakeFuzzyClient().of(httpsClient()))
+                            .from(deepHandshakeFuzzyClient().of(httpsClient()))
                             .configs(DeepHandshakeFuzzerConfigs.noClientAuth(mainConfig)))
                     .set(server)
                     .run();
