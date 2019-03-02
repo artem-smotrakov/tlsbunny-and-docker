@@ -55,6 +55,26 @@ public class FuzzingForOpensslClient {
     }
 
     @Test
+    public void certificate() throws Exception {
+        new VendorTest()
+                .label("mutated_server_certificate")
+                .set(new OpensslClient())
+                .set(MutatedServer.from(httpsServer())
+                        .set(certificateConfigs(mainConfig)))
+                .run();
+    }
+
+    @Test
+    public void certificateVerify() throws Exception {
+        new VendorTest()
+                .label("mutated_server_certificate_verify")
+                .set(new OpensslClient())
+                .set(MutatedServer.from(httpsServer())
+                        .set(certificateVerifyConfigs(mainConfig)))
+                .run();
+    }
+
+    @Test
     public void finished() throws Exception {
         new VendorTest()
                 .label("mutated_server_finished")
@@ -75,7 +95,5 @@ public class FuzzingForOpensslClient {
     }
 
     // TODO: implement deep handshake fuzzing
-    // TODO: fuzz Certificate
-    // TODO: fuzz CertificateVerify
     // TODO: fuzz CertificateRequest
 }
