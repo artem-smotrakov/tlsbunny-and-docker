@@ -77,6 +77,9 @@ public class OpensslServer extends BaseDockerServer implements Server {
         command.add(containerName);
         command.add(image);
 
+        synchronized (this) {
+            status = Status.ready;
+        }
         try {
             Process process = Utils.exec(output, command);
             output.set(process.getInputStream());
@@ -93,6 +96,10 @@ public class OpensslServer extends BaseDockerServer implements Server {
 
             synchronized (this) {
                 failed = true;
+            }
+        } finally {
+            synchronized (this) {
+                status = Status.done;
             }
         }
     }
