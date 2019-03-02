@@ -11,9 +11,9 @@ jdk:
 
 before_install:
   - ./gradlew wrapper --gradle-version 4.10.2
-  - docker pull artemsmotrakov/tlsbunny_openssl_tls13_server
+  - docker pull artemsmotrakov/tlsbunny_openssl_tls13
   - docker pull artemsmotrakov/tlsbunny_wolfssl_tls13
-  - docker run artemsmotrakov/tlsbunny_openssl_tls13_server /bin/bash -c "openssl version"
+  - docker run artemsmotrakov/tlsbunny_openssl_tls13 /bin/bash -c "openssl version"
   - docker run artemsmotrakov/tlsbunny_wolfssl_tls13 /bin/bash -c "examples/server/server -h"
 
 after_success:
