@@ -4,9 +4,9 @@ import com.gypsyengineer.tlsbunny.tls.Struct;
 
 public interface AlertDescription extends Struct {
 
-    int ENCODING_LENGTH = 1;
-    int MAX = 255;
-    int MIN = 0;
+    int encoding_length = 1;
+    int max = 255;
+    int min = 0;
 
     AlertDescription access_denied = StructFactory.getDefault().createAlertDescription(49);
     AlertDescription bad_certificate = StructFactory.getDefault().createAlertDescription(42);
@@ -23,7 +23,7 @@ public interface AlertDescription extends Struct {
     AlertDescription decrypt_error = StructFactory.getDefault().createAlertDescription(51);
     AlertDescription handshake_failure = StructFactory.getDefault().createAlertDescription(40);
     AlertDescription illegal_parameter = StructFactory.getDefault().createAlertDescription(47);
-    AlertDescription inapproptiate_fallback = StructFactory.getDefault().createAlertDescription(86);
+    AlertDescription inappropriate_fallback = StructFactory.getDefault().createAlertDescription(86);
     AlertDescription insufficient_security = StructFactory.getDefault().createAlertDescription(71);
     AlertDescription internal_error = StructFactory.getDefault().createAlertDescription(80);
     AlertDescription missing_extension = StructFactory.getDefault().createAlertDescription(109);

@@ -4,11 +4,10 @@ import com.gypsyengineer.tlsbunny.tls13.client.Client;
 import com.gypsyengineer.tlsbunny.tls13.server.Server;
 import com.gypsyengineer.tlsbunny.output.Output;
 import com.gypsyengineer.tlsbunny.utils.Sync;
-import com.gypsyengineer.tlsbunny.utils.UncaughtExceptionHandler;
+import com.gypsyengineer.tlsbunny.utils.UncaughtExceptionHandlerImpl;
 
 import java.io.IOException;
 
-import static com.gypsyengineer.tlsbunny.vendor.test.tls13.Utils.checkForASanFindings;
 import static com.gypsyengineer.tlsbunny.vendor.test.tls13.Utils.sleep;
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
@@ -47,7 +46,7 @@ public class VendorTest {
         // threads, but it doesn't work for some reason
         // TODO look into it
         Thread.UncaughtExceptionHandler previousExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
-        UncaughtExceptionHandler exceptionHandler = new UncaughtExceptionHandler();
+        UncaughtExceptionHandlerImpl exceptionHandler = new UncaughtExceptionHandlerImpl();
         Thread.setDefaultUncaughtExceptionHandler(exceptionHandler);
 
         configureOutputs();

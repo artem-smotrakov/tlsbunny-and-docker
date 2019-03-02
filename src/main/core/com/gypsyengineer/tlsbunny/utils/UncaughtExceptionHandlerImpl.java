@@ -1,6 +1,6 @@
 package com.gypsyengineer.tlsbunny.utils;
 
-public class UncaughtExceptionHandler implements Thread.UncaughtExceptionHandler {
+public class UncaughtExceptionHandlerImpl implements Thread.UncaughtExceptionHandler {
 
     private Throwable exception;
 

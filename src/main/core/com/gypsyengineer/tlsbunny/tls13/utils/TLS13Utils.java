@@ -83,9 +83,10 @@ public class TLS13Utils {
                 return 48;
             case "secp521r1":
                 return 66;
+            default:
+                throw new IllegalArgumentException(
+                        String.format("unknown groups: %s", group));
         }
-
-        throw new IllegalArgumentException(String.format("unknown groups: %s", group));
     }
 
 }

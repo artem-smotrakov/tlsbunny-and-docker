@@ -5,7 +5,7 @@ import com.gypsyengineer.tlsbunny.tls.Vector;
 
 public interface ResponderID extends Struct {
 
-    static int LENGTH_BYTES = 2;
+    int length_bytes = 2;
 
-    Vector<Byte> getContent();
+    Vector<Byte> content();
 }

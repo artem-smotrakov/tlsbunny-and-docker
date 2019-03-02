@@ -10,8 +10,6 @@ import com.gypsyengineer.tlsbunny.utils.Sync;
 
 public interface Server extends Runnable, AutoCloseable, HasOutput<Server> {
 
-    int start_delay = 1000; // in millis
-
     Server set(Config config);
     Server set(EngineFactory engineFactory);
     Server set(Sync sync);
@@ -66,7 +64,7 @@ public interface Server extends Runnable, AutoCloseable, HasOutput<Server> {
         thread.start();
 
         try {
-            Thread.sleep(start_delay);
+            Thread.sleep(1000); // one second
         } catch (InterruptedException e) {
             output().achtung("exception: ", e);
         }

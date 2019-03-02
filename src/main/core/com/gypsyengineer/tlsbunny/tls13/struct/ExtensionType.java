@@ -4,7 +4,7 @@ import com.gypsyengineer.tlsbunny.tls.Struct;
 
 public interface ExtensionType extends Struct {
 
-    int ENCODING_LENGTH = 2;
+    int encoding_length = 2;
 
     ExtensionType application_layer_protocol_negotiation = StructFactory.getDefault().createExtensionType(16);
     ExtensionType certificate_authorities = StructFactory.getDefault().createExtensionType(47);
@@ -29,5 +29,5 @@ public interface ExtensionType extends Struct {
     ExtensionType use_srtp = StructFactory.getDefault().createExtensionType(14);
     ExtensionType signature_algorithms_cert = StructFactory.getDefault().createExtensionType(50);
 
-    int getCode();
+    int code();
 }

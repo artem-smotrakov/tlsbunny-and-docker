@@ -4,9 +4,9 @@ import com.gypsyengineer.tlsbunny.tls.Struct;
 
 public interface AlertLevel extends Struct {
 
-    int ENCODING_LENGTH = 1;
-    int MAX = 255;
-    int MIN = 0;
+    int encoding_length = 1;
+    int max = 255;
+    int min = 0;
     
     AlertLevel fatal = StructFactory.getDefault().createAlertLevel(2);
     AlertLevel warning = StructFactory.getDefault().createAlertLevel(1);

@@ -14,13 +14,13 @@ public class ResponderIDImpl implements ResponderID {
     }
 
     @Override
-    public Vector<Byte> getContent() {
+    public Vector<Byte> content() {
         return content;
     }
 
     @Override
     public int encodingLength() {
-        return ResponderID.LENGTH_BYTES;
+        return ResponderID.length_bytes;
     }
 
     @Override

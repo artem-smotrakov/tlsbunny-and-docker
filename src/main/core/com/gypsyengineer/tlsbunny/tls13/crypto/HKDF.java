@@ -137,11 +137,11 @@ public class HKDF {
 
     private HkdfLabel createHkdfLabel(int length, byte[] label, byte[] context) {
         byte[] tls13_label = concatenate("tls13 ".getBytes(), label);
-        if (tls13_label.length > HkdfLabel.MAX_LABEL_LENGTH) {
+        if (tls13_label.length > HkdfLabel.max_label_length) {
             throw new IllegalArgumentException();
         }
 
-        if (context.length > HkdfLabel.MAX_CONTEXT_LENGTH) {
+        if (context.length > HkdfLabel.max_context_length) {
             throw new IllegalArgumentException();
         }
 

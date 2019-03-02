@@ -20,12 +20,12 @@ public class SignatureSchemeImpl implements SignatureScheme {
 
     @Override
     public int encodingLength() {
-        return ENCODING_LENGTH;
+        return encoding_length;
     }
 
     @Override
     public byte[] encoding() throws IOException {
-        return ByteBuffer.allocate(ENCODING_LENGTH).putShort((short) code).array();
+        return ByteBuffer.allocate(encoding_length).putShort((short) code).array();
     }
 
     @Override

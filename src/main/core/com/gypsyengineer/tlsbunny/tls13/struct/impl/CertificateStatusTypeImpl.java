@@ -20,7 +20,7 @@ public class CertificateStatusTypeImpl implements CertificateStatusType {
 
     @Override
     public int encodingLength() {
-        return ENCODING_LENGTH;
+        return encoding_length;
     }
 
     @Override
