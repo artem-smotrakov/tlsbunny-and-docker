@@ -83,7 +83,7 @@ public class Utils {
             throws IOException, InterruptedException {
 
         long start = System.currentTimeMillis();
-        while (!client.done() && !client.running()) {
+        while (client.status() == Client.Status.not_started) {
             Thread.sleep(start_delay);
             if (timeout > 0 && System.currentTimeMillis() - start > timeout) {
                 throw new IOException(
@@ -102,7 +102,7 @@ public class Utils {
             throws IOException, InterruptedException {
 
         long start = System.currentTimeMillis();
-        while (!server.done() && !server.running()) {
+        while (server.status() == Server.Status.not_started) {
             Thread.sleep(delay);
             if (timeout > 0 && System.currentTimeMillis() - start > timeout) {
                 throw new IOException(
