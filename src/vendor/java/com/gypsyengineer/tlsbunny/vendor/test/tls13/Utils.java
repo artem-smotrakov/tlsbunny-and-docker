@@ -15,9 +15,9 @@ public class Utils {
 
     // in millis
     private static final int delay = 500;
-    private static final int start_delay = 5 * 1000;
+    private static final int start_delay = 500;
     private static final int stop_delay  = 5 * 1000;
-    private static final int default_timeout = 3 * 60 * 1000; // 3 minutes
+    private static final int default_timeout = 60 * 1000; // 1 minute
 
     public static void sleep(long millis) {
         try {
@@ -60,6 +60,19 @@ public class Utils {
         return pb.start();
     }
 
+    public static void waitStop(Thread thread)
+            throws InterruptedException, IOException {
+
+        if (thread == null || !thread.isAlive()) {
+            return;
+        }
+        thread.join(default_timeout);
+        if (thread.isAlive()) {
+            throw new IOException(
+                    "timeout reached while waiting for the thread to stop");
+        }
+    }
+
     public static void waitStart(Client client)
             throws IOException, InterruptedException {
 
@@ -70,13 +83,13 @@ public class Utils {
             throws IOException, InterruptedException {
 
         long start = System.currentTimeMillis();
-        do {
+        while (!client.running()) {
             Thread.sleep(start_delay);
             if (timeout > 0 && System.currentTimeMillis() - start > timeout) {
                 throw new IOException(
                         "timeout reached while waiting for the client to start");
             }
-        } while (!client.running());
+        }
     }
 
     public static void waitStart(Server server)
