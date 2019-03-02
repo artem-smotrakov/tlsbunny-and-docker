@@ -5,14 +5,18 @@ import java.util.List;
 public abstract class OutputWrapper implements Output {
 
     protected final Output output;
-    protected final Level level;
+    protected Level level;
 
-    public OutputWrapper(Output output) {
+    OutputWrapper(Output output) {
         this(output, Output.level);
     }
 
-    public OutputWrapper(Output output, Level level) {
+    OutputWrapper(Output output, Level level) {
         this.output = output;
+        this.level = level;
+    }
+
+    public void set(Level level) {
         this.level = level;
     }
 
