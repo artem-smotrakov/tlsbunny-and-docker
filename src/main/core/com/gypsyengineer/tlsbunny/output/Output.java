@@ -54,6 +54,8 @@ public interface Output extends AutoCloseable {
 
     boolean contains(String line);
 
+    void clear();
+
     void flush();
 
     @Override

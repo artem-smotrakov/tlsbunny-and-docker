@@ -141,6 +141,11 @@ public class InputStreamOutput implements Output {
     }
 
     @Override
+    public void clear() {
+        lines.clear();
+    }
+
+    @Override
     public void flush() {
         // do nothing
     }

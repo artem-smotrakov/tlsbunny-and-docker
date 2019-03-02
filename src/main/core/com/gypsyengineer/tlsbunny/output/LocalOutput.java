@@ -150,6 +150,11 @@ public class LocalOutput implements Output {
     }
 
     @Override
+    public void clear() {
+        lines.clear();
+    }
+
+    @Override
     synchronized public void flush() {
         // do nothing
     }

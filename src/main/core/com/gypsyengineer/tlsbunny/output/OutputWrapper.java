@@ -68,6 +68,11 @@ public abstract class OutputWrapper implements Output {
     }
 
     @Override
+    public void clear() {
+        output.clear();
+    }
+
+    @Override
     public void flush() {
         output.flush();
     }

@@ -1,9 +1,5 @@
-package com.gypsyengineer.tlsbunny.utils;
+package com.gypsyengineer.tlsbunny.output;
 
-import com.gypsyengineer.tlsbunny.output.OutputWrapper;
-import com.gypsyengineer.tlsbunny.output.Line;
-import com.gypsyengineer.tlsbunny.output.Output;
-import com.gypsyengineer.tlsbunny.output.OutputListener;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -34,9 +30,10 @@ public class OutputWrapperTest {
             wrapper.lines();
             wrapper.contains("oops");
             wrapper.flush();
+            wrapper.clear();
         }
 
-        assertEquals(15, checker.counter);
+        assertEquals(16, checker.counter);
     }
 
     private static class TestWrapperOutput extends OutputWrapper {
@@ -116,6 +113,11 @@ public class OutputWrapperTest {
         public boolean contains(String line) {
             counter++;
             return false;
+        }
+
+        @Override
+        public void clear() {
+            counter++;
         }
 
         @Override
