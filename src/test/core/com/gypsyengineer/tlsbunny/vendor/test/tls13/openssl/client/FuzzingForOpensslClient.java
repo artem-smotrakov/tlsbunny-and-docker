@@ -69,7 +69,7 @@ public class FuzzingForOpensslClient {
                 .run();
     }
 
-    @Test
+    //@Test
     public void deepHandshakeFuzzer() throws Exception {
         new VendorTest()
                 .label("mutated_server_deep_handshake_fuzzer")
