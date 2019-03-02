@@ -14,6 +14,10 @@ import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public interface Client extends AutoCloseable, Runnable, HasOutput<Client> {
 
+    enum Status {
+        not_started, running, done
+    }
+
     Config config();
     Client set(Config config);
     Client set(StructFactory factory);
@@ -24,6 +28,7 @@ public interface Client extends AutoCloseable, Runnable, HasOutput<Client> {
     Client set(Sync sync);
     Client connect() throws Exception;
 
+    Status status();
     Engine[] engines();
 
     default void run() {
@@ -60,14 +65,20 @@ public interface Client extends AutoCloseable, Runnable, HasOutput<Client> {
     /**
      * Stops the client.
      */
-    default Client stop() {
-        throw new UnsupportedOperationException("no stopping for you!");
-    }
+    Client stop();
 
     /**
      * @return true if the client is running, false otherwise
      */
     default boolean running() {
-        throw new UnsupportedOperationException("no running for you!");
+        return status() == Status.running;
     }
+
+    /**
+     * @return true if the client is done, false otherwise
+     */
+    default boolean done() {
+        return status() == Status.done;
+    }
+
 }

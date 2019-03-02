@@ -33,6 +33,7 @@ public class OpensslClient extends BaseDocker implements Client {
 
     private final Config config = SystemPropertiesConfig.load();
     private Sync sync = Sync.dummy();
+    private Status status = Status.not_started;
 
     public OpensslClient() {
         super(new InputStreamOutput());
@@ -109,6 +110,13 @@ public class OpensslClient extends BaseDocker implements Client {
     }
 
     @Override
+    public Status status() {
+        synchronized (this) {
+            return status;
+        }
+    }
+
+    @Override
     public void run() {
         List<String> command = new ArrayList<>();
         command.add("docker");
@@ -129,6 +137,9 @@ public class OpensslClient extends BaseDocker implements Client {
         command.add(containerName);
         command.add(image);
 
+        synchronized (this) {
+            status = Status.running;
+        }
         try {
             int code = Utils.waitProcessFinish(output, command);
             if (code != 0) {
@@ -136,6 +147,10 @@ public class OpensslClient extends BaseDocker implements Client {
             }
         } catch (InterruptedException | IOException e) {
             output.achtung("unexpected exception occurred", e);
+        } finally {
+            synchronized (this) {
+                status = Status.done;
+            }
         }
     }
 

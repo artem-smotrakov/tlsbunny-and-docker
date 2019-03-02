@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
-public class MutatedClient implements Client {
+public class MutatedClient extends AbstractFuzzyClient {
 
     private static final int max_attempts = 3;
     private static final int delay = 3000; // in millis
@@ -31,12 +31,7 @@ public class MutatedClient implements Client {
     private Analyzer analyzer;
     private Check[] checks;
     private FuzzerConfig fuzzerConfig;
-    private Sync sync = Sync.dummy();
-
     private long test = 0;
-
-    // TODO: is it necessary?
-    private boolean strict = true;
 
     public static MutatedClient mutatedClient() {
         return new MutatedClient();
@@ -103,16 +98,6 @@ public class MutatedClient implements Client {
     }
 
     @Override
-    synchronized public MutatedClient set(Sync sync) {
-        this.sync = sync;
-        return this;
-    }
-
-    synchronized public Sync sync() {
-        return sync;
-    }
-
-    @Override
     public MutatedClient connect() {
         run();
         return this;
@@ -131,7 +116,7 @@ public class MutatedClient implements Client {
     }
 
     @Override
-    public void run() {
+    protected void runImpl() {
         if (fuzzerConfig.noFactory()) {
             throw whatTheHell("no fuzzy set specified!");
         }
@@ -157,9 +142,7 @@ public class MutatedClient implements Client {
 
             output.info("smoke test passed, start fuzzing");
         } catch (Exception e) {
-            reportError("smoke test failed", e);
-            output.achtung("skip fuzzing");
-            return;
+            throw whatTheHell("smoke test failed", e);
         } finally {
             output.flush();
             sync().end();
@@ -248,13 +231,6 @@ public class MutatedClient implements Client {
             } finally {
                 output.flush();
             }
-        }
-    }
-
-    private void reportError(String message, Throwable e) {
-        output.achtung(message, e);
-        if (strict) {
-            throw whatTheHell("we failed!", e);
         }
     }
 
