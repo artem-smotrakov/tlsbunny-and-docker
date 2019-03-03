@@ -257,7 +257,7 @@ task runDeepWolfsslServerFuzzing(type: Test) {
     filter.includeTestsMatching 'com.gypsyengineer.tlsbunny.vendor.test.tls13.wolfssl.server.FuzzingForWolfsslServer.deepHandshakeFuzzer'
 }
 
-task runDeepWolfsslServerFuzzing(type: Test) {
+task runDeepOpensslServerFuzzing(type: Test) {
     description = 'Runs deep fuzzing for OpenSSL server'
     group = 'wolfssl'
 
