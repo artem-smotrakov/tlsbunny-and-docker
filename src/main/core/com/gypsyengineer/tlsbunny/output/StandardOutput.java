@@ -44,4 +44,10 @@ public class StandardOutput extends OutputWrapper {
             }
         }
     }
+
+    @Override
+    public void clear() {
+        super.clear();
+        index = 0;
+    }
 }
