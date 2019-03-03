@@ -28,7 +28,8 @@ addons:
 
 script:
   - git fetch --unshallow --quiet
-  - ./gradlew test --info -Ptlsbunny.test.exclude=com/gypsyengineer/tlsbunny/vendor/test/tls13/** -Dtlsbunny.output.standard.level=achtung -Dtlsbunny.sync.output.standard.level=achtung
-  - ./gradlew test --info -Ptlsbunny.test.include=com/gypsyengineer/tlsbunny/vendor/test/tls13/** -Dtlsbunny.output.standard.level=important -Dtlsbunny.sync.output.standard.level=important
+  #- ./gradlew test --info -Ptlsbunny.test.exclude=com/gypsyengineer/tlsbunny/vendor/test/tls13/** -Dtlsbunny.output.standard.level=achtung -Dtlsbunny.sync.output.standard.level=achtung
+  #- ./gradlew test --info -Ptlsbunny.test.include=com/gypsyengineer/tlsbunny/vendor/test/tls13/** -Dtlsbunny.output.standard.level=important -Dtlsbunny.sync.output.standard.level=important
+   ./gradlew test --info -Ptlsbunny.test.include=com/gypsyengineer/tlsbunny/vendor/test/tls13/openssl/server/*Tests* -Dtlsbunny.output.standard.level=info -Dtlsbunny.sync.output.standard.level=info
   - sonar-scanner
 
