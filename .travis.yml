@@ -15,7 +15,6 @@ before_install:
   - docker pull artemsmotrakov/tlsbunny_wolfssl_tls13
   - docker run artemsmotrakov/tlsbunny_openssl_tls13 /bin/bash -c "openssl version"
   - docker run artemsmotrakov/tlsbunny_wolfssl_tls13 /bin/bash -c "examples/server/server -h"
-  - docker ps
 
 after_success:
   - ./gradlew jacocoTestReport coveralls
@@ -28,6 +27,7 @@ addons:
 
 script:
   - git fetch --unshallow --quiet
+  - ./gradlew clean
   - ./gradlew test --info -Ptlsbunny.test.exclude=com/gypsyengineer/tlsbunny/vendor/test/tls13/** -Dtlsbunny.output.standard.level=achtung -Dtlsbunny.sync.output.standard.level=achtung -Dtlsbunny.output.enable.highlighting=false
   - ./gradlew test --info -Ptlsbunny.test.include=com/gypsyengineer/tlsbunny/vendor/test/tls13/** -Dtlsbunny.output.standard.level=achtung -Dtlsbunny.sync.output.standard.level=achtung -Dtlsbunny.output.enable.highlighting=false
   - sonar-scanner
