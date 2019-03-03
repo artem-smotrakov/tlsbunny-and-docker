@@ -1,9 +1,12 @@
 package com.gypsyengineer.tlsbunny.utils;
 
+import com.gypsyengineer.tlsbunny.output.Output;
 import com.gypsyengineer.tlsbunny.tls13.client.Client;
 import com.gypsyengineer.tlsbunny.tls13.server.Server;
 
 public class DummySync implements Sync {
+
+    private final Output output = Output.standard("dummy_sync");
 
     @Override
     public Sync set(Client client) {
@@ -33,6 +36,11 @@ public class DummySync implements Sync {
     @Override
     public Sync end() {
         return this;
+    }
+
+    @Override
+    public Output output() {
+        return output;
     }
 
     @Override

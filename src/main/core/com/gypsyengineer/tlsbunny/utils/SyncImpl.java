@@ -174,6 +174,11 @@ public class SyncImpl implements Sync {
         return this;
     }
 
+    @Override
+    public Output output() {
+        return standardOutput;
+    }
+
     private void checkInitialized() {
         if (!initialized) {
             throw whatTheHell("Sync is not initialized!");

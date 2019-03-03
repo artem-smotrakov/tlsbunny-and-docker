@@ -51,7 +51,8 @@ public class VendorTest {
 
         configureOutputs();
 
-        try (Sync sync = Sync.between(client, server)) {
+        Sync sync = Sync.between(client, server);
+        try (sync) {
             sync.logPrefix(prefix());
             sync.init();
 
@@ -88,21 +89,22 @@ public class VendorTest {
             checkThreads();
 
             if (exceptionHandler.knowsSomething()) {
-                System.err.println("exception handler got an unexpected exception");
-                exceptionHandler.exception().printStackTrace(System.err);
-                throw whatTheHell("unexpected exception",
-                        exceptionHandler.exception());
+                Throwable e = exceptionHandler.exception();
+                sync.output().achtung("exception handler caught an unexpected exception", e);
+                throw whatTheHell("unexpected exception", e);
             }
         } finally {
             // restore exception handler
             Thread.setDefaultUncaughtExceptionHandler(previousExceptionHandler);
 
             if (serverThread != null && server.running()) {
+                sync.output().important("we started the server, it's time to stop it");
                 server.stop();
                 Utils.waitStop(server);
             }
 
             if (client.running()) {
+                sync.output().important("client is still running, let's stop it");
                 client.stop();
                 Utils.waitStop(client);
             }
