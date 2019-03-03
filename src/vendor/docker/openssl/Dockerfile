@@ -21,7 +21,7 @@ FROM ubuntu
 
 MAINTAINER artem.smotrakov@gmail.com
 
-RUN apt-get update && apt-get install -y gcc git lcov make
+RUN apt-get update && apt-get install -y gcc git lcov make g++
 
 RUN mkdir -p /var/src/openssl /var/src/tlsbunny /var/reports
 

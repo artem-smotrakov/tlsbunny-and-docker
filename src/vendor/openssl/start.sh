@@ -1,7 +1,7 @@
 #!/bin/bash
 
 openssl_src=${1}
-options=${options:-"-tls1_3"}
+options=${options:-"-key certs/server_key.pem -cert certs/server_cert.der -certform der -accept 10101 -www -tls1_3"}
 mode=${mode:-"server"}
 port=${port:-"10101"}
 enable_coverage=${enable_coverage:-"no"}
@@ -18,8 +18,7 @@ if [ "${mode}" == "client" ]; then
         echo -e "GET / HTTP/1.0\r\n\r\n" | openssl s_client ${options} -connect 127.0.0.1:${port}
     done
 else
-    openssl s_server -key certs/server_key.pem -cert certs/server_cert.der \
-	    -certform der -accept ${port} -www ${options}
+    openssl s_server ${options}
 fi
 
 if [ "${enable_coverage}" == "yes" ]; then

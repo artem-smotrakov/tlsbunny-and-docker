@@ -1,5 +1,5 @@
 diff --git a/apps/s_server.c b/apps/s_server.c
-index 6f2a2ae..e0590c2 100644
+index fbbfd6c..ae72aed 100644
 --- a/apps/s_server.c
 +++ b/apps/s_server.c
 @@ -60,6 +60,17 @@ typedef unsigned int u_int;
@@ -20,9 +20,9 @@ index 6f2a2ae..e0590c2 100644
  static int not_resumable_sess_cb(SSL *s, int is_forward_secure);
  static int sv_body(int s, int stype, int prot, unsigned char *context);
  static int www_body(int s, int stype, int prot, unsigned char *context);
-@@ -1049,6 +1060,12 @@ int s_server_main(int argc, char *argv[])
-     int max_early_data = -1, recv_max_early_data = -1;
-     char *psksessf = NULL;
+@@ -1052,6 +1063,12 @@ int s_server_main(int argc, char *argv[])
+     int sctp_label_bug = 0;
+ #endif
  
 +    fprintf(stdout, "set a signal handler\n");
 +    if (signal(SIGINT, signal_handler) == SIG_ERR) {
@@ -34,20 +34,19 @@ index 6f2a2ae..e0590c2 100644
      local_argc = argc;
      local_argv = argv;
 diff --git a/apps/s_socket.c b/apps/s_socket.c
-index 76f9289..d582eb1 100644
+index 7dd95e9..d8fc741 100644
 --- a/apps/s_socket.c
 +++ b/apps/s_socket.c
-@@ -217,6 +217,9 @@ int do_server(int *accept_sock, const char *host, const char *port,
+@@ -217,6 +217,8 @@ int do_server(int *accept_sock, const char *host, const char *port,
      int sock_options = BIO_SOCK_REUSEADDR;
      int ret = 0;
  
-+
 +    fprintf(stdout, "debug: do_server(): start\n");
 +
      if (BIO_sock_init() != 1)
          return 0;
  
-@@ -333,6 +336,8 @@ int do_server(int *accept_sock, const char *host, const char *port,
+@@ -333,6 +335,8 @@ int do_server(int *accept_sock, const char *host, const char *port,
                  ERR_print_errors(bio_err);
                  goto end;
              }
@@ -56,7 +55,7 @@ index 76f9289..d582eb1 100644
              do {
                  sock = BIO_accept_ex(asock, ourpeer, 0);
              } while (sock < 0 && BIO_sock_should_retry(sock));
-@@ -374,6 +379,8 @@ int do_server(int *accept_sock, const char *host, const char *port,
+@@ -374,6 +378,8 @@ int do_server(int *accept_sock, const char *host, const char *port,
              i = (*cb)(asock, type, protocol, context);
          }
  

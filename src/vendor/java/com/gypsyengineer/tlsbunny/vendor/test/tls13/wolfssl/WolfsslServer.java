@@ -18,8 +18,6 @@ public class WolfsslServer extends BaseDockerServer implements Server {
     private static final String defaultServerCert = "certs/server-cert.pem";
     private static final String defaultServerKey = "certs/server-key.pem";
 
-    private static final String no_arg = "";
-
     private static final String image = System.getProperty(
             "tlsbunny.wolfssl.docker.image",
             "artemsmotrakov/tlsbunny_wolfssl_tls13");

@@ -14,6 +14,8 @@ import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public class BaseDocker {
 
+    protected static final String no_arg = "";
+
     protected static final String container_report_directory = "/var/reports";
 
     protected static final String remove_container_template =
@@ -30,12 +32,7 @@ public class BaseDocker {
         this.output = output;
     }
 
-    public BaseDocker dockerEnv(String name, String value) {
-        dockerEnv.put(name, value);
-        return this;
-    }
-
-    public static void createReportDirectory(String directory) {
+    protected static void createReportDirectory(String directory) {
         try {
             Files.createDirectories(Paths.get(directory));
         } catch (IOException e) {
@@ -43,7 +40,7 @@ public class BaseDocker {
         }
     }
 
-    protected boolean containerRunning() {
+    boolean containerRunning() {
         try {
             List<String> command = List.of(
                     "/bin/bash",

@@ -6,6 +6,7 @@ import com.gypsyengineer.tlsbunny.tls13.server.Server;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -22,6 +23,7 @@ public class OpensslServer extends BaseDockerServer implements Server {
     private static final String host_report_directory = String.format(
             "%s/openssl_report", System.getProperty("user.dir"));
 
+    private final Map<String, String> options = new HashMap<>();
     private Status status = Status.not_started;
 
     public static OpensslServer opensslServer() {
@@ -31,6 +33,51 @@ public class OpensslServer extends BaseDockerServer implements Server {
     private OpensslServer() {
         super(new OutputListenerImpl("ACCEPT", "tlsbunny: accept"));
         output.prefix("openssl-server");
+        options.put("-key", "certs/server_key.pem");
+        options.put("-cert", "certs/server_cert.der");
+        options.put("-certform", "der");
+        options.put("-accept", String.valueOf(defaultPort));
+        options.put("-www", no_arg);
+        options.put("-tls1_3", no_arg);
+    }
+
+    public OpensslServer noTLSv13() {
+        options.remove("-tls1_3");
+        return this;
+    }
+
+    public OpensslServer minTLSv1() {
+        return minProtocol("TLSv1");
+    }
+
+    public OpensslServer maxTLSv13() {
+        return maxProtocol("TLSv1.3");
+    }
+
+    public OpensslServer minProtocol(String value) {
+        options.put("-min_protocol", value);
+        return this;
+    }
+
+    public OpensslServer enableDebugOutput() {
+        options.put("-debug", no_arg);
+        return this;
+    }
+
+    public OpensslServer enableExtDebugOutput() {
+        options.put("-tlsextdebug", no_arg);
+        return this;
+    }
+
+    public OpensslServer maxProtocol(String value) {
+        options.put("-max_protocol", value);
+        return this;
+    }
+
+    public OpensslServer clientAuth() {
+        options.put("-Verify", "0");
+        options.put("-CAfile", "certs/root_cert.pem");
+        return this;
     }
 
     @Override
@@ -63,15 +110,21 @@ public class OpensslServer extends BaseDockerServer implements Server {
         command.add(String.format("%s:%s",
                 host_report_directory, container_report_directory));
 
+        StringBuilder sb = new StringBuilder();
+        for (Map.Entry<String, String> entry : options.entrySet()) {
+            sb.append(String.format("%s %s ", entry.getKey(), entry.getValue()));
+        }
+        if (dockerEnv.containsKey("options")) {
+            output.achtung("overwritten environment variable 'options'");
+        }
+        dockerEnv.put("options", sb.toString());
+
         if (!dockerEnv.isEmpty()) {
             for (Map.Entry entry : dockerEnv.entrySet()) {
                 command.add("-e");
                 command.add(String.format("%s=%s", entry.getKey(), entry.getValue()));
             }
         }
-
-        // note: -debug and -tlsextdebug options enable more output
-        //       (they need to be passed to s_server via "options" variable)
 
         command.add("--name");
         command.add(containerName);

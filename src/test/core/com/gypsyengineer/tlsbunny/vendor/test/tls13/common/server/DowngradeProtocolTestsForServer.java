@@ -3,9 +3,9 @@ package com.gypsyengineer.tlsbunny.vendor.test.tls13.common.server;
 import com.gypsyengineer.tlsbunny.tls13.client.HttpsClient;
 import com.gypsyengineer.tlsbunny.tls13.client.downgrade.CheckDowngradeMessage;
 import com.gypsyengineer.tlsbunny.tls13.client.downgrade.NoSupportedVersions;
+import com.gypsyengineer.tlsbunny.tls13.server.Server;
 import com.gypsyengineer.tlsbunny.vendor.test.tls13.Utils;
 import com.gypsyengineer.tlsbunny.vendor.test.tls13.VendorTest;
-import com.gypsyengineer.tlsbunny.vendor.test.tls13.openssl.OpensslServer;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,7 +17,7 @@ import static com.gypsyengineer.tlsbunny.vendor.test.tls13.Utils.checkForASanFin
 
 public abstract class DowngradeProtocolTestsForServer {
 
-    protected static OpensslServer server;
+    protected static Server server;
 
     @Before
     public void serverReady() throws IOException, InterruptedException {
