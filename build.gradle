@@ -64,6 +64,9 @@ test {
 
     systemProperty 'tlsbunny.sync.output.standard.level',
             System.getProperty('tlsbunny.sync.output.standard.level', 'important')
+
+    systemProperty 'tlsbunny.output.enable.highlighting',
+            System.getProperty('tlsbunny.output.enable.highlighting', 'true')
 }
 
 jacocoTestReport {
@@ -252,4 +255,24 @@ task runDeepWolfsslServerFuzzing(type: Test) {
     systemProperty 'tlsbunny.output.enable.highlighting', 'false'
 
     filter.includeTestsMatching 'com.gypsyengineer.tlsbunny.vendor.test.tls13.wolfssl.server.FuzzingForWolfsslServer.deepHandshakeFuzzer'
+}
+
+task runDeepWolfsslServerFuzzing(type: Test) {
+    description = 'Runs deep fuzzing for OpenSSL server'
+    group = 'wolfssl'
+
+    testClassesDirs += sourceSets.vendor.output.classesDirs
+    testClassesDirs += sourceSets.test.output.classesDirs
+    classpath += sourceSets.vendor.runtimeClasspath
+    classpath += sourceSets.test.runtimeClasspath
+
+    testLogging.showStandardStreams = true
+    ignoreFailures = true
+    outputs.upToDateWhen { false }
+
+    systemProperty 'tlsbunny.fuzzer.full.configs', 'true'
+    systemProperty 'tlsbunny.output.to.file', 'true'
+    systemProperty 'tlsbunny.output.enable.highlighting', 'false'
+
+    filter.includeTestsMatching 'com.gypsyengineer.tlsbunny.vendor.test.tls13.openssl.server.FuzzingForOpensslServer.deepHandshakeFuzzer'
 }
