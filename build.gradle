@@ -233,6 +233,8 @@ task runWolfsslFuzzing(type: Test) {
     systemProperty 'tlsbunny.fuzzer.full.configs', 'true'
     systemProperty 'tlsbunny.output.to.file', 'true'
     systemProperty 'tlsbunny.output.enable.highlighting', 'false'
+    systemProperty 'tlsbunny.output.standard.level', 'important'
+    systemProperty 'tlsbunny.sync.output.standard.level', 'info'
 
     include 'com/gypsyengineer/tlsbunny/vendor/test/tls13/wolfssl/**/*Fuzzing*'
 }
@@ -253,6 +255,8 @@ task runDeepWolfsslServerFuzzing(type: Test) {
     systemProperty 'tlsbunny.fuzzer.full.configs', 'true'
     systemProperty 'tlsbunny.output.to.file', 'true'
     systemProperty 'tlsbunny.output.enable.highlighting', 'false'
+    systemProperty 'tlsbunny.output.standard.level', 'important'
+    systemProperty 'tlsbunny.sync.output.standard.level', 'info'
 
     filter.includeTestsMatching 'com.gypsyengineer.tlsbunny.vendor.test.tls13.wolfssl.server.FuzzingForWolfsslServer.deepHandshakeFuzzer'
 }
@@ -275,4 +279,5 @@ task runDeepOpensslServerFuzzing(type: Test) {
     systemProperty 'tlsbunny.output.enable.highlighting', 'false'
 
     filter.includeTestsMatching 'com.gypsyengineer.tlsbunny.vendor.test.tls13.openssl.server.FuzzingForOpensslServer.deepHandshakeFuzzer'
+    filter.includeTestsMatching 'com.gypsyengineer.tlsbunny.vendor.test.tls13.openssl.server.FuzzingForOpensslServerWithClientAuth.deepHandshakeFuzzer'
 }

@@ -133,7 +133,7 @@ public abstract class FuzzingForServer {
     @Test
     public void deepHandshakeFuzzer() throws Exception {
         new VendorTest()
-                .label("mutated_client_deep_handshake_fuzzer")
+                .label("client_deep_handshake_fuzzer")
                 .set(multiConfigClient()
                         .from(deepHandshakeFuzzyClient().from(httpsClient()))
                         .configs(DeepHandshakeFuzzerConfigs.noClientAuth(mainConfig)))
