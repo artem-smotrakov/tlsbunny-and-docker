@@ -78,7 +78,7 @@ public class OpensslServer extends BaseDockerServer implements Server {
         command.add(image);
 
         synchronized (this) {
-            status = Status.ready;
+            status = Server.Status.ready;
         }
         try {
             Process process = Utils.exec(output, command);
@@ -99,7 +99,7 @@ public class OpensslServer extends BaseDockerServer implements Server {
             }
         } finally {
             synchronized (this) {
-                status = Status.done;
+                status = Server.Status.done;
             }
         }
     }
@@ -124,7 +124,7 @@ public class OpensslServer extends BaseDockerServer implements Server {
             );
 
             synchronized (this) {
-                status = Status.ready;
+                status = Server.Status.ready;
             }
             try {
                 int code = Utils.waitProcessFinish(output, command);
@@ -134,7 +134,7 @@ public class OpensslServer extends BaseDockerServer implements Server {
                 }
             } finally {
                 synchronized (this) {
-                    status = Status.done;
+                    status = Server.Status.done;
                 }
             }
         } catch (InterruptedException | IOException e) {

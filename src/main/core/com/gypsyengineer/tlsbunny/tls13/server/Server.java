@@ -36,7 +36,7 @@ public interface Server extends Runnable, AutoCloseable, HasOutput<Server> {
      */
     default boolean running() {
         Status status = status();
-        return status == Status.ready || status == Status.accepted;
+        return status == Server.Status.ready || status == Server.Status.accepted;
     }
 
     /**
@@ -44,11 +44,11 @@ public interface Server extends Runnable, AutoCloseable, HasOutput<Server> {
      *         false otherwise
      */
     default boolean ready() {
-        return status() == Status.ready;
+        return status() == Server.Status.ready;
     }
 
     default boolean done() {
-        return status() == Status.done;
+        return status() == Server.Status.done;
     }
 
     /**

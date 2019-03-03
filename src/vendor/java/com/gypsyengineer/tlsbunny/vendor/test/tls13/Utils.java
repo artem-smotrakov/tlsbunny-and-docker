@@ -82,6 +82,10 @@ public class Utils {
     public static void waitStart(Client client, long timeout)
             throws IOException, InterruptedException {
 
+        if (client.done()) {
+            return;
+        }
+
         long start = System.currentTimeMillis();
         while (client.status() == Client.Status.not_started) {
             Thread.sleep(start_delay);
@@ -158,12 +162,16 @@ public class Utils {
     public static void waitServerReady(Server server, long timeout)
             throws IOException, InterruptedException {
 
+        if (server.done()) {
+            return;
+        }
+
         long start = System.currentTimeMillis();
         while (!server.ready()) {
             Thread.sleep(delay);
             if (timeout > 0 && System.currentTimeMillis() - start > timeout) {
                 throw new IOException(
-                        "timeout reached while waiting for the server to start");
+                        "timeout reached while waiting for the server to be ready");
             }
         }
     }
