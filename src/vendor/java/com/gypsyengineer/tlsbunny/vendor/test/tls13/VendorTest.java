@@ -52,7 +52,6 @@ public class VendorTest {
         configureOutputs();
 
         try (Sync sync = Sync.between(client, server)) {
-
             sync.logPrefix(prefix());
             sync.init();
 
@@ -89,6 +88,8 @@ public class VendorTest {
             checkThreads();
 
             if (exceptionHandler.knowsSomething()) {
+                System.err.println("exception handler got an unexpected exception");
+                exceptionHandler.exception().printStackTrace(System.err);
                 throw whatTheHell("unexpected exception",
                         exceptionHandler.exception());
             }
