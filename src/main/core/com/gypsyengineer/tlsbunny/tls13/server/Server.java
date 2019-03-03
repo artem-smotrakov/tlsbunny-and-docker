@@ -72,7 +72,8 @@ public interface Server extends Runnable, AutoCloseable, HasOutput<Server> {
      * @return the thread where the server is running
      */
     default Thread start() {
-        Thread thread = new Thread(this);
+        String name = String.format("%s-thread", getClass().getSimpleName());
+        Thread thread = new Thread(this, name);
         thread.start();
 
         try {
