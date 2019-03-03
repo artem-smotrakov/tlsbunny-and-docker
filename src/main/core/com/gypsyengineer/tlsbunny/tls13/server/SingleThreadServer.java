@@ -138,7 +138,7 @@ public class SingleThreadServer implements Server {
                 accept(socket);
             }
         } catch (IOException e) {
-            if (serverSocket.isClosed()) {
+            if (serverSocket != null && serverSocket.isClosed()) {
                 output.info(e.getMessage());
             } else {
                 output.achtung("unexpected i/o exception", e);
