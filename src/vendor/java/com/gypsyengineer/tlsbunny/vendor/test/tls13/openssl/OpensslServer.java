@@ -101,6 +101,10 @@ public class OpensslServer extends BaseDockerServer implements Server {
 
     @Override
     public void run() {
+        if (status() != Status.not_started) {
+            throw whatTheHell("server can't be started twice!");
+        }
+
         List<String> command = new ArrayList<>();
         command.add("docker");
         command.add("run");
