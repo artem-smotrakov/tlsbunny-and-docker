@@ -8,7 +8,6 @@ import com.gypsyengineer.tlsbunny.utils.UncaughtExceptionHandlerImpl;
 
 import java.io.IOException;
 
-import static com.gypsyengineer.tlsbunny.vendor.test.tls13.Utils.sleep;
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public class VendorTest {
@@ -44,7 +43,6 @@ public class VendorTest {
 
         // it may be better to set a separate exception handler for client and server
         // threads, but it doesn't work for some reason
-        // TODO look into it
         Thread.UncaughtExceptionHandler previousExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
         UncaughtExceptionHandlerImpl exceptionHandler = new UncaughtExceptionHandlerImpl();
         Thread.setDefaultUncaughtExceptionHandler(exceptionHandler);
@@ -56,37 +54,13 @@ public class VendorTest {
             sync.logPrefix(prefix());
             sync.init();
 
-            startServerIfNecessary();
-            startClientIfNecessary();
+            startServerIfNecessary(sync);
+            startClientIfNecessary(sync);
 
             // wait for client or server to finish
-            while (true) {
-                if (server.done()) {
-                    // server is done
-                    // stop the client if we started it in this test
-                    // and then exit
-                    client.stop();
-                    Utils.waitStop(client);
-                    Utils.waitStop(clientThread);
-                    break;
-                }
-
-                if (client.done()) {
-                    // client is done
-                    // stop the server if we started in this test
-                    // and then exit
-                    if (serverThread != null) {
-                        server.stop();
-                        Utils.waitStop(server);
-                        Utils.waitStop(serverThread);
-                    }
-                    break;
-                }
-
+            while (!server.done() && !client.done()) {
                 Utils.sleep(delay);
             }
-
-            checkThreads();
 
             if (exceptionHandler.knowsSomething()) {
                 Throwable e = exceptionHandler.exception();
@@ -97,17 +71,22 @@ public class VendorTest {
             // restore exception handler
             Thread.setDefaultUncaughtExceptionHandler(previousExceptionHandler);
 
-            if (serverThread != null && server.running()) {
-                sync.output().important("we started the server, it's time to stop it");
-                server.stop();
-                Utils.waitStop(server);
-            }
-
             if (client.running()) {
-                sync.output().important("client is still running, let's stop it");
+                sync.output().important("stop the client since it's still running");
                 client.stop();
                 Utils.waitStop(client);
+                Utils.waitStop(clientThread);
             }
+
+            if (serverThread != null && server.running()) {
+                sync.output().important("stop the server since we started it in this test");
+                server.stop();
+                Utils.waitStop(server);
+                Utils.waitStop(serverThread);
+            }
+
+            // just in case
+            checkThreads();
         }
 
         return this;
@@ -150,17 +129,19 @@ public class VendorTest {
                 server.getClass().getSimpleName());
     }
 
-    private void startServerIfNecessary() throws IOException, InterruptedException {
+    private void startServerIfNecessary(Sync sync) throws IOException, InterruptedException {
         // start the server if it's not running
         if (!server.running()) {
+            sync.output().important("start a server in a separate thread");
             serverThread = server.start();
             Utils.waitStart(server);
         }
     }
 
-    private void startClientIfNecessary() throws IOException, InterruptedException {
+    private void startClientIfNecessary(Sync sync) throws IOException, InterruptedException {
         // configure and run the client
         if (!client.running()) {
+            sync.output().important("start a client in a separate thread");
             client.config().port(server.port());
             clientThread = client.start();
             Utils.waitStart(client);
