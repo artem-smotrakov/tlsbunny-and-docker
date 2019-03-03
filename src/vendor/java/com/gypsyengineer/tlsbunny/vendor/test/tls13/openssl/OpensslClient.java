@@ -16,6 +16,7 @@ import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -34,11 +35,33 @@ public class OpensslClient extends BaseDocker implements Client {
     private final Config config = SystemPropertiesConfig.load();
     private Sync sync = Sync.dummy();
     private Status status = Status.not_started;
+    private final Map<String, String> options = new HashMap<>();
 
     public OpensslClient() {
         super(new InputStreamOutput());
         dockerEnv.put("mode", "client");
-        dockerEnv.put("options", "-tls1_3 -CAfile certs/root_cert.pem -curves prime256v1");
+        onlyTLSv13();
+        caFile("certs/root_cert.pem");
+        prime256v1();
+    }
+
+    public OpensslClient onlyTLSv13() {
+        options.put("-tls1_3", no_arg);
+        return this;
+    }
+
+    public OpensslClient caFile(String value) {
+        options.put("-CAfile", value);
+        return this;
+    }
+
+    public OpensslClient curves(String value) {
+        options.put("-curves", value);
+        return this;
+    }
+
+    public OpensslClient prime256v1() {
+        return curves("prime256v1");
     }
 
     @Override
@@ -127,7 +150,18 @@ public class OpensslClient extends BaseDocker implements Client {
         command.add(String.format("%s:%s",
                 host_report_directory, container_report_directory));
 
+        StringBuilder sb = new StringBuilder();
+        for (Map.Entry<String, String> entry : options.entrySet()) {
+            sb.append(String.format("%s %s ", entry.getKey(), entry.getValue()));
+        }
+        if (dockerEnv.containsKey("options")) {
+            output.achtung("overwrite environment variable 'options', previous value: %s",
+                    dockerEnv.get("options"));
+        }
+        dockerEnv.put("options", sb.toString());
+
         dockerEnv.put("port", String.valueOf(config.port()));
+
         for (Map.Entry entry : dockerEnv.entrySet()) {
             command.add("-e");
             command.add(String.format("%s=%s", entry.getKey(), entry.getValue()));

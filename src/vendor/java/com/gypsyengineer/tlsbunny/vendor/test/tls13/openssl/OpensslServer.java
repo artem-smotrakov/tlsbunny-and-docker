@@ -120,11 +120,9 @@ public class OpensslServer extends BaseDockerServer implements Server {
         }
         dockerEnv.put("options", sb.toString());
 
-        if (!dockerEnv.isEmpty()) {
-            for (Map.Entry entry : dockerEnv.entrySet()) {
-                command.add("-e");
-                command.add(String.format("%s=%s", entry.getKey(), entry.getValue()));
-            }
+        for (Map.Entry entry : dockerEnv.entrySet()) {
+            command.add("-e");
+            command.add(String.format("%s=%s", entry.getKey(), entry.getValue()));
         }
 
         command.add("--name");
