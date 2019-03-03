@@ -69,7 +69,8 @@ public class WolfsslServer extends BaseDockerServer implements Server {
             sb.append(String.format("%s %s ", entry.getKey(), entry.getValue()));
         }
         if (dockerEnv.containsKey("options")) {
-            output.achtung("overwritten environment variable 'options'");
+            output.achtung("overwrite environment variable 'options', previous value: %s",
+                    dockerEnv.get("options"));
         }
         dockerEnv.put("options", sb.toString());
 
