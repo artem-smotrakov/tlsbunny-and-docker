@@ -14,7 +14,6 @@ import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public class SyncImpl implements Sync {
 
-    private static final int maxLines = 10000;
     private static final int n = 100;
 
     private static Level standardOutputLevel = Level.valueOf(
@@ -88,6 +87,20 @@ public class SyncImpl implements Sync {
             fileOutput.prefix("");
         }
 
+        output.important("[sync] init");
+
+        output.important("[sync] client output");
+        List<Line> clientLines = client.output().lines();
+        for (; clientIndex < clientLines.size(); clientIndex++) {
+            output.add(clientLines.get(clientIndex));
+        }
+
+        output.important("[sync] server output");
+        List<Line> serverLines = server.output().lines();
+        for (; serverIndex < serverLines.size(); serverIndex++) {
+            output.add(serverLines.get(serverIndex));
+        }
+
         clientIndex = client.output().lines().size();
         serverIndex = server.output().lines().size();
 
@@ -157,19 +170,12 @@ public class SyncImpl implements Sync {
             fileOutput.flush();
         }
 
-        if (clientIndex > maxLines) {
-            client.output().clear();
-            clientIndex = 0;
-        }
+        client.output().clear();
+        server.output().clear();
+        standardOutput.clear();
 
-        if (serverIndex > maxLines) {
-            server.output().clear();
-            serverIndex = 0;
-        }
-
-        if (standardOutput.lines().size() > maxLines) {
-            standardOutput.clear();
-        }
+        clientIndex = 0;
+        serverIndex = 0;
 
         return this;
     }

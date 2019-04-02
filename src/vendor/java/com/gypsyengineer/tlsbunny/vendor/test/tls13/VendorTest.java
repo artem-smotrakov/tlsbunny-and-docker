@@ -64,7 +64,7 @@ public class VendorTest {
 
             if (exceptionHandler.knowsSomething()) {
                 Throwable e = exceptionHandler.exception();
-                sync.output().achtung("exception handler caught an unexpected exception", e);
+                sync.output().achtung("[sync] exception handler caught an unexpected exception", e);
                 throw whatTheHell("unexpected exception", e);
             }
         } finally {
@@ -72,18 +72,22 @@ public class VendorTest {
             Thread.setDefaultUncaughtExceptionHandler(previousExceptionHandler);
 
             if (client.running()) {
-                sync.output().important("stop the client since it's still running");
+                sync.output().important("[sync] stop the client since it's still running");
                 client.stop();
                 Utils.waitStop(client);
                 Utils.waitStop(clientThread);
             }
 
             if (serverThread != null && server.running()) {
-                sync.output().important("stop the server since we started it in this test");
+                sync.output().important("[sync] stop the server since we started it in this test");
                 server.stop();
                 Utils.waitStop(server);
                 Utils.waitStop(serverThread);
             }
+
+            client.output().flush();
+            server.output().flush();
+            sync.output().flush();
 
             // just in case
             checkThreads();
@@ -107,15 +111,21 @@ public class VendorTest {
         Output serverOutput;
 
         // set up an output for the server if necessary
-        if (!server.running() && server.output() == null) {
-            serverOutput = Output.local("server");
-            server.set(serverOutput);
+        if (!server.running()) {
+            if (server.output() == null) {
+                serverOutput = Output.local("server");
+                server.set(serverOutput);
+            }
+            server.output().prefix("server");
         }
 
         // set up an output for the client if necessary
-        if (!client.running() && client.output() == null) {
-            clientOutput = Output.local("client");
-            client.set(clientOutput);
+        if (!client.running()) {
+            if (client.output() == null) {
+                clientOutput = Output.local();
+                client.set(clientOutput);
+            }
+            client.output().prefix("client");
         }
     }
 
@@ -132,7 +142,7 @@ public class VendorTest {
     private void startServerIfNecessary(Sync sync) throws IOException, InterruptedException {
         // start the server if it's not running
         if (!server.running()) {
-            sync.output().important("start a server in a separate thread");
+            sync.output().important("[sync] start a server in a separate thread");
             serverThread = server.start();
             Utils.waitStart(server);
         }
@@ -141,7 +151,7 @@ public class VendorTest {
     private void startClientIfNecessary(Sync sync) throws IOException, InterruptedException {
         // configure and run the client
         if (!client.running()) {
-            sync.output().important("start a client in a separate thread");
+            sync.output().important("[sync] start a client in a separate thread");
             client.config().port(server.port());
             clientThread = client.start();
             Utils.waitStart(client);

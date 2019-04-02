@@ -78,8 +78,7 @@ public abstract class BaseDockerServer extends BaseDocker implements Server {
 
     @Override
     public Server set(Output output) {
-        output.achtung("you can't set output for me!");
-        return this;
+        throw new UnsupportedOperationException("you can't set output for me!");
     }
 
     @Override
