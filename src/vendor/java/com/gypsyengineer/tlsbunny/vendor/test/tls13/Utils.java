@@ -31,7 +31,7 @@ public class Utils {
             throws IOException {
 
         String command = String.format(template, params);
-        output.info("run: %s", command);
+        output.important("run: %s", command);
 
         ProcessBuilder pb = new ProcessBuilder(
                 command.split("\\s+"));
@@ -45,12 +45,9 @@ public class Utils {
         for (String part : command) {
             sb.append(part).append(" ");
         }
-        output.info("run: %s", sb.toString());
+        output.important("run: %s", sb.toString());
 
-        ProcessBuilder pb = new ProcessBuilder(command);
-        pb.redirectErrorStream(true);
-
-        return pb.start();
+        return exec(command);
     }
 
     public static Process exec(List<String> command) throws IOException {
