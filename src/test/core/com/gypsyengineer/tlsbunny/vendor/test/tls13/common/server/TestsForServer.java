@@ -1,5 +1,6 @@
 package com.gypsyengineer.tlsbunny.vendor.test.tls13.common.server;
 
+import com.gypsyengineer.tlsbunny.TestUtils;
 import com.gypsyengineer.tlsbunny.tls13.client.*;
 import com.gypsyengineer.tlsbunny.tls13.client.ccs.CCSAfterHandshake;
 import com.gypsyengineer.tlsbunny.tls13.client.ccs.InvalidCCS;
@@ -16,8 +17,6 @@ import org.junit.*;
 
 import java.io.IOException;
 import java.net.SocketException;
-
-import static com.gypsyengineer.tlsbunny.vendor.test.tls13.Utils.checkForASanFindings;
 
 public abstract class TestsForServer {
 
@@ -154,8 +153,6 @@ public abstract class TestsForServer {
 
     @AfterClass
     public static void tearDown() throws Exception {
-        server.close();
-        Utils.waitStop(server);
-        checkForASanFindings(server.output());
+        TestUtils.tearDown(server);
     }
 }

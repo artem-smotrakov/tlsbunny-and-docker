@@ -2,7 +2,6 @@ package com.gypsyengineer.tlsbunny.vendor.test.tls13.wolfssl.server;
 
 import com.gypsyengineer.tlsbunny.vendor.test.tls13.Utils;
 import com.gypsyengineer.tlsbunny.vendor.test.tls13.common.server.FuzzingForServerWithClientAuth;
-import com.gypsyengineer.tlsbunny.vendor.test.tls13.wolfssl.WolfsslServer;
 import org.junit.BeforeClass;
 
 import static com.gypsyengineer.tlsbunny.vendor.test.tls13.wolfssl.WolfsslServer.wolfsslServer;
@@ -11,10 +10,7 @@ public class FuzzingForWolfsslServerWithClientAuth extends FuzzingForServerWithC
 
     @BeforeClass
     public static void setUp() throws Exception {
-        WolfsslServer wolfsslServer = wolfsslServer();
-        wolfsslServer.clientAuth();
-
-        server = wolfsslServer;
+        server = wolfsslServer().clientAuth();
         server.start();
         Utils.waitStart(server);
     }

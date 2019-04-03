@@ -62,4 +62,10 @@ public class FileOutput extends OutputWrapper {
             throw whatTheHell("could not close file writer", e);
         }
     }
+
+    @Override
+    public void clear() {
+        super.clear();
+        index = 0;
+    }
 }

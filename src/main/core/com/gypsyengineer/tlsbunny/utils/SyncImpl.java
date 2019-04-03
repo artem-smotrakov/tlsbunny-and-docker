@@ -14,7 +14,12 @@ import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public class SyncImpl implements Sync {
 
-    private static final long n = 100;
+    private static final int n = 100;
+
+    private static Level standardOutputLevel = Level.valueOf(
+            System.getProperty("tlsbunny.sync.output.standard.level",
+                    Level.info.name()));
+
     private static final boolean printToFile;
     private static final String dirName;
     static {
@@ -34,7 +39,7 @@ public class SyncImpl implements Sync {
     private Client client;
     private Server server;
     private Output output;
-    private StandardOutput consoleOutput;
+    private StandardOutput standardOutput;
     private Output fileOutput;
     private int clientIndex;
     private int serverIndex;
@@ -71,14 +76,29 @@ public class SyncImpl implements Sync {
 
         output = new LocalOutput();
 
-        consoleOutput = new StandardOutput();
-        consoleOutput.prefix("");
+        standardOutput = new StandardOutput(output);
+        standardOutput.set(standardOutputLevel);
+        standardOutput.prefix("");
 
         if (printToFile) {
             String filename = String.format("%s/%s_%d.log",
                     dirName, logPrefix, System.currentTimeMillis());
             fileOutput = new FileOutput(output, filename);
             fileOutput.prefix("");
+        }
+
+        output.important("[sync] init");
+
+        output.important("[sync] client output");
+        List<Line> clientLines = client.output().lines();
+        for (; clientIndex < clientLines.size(); clientIndex++) {
+            output.add(clientLines.get(clientIndex));
+        }
+
+        output.important("[sync] server output");
+        List<Line> serverLines = server.output().lines();
+        for (; serverIndex < serverLines.size(); serverIndex++) {
+            output.add(serverLines.get(serverIndex));
         }
 
         clientIndex = client.output().lines().size();
@@ -125,32 +145,44 @@ public class SyncImpl implements Sync {
         output.flush();
 
         if (found) {
-            consoleOutput.important("oops!");
-            consoleOutput.important("Looks like AddressSanitizer found something");
-            consoleOutput.important("[sync] client output");
+            standardOutput.important("oops!");
+            standardOutput.important("Looks like AddressSanitizer found something");
+            standardOutput.important("[sync] client output");
             for (int i = oldClientIndex; i < clientIndex; i++) {
-                consoleOutput.add(clientLines.get(i));
+                standardOutput.add(clientLines.get(i));
             }
-            consoleOutput.important("[sync] server output");
+            standardOutput.important("[sync] server output");
             for (int i = oldServerIndex; i < serverIndex; i++) {
-                consoleOutput.add(serverLines.get(i));
+                standardOutput.add(serverLines.get(i));
             }
-            consoleOutput.flush();
         } else {
             if (++tests % n == 0) {
                 long speed = n * 60000000000L / testsDuration;
-                consoleOutput.important("%d tests done, %d tests / minute",
+                standardOutput.important("%d tests done, %d tests / minute",
                         tests, speed);
                 testsDuration = 0;
-                consoleOutput.flush();
             }
         }
+
+        standardOutput.flush();
 
         if (printToFile) {
             fileOutput.flush();
         }
 
+        client.output().clear();
+        server.output().clear();
+        standardOutput.clear();
+
+        clientIndex = 0;
+        serverIndex = 0;
+
         return this;
+    }
+
+    @Override
+    public Output output() {
+        return standardOutput;
     }
 
     private void checkInitialized() {
@@ -161,7 +193,7 @@ public class SyncImpl implements Sync {
 
     @Override
     public void close() {
-        consoleOutput.close();
+        standardOutput.close();
     }
 
 }

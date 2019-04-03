@@ -5,14 +5,18 @@ import java.util.List;
 public abstract class OutputWrapper implements Output {
 
     protected final Output output;
-    protected final Level level;
+    protected Level level;
 
-    public OutputWrapper(Output output) {
+    OutputWrapper(Output output) {
         this(output, Output.level);
     }
 
-    public OutputWrapper(Output output, Level level) {
+    OutputWrapper(Output output, Level level) {
         this.output = output;
+        this.level = level;
+    }
+
+    public void set(Level level) {
         this.level = level;
     }
 
@@ -68,6 +72,11 @@ public abstract class OutputWrapper implements Output {
     }
 
     @Override
+    public void clear() {
+        output.clear();
+    }
+
+    @Override
     public void flush() {
         output.flush();
     }
@@ -80,6 +89,11 @@ public abstract class OutputWrapper implements Output {
     @Override
     public void add(Line line) {
         output.add(line);
+    }
+
+    @Override
+    public void add(Output output) {
+        this.output.add(output);
     }
 
     @Override

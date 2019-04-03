@@ -242,7 +242,7 @@ public class FuzzedStruct implements ClientHello, ServerHello,
     }
 
     @Override
-    public int getCode() {
+    public int code() {
         throw cantDoThat();
     }
 

@@ -13,7 +13,7 @@ public class AlertDescriptionImpl implements AlertDescription {
 
     @Override
     public int encodingLength() {
-        return ENCODING_LENGTH;
+        return encoding_length;
     }
 
     @Override
@@ -59,7 +59,7 @@ public class AlertDescriptionImpl implements AlertDescription {
     }
 
     private static void check(int code) {
-        if (code < MIN || code > MAX) {
+        if (code < min || code > max) {
             throw new IllegalArgumentException();
         }
     }

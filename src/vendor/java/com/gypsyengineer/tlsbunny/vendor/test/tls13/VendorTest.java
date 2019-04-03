@@ -4,12 +4,10 @@ import com.gypsyengineer.tlsbunny.tls13.client.Client;
 import com.gypsyengineer.tlsbunny.tls13.server.Server;
 import com.gypsyengineer.tlsbunny.output.Output;
 import com.gypsyengineer.tlsbunny.utils.Sync;
-import com.gypsyengineer.tlsbunny.utils.UncaughtExceptionHandler;
+import com.gypsyengineer.tlsbunny.utils.UncaughtExceptionHandlerImpl;
 
 import java.io.IOException;
 
-import static com.gypsyengineer.tlsbunny.vendor.test.tls13.Utils.checkForASanFindings;
-import static com.gypsyengineer.tlsbunny.vendor.test.tls13.Utils.sleep;
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public class VendorTest {
@@ -45,65 +43,54 @@ public class VendorTest {
 
         // it may be better to set a separate exception handler for client and server
         // threads, but it doesn't work for some reason
-        // TODO look into it
         Thread.UncaughtExceptionHandler previousExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
-        UncaughtExceptionHandler exceptionHandler = new UncaughtExceptionHandler();
+        UncaughtExceptionHandlerImpl exceptionHandler = new UncaughtExceptionHandlerImpl();
         Thread.setDefaultUncaughtExceptionHandler(exceptionHandler);
 
         configureOutputs();
 
-        try (Sync sync = Sync.between(client, server)) {
-
+        Sync sync = Sync.between(client, server);
+        try (sync) {
             sync.logPrefix(prefix());
             sync.init();
 
-            startServerIfNecessary();
-            startClientIfNecessary();
+            startServerIfNecessary(sync);
+            startClientIfNecessary(sync);
 
             // wait for client or server to finish
-            while (true) {
-                if (!server.running()) {
-                    // server stopped
-                    // stop the client if we started it in this test
-                    // and then exit
-                    client.stop();
-                    Utils.waitStop(client);
-                    break;
-                }
-
-                if (!client.running()) {
-                    // client stopped
-                    // stop the server if we started in this test
-                    // and then exit
-                    if (serverThread != null) {
-                        server.stop();
-                        Utils.waitStop(server);
-                    }
-                    break;
-                }
-
+            while (!server.done() && !client.done()) {
                 Utils.sleep(delay);
             }
 
-            checkThreads();
-
             if (exceptionHandler.knowsSomething()) {
-                throw whatTheHell("unexpected exception",
-                        exceptionHandler.exception());
+                Throwable e = exceptionHandler.exception();
+                sync.output().achtung("[sync] exception handler caught an unexpected exception", e);
+                throw whatTheHell("unexpected exception", e);
             }
         } finally {
             // restore exception handler
             Thread.setDefaultUncaughtExceptionHandler(previousExceptionHandler);
 
-            if (serverThread != null && server.running()) {
-                server.stop();
-                Utils.waitStop(server);
-            }
-
             if (client.running()) {
+                sync.output().important("[sync] stop the client since it's still running");
                 client.stop();
                 Utils.waitStop(client);
+                Utils.waitStop(clientThread);
             }
+
+            if (serverThread != null && server.running()) {
+                sync.output().important("[sync] stop the server since we started it in this test");
+                server.stop();
+                Utils.waitStop(server);
+                Utils.waitStop(serverThread);
+            }
+
+            client.output().flush();
+            server.output().flush();
+            sync.output().flush();
+
+            // just in case
+            checkThreads();
         }
 
         return this;
@@ -124,15 +111,21 @@ public class VendorTest {
         Output serverOutput;
 
         // set up an output for the server if necessary
-        if (!server.running() && server.output() == null) {
-            serverOutput = Output.local("server");
-            server.set(serverOutput);
+        if (!server.running()) {
+            if (server.output() == null) {
+                serverOutput = Output.local("server");
+                server.set(serverOutput);
+            }
+            server.output().prefix("server");
         }
 
         // set up an output for the client if necessary
-        if (!client.running() && client.output() == null) {
-            clientOutput = Output.local("client");
-            client.set(clientOutput);
+        if (!client.running()) {
+            if (client.output() == null) {
+                clientOutput = Output.local();
+                client.set(clientOutput);
+            }
+            client.output().prefix("client");
         }
     }
 
@@ -146,20 +139,22 @@ public class VendorTest {
                 server.getClass().getSimpleName());
     }
 
-    private void startServerIfNecessary() throws IOException, InterruptedException {
+    private void startServerIfNecessary(Sync sync) throws IOException, InterruptedException {
         // start the server if it's not running
         if (!server.running()) {
+            sync.output().important("[sync] start a server in a separate thread");
             serverThread = server.start();
             Utils.waitStart(server);
         }
     }
 
-    private void startClientIfNecessary() {
+    private void startClientIfNecessary(Sync sync) throws IOException, InterruptedException {
         // configure and run the client
         if (!client.running()) {
+            sync.output().important("[sync] start a client in a separate thread");
             client.config().port(server.port());
             clientThread = client.start();
-            sleep(delay);
+            Utils.waitStart(client);
         }
     }
 

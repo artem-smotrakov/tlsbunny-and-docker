@@ -1,11 +1,12 @@
 package com.gypsyengineer.tlsbunny.vendor.test.tls13.common.server;
 
+import com.gypsyengineer.tlsbunny.TestUtils;
 import com.gypsyengineer.tlsbunny.tls13.client.HttpsClient;
 import com.gypsyengineer.tlsbunny.tls13.client.downgrade.CheckDowngradeMessage;
 import com.gypsyengineer.tlsbunny.tls13.client.downgrade.NoSupportedVersions;
+import com.gypsyengineer.tlsbunny.tls13.server.Server;
 import com.gypsyengineer.tlsbunny.vendor.test.tls13.Utils;
 import com.gypsyengineer.tlsbunny.vendor.test.tls13.VendorTest;
-import com.gypsyengineer.tlsbunny.vendor.test.tls13.openssl.OpensslServer;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,11 +14,10 @@ import org.junit.Test;
 import java.io.IOException;
 
 import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.*;
-import static com.gypsyengineer.tlsbunny.vendor.test.tls13.Utils.checkForASanFindings;
 
 public abstract class DowngradeProtocolTestsForServer {
 
-    protected static OpensslServer server;
+    protected static Server server;
 
     @Before
     public void serverReady() throws IOException, InterruptedException {
@@ -77,8 +77,6 @@ public abstract class DowngradeProtocolTestsForServer {
 
     @AfterClass
     public static void tearDown() throws Exception {
-        server.close();
-        Utils.waitStop(server);
-        checkForASanFindings(server.output());
+        TestUtils.tearDown(server);
     }
 }

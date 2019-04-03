@@ -4,7 +4,7 @@ import com.gypsyengineer.tlsbunny.tls.Struct;
 
 public interface NewSessionTicket extends Struct {
 
-    int NONCE_LENGTH_BYTES = 1;
-    int TICKET_LENTGH_BYTES = 2;
-    int EXTENSIONS_LENGTH_BYTES = 2;
+    int nonce_length_bytes = 1;
+    int ticket_length_bytes = 2;
+    int extensions_length_bytes = 2;
 }

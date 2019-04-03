@@ -11,10 +11,10 @@ jdk:
 
 before_install:
   - ./gradlew wrapper --gradle-version 4.10.2
-  - docker pull artemsmotrakov/tlsbunny_openssl_tls13_server:2018_11_17
-  - docker pull artemsmotrakov/tlsbunny_wolfssl_tls13:2018_11_19
-  - docker run artemsmotrakov/tlsbunny_openssl_tls13_server:2018_11_17 /bin/bash -c "openssl version"
-  - docker run artemsmotrakov/tlsbunny_wolfssl_tls13:2018_11_19 /bin/bash -c "examples/server/server -h"
+  - docker pull artemsmotrakov/tlsbunny_openssl_tls13:2019_04_02
+  - docker pull artemsmotrakov/tlsbunny_wolfssl_tls13:2019_03_03
+  - docker run artemsmotrakov/tlsbunny_openssl_tls13:2019_04_02 /bin/bash -c "openssl version"
+  - docker run artemsmotrakov/tlsbunny_wolfssl_tls13:2019_03_03 /bin/bash -c "examples/server/server -h"
 
 after_success:
   - ./gradlew jacocoTestReport coveralls
@@ -27,7 +27,7 @@ addons:
 
 script:
   - git fetch --unshallow --quiet
-  - ./gradlew test --info -Ptlsbunny.test.exclude=com/gypsyengineer/tlsbunny/vendor/test/tls13/** -Dtlsbunny.output.standard.level=achtung
-  - ./gradlew test --info -Ptlsbunny.test.include=com/gypsyengineer/tlsbunny/vendor/test/tls13/** -Dtlsbunny.output.standard.level=achtung
+  - ./gradlew clean
+  - ./gradlew test --info -Ptlsbunny.test.exclude=com/gypsyengineer/tlsbunny/vendor/test/tls13/** -Dtlsbunny.output.standard.level=achtung -Dtlsbunny.sync.output.standard.level=achtung -Dtlsbunny.output.enable.highlighting=false
+  - ./gradlew test --info -Ptlsbunny.test.include=com/gypsyengineer/tlsbunny/vendor/test/tls13/** -Dtlsbunny.output.standard.level=achtung -Dtlsbunny.sync.output.standard.level=achtung -Dtlsbunny.output.enable.highlighting=false
   - sonar-scanner
-

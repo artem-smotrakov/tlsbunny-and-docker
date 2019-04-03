@@ -18,29 +18,30 @@ public class WolfsslServer extends BaseDockerServer implements Server {
     private static final String defaultServerCert = "certs/server-cert.pem";
     private static final String defaultServerKey = "certs/server-key.pem";
 
-    private static final String NO_ARG = "";
-
-    private final Map<String, String> options = new HashMap<>();
-
     private static final String image = System.getProperty(
             "tlsbunny.wolfssl.docker.image",
-            "artemsmotrakov/tlsbunny_wolfssl_tls13");
+            "artemsmotrakov/tlsbunny_wolfssl_tls13:2019_03_03");
+
+    private final Map<String, String> options = new HashMap<>();
+    private Status status = Status.not_started;
 
     public static WolfsslServer wolfsslServer() {
         return new WolfsslServer();
     }
 
     private WolfsslServer() {
-        super(new OutputListenerImpl("wolfSSL Leaving SSL_new, return 0", "wolfSSL Entering wolfSSL_SetHsDoneCb"),
+        super(new OutputListenerImpl(
+                "wolfSSL Leaving SSL_new, return 0",
+                        "wolfSSL Entering wolfSSL_SetHsDoneCb"),
                 new AddressSanitizerWatcherOutput());
         output.prefix("wolfssl-server");
         options.put("-p", String.valueOf(defaultPort));
         options.put("-v", "4"); // TLS 1.3 only
-        options.put("-d", NO_ARG); // no client auth
-        options.put("-i", NO_ARG);
-        options.put("-g", NO_ARG);
-        options.put("-b", NO_ARG);
-        options.put("-x", NO_ARG);
+        options.put("-d", no_arg); // no client auth
+        options.put("-i", no_arg);
+        options.put("-g", no_arg);
+        options.put("-b", no_arg);
+        options.put("-x", no_arg);
         options.put("-c", defaultServerCert);
         options.put("-k", defaultServerKey);
     }
@@ -68,21 +69,23 @@ public class WolfsslServer extends BaseDockerServer implements Server {
             sb.append(String.format("%s %s ", entry.getKey(), entry.getValue()));
         }
         if (dockerEnv.containsKey("options")) {
-            output.achtung("overwritten environment variable 'options'");
+            output.achtung("overwrite environment variable 'options', previous value: %s",
+                    dockerEnv.get("options"));
         }
         dockerEnv.put("options", sb.toString());
 
-        if (!dockerEnv.isEmpty()) {
-            for (Map.Entry entry : dockerEnv.entrySet()) {
-                command.add("-e");
-                command.add(String.format("%s=%s", entry.getKey(), entry.getValue()));
-            }
+        for (Map.Entry entry : dockerEnv.entrySet()) {
+            command.add("-e");
+            command.add(String.format("%s=%s", entry.getKey(), entry.getValue()));
         }
 
         command.add("--name");
         command.add(containerName);
         command.add(image);
 
+        synchronized (this) {
+            status = Status.ready;
+        }
         try {
             Process process = Utils.exec(output, command);
             output.set(process.getInputStream());
@@ -100,6 +103,17 @@ public class WolfsslServer extends BaseDockerServer implements Server {
             synchronized (this) {
                 failed = true;
             }
+        } finally {
+            synchronized (this) {
+                status = Status.done;
+            }
+        }
+    }
+
+    @Override
+    public Status status() {
+        synchronized (this) {
+            return status;
         }
     }
 

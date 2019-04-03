@@ -4,7 +4,7 @@ import com.gypsyengineer.tlsbunny.tls.Struct;
 
 public interface NamedGroup extends Struct {
 
-    int ENCODING_LENGTH = 2;
+    int encoding_length = 2;
     
     FFDHE ffdhe2048 = StructFactory.getDefault().createFFDHENamedGroup(0x0100);
     FFDHE ffdhe3072 = StructFactory.getDefault().createFFDHENamedGroup(0x0101);

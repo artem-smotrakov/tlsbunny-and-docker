@@ -10,7 +10,9 @@ import com.gypsyengineer.tlsbunny.utils.Sync;
 
 public interface Server extends Runnable, AutoCloseable, HasOutput<Server> {
 
-    int start_delay = 1000; // in millis
+    enum Status {
+        not_started, ready, accepted, done
+    }
 
     Server set(Config config);
     Server set(EngineFactory engineFactory);
@@ -22,6 +24,7 @@ public interface Server extends Runnable, AutoCloseable, HasOutput<Server> {
     Server stopWhen(StopCondition condition);
 
     EngineFactory engineFactory();
+    Status status();
 
     /**
      * Stops the server.
@@ -31,14 +34,21 @@ public interface Server extends Runnable, AutoCloseable, HasOutput<Server> {
     /**
      * @return true if the server is running, false otherwise
      */
-    boolean running();
+    default boolean running() {
+        Status status = status();
+        return status == Server.Status.ready || status == Server.Status.accepted;
+    }
 
     /**
      * @return true if the server is ready to accept a connection,
      *         false otherwise
      */
     default boolean ready() {
-        throw new UnsupportedOperationException("not ready for you!");
+        return status() == Server.Status.ready;
+    }
+
+    default boolean done() {
+        return status() == Server.Status.done;
     }
 
     /**
@@ -62,11 +72,12 @@ public interface Server extends Runnable, AutoCloseable, HasOutput<Server> {
      * @return the thread where the server is running
      */
     default Thread start() {
-        Thread thread = new Thread(this);
+        String name = String.format("%s-thread", getClass().getSimpleName());
+        Thread thread = new Thread(this, name);
         thread.start();
 
         try {
-            Thread.sleep(start_delay);
+            Thread.sleep(1000); // one second
         } catch (InterruptedException e) {
             output().achtung("exception: ", e);
         }

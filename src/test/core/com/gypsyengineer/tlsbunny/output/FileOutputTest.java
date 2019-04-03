@@ -1,53 +1,70 @@
-package com.gypsyengineer.tlsbunny.utils;
+package com.gypsyengineer.tlsbunny.output;
 
-import com.gypsyengineer.tlsbunny.output.*;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
-import static com.gypsyengineer.tlsbunny.output.Level.achtung;
-import static com.gypsyengineer.tlsbunny.output.Level.info;
 import static org.junit.Assert.*;
 
-public class LocalOutputTest {
+public class FileOutputTest {
 
     @Test
-    public void main() {
-        try (Output output = new LocalOutput()) {
+    public void main() throws IOException {
+        Path path = Files.createTempFile(
+                "tlsbunny", "file_output_test");
+        try (Output output = new FileOutput(new LocalOutput(), path.toString())) {
             output.prefix("test");
             output.achtung("foo");
             output.increaseIndent();
             output.info("bar");
+            output.important("important");
             output.decreaseIndent();;
             output.info("test");
+            output.achtung("bar");
             output.flush();
 
-            Line[] expected = {
-                    new Line(achtung, "[test] achtung: foo"),
-                    new Line(info, "[test]     bar"),
-                    new Line(info, "[test] test")
+            String[] expected = {
+                    "[test] achtung: foo",
+                    "[test]     important",
+                    "[test] achtung: bar"
             };
 
-            Line[] lines = output.lines().toArray(new Line[0]);
+            String[] lines = Files.readAllLines(path).toArray(new String[0]);
             assertArrayEquals(expected, lines);
             assertTrue(output.contains("foo"));
+
+            output.clear();
+            assertEquals(0, output.lines().size());
+            assertFalse(output.contains("foo"));
+            assertFalse(output.contains("bar"));
+            assertFalse(output.contains("important"));
+        } finally {
+            Files.delete(path);
         }
     }
 
     @Test
-    public void exception() {
-        try (Output output = new LocalOutput()) {
+    public void exception() throws IOException {
+        Path path = Files.createTempFile(
+                "tlsbunny", "file_output_test");
+        try (Output output = new FileOutput(new LocalOutput(), path.toString())) {
             output.prefix("test");
             output.info("error", new IOException("oops"));
             output.flush();
 
             assertTrue(output.contains("[test] java.io.IOException: oops"));
+        } finally {
+            Files.delete(path);
         }
     }
 
     @Test
-    public void listener() {
-        try (Output output = new LocalOutput()) {
+    public void listener() throws IOException {
+        Path path = Files.createTempFile(
+                "tlsbunny", "file_output_test");
+        try (Output output = new FileOutput(new LocalOutput(), path.toString())) {
 
             output.add(new OutputListener() {
 
@@ -74,6 +91,8 @@ public class LocalOutputTest {
             output.flush();
 
             assertTrue(output.contains("[test] error"));
+        } finally {
+            Files.delete(path);
         }
     }
 }

@@ -16,8 +16,8 @@ import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 public abstract class BaseDockerServer extends BaseDocker implements Server {
 
     protected boolean failed = false;
-    protected int previousAcceptCounter = 0;
-    protected final OutputListenerImpl listener;
+    private int previousAcceptCounter = 0;
+    private final OutputListenerImpl listener;
 
     public BaseDockerServer(OutputListenerImpl listener, InputStreamOutput output) {
         super(output);
@@ -62,12 +62,6 @@ public abstract class BaseDockerServer extends BaseDocker implements Server {
         Utils.waitStop(this);
         output.info("server stopped");
 
-        int code = Utils.waitProcessFinish(output, remove_container_template, containerName);
-        if (code != 0) {
-            output.achtung("could not remove the container (exit code %d)", code);
-            failed = true;
-        }
-
         output.flush();
     }
 
@@ -78,8 +72,7 @@ public abstract class BaseDockerServer extends BaseDocker implements Server {
 
     @Override
     public Server set(Output output) {
-        output.achtung("you can't set output for me!");
-        return this;
+        throw new UnsupportedOperationException("you can't set output for me!");
     }
 
     @Override
@@ -148,11 +141,11 @@ public abstract class BaseDockerServer extends BaseDocker implements Server {
             this.acceptedString = acceptedString;
         }
 
-        public synchronized int acceptCounter() {
+        synchronized int acceptCounter() {
             return acceptCounter;
         }
 
-        public synchronized boolean serverStarted() {
+        synchronized boolean serverStarted() {
             return serverStarted;
         }
 

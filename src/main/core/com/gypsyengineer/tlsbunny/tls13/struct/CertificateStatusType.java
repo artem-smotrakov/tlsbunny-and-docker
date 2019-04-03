@@ -4,7 +4,7 @@ import com.gypsyengineer.tlsbunny.tls.Struct;
 
 public interface CertificateStatusType extends Struct {
 
-    int ENCODING_LENGTH = 1;
+    int encoding_length = 1;
 
     CertificateStatusType ocsp = StructFactory.getDefault().createCertificateStatusType(1);
 

@@ -14,13 +14,13 @@ public class CompressionMethodImpl implements CompressionMethod {
     }
 
     @Override
-    public int getCode() {
+    public int code() {
         return code;
     }
 
     @Override
     public int encodingLength() {
-        return ENCODING_LENGTH;
+        return encoding_length;
     }
 
     @Override

@@ -7,9 +7,6 @@ public class StandardOutput extends OutputWrapper {
     private static Level globalLevel = Level.valueOf(
             System.getProperty("tlsbunny.output.standard.level",
                     Level.info.name()));
-    static {
-        System.out.printf("[output] tlsbunny.output.standard.level = %s%n", globalLevel);
-    }
 
     protected static final Object consoleLock = new Object();
 
@@ -19,10 +16,6 @@ public class StandardOutput extends OutputWrapper {
             System.getProperty("tlsbunny.output.enable.highlighting", "true"));
 
     protected int index = 0;
-
-    public StandardOutput() {
-        this(new LocalOutput());
-    }
 
     public StandardOutput(Output output) {
         super(output, globalLevel);
@@ -50,5 +43,11 @@ public class StandardOutput extends OutputWrapper {
                 System.out.println(string);
             }
         }
+    }
+
+    @Override
+    public void clear() {
+        super.clear();
+        index = 0;
     }
 }

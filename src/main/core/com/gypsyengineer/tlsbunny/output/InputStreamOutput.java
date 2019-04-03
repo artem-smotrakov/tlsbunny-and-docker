@@ -82,7 +82,7 @@ public class InputStreamOutput implements Output {
     }
 
     @Override
-    public void important(String format, Object... values) {
+    synchronized public void important(String format, Object... values) {
         String text = format;
         if (values != null && values.length != 0) {
             text = String.format(format, values);
@@ -100,7 +100,7 @@ public class InputStreamOutput implements Output {
     }
 
     @Override
-    public void important(String message, Throwable e) {
+    synchronized public void important(String message, Throwable e) {
         important(String.format("%s%n%s", message, Utils.toString(e)));
     }
 
@@ -119,8 +119,15 @@ public class InputStreamOutput implements Output {
     }
 
     @Override
-    public void add(Line line) {
+    synchronized public void add(Line line) {
         lines.add(line);
+    }
+
+    @Override
+    public void add(Output output) {
+        for (Line line : output.lines()) {
+            add(line);
+        }
     }
 
     @Override
@@ -138,6 +145,11 @@ public class InputStreamOutput implements Output {
         }
 
         return false;
+    }
+
+    @Override
+    synchronized public void clear() {
+        lines.clear();
     }
 
     @Override

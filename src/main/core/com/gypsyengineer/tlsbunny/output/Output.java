@@ -1,5 +1,6 @@
 package com.gypsyengineer.tlsbunny.output;
 
+import java.io.InputStream;
 import java.util.List;
 
 public interface Output extends AutoCloseable {
@@ -8,24 +9,32 @@ public interface Output extends AutoCloseable {
     Level level = Level.valueOf(
             System.getProperty("tlsbunny.output.level", Level.info.name()));
 
-    static Output standard() {
+    static StandardOutput standard() {
         return new StandardOutput(local());
     }
 
-    static Output standard(String prefix) {
+    static StandardOutput standard(String prefix) {
         return new StandardOutput(local(prefix));
     }
 
-    static Output standardClient() {
+    static StandardOutput standard(Output output) {
+        return new StandardOutput(output);
+    }
+
+    static StandardOutput standardClient() {
         return standard("client");
     }
 
-    static Output local() {
+    static LocalOutput local() {
         return new LocalOutput();
     }
 
-    static Output local(String prefix) {
+    static LocalOutput local(String prefix) {
         return new LocalOutput(prefix);
+    }
+
+    static InputStreamOutput create(InputStream is) {
+        return new InputStreamOutput().set(is);
     }
 
     Output add(OutputListener listener);
@@ -50,9 +59,13 @@ public interface Output extends AutoCloseable {
 
     void add(Line line);
 
+    void add(Output output);
+
     List<Line> lines();
 
     boolean contains(String line);
+
+    void clear();
 
     void flush();
 

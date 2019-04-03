@@ -4,7 +4,7 @@ import com.gypsyengineer.tlsbunny.tls.Struct;
 
 public interface SignatureScheme extends Struct {
 
-    int ENCODING_LENGTH = 2;
+    int encoding_length = 2;
 
     /* ECDSA algorithms */
     SignatureScheme ecdsa_secp256r1_sha256 = StructFactory.getDefault().createSignatureScheme(0x0403);

@@ -7,7 +7,7 @@ import com.gypsyengineer.tlsbunny.tls.Struct;
  */
 public interface MaxFragmentLength extends Struct {
 
-    int ENCODING_LENGTH = 1;
+    int encoding_length = 1;
 
     MaxFragmentLength two_pow_nine = StructFactory.getDefault().createMaxFragmentLength(1);
     MaxFragmentLength two_pow_ten = StructFactory.getDefault().createMaxFragmentLength(2);

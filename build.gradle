@@ -61,6 +61,12 @@ test {
 
     systemProperty 'tlsbunny.output.standard.level',
             System.getProperty('tlsbunny.output.standard.level', 'important')
+
+    systemProperty 'tlsbunny.sync.output.standard.level',
+            System.getProperty('tlsbunny.sync.output.standard.level', 'important')
+
+    systemProperty 'tlsbunny.output.enable.highlighting',
+            System.getProperty('tlsbunny.output.enable.highlighting', 'true')
 }
 
 jacocoTestReport {
@@ -227,6 +233,8 @@ task runWolfsslFuzzing(type: Test) {
     systemProperty 'tlsbunny.fuzzer.full.configs', 'true'
     systemProperty 'tlsbunny.output.to.file', 'true'
     systemProperty 'tlsbunny.output.enable.highlighting', 'false'
+    systemProperty 'tlsbunny.output.standard.level', 'important'
+    systemProperty 'tlsbunny.sync.output.standard.level', 'info'
 
     include 'com/gypsyengineer/tlsbunny/vendor/test/tls13/wolfssl/**/*Fuzzing*'
 }
@@ -247,6 +255,29 @@ task runDeepWolfsslServerFuzzing(type: Test) {
     systemProperty 'tlsbunny.fuzzer.full.configs', 'true'
     systemProperty 'tlsbunny.output.to.file', 'true'
     systemProperty 'tlsbunny.output.enable.highlighting', 'false'
+    systemProperty 'tlsbunny.output.standard.level', 'important'
+    systemProperty 'tlsbunny.sync.output.standard.level', 'info'
 
     filter.includeTestsMatching 'com.gypsyengineer.tlsbunny.vendor.test.tls13.wolfssl.server.FuzzingForWolfsslServer.deepHandshakeFuzzer'
+}
+
+task runDeepOpensslServerFuzzing(type: Test) {
+    description = 'Runs deep fuzzing for OpenSSL server'
+    group = 'wolfssl'
+
+    testClassesDirs += sourceSets.vendor.output.classesDirs
+    testClassesDirs += sourceSets.test.output.classesDirs
+    classpath += sourceSets.vendor.runtimeClasspath
+    classpath += sourceSets.test.runtimeClasspath
+
+    testLogging.showStandardStreams = true
+    ignoreFailures = true
+    outputs.upToDateWhen { false }
+
+    systemProperty 'tlsbunny.fuzzer.full.configs', 'true'
+    systemProperty 'tlsbunny.output.to.file', 'true'
+    systemProperty 'tlsbunny.output.enable.highlighting', 'false'
+
+    filter.includeTestsMatching 'com.gypsyengineer.tlsbunny.vendor.test.tls13.openssl.server.FuzzingForOpensslServer.deepHandshakeFuzzer'
+    filter.includeTestsMatching 'com.gypsyengineer.tlsbunny.vendor.test.tls13.openssl.server.FuzzingForOpensslServerWithClientAuth.deepHandshakeFuzzer'
 }

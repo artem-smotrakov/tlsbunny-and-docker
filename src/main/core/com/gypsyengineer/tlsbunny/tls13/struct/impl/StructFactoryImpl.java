@@ -188,7 +188,7 @@ public class StructFactoryImpl implements StructFactory {
 
     @Override
     public Cookie createCookie(byte[] cookie) {
-        return createCookie(Vector.wrap(Cookie.LENGTH_BYTES, cookie));
+        return createCookie(Vector.wrap(Cookie.length_bytes, cookie));
     }
 
     @Override
@@ -239,8 +239,8 @@ public class StructFactoryImpl implements StructFactory {
     public HkdfLabel createHkdfLabel(int length, byte[] label, byte[] hashValue) {
         return new HkdfLabelImpl(
                 new UInt16(length),
-                Vector.wrap(HkdfLabel.LABEL_LENGTH_BYTES, label),
-                Vector.wrap(HkdfLabel.CONTEXT_LENGTH_BYTES, hashValue));
+                Vector.wrap(HkdfLabel.label_length_bytes, label),
+                Vector.wrap(HkdfLabel.context_length_bytes, hashValue));
     }
 
     @Override

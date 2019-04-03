@@ -44,9 +44,9 @@ public class CipherSuiteImpl implements CipherSuite {
                 return AEAD.Method.AES_128_CCM;
             case 0x05:
                 return AEAD.Method.AES_128_CCM_8;
+            default:
+                return AEAD.Method.UNKNOWN;
         }
-        
-        return AEAD.Method.UNKNOWN;
     }
     
     @Override
@@ -63,9 +63,9 @@ public class CipherSuiteImpl implements CipherSuite {
             case 0x02:
             case 0x03:
                 return 32;
+            default:
+                return 0;
         }
-        
-        return 0;
     }
     
     @Override
@@ -91,7 +91,7 @@ public class CipherSuiteImpl implements CipherSuite {
     @Override
     public String hash() {
         if (first != 0x13) {
-            return UNKNOWN;
+            return unknown;
         }
         
         switch (second) {
@@ -102,9 +102,9 @@ public class CipherSuiteImpl implements CipherSuite {
                 return "SHA-256";
             case 0x02:
                 return "SHA-384";
+            default:
+                return unknown;
         }
-        
-        return UNKNOWN;
     }
     
     @Override
@@ -121,14 +121,14 @@ public class CipherSuiteImpl implements CipherSuite {
                 return 32;
             case 0x02:
                 return 48;
+            default:
+                return 0;
         }
-        
-        return 0;
     }
 
     @Override
     public int encodingLength() {
-        return ENCODING_LENGTH;
+        return encoding_length;
     }
 
     @Override

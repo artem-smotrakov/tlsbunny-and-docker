@@ -18,7 +18,7 @@ public class MultiConfigClient implements Client, AutoCloseable {
 
     private Client client;
     private FuzzerConfig[] configs = new FuzzerConfig[0];
-    private boolean running = false;
+    private Status status = Status.not_started;
     private boolean stopped = false;
 
     public static MultiConfigClient multiConfigClient() {
@@ -37,7 +37,7 @@ public class MultiConfigClient implements Client, AutoCloseable {
         return this;
     }
 
-    public MultiConfigClient of(Client client) {
+    public MultiConfigClient from(Client client) {
         this.client = client;
         return this;
     }
@@ -96,7 +96,8 @@ public class MultiConfigClient implements Client, AutoCloseable {
     @Override
     public MultiConfigClient connect() throws Exception {
         synchronized (this) {
-            running = true;
+            stopped = false;
+            status = Status.running;
         }
 
         try {
@@ -106,16 +107,22 @@ public class MultiConfigClient implements Client, AutoCloseable {
                         break;
                     }
                 }
-                client.set(config);
-                client.connect();
+                client.set(config).connect();
             }
         } finally {
             synchronized (this) {
-                running = false;
+                status = Status.done;
             }
         }
 
         return this;
+    }
+
+    @Override
+    public Status status() {
+        synchronized (this) {
+            return status;
+        }
     }
 
     @Override
@@ -136,13 +143,6 @@ public class MultiConfigClient implements Client, AutoCloseable {
         }
         client.stop();
         return this;
-    }
-
-    @Override
-    public boolean running() {
-        synchronized (this) {
-            return running;
-        }
     }
 
     @Override

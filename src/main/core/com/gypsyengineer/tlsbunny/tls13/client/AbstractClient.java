@@ -29,7 +29,7 @@ public abstract class AbstractClient implements Client, AutoCloseable {
     protected List<Check> checks = Collections.emptyList();
     protected Sync sync = Sync.dummy();
 
-    private boolean running = false;
+    protected Status status = Status.not_started;
 
     public AbstractClient() {
         try {
@@ -40,11 +40,16 @@ public abstract class AbstractClient implements Client, AutoCloseable {
     }
 
     @Override
+    public synchronized Status status() {
+        return status;
+    }
+
+    @Override
     // TODO should it run checks and analyzers? should they be private?
     //      if so, connectImpl should probably return engines
     public final Client connect() throws Exception {
         synchronized (this) {
-            running = true;
+            status = Status.running;
             engines = new ArrayList<>();
         }
 
@@ -52,7 +57,7 @@ public abstract class AbstractClient implements Client, AutoCloseable {
             return connectImpl();
         } finally {
             synchronized (this) {
-                running = false;
+                status = Status.done;
                 if (analyzer != null) {
                     analyzer.add(engines.toArray(new Engine[0]));
                 }
@@ -61,11 +66,6 @@ public abstract class AbstractClient implements Client, AutoCloseable {
     }
 
     protected abstract Client connectImpl() throws Exception;
-
-    @Override
-    synchronized public boolean running() {
-        return running;
-    }
 
     @Override
     public Output output() {
@@ -125,9 +125,16 @@ public abstract class AbstractClient implements Client, AutoCloseable {
 
     @Override
     public void close() {
+        stop();
         if (output != null) {
             output.flush();
         }
+    }
+
+    @Override
+    public Client stop() {
+        // do nothing
+        return this;
     }
 
     @Override

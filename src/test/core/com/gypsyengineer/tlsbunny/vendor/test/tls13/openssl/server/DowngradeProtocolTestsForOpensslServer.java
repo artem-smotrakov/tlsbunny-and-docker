@@ -10,10 +10,10 @@ public class DowngradeProtocolTestsForOpensslServer extends DowngradeProtocolTes
 
     @BeforeClass
     public static void setUp() throws Exception {
-        server = opensslServer();
-        server.dockerEnv(
-                "options",
-                "-min_protocol TLSv1 -max_protocol TLSv1.3 -debug -tlsextdebug");
+        server = opensslServer()
+                .noTLSv13()
+                .minTLSv1().maxTLSv13()
+                .enableDebugOutput().enableExtDebugOutput();
         server.start();
         Utils.waitStart(server);
     }

@@ -5,8 +5,8 @@ import com.gypsyengineer.tlsbunny.tls13.crypto.AEAD;
 
 public interface CipherSuite extends Struct {
 
-    int ENCODING_LENGTH = 2;
-    String UNKNOWN = "unknown";
+    int encoding_length = 2;
+    String unknown = "unknown";
         
     CipherSuite TLS_AES_128_CCM_8_SHA256 = StructFactory.getDefault().createCipherSuite(0x13, 0x05);
     CipherSuite TLS_AES_128_CCM_SHA256 = StructFactory.getDefault().createCipherSuite(0x13, 0x04);

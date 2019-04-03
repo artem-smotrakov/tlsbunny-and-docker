@@ -23,7 +23,7 @@ public class ChangeCipherSpecImpl implements ChangeCipherSpec {
 
     @Override
     public int encodingLength() {
-        return ENCODING_LENGTH;
+        return encoding_length;
     }
 
     @Override

@@ -13,7 +13,7 @@ public class AlertLevelImpl implements AlertLevel {
 
     @Override
     public int encodingLength() {
-        return ENCODING_LENGTH;
+        return encoding_length;
     }
 
     @Override
@@ -65,7 +65,7 @@ public class AlertLevelImpl implements AlertLevel {
     }
 
     private static void check(int code) {
-        if (code < MIN || code > MAX) {
+        if (code < min || code > max) {
             throw new IllegalArgumentException();
         }
     }

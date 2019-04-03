@@ -1,9 +1,5 @@
-package com.gypsyengineer.tlsbunny.utils;
+package com.gypsyengineer.tlsbunny.output;
 
-import com.gypsyengineer.tlsbunny.output.OutputWrapper;
-import com.gypsyengineer.tlsbunny.output.Line;
-import com.gypsyengineer.tlsbunny.output.Output;
-import com.gypsyengineer.tlsbunny.output.OutputListener;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -15,6 +11,7 @@ public class OutputWrapperTest {
 
     private static final Line null_line = null;
     private static final OutputListener null_listener = null;
+    private static final Output null_output = null;
 
     @Test
     public void main() {
@@ -22,6 +19,7 @@ public class OutputWrapperTest {
         try (TestWrapperOutput wrapper = new TestWrapperOutput(checker)) {
             wrapper.add(null_line);
             wrapper.add(null_listener);
+            wrapper.add(null_output);
             wrapper.increaseIndent();
             wrapper.decreaseIndent();
             wrapper.prefix("test");
@@ -34,9 +32,10 @@ public class OutputWrapperTest {
             wrapper.lines();
             wrapper.contains("oops");
             wrapper.flush();
+            wrapper.clear();
         }
 
-        assertEquals(15, checker.counter);
+        assertEquals(17, checker.counter);
     }
 
     private static class TestWrapperOutput extends OutputWrapper {
@@ -107,6 +106,11 @@ public class OutputWrapperTest {
         }
 
         @Override
+        public void add(Output output) {
+            counter++;
+        }
+
+        @Override
         public List<Line> lines() {
             counter++;
             return Collections.emptyList();
@@ -116,6 +120,11 @@ public class OutputWrapperTest {
         public boolean contains(String line) {
             counter++;
             return false;
+        }
+
+        @Override
+        public void clear() {
+            counter++;
         }
 
         @Override

@@ -11,19 +11,17 @@ import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import com.gypsyengineer.tlsbunny.tls13.utils.FuzzerConfig;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.output.Output;
-import com.gypsyengineer.tlsbunny.utils.Sync;
 import com.gypsyengineer.tlsbunny.utils.Utils;
 
 import java.io.IOException;
 import java.net.ConnectException;
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.gypsyengineer.tlsbunny.utils.Achtung.achtung;
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
-public class DeepHandshakeFuzzyClient implements Client {
+public class DeepHandshakeFuzzyClient extends AbstractFuzzyClient {
 
     private static final int max_attempts = 3;
     private static final int delay = 3000; // in millis
@@ -33,11 +31,7 @@ public class DeepHandshakeFuzzyClient implements Client {
     private Check[] checks;
     private Analyzer analyzer;
     private FuzzerConfig fuzzerConfig;
-    private Sync sync = Sync.dummy();
-
     private long test = 0;
-
-    private boolean strict = true;
 
     public static DeepHandshakeFuzzyClient deepHandshakeFuzzyClient() {
         return new DeepHandshakeFuzzyClient();
@@ -59,7 +53,7 @@ public class DeepHandshakeFuzzyClient implements Client {
         this.fuzzerConfig = fuzzerConfig;
     }
 
-    public DeepHandshakeFuzzyClient of(Client client) {
+    public DeepHandshakeFuzzyClient from(Client client) {
         this.client = client;
         return this;
     }
@@ -112,13 +106,6 @@ public class DeepHandshakeFuzzyClient implements Client {
     }
 
     @Override
-    synchronized public DeepHandshakeFuzzyClient set(Sync sync) {
-        Objects.requireNonNull(sync, "sync can't be null!");
-        this.sync = sync;
-        return this;
-    }
-
-    @Override
     public DeepHandshakeFuzzyClient connect() {
         run();
         return this;
@@ -131,17 +118,14 @@ public class DeepHandshakeFuzzyClient implements Client {
 
     @Override
     public void close() {
+        stop();
         if (output != null) {
             output.flush();
         }
     }
 
-    synchronized public Sync sync() {
-        return sync;
-    }
-
     @Override
-    public void run() {
+    protected void runImpl() {
         if (fuzzerConfig.noFactory()) {
             throw whatTheHell("no factory provided!");
         }
@@ -179,9 +163,7 @@ public class DeepHandshakeFuzzyClient implements Client {
 
             output.info("smoke test passed, start fuzzing");
         } catch (Exception e) {
-            reportError("smoke test failed", e);
-            output.achtung("skip fuzzing");
-            return;
+            throw whatTheHell("smoke test failed", e);
         } finally {
             output.flush();
             sync().end();
@@ -282,15 +264,10 @@ public class DeepHandshakeFuzzyClient implements Client {
         }
     }
 
-    private void reportError(String message, Throwable e) {
-        output.achtung(message, e);
-        if (strict) {
-            throw whatTheHell("we failed!", e);
-        }
-    }
-
     private boolean shouldRun(DeepHandshakeFuzzer fuzzer) {
-        return fuzzer.canFuzz() && test < fuzzerConfig.total();
+        synchronized (this) {
+            return !stopped() && fuzzer.canFuzz() && test < fuzzerConfig.total();
+        }
     }
 
 }

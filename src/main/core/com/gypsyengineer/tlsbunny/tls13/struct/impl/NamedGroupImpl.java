@@ -16,12 +16,12 @@ public class NamedGroupImpl implements NamedGroup {
 
     @Override
     public int encodingLength() {
-        return ENCODING_LENGTH;
+        return encoding_length;
     }
 
     @Override
     public byte[] encoding() throws IOException {
-        return ByteBuffer.allocate(ENCODING_LENGTH).putShort((short) code).array();
+        return ByteBuffer.allocate(encoding_length).putShort((short) code).array();
     }
 
     @Override

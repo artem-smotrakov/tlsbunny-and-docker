@@ -2,13 +2,16 @@ package com.gypsyengineer.tlsbunny;
 
 import com.gypsyengineer.tlsbunny.fuzzer.AbstractFlipFuzzer;
 import com.gypsyengineer.tlsbunny.fuzzer.Fuzzer;
+import com.gypsyengineer.tlsbunny.output.StandardOutput;
 import com.gypsyengineer.tlsbunny.tls.Random;
 import com.gypsyengineer.tlsbunny.tls.Vector;
 import com.gypsyengineer.tlsbunny.tls13.connection.Analyzer;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
+import com.gypsyengineer.tlsbunny.tls13.server.Server;
 import com.gypsyengineer.tlsbunny.tls13.struct.*;
 import com.gypsyengineer.tlsbunny.output.Output;
 import com.gypsyengineer.tlsbunny.utils.WhatTheHell;
+import com.gypsyengineer.tlsbunny.vendor.test.tls13.Utils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -16,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static com.gypsyengineer.tlsbunny.vendor.test.tls13.Utils.checkForASanFindings;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -23,6 +27,20 @@ public class TestUtils {
 
     public interface TestAction {
         void run() throws Exception;
+    }
+
+    public static void tearDown(Server server) throws Exception {
+        Output output = server.output();
+        checkForASanFindings(output);
+
+        output.clear();
+        StandardOutput standardOutput = Output.standard(output);
+        try (standardOutput) {
+            server.close();
+            Utils.waitStop(server);
+        } finally {
+            standardOutput.flush();
+        }
     }
 
     public static <T> void assertContains(T object, T... array) {

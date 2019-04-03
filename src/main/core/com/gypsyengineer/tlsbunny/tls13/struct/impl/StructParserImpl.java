@@ -352,12 +352,12 @@ public class StructParserImpl implements StructParser {
                 UInt32.parse(buffer),
                 UInt32.parse(buffer),
                 Vector.parseOpaqueVector(buffer,
-                        NewSessionTicket.NONCE_LENGTH_BYTES),
+                        NewSessionTicket.nonce_length_bytes),
                 Vector.parseOpaqueVector(buffer,
-                        NewSessionTicket.TICKET_LENTGH_BYTES),
+                        NewSessionTicket.ticket_length_bytes),
                 Vector.parse(
                         buffer,
-                        NewSessionTicket.EXTENSIONS_LENGTH_BYTES,
+                        NewSessionTicket.extensions_length_bytes,
                         buf -> parseExtension(buf)));
     }
 }

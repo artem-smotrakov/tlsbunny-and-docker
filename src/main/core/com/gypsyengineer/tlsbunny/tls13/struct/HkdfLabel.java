@@ -6,12 +6,10 @@ import com.gypsyengineer.tlsbunny.tls.Vector;
 
 public interface HkdfLabel extends Struct {
 
-    int CONTEXT_LENGTH_BYTES = 1;
-    int LABEL_LENGTH_BYTES = 1;
-    int MAX_CONTEXT_LENGTH = 255;
-    int MAX_LABEL_LENGTH = 255;
-    int MIN_CONTEXT_LENGTH = 0;
-    int MIN_LABEL_LENGTH = 7;
+    int context_length_bytes = 1;
+    int label_length_bytes = 1;
+    int max_context_length = 255;
+    int max_label_length = 255;
 
     Vector<Byte> getContext();
     Vector<Byte> getLabel();

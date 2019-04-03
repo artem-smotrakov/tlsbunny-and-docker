@@ -16,6 +16,7 @@ import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -26,18 +27,41 @@ public class OpensslClient extends BaseDocker implements Client {
 
     private static final String image = System.getProperty(
             "tlsbunny.openssl.docker.image",
-            "artemsmotrakov/tlsbunny_openssl_tls13");
+            "artemsmotrakov/tlsbunny_openssl_tls13:2019_04_02");
 
     private static final String host_report_directory = String.format(
             "%s/openssl_report", System.getProperty("user.dir"));
 
     private final Config config = SystemPropertiesConfig.load();
     private Sync sync = Sync.dummy();
+    private Status status = Status.not_started;
+    private final Map<String, String> options = new HashMap<>();
 
     public OpensslClient() {
         super(new InputStreamOutput());
         dockerEnv.put("mode", "client");
-        dockerEnv.put("options", "-tls1_3 -CAfile certs/root_cert.pem -curves prime256v1");
+        onlyTLSv13();
+        caFile("certs/root_cert.pem");
+        prime256v1();
+    }
+
+    public OpensslClient onlyTLSv13() {
+        options.put("-tls1_3", no_arg);
+        return this;
+    }
+
+    public OpensslClient caFile(String value) {
+        options.put("-CAfile", value);
+        return this;
+    }
+
+    public OpensslClient curves(String value) {
+        options.put("-curves", value);
+        return this;
+    }
+
+    public OpensslClient prime256v1() {
+        return curves("prime256v1");
     }
 
     @Override
@@ -109,6 +133,13 @@ public class OpensslClient extends BaseDocker implements Client {
     }
 
     @Override
+    public Status status() {
+        synchronized (this) {
+            return status;
+        }
+    }
+
+    @Override
     public void run() {
         List<String> command = new ArrayList<>();
         command.add("docker");
@@ -119,7 +150,18 @@ public class OpensslClient extends BaseDocker implements Client {
         command.add(String.format("%s:%s",
                 host_report_directory, container_report_directory));
 
+        StringBuilder sb = new StringBuilder();
+        for (Map.Entry<String, String> entry : options.entrySet()) {
+            sb.append(String.format("%s %s ", entry.getKey(), entry.getValue()));
+        }
+        if (dockerEnv.containsKey("options")) {
+            output.achtung("overwrite environment variable 'options', previous value: %s",
+                    dockerEnv.get("options"));
+        }
+        dockerEnv.put("options", sb.toString());
+
         dockerEnv.put("port", String.valueOf(config.port()));
+
         for (Map.Entry entry : dockerEnv.entrySet()) {
             command.add("-e");
             command.add(String.format("%s=%s", entry.getKey(), entry.getValue()));
@@ -129,13 +171,22 @@ public class OpensslClient extends BaseDocker implements Client {
         command.add(containerName);
         command.add(image);
 
+        synchronized (this) {
+            status = Status.running;
+        }
         try {
-            int code = Utils.waitProcessFinish(output, command);
+            Process process = Utils.exec(output, command);
+            output.set(process.getInputStream());
+            int code = process.waitFor();
             if (code != 0) {
                 output.achtung("the client exited with a non-zero exit code (%d)", code);
             }
         } catch (InterruptedException | IOException e) {
             output.achtung("unexpected exception occurred", e);
+        } finally {
+            synchronized (this) {
+                status = Status.done;
+            }
         }
     }
 
@@ -163,21 +214,11 @@ public class OpensslClient extends BaseDocker implements Client {
     }
 
     @Override
-    public boolean running() {
-        return containerRunning();
-    }
-
-    @Override
     public void close() throws Exception {
         stop();
 
         Utils.waitStop(this);
         output.info("client stopped");
-
-        int code = Utils.waitProcessFinish(output, remove_container_template, containerName);
-        if (code != 0) {
-            output.achtung("could not remove the container (exit code %d)", code);
-        }
 
         output.flush();
     }
