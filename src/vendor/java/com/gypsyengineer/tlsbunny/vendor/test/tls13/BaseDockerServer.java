@@ -62,12 +62,6 @@ public abstract class BaseDockerServer extends BaseDocker implements Server {
         Utils.waitStop(this);
         output.info("server stopped");
 
-        int code = Utils.waitProcessFinish(output, remove_container_template, containerName);
-        if (code != 0) {
-            output.achtung("could not remove the container (exit code %d)", code);
-            failed = true;
-        }
-
         output.flush();
     }
 

@@ -213,24 +213,12 @@ public class OpensslClient extends BaseDocker implements Client {
         return this;
     }
 
-    /*
-    @Override
-    public boolean running() {
-        return containerRunning();
-    }
-    */
-
     @Override
     public void close() throws Exception {
         stop();
 
         Utils.waitStop(this);
         output.info("client stopped");
-
-        int code = Utils.waitProcessFinish(output, remove_container_template, containerName);
-        if (code != 0) {
-            output.achtung("could not remove the container (exit code %d)", code);
-        }
 
         output.flush();
     }

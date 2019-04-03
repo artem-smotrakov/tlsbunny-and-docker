@@ -18,9 +18,6 @@ public class BaseDocker {
 
     protected static final String container_report_directory = "/var/reports";
 
-    protected static final String remove_container_template =
-            "docker container rm %s";
-
     protected final String containerName = String.format("%s_%d",
             this.getClass().getSimpleName().toLowerCase(), System.currentTimeMillis());
 
