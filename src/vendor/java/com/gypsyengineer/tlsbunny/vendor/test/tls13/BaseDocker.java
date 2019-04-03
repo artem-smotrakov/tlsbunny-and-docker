@@ -37,7 +37,7 @@ public class BaseDocker {
         }
     }
 
-    boolean containerRunning() {
+    protected boolean containerRunning() {
         try {
             List<String> command = List.of(
                     "/bin/bash",

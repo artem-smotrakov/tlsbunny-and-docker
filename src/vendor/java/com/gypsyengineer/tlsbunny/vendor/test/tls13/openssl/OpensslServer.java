@@ -18,6 +18,8 @@ public class OpensslServer extends BaseDockerServer implements Server {
 
     private static final int defaultPort = 10101;
 
+    private static final int stop_wait_delay = 1000;
+
     private static final String image = System.getProperty(
             "tlsbunny.openssl.docker.image",
             "artemsmotrakov/tlsbunny_openssl_tls13:2019_04_02");
@@ -193,6 +195,10 @@ public class OpensslServer extends BaseDockerServer implements Server {
                 if (code != 0) {
                     output.achtung("could not stop the server (exit code %d)", code);
                     failed = true;
+                }
+
+                while (containerRunning()) {
+                    Utils.sleep(stop_wait_delay);
                 }
             } finally {
                 synchronized (this) {
