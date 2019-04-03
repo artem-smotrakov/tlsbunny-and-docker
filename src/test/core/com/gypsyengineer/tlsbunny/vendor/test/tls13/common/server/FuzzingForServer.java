@@ -1,5 +1,6 @@
 package com.gypsyengineer.tlsbunny.vendor.test.tls13.common.server;
 
+import com.gypsyengineer.tlsbunny.TestUtils;
 import com.gypsyengineer.tlsbunny.tls13.fuzzer.DeepHandshakeFuzzerConfigs;
 import com.gypsyengineer.tlsbunny.tls13.server.Server;
 import com.gypsyengineer.tlsbunny.utils.Config;
@@ -17,7 +18,6 @@ import static com.gypsyengineer.tlsbunny.tls13.fuzzer.DeepHandshakeFuzzyClient.d
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.MultiConfigClient.multiConfigClient;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.MutatedClient.mutatedClient;
 import static com.gypsyengineer.tlsbunny.tls13.fuzzer.MutatedConfigs.*;
-import static com.gypsyengineer.tlsbunny.vendor.test.tls13.Utils.checkForASanFindings;
 
 public abstract class FuzzingForServer {
 
@@ -143,8 +143,6 @@ public abstract class FuzzingForServer {
 
     @AfterClass
     public static void tearDown() throws Exception {
-        server.close();
-        Utils.waitStop(server);
-        checkForASanFindings(server.output());
+        TestUtils.tearDown(server);
     }
 }

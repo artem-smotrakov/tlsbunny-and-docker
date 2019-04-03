@@ -1,5 +1,6 @@
 package com.gypsyengineer.tlsbunny.vendor.test.tls13.common.server;
 
+import com.gypsyengineer.tlsbunny.TestUtils;
 import com.gypsyengineer.tlsbunny.tls13.client.HttpsClient;
 import com.gypsyengineer.tlsbunny.tls13.client.downgrade.CheckDowngradeMessage;
 import com.gypsyengineer.tlsbunny.tls13.client.downgrade.NoSupportedVersions;
@@ -13,7 +14,6 @@ import org.junit.Test;
 import java.io.IOException;
 
 import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.*;
-import static com.gypsyengineer.tlsbunny.vendor.test.tls13.Utils.checkForASanFindings;
 
 public abstract class DowngradeProtocolTestsForServer {
 
@@ -77,8 +77,6 @@ public abstract class DowngradeProtocolTestsForServer {
 
     @AfterClass
     public static void tearDown() throws Exception {
-        server.close();
-        Utils.waitStop(server);
-        checkForASanFindings(server.output());
+        TestUtils.tearDown(server);
     }
 }
