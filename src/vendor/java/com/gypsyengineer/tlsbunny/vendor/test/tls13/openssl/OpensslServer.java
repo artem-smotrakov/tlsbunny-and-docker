@@ -1,5 +1,7 @@
 package com.gypsyengineer.tlsbunny.vendor.test.tls13.openssl;
 
+import com.gypsyengineer.tlsbunny.output.InputStreamOutput;
+import com.gypsyengineer.tlsbunny.output.Output;
 import com.gypsyengineer.tlsbunny.vendor.test.tls13.BaseDockerServer;
 import com.gypsyengineer.tlsbunny.vendor.test.tls13.Utils;
 import com.gypsyengineer.tlsbunny.tls13.server.Server;
@@ -183,7 +185,11 @@ public class OpensslServer extends BaseDockerServer implements Server {
                 status = Server.Status.ready;
             }
             try {
-                int code = Utils.waitProcessFinish(output, command);
+                Process process = Utils.exec(output, command);
+                InputStreamOutput commandOutput = Output.create(process.getInputStream());
+                int code = process.waitFor();
+                output.add(commandOutput);
+
                 if (code != 0) {
                     output.achtung("could not stop the server (exit code %d)", code);
                     failed = true;
