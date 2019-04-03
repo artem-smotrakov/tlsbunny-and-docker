@@ -1,8 +1,6 @@
 package com.gypsyengineer.tlsbunny.vendor.test.tls13.common.server;
 
 import com.gypsyengineer.tlsbunny.TestUtils;
-import com.gypsyengineer.tlsbunny.output.Output;
-import com.gypsyengineer.tlsbunny.output.StandardOutput;
 import com.gypsyengineer.tlsbunny.tls13.client.HttpsClientAuth;
 import com.gypsyengineer.tlsbunny.tls13.server.Server;
 import com.gypsyengineer.tlsbunny.vendor.test.tls13.Utils;
@@ -12,8 +10,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
-
-import static com.gypsyengineer.tlsbunny.vendor.test.tls13.Utils.checkForASanFindings;
 
 public abstract class TestsForServerWithClientAuth {
 
