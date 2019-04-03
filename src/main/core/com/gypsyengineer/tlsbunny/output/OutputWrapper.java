@@ -92,6 +92,11 @@ public abstract class OutputWrapper implements Output {
     }
 
     @Override
+    public void add(Output output) {
+        output.add(output);
+    }
+
+    @Override
     public void important(String format, Object... values) {
         output.important(format, values);
     }

@@ -1,5 +1,6 @@
 package com.gypsyengineer.tlsbunny.output;
 
+import java.io.InputStream;
 import java.util.List;
 
 public interface Output extends AutoCloseable {
@@ -32,6 +33,10 @@ public interface Output extends AutoCloseable {
         return new LocalOutput(prefix);
     }
 
+    static InputStreamOutput create(InputStream is) {
+        return new InputStreamOutput().set(is);
+    }
+
     Output add(OutputListener listener);
 
     void increaseIndent();
@@ -53,6 +58,8 @@ public interface Output extends AutoCloseable {
     void achtung(String message, Throwable e);
 
     void add(Line line);
+
+    void add(Output output);
 
     List<Line> lines();
 

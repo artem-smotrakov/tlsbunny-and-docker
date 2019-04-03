@@ -134,6 +134,13 @@ public class LocalOutput implements Output {
     }
 
     @Override
+    public void add(Output output) {
+        for (Line line : output.lines()) {
+            add(line);
+        }
+    }
+
+    @Override
     synchronized public List<Line> lines() {
         return Collections.unmodifiableList(lines);
     }

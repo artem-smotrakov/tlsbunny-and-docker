@@ -11,6 +11,7 @@ public class OutputWrapperTest {
 
     private static final Line null_line = null;
     private static final OutputListener null_listener = null;
+    private static final Output null_output = null;
 
     @Test
     public void main() {
@@ -18,6 +19,7 @@ public class OutputWrapperTest {
         try (TestWrapperOutput wrapper = new TestWrapperOutput(checker)) {
             wrapper.add(null_line);
             wrapper.add(null_listener);
+            wrapper.add(null_output);
             wrapper.increaseIndent();
             wrapper.decreaseIndent();
             wrapper.prefix("test");
@@ -33,7 +35,7 @@ public class OutputWrapperTest {
             wrapper.clear();
         }
 
-        assertEquals(16, checker.counter);
+        assertEquals(17, checker.counter);
     }
 
     private static class TestWrapperOutput extends OutputWrapper {
@@ -100,6 +102,11 @@ public class OutputWrapperTest {
 
         @Override
         public void add(Line line) {
+            counter++;
+        }
+
+        @Override
+        public void add(Output output) {
             counter++;
         }
 
