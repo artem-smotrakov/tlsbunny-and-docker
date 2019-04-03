@@ -1,5 +1,8 @@
 package com.gypsyengineer.tlsbunny.vendor.test.tls13.common.server;
 
+import com.gypsyengineer.tlsbunny.TestUtils;
+import com.gypsyengineer.tlsbunny.output.Output;
+import com.gypsyengineer.tlsbunny.output.StandardOutput;
 import com.gypsyengineer.tlsbunny.tls13.client.HttpsClientAuth;
 import com.gypsyengineer.tlsbunny.tls13.server.Server;
 import com.gypsyengineer.tlsbunny.vendor.test.tls13.Utils;
@@ -33,8 +36,6 @@ public abstract class TestsForServerWithClientAuth {
 
     @AfterClass
     public static void tearDown() throws Exception {
-        server.close();
-        Utils.waitStop(server);
-        checkForASanFindings(server.output());
+        TestUtils.tearDown(server);
     }
 }
