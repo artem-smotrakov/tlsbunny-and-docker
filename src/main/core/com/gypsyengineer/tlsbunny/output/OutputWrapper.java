@@ -93,7 +93,7 @@ public abstract class OutputWrapper implements Output {
 
     @Override
     public void add(Output output) {
-        output.add(output);
+        this.output.add(output);
     }
 
     @Override
