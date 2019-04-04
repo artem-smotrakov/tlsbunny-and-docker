@@ -149,6 +149,14 @@ public class SyncImpl implements Sync {
                 standardOutput.achtung("oops!");
                 standardOutput.achtung("Looks like AddressSanitizer found something");
                 standardOutput.add(output);
+
+                if (printToFile) {
+                    String path = String.format("%s/oops_%s_%d.log",
+                            dirName, logPrefix, System.currentTimeMillis());
+                    try (Output oopsOutput = Output.file(path)) {
+                        oopsOutput.add(output);
+                    }
+                }
             } else {
                 if (++tests % n == 0) {
                     long speed = n * 60000000000L / testsDuration;
