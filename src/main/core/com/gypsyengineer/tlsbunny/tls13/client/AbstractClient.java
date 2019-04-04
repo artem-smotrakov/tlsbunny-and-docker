@@ -23,7 +23,7 @@ public abstract class AbstractClient implements Client, AutoCloseable {
     protected Config config = SystemPropertiesConfig.load();
     protected StructFactory factory = StructFactory.getDefault();
     protected Negotiator negotiator;
-    protected Output output = Output.standard();
+    protected Output output = Output.local();
     protected Analyzer analyzer;
     protected List<Engine> engines = new ArrayList<>();
     protected List<Check> checks = Collections.emptyList();
