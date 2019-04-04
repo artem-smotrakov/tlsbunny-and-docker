@@ -23,11 +23,11 @@ public class LocalOutput implements Output {
     private final List<OutputListener> listeners
             = Collections.synchronizedList(new ArrayList<>());
 
-    public LocalOutput() {
+    LocalOutput() {
 
     }
 
-    public LocalOutput(String prefix) {
+    LocalOutput(String prefix) {
         prefix(prefix);
     }
 

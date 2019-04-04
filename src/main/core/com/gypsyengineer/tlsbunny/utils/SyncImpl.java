@@ -124,7 +124,7 @@ public class SyncImpl implements Sync {
         long time = System.nanoTime() - testStarted;
         testsDuration += time;
 
-        try (Output output = new LocalOutput()) {
+        try (Output output = Output.local()) {
             output.info("[sync] client output");
             List<Line> clientLines = client.output().lines();
             for (; clientIndex < clientLines.size(); clientIndex++) {
