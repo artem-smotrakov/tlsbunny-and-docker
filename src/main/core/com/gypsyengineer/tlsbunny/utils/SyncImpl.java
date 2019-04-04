@@ -78,9 +78,9 @@ public class SyncImpl implements Sync {
         standardOutput.prefix("");
 
         if (printToFile) {
-            String filename = String.format("%s/%s_%d.log",
+            String path = String.format("%s/%s_%d.log",
                     dirName, logPrefix, System.currentTimeMillis());
-            fileOutput = new FileOutput(Output.local(), filename);
+            fileOutput = Output.file(path);
             fileOutput.prefix("");
         }
 
