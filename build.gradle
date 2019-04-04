@@ -234,7 +234,7 @@ task runWolfsslFuzzing(type: Test) {
     systemProperty 'tlsbunny.output.to.file', 'true'
     systemProperty 'tlsbunny.output.enable.highlighting', 'false'
     systemProperty 'tlsbunny.output.standard.level', 'important'
-    systemProperty 'tlsbunny.sync.output.standard.level', 'info'
+    systemProperty 'tlsbunny.sync.output.standard.level', 'important'
 
     include 'com/gypsyengineer/tlsbunny/vendor/test/tls13/wolfssl/**/*Fuzzing*'
 }
@@ -256,14 +256,16 @@ task runDeepWolfsslServerFuzzing(type: Test) {
     systemProperty 'tlsbunny.output.to.file', 'true'
     systemProperty 'tlsbunny.output.enable.highlighting', 'false'
     systemProperty 'tlsbunny.output.standard.level', 'important'
-    systemProperty 'tlsbunny.sync.output.standard.level', 'info'
+    systemProperty 'tlsbunny.sync.output.standard.level', 'important'
+    systemProperty 'tlsbunny.output.file.level', 'info'
 
     filter.includeTestsMatching 'com.gypsyengineer.tlsbunny.vendor.test.tls13.wolfssl.server.FuzzingForWolfsslServer.deepHandshakeFuzzer'
+    filter.includeTestsMatching 'com.gypsyengineer.tlsbunny.vendor.test.tls13.wolfssl.server.FuzzingForWolfsslServerWithClientAuth.deepHandshakeFuzzer'
 }
 
 task runDeepOpensslServerFuzzing(type: Test) {
     description = 'Runs deep fuzzing for OpenSSL server'
-    group = 'wolfssl'
+    group = 'openssl'
 
     testClassesDirs += sourceSets.vendor.output.classesDirs
     testClassesDirs += sourceSets.test.output.classesDirs
