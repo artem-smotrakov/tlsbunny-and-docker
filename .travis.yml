@@ -25,10 +25,8 @@ script:
   - ./gradlew clean
   - ./gradlew test --info -Ptlsbunny.test.exclude=com/gypsyengineer/tlsbunny/vendor/test/tls13/** -Dtlsbunny.output.standard.level=achtung -Dtlsbunny.sync.output.standard.level=achtung -Dtlsbunny.output.enable.highlighting=false
   - ./gradlew test --info -Ptlsbunny.test.include=com/gypsyengineer/tlsbunny/vendor/test/tls13/** -Dtlsbunny.output.standard.level=achtung -Dtlsbunny.sync.output.standard.level=achtung -Dtlsbunny.output.enable.highlighting=false
+  - ./gradlew jacocoTestReport
   - sonar-scanner
-
-after_success:
-  - ./gradlew jacocoTestReport coveralls
 
 addons:
   sonarcloud:
