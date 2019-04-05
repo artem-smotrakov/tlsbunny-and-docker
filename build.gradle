@@ -3,7 +3,7 @@ plugins {
     id 'idea'
     id 'application'
     id 'jacoco'
-    id 'org.sonarqube' version '2.6.2'
+    id 'org.sonarqube' version '2.7'
 }
 
 version '1.0-SNAPSHOT'
@@ -31,7 +31,7 @@ sourceSets {
 
     vendor {
         java {
-            srcDir 'src/vendor/java'
+            srcDir 'src/main/vendor'
         }
         compileClasspath += sourceSets.main.output + configurations.testRuntimeClasspath
         runtimeClasspath += output + compileClasspath
@@ -39,7 +39,7 @@ sourceSets {
 
     test {
         java {
-            srcDirs 'src/test/core', 'src/vendor/java'
+            srcDirs 'src/test/core', 'src/test/vendor'
         }
 
         compileClasspath += sourceSets.main.output
@@ -113,7 +113,7 @@ task buildOpensslDocker(type: Exec) {
     commandLine 'docker',
             'build',
             '--no-cache',
-            '--file', 'src/vendor/docker/openssl/Dockerfile',
+            '--file', 'src/main/docker/openssl/Dockerfile',
             '--tag',  'artemsmotrakov/tlsbunny_openssl_tls13',
             '.'
 }
@@ -192,7 +192,7 @@ task buildWolfsslDocker(type: Exec) {
     commandLine 'docker',
             'build',
             '--no-cache',
-            '--file', 'src/vendor/docker/wolfssl/Dockerfile',
+            '--file', 'src/main/docker/wolfssl/Dockerfile',
             '--tag',  'artemsmotrakov/tlsbunny_wolfssl_tls13',
             '.'
 }
