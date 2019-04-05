@@ -266,7 +266,7 @@ public class TestUtils {
 
         @Override
         public Output output() {
-            return Output.standard();
+            return Output.local();
         }
 
         @Override
@@ -314,7 +314,7 @@ public class TestUtils {
 
         @Override
         public Output output() {
-            return Output.standard();
+            return Output.local();
         }
 
         @Override
@@ -362,7 +362,7 @@ public class TestUtils {
 
         @Override
         public Output output() {
-            return Output.standard();
+            return Output.local();
         }
 
         @Override

@@ -20,7 +20,7 @@ public class FileOutput extends OutputWrapper {
     private final Writer writer;
     private int index = 0;
 
-    public FileOutput(Output output, String filename) {
+    FileOutput(Output output, String filename) {
         super(output, globalLevel);
 
         try {

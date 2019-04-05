@@ -6,7 +6,7 @@ import com.gypsyengineer.tlsbunny.tls13.server.Server;
 
 public class DummySync implements Sync {
 
-    private final Output output = Output.standard("dummy_sync");
+    private final Output output = Output.local("dummy_sync");
 
     @Override
     public Sync set(Client client) {

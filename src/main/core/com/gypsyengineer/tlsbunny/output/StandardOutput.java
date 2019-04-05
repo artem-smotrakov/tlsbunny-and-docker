@@ -8,7 +8,7 @@ public class StandardOutput extends OutputWrapper {
             System.getProperty("tlsbunny.output.standard.level",
                     Level.info.name()));
 
-    protected static final Object consoleLock = new Object();
+    private static final Object consoleLock = new Object();
 
     private static final String ansi_red = "\u001B[31m";
     private static final String ansi_reset = "\u001B[0m";
@@ -17,7 +17,7 @@ public class StandardOutput extends OutputWrapper {
 
     protected int index = 0;
 
-    public StandardOutput(Output output) {
+    StandardOutput(Output output) {
         super(output, globalLevel);
     }
 

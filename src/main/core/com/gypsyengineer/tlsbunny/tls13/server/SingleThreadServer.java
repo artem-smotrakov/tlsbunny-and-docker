@@ -34,7 +34,7 @@ public class SingleThreadServer implements Server {
     private Config config = SystemPropertiesConfig.load();
     private EngineFactory factory;
     private StopCondition stopCondition = new NonStop();
-    private Output output = Output.standard("server");
+    private Output output = Output.local("server");
     private Check check;
     private boolean failed = false;
     private Status status = Status.not_started;

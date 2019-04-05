@@ -9,6 +9,10 @@ public interface Output extends AutoCloseable {
     Level level = Level.valueOf(
             System.getProperty("tlsbunny.output.level", Level.info.name()));
 
+    static FileOutput file(String filename) {
+        return new FileOutput(local(), filename);
+    }
+
     static StandardOutput standard() {
         return new StandardOutput(local());
     }

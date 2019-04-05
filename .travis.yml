@@ -5,29 +5,31 @@ dist: trusty
 services:
   - docker
 
-jdk:
-  - openjdk10
-  - openjdk11
-
 before_install:
+  - wget https://github.com/sormuras/bach/raw/master/install-jdk.sh
   - ./gradlew wrapper --gradle-version 4.10.2
   - docker pull artemsmotrakov/tlsbunny_openssl_tls13:2019_04_02
   - docker pull artemsmotrakov/tlsbunny_wolfssl_tls13:2019_03_03
   - docker run artemsmotrakov/tlsbunny_openssl_tls13:2019_04_02 /bin/bash -c "openssl version"
   - docker run artemsmotrakov/tlsbunny_wolfssl_tls13:2019_03_03 /bin/bash -c "examples/server/server -h"
 
-after_success:
-  - ./gradlew jacocoTestReport coveralls
-
-addons:
-  sonarcloud:
-    organization: "artem-smotrakov-github"
-    token:
-      secure: "dluei+0gd66JePCjVlPagI8hrZ56BU5CaQV3SLzskTe2iHyV/Xvspwn5FN4c3lwKtLbr0pQXpbpddKEinqpZ9JUFgvtpl1MoI6fI61vrtBgrZTsAPvWgQYN7OluvKSjaIK6Q4SJAd6KLS1GBGEG55np4rD3W4fKW1jyz+ZaAOvQHxBT5JkOARRZKtLHgL8iN6I8YYF7WGwwp5BtrfALz5jTPKsIcuWXqICLwVmZmnGjWnsqRxZuYxcWX27jcoWuGg8ei+BjUf9yWzevkqVU3896vg/sCWjua+jJzVXXElmrXe3bJXGd0zS8LyjvrSVFwueY4pMy1HYZwtBDJMb2lriDTimeVmb+Bb2YJDfUuq5f2w20Cp/RbWvvCMoYVerosSk3OaqYLPEHFFu+MSI76erHgHDHJX+i9A1MwU0nl7JCivejpqMpho52dGUScqAfWeXE68Kd5/1nKNQr+roMhzyQnFwFTJahD3BVmxXmhcLR4sYT0inqxSGQ+leAfYS0qLztz/2QthZyGvzPhiP/orzhBK2AUnSQjPu3hX2azkH1Pjgm/pW2twdkkURNstQvLj+PboFJZzJjMrmgJ6q00dclKEvHU3hx69ea//9b0l7+wPJnhN17fsTfc84ATpXadtB2K6nCrabGnlxoK0V5RO7MdeYzdMCdsQCqTLry/BbY="
+matrix:
+  include:
+    - env: JDK='OpenJDK 11'
+      install: . ./install-jdk.sh -F 11 -L GPL
+    - env: JDK='OpenJDK 12'
+      install: . ./install-jdk.sh -F 12 -L GPL
 
 script:
   - git fetch --unshallow --quiet
   - ./gradlew clean
   - ./gradlew test --info -Ptlsbunny.test.exclude=com/gypsyengineer/tlsbunny/vendor/test/tls13/** -Dtlsbunny.output.standard.level=achtung -Dtlsbunny.sync.output.standard.level=achtung -Dtlsbunny.output.enable.highlighting=false
   - ./gradlew test --info -Ptlsbunny.test.include=com/gypsyengineer/tlsbunny/vendor/test/tls13/** -Dtlsbunny.output.standard.level=achtung -Dtlsbunny.sync.output.standard.level=achtung -Dtlsbunny.output.enable.highlighting=false
+  - ./gradlew jacocoTestReport
   - sonar-scanner
+
+addons:
+  sonarcloud:
+    organization: "artem-smotrakov-github"
+    token:
+      secure: "dluei+0gd66JePCjVlPagI8hrZ56BU5CaQV3SLzskTe2iHyV/Xvspwn5FN4c3lwKtLbr0pQXpbpddKEinqpZ9JUFgvtpl1MoI6fI61vrtBgrZTsAPvWgQYN7OluvKSjaIK6Q4SJAd6KLS1GBGEG55np4rD3W4fKW1jyz+ZaAOvQHxBT5JkOARRZKtLHgL8iN6I8YYF7WGwwp5BtrfALz5jTPKsIcuWXqICLwVmZmnGjWnsqRxZuYxcWX27jcoWuGg8ei+BjUf9yWzevkqVU3896vg/sCWjua+jJzVXXElmrXe3bJXGd0zS8LyjvrSVFwueY4pMy1HYZwtBDJMb2lriDTimeVmb+Bb2YJDfUuq5f2w20Cp/RbWvvCMoYVerosSk3OaqYLPEHFFu+MSI76erHgHDHJX+i9A1MwU0nl7JCivejpqMpho52dGUScqAfWeXE68Kd5/1nKNQr+roMhzyQnFwFTJahD3BVmxXmhcLR4sYT0inqxSGQ+leAfYS0qLztz/2QthZyGvzPhiP/orzhBK2AUnSQjPu3hX2azkH1Pjgm/pW2twdkkURNstQvLj+PboFJZzJjMrmgJ6q00dclKEvHU3hx69ea//9b0l7+wPJnhN17fsTfc84ATpXadtB2K6nCrabGnlxoK0V5RO7MdeYzdMCdsQCqTLry/BbY="

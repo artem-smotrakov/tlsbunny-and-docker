@@ -1,5 +1,4 @@
 [![Build Status](https://travis-ci.org/artem-smotrakov/tlsbunny.svg?branch=master)](https://travis-ci.org/artem-smotrakov/tlsbunny)
-[![Coverage Status](https://coveralls.io/repos/github/artem-smotrakov/tlsbunny/badge.svg?branch=master)](https://coveralls.io/github/artem-smotrakov/tlsbunny?branch=master)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 # tlsbunny
