@@ -53,7 +53,7 @@ public class TestsForOpensslServer extends TestsForServer {
 
     /**
      * The test is ignored because OpenSSl server doesn't send an alert
-     * if ClientHello contains an invalid max_fragment_length extension.
+     * if a ClientHello contains an invalid max_fragment_length extension.
      *
      * Looks like a bug in OpenSSL.
      */
@@ -61,5 +61,24 @@ public class TestsForOpensslServer extends TestsForServer {
     @Override
     @Ignore
     public final void invalidMaxFragmentLength() {}
+
+    /**
+     * The test is ignored because OpenSSL server doesn't send an alert
+     * if an initial ClientHello contains an unexpected Cookie extension.
+     *
+     * The TLS 1.3 spec says the following:
+     *
+     *     Clients MUST NOT use cookies in their initial ClientHello
+     *     in subsequent connections.
+     *
+     * But the spec doesn't explicitly mention that a server must send an alert
+     * if a ClientHello has an unexpected Cookie extension.
+     *
+     * Is it a bug?
+     */
+    @Test
+    @Override
+    @Ignore
+    public final void unexpectedClientHelloCookie() {}
 
 }

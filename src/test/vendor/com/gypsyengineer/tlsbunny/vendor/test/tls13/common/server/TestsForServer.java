@@ -46,6 +46,14 @@ public abstract class TestsForServer {
     }
 
     @Test
+    public void unexpectedClientHelloCookie() throws Exception {
+        new VendorTest()
+                .set(new UnexpectedClientHelloCookie())
+                .set(server)
+                .run();
+    }
+
+    @Test
     public void ccsAfterHandshake() throws Exception {
         new VendorTest()
                 .set(new CCSAfterHandshake())
