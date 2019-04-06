@@ -18,6 +18,8 @@ import org.junit.*;
 import java.io.IOException;
 import java.net.SocketException;
 
+import static com.gypsyengineer.tlsbunny.tls13.client.StagedHttpsClient.stagedHttpsClient;
+
 public abstract class TestsForServer {
 
     protected static Server server;
@@ -31,6 +33,14 @@ public abstract class TestsForServer {
     public void httpClient() throws Exception {
         new VendorTest()
                 .set(new HttpsClient())
+                .set(server)
+                .run();
+    }
+
+    @Test
+    public void stagedHttpClient() throws Exception {
+        new VendorTest()
+                .set(stagedHttpsClient())
                 .set(server)
                 .run();
     }
