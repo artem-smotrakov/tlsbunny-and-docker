@@ -81,7 +81,7 @@ public class CCSAfterHandshakeTest {
 
             fail("expected ActionFailed");
         } catch (ActionFailed e) {
-            assertEquals("alert received check failed", e.getMessage());
+            assertEquals("check failed: alert received", e.getMessage());
         }
 
         Alert alert = client.engines()[0].context().getAlert();

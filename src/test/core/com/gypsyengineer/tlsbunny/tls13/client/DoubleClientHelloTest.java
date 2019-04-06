@@ -82,7 +82,7 @@ public class DoubleClientHelloTest {
 
             fail("expected ActionFailed");
         } catch (ActionFailed e) {
-            assertEquals("alert received check failed", e.getMessage());
+            assertEquals("check failed: alert received", e.getMessage());
         }
 
         Engine[] engines = client.engines();
