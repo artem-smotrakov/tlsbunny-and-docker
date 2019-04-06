@@ -23,18 +23,10 @@ import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv12;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion.TLSv13;
 import static com.gypsyengineer.tlsbunny.tls13.struct.SignatureScheme.ecdsa_secp256r1_sha256;
 
-public class StagedHttpsClient extends SingleConnectionClient {
+public class StagedHttpsClient extends AbstractClient {
 
     public interface Stage {
         void run(Engine engine) throws NegotiatorException, NoSuchAlgorithmException;
-    }
-
-    public static void main(String... args) throws Exception {
-        try (Output output = Output.standardClient();
-             StagedHttpsClient client = stagedHttpsClient()) {
-
-            client.set(output).connect();
-        }
     }
 
     public static StagedHttpsClient stagedHttpsClient() {
@@ -79,14 +71,29 @@ public class StagedHttpsClient extends SingleConnectionClient {
             engine.loop(context -> !context.receivedApplicationData() && !context.hasAlert())
                     .receive(() -> new IncomingMessages(Side.client));
 
-    private StagedHttpsClient() {
+    public StagedHttpsClient() {
         checks = List.of(
                 new NoAlertCheck(),
                 new SuccessCheck(),
                 new NoExceptionCheck());
     }
 
+
     @Override
+    public StagedHttpsClient connectImpl() throws Exception {
+        sync().start();
+        try {
+            output.info("connect to %s:%d", config.host(), config.port());
+            Engine engine = createEngine();
+            engines.add(engine);
+            engine.connect();
+            engine.run(checks);
+            return this;
+        } finally {
+            sync().end();
+        }
+    }
+
     protected final Engine createEngine()
             throws NegotiatorException, NoSuchAlgorithmException {
 

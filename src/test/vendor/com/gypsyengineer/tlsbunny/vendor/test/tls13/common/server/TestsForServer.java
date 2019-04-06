@@ -122,6 +122,14 @@ public abstract class TestsForServer {
     }
 
     @Test
+    public void invalidMaxFragmentLength() throws Exception {
+        new VendorTest()
+                .set(new InvalidMaxFragmentLength())
+                .set(server)
+                .run();
+    }
+
+    @Test
     public void ecdheStrictValidation() throws Exception {
         new VendorTest()
                 .set(new ECDHEStrictValidation())
