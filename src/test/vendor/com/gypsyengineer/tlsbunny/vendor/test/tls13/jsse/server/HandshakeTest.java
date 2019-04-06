@@ -1,4 +1,4 @@
-package com.gypsyengineer.tlsbunny.vendor.test.tls13.old.jsse;
+package com.gypsyengineer.tlsbunny.vendor.test.tls13.jsse.server;
 
 import com.gypsyengineer.tlsbunny.tls13.client.HttpsClient;
 import com.gypsyengineer.tlsbunny.tls13.connection.Engine;
@@ -10,6 +10,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.ProtocolVersion;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.output.Output;
 import com.gypsyengineer.tlsbunny.utils.SystemPropertiesConfig;
+import com.gypsyengineer.tlsbunny.vendor.test.tls13.jsse.SimpleHttpsServer;
 import org.junit.Test;
 
 public class HandshakeTest extends BaseTest {

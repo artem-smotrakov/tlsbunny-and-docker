@@ -1,4 +1,4 @@
-package com.gypsyengineer.tlsbunny.vendor.test.tls13.old.jsse;
+package com.gypsyengineer.tlsbunny.vendor.test.tls13.jsse.server;
 
 import org.junit.Test;
 
@@ -10,7 +10,7 @@ import java.util.List;
 import static org.junit.Assert.assertTrue;
 
 /**
- * This is a fake test which has to be run first because it initialized JSSE settings.
+ * This is a fake test which has to be run first because it initializes JSSE.
  * Once JSSE is loaded, then its settings (like paths ot keystores, and passwords)
  * can't be changed. Make sure that this fake test runs before other tests,
  * otherwise JSSE-based tests may fail.

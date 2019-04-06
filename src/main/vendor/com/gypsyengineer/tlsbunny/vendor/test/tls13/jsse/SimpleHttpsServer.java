@@ -1,4 +1,4 @@
-package com.gypsyengineer.tlsbunny.vendor.test.tls13.old.jsse;
+package com.gypsyengineer.tlsbunny.vendor.test.tls13.jsse;
 
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.output.Output;
