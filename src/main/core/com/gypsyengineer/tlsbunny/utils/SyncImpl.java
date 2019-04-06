@@ -14,11 +14,14 @@ import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public class SyncImpl implements Sync {
 
+    public enum VerboseLevel {
+        fuzzing, limited, all
+    }
+
     private static final int n = 100;
 
-    private static Level standardOutputLevel = Level.valueOf(
-            System.getProperty("tlsbunny.sync.output.standard.level",
-                    Level.info.name()));
+    private static VerboseLevel verboseLevel = VerboseLevel.valueOf(
+            System.getProperty("tlsbunny.sync.output", VerboseLevel.all.name()));
 
     private static final boolean printToFile;
     private static final String dirName;
@@ -74,7 +77,6 @@ public class SyncImpl implements Sync {
         Objects.requireNonNull(server, "server can't be null!");
 
         standardOutput = Output.standard();
-        standardOutput.set(standardOutputLevel);
         standardOutput.prefix("");
 
         if (printToFile) {
@@ -163,6 +165,10 @@ public class SyncImpl implements Sync {
                     standardOutput.important("%d tests done, %d tests / minute",
                             tests, speed);
                     testsDuration = 0;
+                }
+
+                if (verboseLevel == VerboseLevel.all) {
+                    standardOutput.add(output);
                 }
             }
 
