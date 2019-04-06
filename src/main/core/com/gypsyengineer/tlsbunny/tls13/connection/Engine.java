@@ -303,7 +303,7 @@ public class Engine {
 
             check.run();
             if (check.failed()) {
-                throw new ActionFailed(String.format("%s check failed", check.name()));
+                throw new ActionFailed(String.format("check failed: %s", check.name()));
             }
             output.info(String.format("check passed: %s", check.name()));
         }
