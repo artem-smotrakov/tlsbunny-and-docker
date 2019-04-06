@@ -32,9 +32,7 @@ public class TestsForOpensslServer extends TestsForServer {
      *  Should it expect an alert them
      *  after sending an empty TLSPlaintext message of handshake type?
      */
-    public void startWithTLSPlaintextWithHandshake() {
-        throw achtung("don't override this method!");
-    }
+    public final void startWithTLSPlaintextWithHandshake() {}
 
     @Test
     @Override
@@ -51,8 +49,17 @@ public class TestsForOpensslServer extends TestsForServer {
      *
      *  Is it a minor bug in OpenSSL?
      */
-    public void startWithTLSPlaintextWithCCS() throws Exception {
-        throw achtung("don't override this method!");
-    }
+    public final void startWithTLSPlaintextWithCCS() {}
+
+    /**
+     * The test is ignored because OpenSSl server doesn't send an alert
+     * if ClientHello contains an invalid max_fragment_length extension.
+     *
+     * Looks like a bug in OpenSSL.
+     */
+    @Test
+    @Override
+    @Ignore
+    public final void invalidMaxFragmentLength() {}
 
 }
