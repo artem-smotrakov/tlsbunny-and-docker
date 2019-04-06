@@ -22,10 +22,7 @@ matrix:
 
 script:
   - git fetch --unshallow --quiet
-  - ./gradlew clean
-  - ./gradlew test --info -Ptlsbunny.test.exclude=com/gypsyengineer/tlsbunny/vendor/test/tls13/** -Dtlsbunny.output.standard.level=achtung -Dtlsbunny.sync.output=fuzzing -Dtlsbunny.output.enable.highlighting=false
-  - ./gradlew test --info -Ptlsbunny.test.include=com/gypsyengineer/tlsbunny/vendor/test/tls13/** -Dtlsbunny.output.standard.level=achtung -Dtlsbunny.sync.output=fuzzing -Dtlsbunny.output.enable.highlighting=false
-  - ./gradlew jacocoTestReport
+  - ./gradlew clean runTestsSilently jacocoTestReport
   - sonar-scanner
 
 addons:

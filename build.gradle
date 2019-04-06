@@ -285,3 +285,14 @@ task runDeepOpensslServerFuzzing(type: Test) {
     filter.includeTestsMatching 'com.gypsyengineer.tlsbunny.vendor.test.tls13.openssl.server.FuzzingForOpensslServer.deepHandshakeFuzzer'
     filter.includeTestsMatching 'com.gypsyengineer.tlsbunny.vendor.test.tls13.openssl.server.FuzzingForOpensslServerWithClientAuth.deepHandshakeFuzzer'
 }
+
+task runTestsSilently(type: Test) {
+    description = 'Runs tests without too much output'
+
+    testLogging.showStandardStreams = true
+    outputs.upToDateWhen { false }
+
+    systemProperty 'tlsbunny.output.standard.level', 'achtung'
+    systemProperty 'tlsbunny.sync.output', 'limited'
+    systemProperty 'tlsbunny.output.enable.highlighting', 'false'
+}
