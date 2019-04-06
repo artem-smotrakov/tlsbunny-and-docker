@@ -20,7 +20,7 @@ public class WolfsslServer extends BaseDockerServer implements Server {
 
     private static final String image = System.getProperty(
             "tlsbunny.wolfssl.docker.image",
-            "artemsmotrakov/tlsbunny_wolfssl_tls13:2019_03_03");
+            "artemsmotrakov/tlsbunny_wolfssl_tls13");
 
     private final Map<String, String> options = new HashMap<>();
     private Status status = Status.not_started;

@@ -66,6 +66,14 @@ test {
 
     systemProperty 'tlsbunny.output.enable.highlighting',
             System.getProperty('tlsbunny.output.enable.highlighting', 'true')
+
+    systemProperty 'tlsbunny.openssl.docker.image',
+            System.getProperty('tlsbunny.openssl.docker.image',
+                    'artemsmotrakov/tlsbunny_openssl_tls13')
+
+    systemProperty 'tlsbunny.wolfssl.docker.image',
+            System.getProperty('tlsbunny.wolfssl.docker.image',
+                    'artemsmotrakov/tlsbunny_wolfssl_tls13')
 }
 
 jacocoTestReport {
@@ -286,8 +294,8 @@ task runDeepOpensslServerFuzzing(type: Test) {
     filter.includeTestsMatching 'com.gypsyengineer.tlsbunny.vendor.test.tls13.openssl.server.FuzzingForOpensslServerWithClientAuth.deepHandshakeFuzzer'
 }
 
-task runTestsSilently(type: Test) {
-    description = 'Runs tests without too much output'
+task runTestsInTravis(type: Test) {
+    description = 'Runs tests in Travis without too much output'
 
     testLogging.showStandardStreams = true
     outputs.upToDateWhen { false }
@@ -295,4 +303,8 @@ task runTestsSilently(type: Test) {
     systemProperty 'tlsbunny.output.standard.level', 'achtung'
     systemProperty 'tlsbunny.sync.output', 'limited'
     systemProperty 'tlsbunny.output.enable.highlighting', 'false'
+    systemProperty 'tlsbunny.openssl.docker.image',
+            'artemsmotrakov/tlsbunny_openssl_tls13:2019_04_02'
+    systemProperty 'tlsbunny.wolfssl.docker.image',
+            'artemsmotrakov/tlsbunny_wolfssl_tls13:2019_03_03'
 }
