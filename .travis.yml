@@ -22,7 +22,7 @@ matrix:
 
 script:
   - git fetch --unshallow --quiet
-  - ./gradlew clean runTestsSilently jacocoTestReport
+  - ./gradlew clean runTestsInTravis jacocoTestReport
   - sonar-scanner
 
 addons:
