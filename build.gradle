@@ -25,27 +25,14 @@ jacoco {
 sourceSets {
     main {
         java {
-            srcDirs 'src/main/core'
+            srcDirs 'src/main/core', 'src/main/vendor'
         }
-    }
-
-    vendor {
-        java {
-            srcDir 'src/main/vendor'
-        }
-        compileClasspath += sourceSets.main.output + configurations.testRuntimeClasspath
-        runtimeClasspath += output + compileClasspath
     }
 
     test {
         java {
             srcDirs 'src/test/core', 'src/test/vendor'
         }
-
-        compileClasspath += sourceSets.main.output
-        compileClasspath += sourceSets.vendor.output
-        compileClasspath += configurations.testRuntimeClasspath
-        runtimeClasspath += output + compileClasspath
     }
 }
 
@@ -130,11 +117,6 @@ task runOpensslTests(type: Test) {
     description = 'Runs tests for OpenSSL'
     group = 'openssl'
 
-    testClassesDirs += sourceSets.vendor.output.classesDirs
-    testClassesDirs += sourceSets.test.output.classesDirs
-    classpath += sourceSets.vendor.runtimeClasspath
-    classpath += sourceSets.test.runtimeClasspath
-
     testLogging.showStandardStreams = true
     ignoreFailures = true
     outputs.upToDateWhen { false }
@@ -146,11 +128,6 @@ task runOpensslTests(type: Test) {
 task runOpensslFuzzing(type: Test) {
     description = 'Runs fuzzing for OpenSSL'
     group = 'openssl'
-
-    testClassesDirs += sourceSets.vendor.output.classesDirs
-    testClassesDirs += sourceSets.test.output.classesDirs
-    classpath += sourceSets.vendor.runtimeClasspath
-    classpath += sourceSets.test.runtimeClasspath
 
     testLogging.showStandardStreams = true
     ignoreFailures = true
@@ -209,11 +186,6 @@ task runWolfsslTests(type: Test) {
     description = 'Runs tests for WolfSSL'
     group = 'wolfssl'
 
-    testClassesDirs += sourceSets.vendor.output.classesDirs
-    testClassesDirs += sourceSets.test.output.classesDirs
-    classpath += sourceSets.vendor.runtimeClasspath
-    classpath += sourceSets.test.runtimeClasspath
-
     testLogging.showStandardStreams = true
     ignoreFailures = true
     outputs.upToDateWhen { false }
@@ -227,11 +199,6 @@ task runWolfsslTests(type: Test) {
 task runWolfsslFuzzing(type: Test) {
     description = 'Runs fuzzing for WolfSSL'
     group = 'wolfssl'
-
-    testClassesDirs += sourceSets.vendor.output.classesDirs
-    testClassesDirs += sourceSets.test.output.classesDirs
-    classpath += sourceSets.vendor.runtimeClasspath
-    classpath += sourceSets.test.runtimeClasspath
 
     testLogging.showStandardStreams = true
     ignoreFailures = true
@@ -249,11 +216,6 @@ task runWolfsslFuzzing(type: Test) {
 task runDeepWolfsslServerFuzzing(type: Test) {
     description = 'Runs deep fuzzing for WolfSSL server'
     group = 'wolfssl'
-
-    testClassesDirs += sourceSets.vendor.output.classesDirs
-    testClassesDirs += sourceSets.test.output.classesDirs
-    classpath += sourceSets.vendor.runtimeClasspath
-    classpath += sourceSets.test.runtimeClasspath
 
     testLogging.showStandardStreams = true
     ignoreFailures = true
@@ -273,11 +235,6 @@ task runDeepWolfsslServerFuzzing(type: Test) {
 task runDeepOpensslServerFuzzing(type: Test) {
     description = 'Runs deep fuzzing for OpenSSL server'
     group = 'openssl'
-
-    testClassesDirs += sourceSets.vendor.output.classesDirs
-    testClassesDirs += sourceSets.test.output.classesDirs
-    classpath += sourceSets.vendor.runtimeClasspath
-    classpath += sourceSets.test.runtimeClasspath
 
     testLogging.showStandardStreams = true
     ignoreFailures = true
