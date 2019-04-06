@@ -106,6 +106,7 @@ public class SimpleHttpsServer implements Runnable, AutoCloseable {
                 Thread.sleep(delay);
             } catch (InterruptedException e) {
                 output.achtung("exception occurred while waiting", e);
+                break;
             }
         }
     }
