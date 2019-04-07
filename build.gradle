@@ -250,18 +250,3 @@ task runDeepOpensslServerFuzzing(type: Test) {
     filter.includeTestsMatching 'com.gypsyengineer.tlsbunny.vendor.test.tls13.openssl.server.FuzzingForOpensslServer.deepHandshakeFuzzer'
     filter.includeTestsMatching 'com.gypsyengineer.tlsbunny.vendor.test.tls13.openssl.server.FuzzingForOpensslServerWithClientAuth.deepHandshakeFuzzer'
 }
-
-task runTestsInTravis(type: Test) {
-    description = 'Runs tests in Travis without too much output'
-
-    testLogging.showStandardStreams = true
-    outputs.upToDateWhen { false }
-
-    systemProperty 'tlsbunny.output.standard.level', 'achtung'
-    systemProperty 'tlsbunny.sync.output', 'limited'
-    systemProperty 'tlsbunny.output.enable.highlighting', 'false'
-    systemProperty 'tlsbunny.openssl.docker.image',
-            'artemsmotrakov/tlsbunny_openssl_tls13:2019_04_02'
-    systemProperty 'tlsbunny.wolfssl.docker.image',
-            'artemsmotrakov/tlsbunny_wolfssl_tls13:2019_03_03'
-}
