@@ -143,7 +143,7 @@ task buildPicotlsDocker(type: Exec) {
             'build',
             '--no-cache',
             '--file', 'src/main/docker/picotls/Dockerfile',
-            '--tag',  'picotls/server/tls13',
+            '--tag',  'tlsbunny_picotls_tls13',
             '.'
 }
 

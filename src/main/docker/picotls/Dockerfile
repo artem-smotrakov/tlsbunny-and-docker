@@ -4,11 +4,11 @@
 # the following command builds a docker image
 # it should be run from the root of tlsbunny repository
 #
-# $ docker build --file src/main/docker/picotls/Dockerfile --tag picotls/server/tls13 .
+# $ docker build --file src/main/docker/picotls/Dockerfile --tag tlsbunny_picotls_tls13 .
 #
 # the following command starts a local picotls server
 #
-# $ docker run -p 20101:20101 picotls/server/tls13
+# $ docker run -p 20101:20101 tlsbunny_picotls_tls13
 #
 # good luck!
 #
@@ -42,4 +42,4 @@ EXPOSE 20101
 ADD . ${TLSBUNNY}
 WORKDIR ${TLSBUNNY}
 
-CMD [ "bash", "scripts/start_picotls_tls13_server.sh" ]
+CMD [ "bash", "src/main/picotls/start.sh" ]
