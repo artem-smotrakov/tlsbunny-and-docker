@@ -56,7 +56,7 @@ test {
 
     systemProperty 'tlsbunny.openssl.docker.image',
             System.getProperty('tlsbunny.openssl.docker.image',
-                    'artemsmotrakov/tlsbunny_openssl_tls13')
+                    'tlsbunny_openssl_tls13')
 
     systemProperty 'tlsbunny.wolfssl.docker.image',
             System.getProperty('tlsbunny.wolfssl.docker.image',
