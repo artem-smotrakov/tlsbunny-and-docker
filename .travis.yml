@@ -6,8 +6,9 @@ services:
   - docker
 
 env:
-  - OPENSSL_IMAGE=artemsmotrakov/tlsbunny_openssl_tls13:2019_04_02
-  - WOLFSSL_IMAGE=artemsmotrakov/tlsbunny_wolfssl_tls13:2019_03_03
+  global:
+    - OPENSSL_IMAGE=artemsmotrakov/tlsbunny_openssl_tls13:2019_04_02
+    - WOLFSSL_IMAGE=artemsmotrakov/tlsbunny_wolfssl_tls13:2019_03_03
 
 before_install:
   - wget https://github.com/sormuras/bach/raw/master/install-jdk.sh
