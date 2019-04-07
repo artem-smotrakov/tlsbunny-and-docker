@@ -27,7 +27,7 @@ public class OpensslClient extends BaseDocker implements Client {
 
     private static final String image = System.getProperty(
             "tlsbunny.openssl.docker.image",
-            "artemsmotrakov/tlsbunny_openssl_tls13:2019_04_02");
+            "tlsbunny_openssl_tls13");
 
     private static final String host_report_directory = String.format(
             "%s/openssl_report", System.getProperty("user.dir"));
