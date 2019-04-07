@@ -4,11 +4,11 @@
 # the following command builds a docker image
 # it should be run from the root of tlsbunny repository
 #
-# $ docker build --file src/vendor/docker/wolfssl/Dockerfile --tag wolfssl/tls13 .
+# $ docker build --file src/main/docker/wolfssl/Dockerfile --tag tlsbunny_wolfssl_tls13 .
 #
 # the following command starts a local wolfssl server
 #
-# $ docker run -p 40101:40101 wolfssl/tls13
+# $ docker run -p 40101:40101 tlsbunny_wolfssl_tls13
 #
 # good luck!
 #
@@ -43,4 +43,4 @@ EXPOSE 40101
 ENV ASAN_OPTIONS "detect_leaks=0"
 WORKDIR /var/src/wolfssl
 
-CMD [ "bash", "/var/src/tlsbunny/src/vendor/wolfssl/start.sh" ]
+CMD [ "bash", "/var/src/tlsbunny/src/main/wolfssl/start.sh" ]

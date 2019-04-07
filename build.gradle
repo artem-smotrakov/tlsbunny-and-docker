@@ -60,7 +60,7 @@ test {
 
     systemProperty 'tlsbunny.wolfssl.docker.image',
             System.getProperty('tlsbunny.wolfssl.docker.image',
-                    'artemsmotrakov/tlsbunny_wolfssl_tls13')
+                    'tlsbunny_wolfssl_tls13')
 }
 
 jacocoTestReport {
@@ -109,7 +109,7 @@ task buildOpensslDocker(type: Exec) {
             'build',
             '--no-cache',
             '--file', 'src/main/docker/openssl/Dockerfile',
-            '--tag',  'artemsmotrakov/tlsbunny_openssl_tls13',
+            '--tag',  'tlsbunny_openssl_tls13',
             '.'
 }
 
@@ -178,7 +178,7 @@ task buildWolfsslDocker(type: Exec) {
             'build',
             '--no-cache',
             '--file', 'src/main/docker/wolfssl/Dockerfile',
-            '--tag',  'artemsmotrakov/tlsbunny_wolfssl_tls13',
+            '--tag',  'tlsbunny_wolfssl_tls13',
             '.'
 }
 
