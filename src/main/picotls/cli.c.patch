@@ -1,0 +1,14 @@
+diff --git a/t/cli.c b/t/cli.c
+index 1be0208..429a96d 100644
+--- a/t/cli.c
++++ b/t/cli.c
+@@ -264,7 +264,9 @@ static int run_server(struct sockaddr *sa, socklen_t salen, ptls_context_t *ctx,
+         return 1;
+     }
+ 
++    printf("tlsbunny: server started\n");
+     while (1) {
++        printf("tlsbunny: server ready\n");
+         if ((conn_fd = accept(listen_fd, NULL, 0)) != -1)
+             handle_connection(conn_fd, ctx, NULL, input_file, hsprop, request_key_update);
+     }

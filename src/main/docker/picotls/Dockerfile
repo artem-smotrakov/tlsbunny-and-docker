@@ -25,12 +25,15 @@ RUN mkdir -p /var/src/tlsbunny
 ENV TLSBUNNY /var/src/tlsbunny
 ENV PICOTLS /var/src/picotls
 
+ADD . ${TLSBUNNY}
+
 ENV CFLAGS "-fsanitize=address -fno-omit-frame-pointer -g -O1"
 ENV LDFLAGS "-fsanitize=address"
 
 RUN git clone https://github.com/h2o/picotls ${PICOTLS} && \
     cd ${PICOTLS} && \
     git submodule init && git submodule update && \
+    git apply ${TLSBUNNY}/src/main/picotls/cli.c.patch && \
     cmake \
         -DCMAKE_C_FLAGS=${CFLAGS} \
         -DCMAKE_EXE_LINKER_FLAGS=${LDFLAGS} \
@@ -39,7 +42,6 @@ RUN git clone https://github.com/h2o/picotls ${PICOTLS} && \
 
 EXPOSE 20101
 
-ADD . ${TLSBUNNY}
 WORKDIR ${TLSBUNNY}
 
 CMD [ "bash", "src/main/picotls/start.sh" ]
