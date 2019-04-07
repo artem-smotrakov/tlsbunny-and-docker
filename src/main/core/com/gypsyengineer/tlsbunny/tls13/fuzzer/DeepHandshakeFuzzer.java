@@ -194,7 +194,7 @@ public class DeepHandshakeFuzzer extends StructFactoryWrapper
         output.decreaseIndent();
 
         if (Arrays.equals(encoding, fuzzed)) {
-            output.achtung("nothing actually fuzzed");
+            output.important("nothing actually fuzzed");
         }
     }
 

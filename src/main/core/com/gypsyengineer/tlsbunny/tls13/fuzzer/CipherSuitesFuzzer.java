@@ -69,7 +69,7 @@ public class CipherSuitesFuzzer extends FuzzyStructFactory<Vector<CipherSuite>> 
             output.decreaseIndent();
 
             if (Vector.equals(fuzzedCipherSuites, cipherSuites)) {
-                output.achtung("nothing actually fuzzed");
+                output.important("nothing actually fuzzed");
             }
         } catch (IOException e) {
             output.achtung("what the hell?", e);

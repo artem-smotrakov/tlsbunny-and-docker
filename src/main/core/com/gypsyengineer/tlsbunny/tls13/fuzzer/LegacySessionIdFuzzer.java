@@ -94,7 +94,7 @@ public class LegacySessionIdFuzzer extends FuzzyStructFactory<Vector<Byte>> {
             output.decreaseIndent();
 
             if (Vector.equals(fuzzedSessionId, sessionId)) {
-                output.achtung("nothing actually fuzzed");
+                output.important("nothing actually fuzzed");
             }
         } catch (IOException e) {
             output.achtung("what the hell?", e);
