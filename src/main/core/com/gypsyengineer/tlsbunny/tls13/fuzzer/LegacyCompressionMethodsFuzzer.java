@@ -73,7 +73,7 @@ public class LegacyCompressionMethodsFuzzer
             output.decreaseIndent();
 
             if (Vector.equals(fuzzedCompressionMethods, compressionMethods)) {
-                output.achtung("nothing actually fuzzed");
+                output.important("nothing actually fuzzed");
             }
         } catch (IOException e) {
             output.achtung("what the hell?", e);

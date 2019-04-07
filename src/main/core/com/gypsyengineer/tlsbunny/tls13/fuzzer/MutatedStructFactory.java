@@ -246,7 +246,7 @@ public class MutatedStructFactory extends FuzzyStructFactory<byte[]> {
         output.decreaseIndent();
 
         if (Arrays.equals(encoding, fuzzed)) {
-            output.achtung("nothing actually fuzzed");
+            output.important("nothing actually fuzzed");
         }
 
         return fuzzed;

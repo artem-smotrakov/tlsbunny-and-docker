@@ -95,7 +95,7 @@ public class ExtensionVectorFuzzer extends FuzzyStructFactory<Vector<Extension>>
             output.decreaseIndent();
 
             if (Vector.equals(fuzzedExtensions, extensions)) {
-                output.achtung("nothing actually fuzzed");
+                output.important("nothing actually fuzzed");
             }
         } catch (IOException e) {
             output.achtung("what the hell?", e);
