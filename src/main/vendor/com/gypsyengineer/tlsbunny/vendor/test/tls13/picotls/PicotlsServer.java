@@ -33,7 +33,7 @@ public class PicotlsServer extends BaseDockerServer implements Server {
 
     private PicotlsServer() {
         super(new OutputListenerImpl(
-                "tlsbunny: server started", "tlsbunny: server ready"));
+                "server started on port", "waiting for connections"));
         output.prefix("picotls-server");
     }
 

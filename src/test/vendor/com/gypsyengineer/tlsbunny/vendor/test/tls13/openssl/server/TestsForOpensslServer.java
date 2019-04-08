@@ -52,7 +52,7 @@ public class TestsForOpensslServer extends TestsForServer {
     public final void startWithTLSPlaintextWithCCS() {}
 
     /**
-     * The test is ignored because OpenSSl server doesn't send an alert
+     * The test is ignored because OpenSSL server doesn't send an alert
      * if a ClientHello contains an invalid max_fragment_length extension.
      *
      * Looks like a bug in OpenSSL.
