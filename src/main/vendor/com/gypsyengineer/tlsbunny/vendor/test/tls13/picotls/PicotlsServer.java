@@ -35,6 +35,16 @@ public class PicotlsServer extends BaseDockerServer implements Server {
         super(new OutputListenerImpl(
                 "server started on port", "waiting for connections"));
         output.prefix("picotls-server");
+        options.put("-c", "certs/server_cert.pem");
+        options.put("-k", "certs/server_key.pem");
+        options.put("-i", "message");
+        options.put("0.0.0.0", no_arg);
+        options.put(String.valueOf(defaultPort), no_arg);
+    }
+
+    public PicotlsServer clientAuth() {
+        options.put("-a", no_arg);
+        return this;
     }
 
     @Override

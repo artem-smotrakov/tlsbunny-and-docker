@@ -6,7 +6,6 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import static com.gypsyengineer.tlsbunny.vendor.test.tls13.openssl.OpensslServer.opensslServer;
 import static com.gypsyengineer.tlsbunny.vendor.test.tls13.picotls.PicotlsServer.picotlsServer;
 
 public class TestsForPicotlsServer extends TestsForServer {
