@@ -9,14 +9,17 @@ env:
   global:
     - OPENSSL_IMAGE=artemsmotrakov/tlsbunny_openssl_tls13:2019_04_02
     - WOLFSSL_IMAGE=artemsmotrakov/tlsbunny_wolfssl_tls13:2019_03_03
+    - PICOTLS_IMAGE=artemsmotrakov/tlsbunny_picotls_tls13:2019_04_10
 
 before_install:
   - wget https://github.com/sormuras/bach/raw/master/install-jdk.sh
   - ./gradlew wrapper --gradle-version 4.10.2
   - docker pull ${OPENSSL_IMAGE}
   - docker pull ${WOLFSSL_IMAGE}
+  - docker pull ${PICOTLS_IMAGE}
   - docker run ${OPENSSL_IMAGE} /bin/bash -c "openssl version"
   - docker run ${WOLFSSL_IMAGE} /bin/bash -c "examples/server/server -h"
+  - docker run ${PICOTLS_IMAGE} /bin/bash -c "/var/src/picotls/cli -h"
 
 matrix:
   include:
