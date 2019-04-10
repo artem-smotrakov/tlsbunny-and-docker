@@ -149,7 +149,7 @@ public class PicotlsServer extends BaseDockerServer implements Server {
                 try (InputStreamOutput commandOutput = Output.create(process.getInputStream())) {
                     int code = process.waitFor();
                     output.add(commandOutput);
-                    
+
                     if (code != 0) {
                         output.achtung("could not stop the server (exit code %d)", code);
                         failed = true;
