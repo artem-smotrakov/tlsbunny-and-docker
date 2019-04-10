@@ -159,7 +159,13 @@ public class InputStreamOutput implements Output {
 
     @Override
     public void close() {
-        // do nothing
+        if (is != null) {
+            try {
+                is.close();
+            } catch (IOException e) {
+                achtung("exception occurred while closing the stream", e);
+            }
+        }
     }
 
     synchronized public InputStreamOutput update() {
