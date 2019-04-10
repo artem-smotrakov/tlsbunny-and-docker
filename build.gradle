@@ -61,6 +61,10 @@ test {
     systemProperty 'tlsbunny.wolfssl.docker.image',
             System.getProperty('tlsbunny.wolfssl.docker.image',
                     'tlsbunny_wolfssl_tls13')
+
+    systemProperty 'tlsbunny.picotls.docker.image',
+            System.getProperty('tlsbunny.picotls.docker.image',
+                    'tlsbunny_picotls_tls13')
 }
 
 jacocoTestReport {
@@ -83,12 +87,9 @@ task buildAllDocker() {
 // check for crashes
 task checkCrashes(type: Exec) {
     commandLine 'bash', 'scripts/check_logs_for_crashes.sh',
-            'gnutls_server_tls13',
-            'nss_server_tls13',
-            'h2o_server_tls13',
-            'picotls_server_tls13',
-            'openssl_server_tls13',
-            'wolfssl_server_tls13'
+            'tlsbunny_openssl_tls13',
+            'tlsbunny_wolfssl_tls13',
+            'tlsbunny_picotls_tls13'
 }
 
 // tasks for running tests for GnuTLS
@@ -143,7 +144,7 @@ task buildPicotlsDocker(type: Exec) {
             'build',
             '--no-cache',
             '--file', 'src/main/docker/picotls/Dockerfile',
-            '--tag',  'picotls/server/tls13',
+            '--tag',  'tlsbunny_picotls_tls13',
             '.'
 }
 
@@ -211,6 +212,25 @@ task runWolfsslFuzzing(type: Test) {
     systemProperty 'tlsbunny.sync.output', 'fuzzing'
 
     include 'com/gypsyengineer/tlsbunny/vendor/test/tls13/wolfssl/**/*Fuzzing*'
+}
+
+task runDeepPicotlsServerFuzzing(type: Test) {
+    description = 'Runs deep fuzzing for Picotls server'
+    group = 'picotls'
+
+    testLogging.showStandardStreams = true
+    ignoreFailures = true
+    outputs.upToDateWhen { false }
+
+    systemProperty 'tlsbunny.fuzzer.full.configs', 'true'
+    systemProperty 'tlsbunny.output.to.file', 'true'
+    systemProperty 'tlsbunny.output.enable.highlighting', 'false'
+    systemProperty 'tlsbunny.output.standard.level', 'important'
+    systemProperty 'tlsbunny.sync.output', 'fuzzing'
+    systemProperty 'tlsbunny.output.file.level', 'important'
+
+    filter.includeTestsMatching 'com.gypsyengineer.tlsbunny.vendor.test.tls13.picotls.server.FuzzingForPicotlsServer.deepHandshakeFuzzer'
+    filter.includeTestsMatching 'com.gypsyengineer.tlsbunny.vendor.test.tls13.picotls.server.FuzzingForPicotlsServerWithClientAuth.deepHandshakeFuzzer'
 }
 
 task runDeepWolfsslServerFuzzing(type: Test) {
