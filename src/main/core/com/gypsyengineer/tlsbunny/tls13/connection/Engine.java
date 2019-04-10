@@ -296,6 +296,27 @@ public class Engine {
         return this;
     }
 
+    public Engine requireOne(Check... checks) throws ActionFailed {
+        return requireOne(List.of(checks));
+    }
+
+    public Engine requireOne(List<Check> checks) throws ActionFailed {
+        for (Check check : checks) {
+            check.set(this);
+            check.set(context);
+
+            check.run();
+            if (!check.failed()) {
+                output.info("check passed: %s", check.name());
+                return this;
+            }
+
+            output.info("check failed: %s", check.name());
+        }
+
+        throw new ActionFailed("all checks failed");
+    }
+
     public Engine run(List<Check> checks) throws ActionFailed {
         for (Check check : checks) {
             check.set(this);
