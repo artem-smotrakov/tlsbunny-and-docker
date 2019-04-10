@@ -6,6 +6,7 @@ import com.gypsyengineer.tlsbunny.tls13.connection.action.ActionFailed;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.GeneratingClientHello;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.WrappingIntoHandshake;
 import com.gypsyengineer.tlsbunny.tls13.connection.action.simple.WrappingIntoTLSPlaintexts;
+import com.gypsyengineer.tlsbunny.tls13.connection.check.AlertCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.check.FailureCheck;
 import com.gypsyengineer.tlsbunny.tls13.connection.check.SuccessCheck;
 import com.gypsyengineer.tlsbunny.tls13.handshake.Context;
@@ -75,7 +76,7 @@ public class InvalidMaxFragmentLength extends StagedHttpsClient {
                 Engine engine = createEngine();
                 engines.add(engine);
                 engine.connect();
-                engine.run(new FailureCheck());
+                engine.requireOne(new FailureCheck(), new AlertCheck());
             } finally {
                 sync().end();
             }
@@ -85,8 +86,6 @@ public class InvalidMaxFragmentLength extends StagedHttpsClient {
     }
 
     private Stage clientHelloStage(int code) {
-
-
         return engine -> engine.run(new GeneratingClientHello()
                 .supportedVersions(TLSv13)
                 .groups(secp256r1)
