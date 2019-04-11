@@ -7,10 +7,7 @@ import com.gypsyengineer.tlsbunny.vendor.test.tls13.BaseDockerServer;
 import com.gypsyengineer.tlsbunny.vendor.test.tls13.Utils;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
@@ -38,8 +35,6 @@ public class PicotlsServer extends BaseDockerServer implements Server {
         options.put("-c", "certs/server_cert.pem");
         options.put("-k", "certs/server_key.pem");
         options.put("-i", "message");
-        options.put("0.0.0.0", no_arg);
-        options.put(String.valueOf(defaultPort), no_arg);
     }
 
     public PicotlsServer clientAuth() {
@@ -84,6 +79,7 @@ public class PicotlsServer extends BaseDockerServer implements Server {
             output.achtung("overwrite environment variable 'options', previous value: %s",
                     dockerEnv.get("options"));
         }
+        sb.append(String.format(" 0.0.0.0 %d", defaultPort));
         dockerEnv.put("options", sb.toString());
 
         for (Map.Entry entry : dockerEnv.entrySet()) {
