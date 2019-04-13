@@ -35,18 +35,20 @@ RUN mkdir -p /var/src ${TLSBUNNY}
 WORKDIR /var/src
 RUN wget https://ftp.gnu.org/gnu/nettle/nettle-3.4.1.tar.gz && tar xf nettle-3.4.1.tar.gz
 WORKDIR /var/src/nettle-3.4.1
-RUN ./configure --prefix=/usr --disable-openssl --enable-shared && \
+RUN ./configure --disable-openssl --enable-shared && \
         make && make install
 
 WORKDIR /var/src
-RUN git clone https://github.com/gnutls/gnutls.git && \
-    cd gnutls && ./bootstrap && \
-        ./configure \
-            --with-included-libtasn1 \
-            --with-guile-site-dir=no \
-            --disable-guile && \
-    make && \
-    make install
+RUN git clone https://gitlab.com/gnutls/gnutls.git
+RUN cd gnutls && \
+    ./bootstrap && \
+    LD_LIBRARY_PATH=/usr/local/lib \
+            ./configure \
+                --with-included-libtasn1 \
+                --with-guile-site-dir=no \
+                --disable-guile && \
+    LD_LIBRARY_PATH=/usr/local/lib make && \
+    LD_LIBRARY_PATH=/usr/local/lib make install
 
 EXPOSE 50101
 ADD . ${TLSBUNNY}
