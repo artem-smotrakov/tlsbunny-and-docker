@@ -5,19 +5,15 @@ import java.util.List;
 public abstract class OutputWrapper implements Output {
 
     protected final Output output;
-    protected Level level;
+    Level minLevel;
 
     OutputWrapper(Output output) {
         this(output, Output.level);
     }
 
-    OutputWrapper(Output output, Level level) {
+    OutputWrapper(Output output, Level minLevel) {
         this.output = output;
-        this.level = level;
-    }
-
-    public void set(Level level) {
-        this.level = level;
+        this.minLevel = minLevel;
     }
 
     @Override
@@ -104,5 +100,10 @@ public abstract class OutputWrapper implements Output {
     @Override
     public void important(String message, Throwable e) {
         output.important(message, e);
+    }
+
+    @Override
+    public void add(Output output, Level level) {
+        this.output.add(output, level);
     }
 }

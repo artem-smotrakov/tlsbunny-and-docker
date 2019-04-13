@@ -13,13 +13,21 @@ import com.gypsyengineer.tlsbunny.output.Output;
 import com.gypsyengineer.tlsbunny.utils.WhatTheHell;
 import com.gypsyengineer.tlsbunny.vendor.test.tls13.Utils;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.gypsyengineer.tlsbunny.vendor.test.tls13.Utils.checkForASanFindings;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -41,6 +49,43 @@ public class TestUtils {
         } finally {
             standardOutput.flush();
         }
+    }
+
+    public static Path createTempDirectory() throws IOException {
+        Path dir = Files.createTempDirectory("tlsbunny_test");
+        assertTrue(Files.exists(dir));
+        assertTrue(Files.isDirectory(dir));
+
+        return dir;
+    }
+
+    public static List<String> findFiles(Path dir, String prefix) throws IOException {
+        try (Stream<Path> walk = Files.walk(dir)) {
+            return walk.map(Path::toFile)
+                    .filter(f -> f.getName().startsWith(prefix))
+                    .map(File::toString)
+                    .collect(Collectors.toList());
+        }
+    }
+
+    public static boolean searchInFile(String filename, String string) throws IOException {
+        List<String> lines = Files.readAllLines(Paths.get(filename));
+        for (String line : lines) {
+            if (line.contains(string)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public static void removeDirectory(Path path) throws IOException {
+        Files.walk(path)
+                .filter(Files::isRegularFile)
+                .map(Path::toFile)
+                .forEach(File::delete);
+
+        Files.delete(path);
     }
 
     public static <T> void assertContains(T object, T... array) {

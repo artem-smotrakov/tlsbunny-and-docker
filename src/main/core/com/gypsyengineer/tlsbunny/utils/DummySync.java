@@ -24,6 +24,16 @@ public class DummySync implements Sync {
     }
 
     @Override
+    public Sync logs(String path) {
+        return this;
+    }
+
+    @Override
+    public Sync printToFile() {
+        return this;
+    }
+
+    @Override
     public Sync init() {
         return this;
     }

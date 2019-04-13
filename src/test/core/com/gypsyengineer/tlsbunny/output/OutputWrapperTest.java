@@ -20,6 +20,7 @@ public class OutputWrapperTest {
             wrapper.add(null_line);
             wrapper.add(null_listener);
             wrapper.add(null_output);
+            wrapper.add(Output.local(), Level.achtung);
             wrapper.increaseIndent();
             wrapper.decreaseIndent();
             wrapper.prefix("test");
@@ -35,12 +36,12 @@ public class OutputWrapperTest {
             wrapper.clear();
         }
 
-        assertEquals(17, checker.counter);
+        assertEquals(18, checker.counter);
     }
 
     private static class TestWrapperOutput extends OutputWrapper {
 
-        public TestWrapperOutput(Output output) {
+        TestWrapperOutput(Output output) {
             super(output);
         }
     }
@@ -114,6 +115,11 @@ public class OutputWrapperTest {
         public List<Line> lines() {
             counter++;
             return Collections.emptyList();
+        }
+
+        @Override
+        public void add(Output output, Level level) {
+            counter++;
         }
 
         @Override

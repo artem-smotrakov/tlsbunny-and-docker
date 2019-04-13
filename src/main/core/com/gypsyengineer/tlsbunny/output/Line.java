@@ -20,7 +20,7 @@ public class Line {
         return value;
     }
 
-    public boolean printable(Level level) {
+    boolean has(Level level) {
         return this.level.compareTo(level) >= 0;
     }
 
