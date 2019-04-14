@@ -16,13 +16,8 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class AesGcmDecryptor extends AesGcm {
 
-    public AesGcmDecryptor(Cipher cipher, Key key, byte[] iv) {
+    AesGcmDecryptor(Cipher cipher, Key key, byte[] iv) {
         super(cipher, key, iv);
-    }
-
-    @Override
-    public boolean supportDecryption() {
-        return true;
     }
 
     @Override
@@ -31,7 +26,7 @@ public class AesGcmDecryptor extends AesGcm {
             cipher.init(
                     Cipher.DECRYPT_MODE,
                     key,
-                    new GCMParameterSpec(TAG_LENGTH_IN_BITS, nextNonce()));
+                    new GCMParameterSpec(tag_length_in_bits, nextNonce()));
         } catch (InvalidKeyException | InvalidAlgorithmParameterException e) {
             throw new AEADException(e);
         }
@@ -71,8 +66,8 @@ public class AesGcmDecryptor extends AesGcm {
     public static AesGcmDecryptor create(byte[] key, byte[] iv) throws AEADException {
         try {
             return new AesGcmDecryptor(
-                    Cipher.getInstance(TRANSFORM),
-                    new SecretKeySpec(key, ALGORITHM),
+                    Cipher.getInstance(transform),
+                    new SecretKeySpec(key, algorithm),
                     iv);
         } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
             throw new AEADException(e);

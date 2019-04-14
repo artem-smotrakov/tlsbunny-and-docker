@@ -13,7 +13,8 @@ public class OCSPStatusRequestImpl implements OCSPStatusRequest {
     private Vector<ResponderID> responder_id_list;
     private Vector<Byte> extensions;
 
-    OCSPStatusRequestImpl(Vector<ResponderID> responder_id_list, Vector<Byte> extensions) {
+    OCSPStatusRequestImpl(
+            Vector<ResponderID> responder_id_list, Vector<Byte> extensions) {
         this.responder_id_list = responder_id_list;
         this.extensions = extensions;
     }

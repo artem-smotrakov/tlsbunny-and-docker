@@ -12,11 +12,11 @@ import java.security.Key;
 
 public abstract class AesGcm extends AbstractAEAD {
 
-    public static final String ALGORITHM = "AES";
-    public static final String TRANSFORM = "AES/GCM/NoPadding";
-    public static final int TAG_LENGTH_IN_BITS = 128;
-    public static final int TAG_LENGTH_IN_BYTES = 16;
-    public static final int N_MIN = 12;
+    public static final String algorithm = "AES";
+    public static final String transform = "AES/GCM/NoPadding";
+    public static final int tag_length_in_bits = 128;
+    public static final int tag_length_in_bytes = 16;
+    public static final int n_min = 12;
 
     final Cipher cipher;
     final Key key;
@@ -29,7 +29,7 @@ public abstract class AesGcm extends AbstractAEAD {
 
     @Override
     public int getNMin() {
-        return N_MIN;
+        return n_min;
     }
 
     @Override

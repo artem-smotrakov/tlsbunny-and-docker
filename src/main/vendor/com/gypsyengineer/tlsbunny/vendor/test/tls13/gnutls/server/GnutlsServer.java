@@ -30,6 +30,12 @@ public class GnutlsServer extends BaseDockerServer implements Server {
         dockerEnv.put("ASAN_OPTIONS", "detect_leaks=0");
     }
 
+    public GnutlsServer clientAuth() {
+        options.remove("--disable-client-cert");
+        options.put("--require-client-cert", no_arg);
+        return this;
+    }
+
     @Override
     public int port() {
         return defaultPort;

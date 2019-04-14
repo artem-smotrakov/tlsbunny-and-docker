@@ -15,7 +15,7 @@ import org.junit.Test;
 
 import java.nio.ByteBuffer;
 
-import static com.gypsyengineer.tlsbunny.tls13.crypto.AEAD.Method.AES_128_GCM;
+import static com.gypsyengineer.tlsbunny.tls13.crypto.AEAD.Method.aes_128_gcm;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.alert;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.handshake;
 import static org.junit.Assert.assertArrayEquals;
@@ -93,8 +93,8 @@ public class IncomingEncryptedHandshakeDataTest {
 
         byte[] key = new byte[16];
         byte[] iv = new byte[16];
-        AEAD encryptor = AEAD.createEncryptor(AES_128_GCM, key, iv);
-        AEAD decryptor = AEAD.createDecryptor(AES_128_GCM, key, iv);
+        AEAD encryptor = AEAD.createEncryptor(aes_128_gcm, key, iv);
+        AEAD decryptor = AEAD.createDecryptor(aes_128_gcm, key, iv);
         context.handshakeEncryptor(encryptor);
         context.handshakeDecryptor(decryptor);
 

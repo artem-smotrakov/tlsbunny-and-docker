@@ -11,23 +11,13 @@ import java.io.IOException;
 public interface AEAD {
 
     enum Method {
-        AES_128_GCM,
-        AES_256_GCM,
-        CHACHA20_POLY1305,
-        AES_128_CCM,
-        AES_128_CCM_8,
-        UNKNOWN
+        aes_128_gcm,
+        aes_256_gcm,
+        chacha20_poly1305,
+        aes_128_ccm,
+        aes_128_ccm_8,
+        unknown
     }
-
-    interface Factory {
-        AEAD create(byte[] key, byte[] iv) throws Exception;
-    }
-
-    boolean supportEncryption();
-    boolean supportDecryption();
-    
-    int getKeyLength();
-    int getIvLength();
 
     void start() throws AEADException;
     byte[] update(byte[] data) throws AEADException;
@@ -40,28 +30,28 @@ public interface AEAD {
             throws AEADException {
         
         switch (cipher) {
-            case AES_128_GCM:
-            case AES_256_GCM:
+            case aes_128_gcm:
+            case aes_256_gcm:
                 return AesGcmEncryptor.create(key, iv);
-            case CHACHA20_POLY1305:
-            case AES_128_CCM:
-            case AES_128_CCM_8:
-                throw new IllegalArgumentException();
+            case chacha20_poly1305:
+            case aes_128_ccm:
+            case aes_128_ccm_8:
+                throw new IllegalArgumentException("Unsupported cipher: " + cipher);
+            default:
+                throw new IllegalArgumentException("Unknown cipher: " + cipher);
         }
-        
-        throw new IllegalArgumentException();
     }
     
     static AEAD createDecryptor(Method cipher, byte[] key, byte[] iv)
             throws AEADException {
         
         switch (cipher) {
-            case AES_128_GCM:
-            case AES_256_GCM:
+            case aes_128_gcm:
+            case aes_256_gcm:
                 return AesGcmDecryptor.create(key, iv);
-            case CHACHA20_POLY1305:
-            case AES_128_CCM:
-            case AES_128_CCM_8:
+            case chacha20_poly1305:
+            case aes_128_ccm:
+            case aes_128_ccm_8:
                 throw new IllegalArgumentException("Unsupported cipher: " + cipher);
             default:
                 throw new IllegalArgumentException("Unknown cipher: " + cipher);
@@ -70,10 +60,6 @@ public interface AEAD {
 
     static byte[] getAdditionalData(int length) throws IOException {
         return getAdditionalData(new UInt16(length));
-    }
-
-    static byte[] getAdditionalData(TLSPlaintext tlsPlaintext) throws IOException {
-        return getAdditionalData(tlsPlaintext.getFragmentLength());
     }
 
     static byte[] getAdditionalData(UInt16 length) throws IOException {

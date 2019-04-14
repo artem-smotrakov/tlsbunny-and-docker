@@ -17,23 +17,18 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class AesGcmEncryptor extends AesGcm {
 
-    private List<byte[]> ciphertexts = new ArrayList<>();
+    private List<byte[]> cipherTexts = new ArrayList<>();
 
-    public AesGcmEncryptor(Cipher cipher, Key key, byte[] iv) {
+    AesGcmEncryptor(Cipher cipher, Key key, byte[] iv) {
         super(cipher, key, iv);
     }
 
     @Override
-    public boolean supportEncryption() {
-        return true;
-    }
-
-    @Override
     public void start() throws AEADException {
-        ciphertexts.clear();
+        cipherTexts.clear();
         try {
             cipher.init(Cipher.ENCRYPT_MODE, key,
-                    new GCMParameterSpec(TAG_LENGTH_IN_BITS, nextNonce()));
+                    new GCMParameterSpec(tag_length_in_bits, nextNonce()));
         } catch (InvalidKeyException | InvalidAlgorithmParameterException e) {
             throw new AEADException(e);
         }
@@ -42,7 +37,7 @@ public class AesGcmEncryptor extends AesGcm {
     @Override
     public byte[] update(byte[] data) {
         byte[] ciphertext = cipher.update(data);
-        ciphertexts.add(ciphertext);
+        cipherTexts.add(ciphertext);
 
         return ciphertext.clone();
     }
@@ -55,12 +50,12 @@ public class AesGcmEncryptor extends AesGcm {
     @Override
     public byte[] finish() throws AEADException {
         try {
-            ciphertexts.add(cipher.doFinal());
+            cipherTexts.add(cipher.doFinal());
         } catch (BadPaddingException | IllegalBlockSizeException e) {
             throw new AEADException(e);
         }
 
-        return Utils.concatenate(ciphertexts);
+        return Utils.concatenate(cipherTexts);
     }
 
     public static AesGcmEncryptor create(byte[] key, byte[] iv)
@@ -68,8 +63,8 @@ public class AesGcmEncryptor extends AesGcm {
 
         try {
             return new AesGcmEncryptor(
-                    Cipher.getInstance(TRANSFORM),
-                    new SecretKeySpec(key, ALGORITHM),
+                    Cipher.getInstance(transform),
+                    new SecretKeySpec(key, algorithm),
                     iv);
         } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
             throw new AEADException(e);
