@@ -1,7 +1,6 @@
 package com.gypsyengineer.tlsbunny.vendor.test.tls13.wolfssl;
 
 import com.gypsyengineer.tlsbunny.tls13.server.Server;
-import com.gypsyengineer.tlsbunny.vendor.test.tls13.AddressSanitizerWatcherOutput;
 import com.gypsyengineer.tlsbunny.vendor.test.tls13.BaseDockerServer;
 
 public class WolfsslServer extends BaseDockerServer implements Server {
@@ -22,8 +21,7 @@ public class WolfsslServer extends BaseDockerServer implements Server {
     private WolfsslServer() {
         super(new OutputListenerImpl(
                 "wolfSSL Leaving SSL_new, return 0",
-                        "wolfSSL Entering wolfSSL_SetHsDoneCb"),
-                new AddressSanitizerWatcherOutput());
+                        "wolfSSL Entering wolfSSL_SetHsDoneCb"));
         output.prefix("wolfssl-server");
         options.put("-p", String.valueOf(defaultPort));
         options.put("-v", "4"); // TLS 1.3 only
