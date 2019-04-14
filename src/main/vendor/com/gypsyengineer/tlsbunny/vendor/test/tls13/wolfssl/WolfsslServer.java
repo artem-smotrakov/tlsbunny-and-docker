@@ -21,7 +21,8 @@ public class WolfsslServer extends BaseDockerServer implements Server {
     private WolfsslServer() {
         super(new OutputListenerImpl(
                 "wolfSSL Leaving SSL_new, return 0",
-                        "wolfSSL Entering wolfSSL_SetHsDoneCb"));
+                        "wolfSSL Entering wolfSSL_SetHsDoneCb"),
+                defaultPort, image);
         output.prefix("wolfssl-server");
         options.put("-p", String.valueOf(defaultPort));
         options.put("-v", "4"); // TLS 1.3 only
@@ -42,16 +43,6 @@ public class WolfsslServer extends BaseDockerServer implements Server {
     @Override
     public int port() {
         return defaultPort;
-    }
-
-    @Override
-    protected int dockerPort() {
-        return defaultPort;
-    }
-
-    @Override
-    protected String dockerImage() {
-        return image;
     }
 
     @Override

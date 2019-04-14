@@ -16,7 +16,8 @@ public class OpensslServer extends BaseDockerServer implements Server {
     }
 
     private OpensslServer() {
-        super(new OutputListenerImpl("ACCEPT", "tlsbunny: accept"));
+        super(new OutputListenerImpl("ACCEPT", "tlsbunny: accept"),
+                defaultPort, image);
         output.prefix("openssl-server");
         options.put("-key", "certs/server_key.pem");
         options.put("-cert", "certs/server_cert.der");
@@ -68,16 +69,6 @@ public class OpensslServer extends BaseDockerServer implements Server {
     @Override
     public int port() {
         return defaultPort;
-    }
-
-    @Override
-    protected int dockerPort() {
-        return defaultPort;
-    }
-
-    @Override
-    protected String dockerImage() {
-        return image;
     }
 
     @Override

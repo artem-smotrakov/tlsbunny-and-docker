@@ -17,7 +17,8 @@ public class GnutlsServer extends BaseDockerServer implements Server {
 
     private GnutlsServer() {
         super(new OutputListenerImpl(
-                "HTTP Server listening on", "server is ready to accept"));
+                "HTTP Server listening on", "server is ready to accept"),
+                defaultPort, image);
         output.prefix("gnutls-server");
         options.put("--port", String.valueOf(defaultPort));
         options.put("--http", no_arg);
@@ -32,16 +33,6 @@ public class GnutlsServer extends BaseDockerServer implements Server {
     @Override
     public int port() {
         return defaultPort;
-    }
-
-    @Override
-    protected int dockerPort() {
-        return defaultPort;
-    }
-
-    @Override
-    protected String dockerImage() {
-        return image;
     }
 
     @Override

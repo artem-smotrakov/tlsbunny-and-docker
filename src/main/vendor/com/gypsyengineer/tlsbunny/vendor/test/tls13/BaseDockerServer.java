@@ -20,20 +20,27 @@ public abstract class BaseDockerServer extends BaseDocker implements Server {
 
     private static final int stop_wait_delay = 1000;
 
-    private int previousAcceptCounter = 0;
     private final OutputListenerImpl listener;
+    private final int dockerPort;
+    private final String dockerImage;
+
+    private int previousAcceptCounter = 0;
     private Status status = Status.not_started;
     protected boolean failed = false;
     protected final Map<String, String> options = new LinkedHashMap<>();
 
-    public BaseDockerServer(OutputListenerImpl listener, InputStreamOutput output) {
+    private BaseDockerServer(OutputListenerImpl listener, InputStreamOutput output,
+                            int dockerPort, String dockerImage) {
         super(output);
         this.listener = listener;
+        this.dockerPort = dockerPort;
+        this.dockerImage = dockerImage;
         output.add(listener);
     }
 
-    public BaseDockerServer(OutputListenerImpl listener) {
-        this(listener, new InputStreamOutput());
+    public BaseDockerServer(OutputListenerImpl listener,
+                            int dockerPort, String dockerImage) {
+        this(listener, new InputStreamOutput(), dockerPort, dockerImage);
     }
 
     @Override
@@ -156,7 +163,7 @@ public abstract class BaseDockerServer extends BaseDocker implements Server {
         command.add("docker");
         command.add("run");
         command.add("-p");
-        command.add(String.format("%d:%d", dockerPort(), dockerPort()));
+        command.add(String.format("%d:%d", dockerPort, dockerPort));
 
         if (mountReportDirectory) {
             command.add("-v");
@@ -181,7 +188,7 @@ public abstract class BaseDockerServer extends BaseDocker implements Server {
 
         command.add("--name");
         command.add(containerName);
-        command.add(dockerImage());
+        command.add(dockerImage);
 
         synchronized (this) {
             status = Server.Status.ready;
@@ -251,10 +258,6 @@ public abstract class BaseDockerServer extends BaseDocker implements Server {
 
         return this;
     }
-
-    protected abstract int dockerPort();
-
-    protected abstract String dockerImage();
 
     protected abstract String killCommand();
 
