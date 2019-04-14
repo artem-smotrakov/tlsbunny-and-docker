@@ -63,7 +63,7 @@ public class WrappingIntoTLSCiphertext extends AbstractAction {
 
         encryptor.start();
         encryptor.updateAAD(
-                AEAD.getAdditionalData(plaintext.length + AesGcm.TAG_LENGTH_IN_BYTES));
+                AEAD.getAdditionalData(plaintext.length + AesGcm.tag_length_in_bytes));
         encryptor.update(plaintext);
         byte[] ciphertext = encryptor.finish();
 

@@ -16,7 +16,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import static com.gypsyengineer.tlsbunny.tls13.crypto.AEAD.Method.AES_128_GCM;
+import static com.gypsyengineer.tlsbunny.tls13.crypto.AEAD.Method.aes_128_gcm;
 import static com.gypsyengineer.tlsbunny.tls13.struct.ContentType.alert;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -78,10 +78,10 @@ public class ProcessingEncryptedAlertTest {
 
         byte[] key = new byte[16];
         byte[] iv = new byte[16];
-        context.handshakeEncryptor(AEAD.createEncryptor(AES_128_GCM, key, iv));
-        context.handshakeDecryptor(AEAD.createDecryptor(AES_128_GCM, key, iv));
-        context.applicationDataEncryptor(AEAD.createEncryptor(AES_128_GCM, key, iv));
-        context.applicationDataDecryptor(AEAD.createDecryptor(AES_128_GCM, key, iv));
+        context.handshakeEncryptor(AEAD.createEncryptor(aes_128_gcm, key, iv));
+        context.handshakeDecryptor(AEAD.createDecryptor(aes_128_gcm, key, iv));
+        context.applicationDataEncryptor(AEAD.createEncryptor(aes_128_gcm, key, iv));
+        context.applicationDataDecryptor(AEAD.createDecryptor(aes_128_gcm, key, iv));
 
         return context;
     }

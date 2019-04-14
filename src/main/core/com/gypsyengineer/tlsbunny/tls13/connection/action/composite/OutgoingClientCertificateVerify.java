@@ -103,7 +103,7 @@ public class OutgoingClientCertificateVerify
 
         context.handshakeEncryptor().start();
         context.handshakeEncryptor().updateAAD(
-                AEAD.getAdditionalData(plaintext.length + AesGcm.TAG_LENGTH_IN_BYTES));
+                AEAD.getAdditionalData(plaintext.length + AesGcm.tag_length_in_bytes));
         context.handshakeEncryptor().update(plaintext);
 
         return context.handshakeEncryptor().finish();

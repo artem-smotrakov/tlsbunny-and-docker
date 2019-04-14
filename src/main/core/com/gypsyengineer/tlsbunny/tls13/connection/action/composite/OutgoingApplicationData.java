@@ -53,7 +53,7 @@ public class OutgoingApplicationData extends AbstractAction {
 
         context.applicationDataEncryptor().start();
         context.applicationDataEncryptor().updateAAD(
-                AEAD.getAdditionalData(plaintext.length + AesGcm.TAG_LENGTH_IN_BYTES));
+                AEAD.getAdditionalData(plaintext.length + AesGcm.tag_length_in_bytes));
         context.applicationDataEncryptor().update(plaintext);
 
         return context.applicationDataEncryptor().finish();
