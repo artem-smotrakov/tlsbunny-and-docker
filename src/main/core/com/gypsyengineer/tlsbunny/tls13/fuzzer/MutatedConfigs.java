@@ -30,7 +30,7 @@ public class MutatedConfigs {
     // settings for minimized configs
     private static boolean fullConfigs = Boolean.valueOf(
             System.getProperty("tlsbunny.fuzzer.full.configs", "false"));
-    private static final int total = 3;
+    private static final int total = 2;
     private static final int parts = 1;
 
     public static final int tls_plaintext_header_length =
