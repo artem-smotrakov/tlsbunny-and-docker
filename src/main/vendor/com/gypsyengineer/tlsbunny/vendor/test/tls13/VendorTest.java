@@ -23,6 +23,20 @@ public class VendorTest {
 
     private String label = "";
 
+    private String path;
+    private boolean printToFile = false;
+
+    public VendorTest printToFile() {
+        printToFile = true;
+        return this;
+    }
+
+    public VendorTest logs(String path) {
+        this.path = path;
+        printToFile();
+        return this;
+    }
+
     public VendorTest label(String label) {
         this.label = label;
         return this;
@@ -50,6 +64,12 @@ public class VendorTest {
         configureOutputs();
 
         Sync sync = Sync.between(client, server);
+        if (printToFile) {
+            sync.printToFile();
+        }
+        if (path != null) {
+            sync.logs(path);
+        }
         try (sync) {
             sync.logPrefix(prefix());
             sync.init();

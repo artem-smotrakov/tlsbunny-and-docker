@@ -39,7 +39,7 @@ public class FileOutput extends OutputWrapper {
             for (;index < lines.size(); index++) {
                 Line line = lines.get(index);
 
-                if (!line.printable(level)) {
+                if (!line.has(minLevel)) {
                     continue;
                 }
 

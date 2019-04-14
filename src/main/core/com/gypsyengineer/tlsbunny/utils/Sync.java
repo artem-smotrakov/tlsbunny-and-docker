@@ -24,6 +24,8 @@ public interface Sync extends AutoCloseable {
     Sync set(Client client);
     Sync set(Server server);
     Sync logPrefix(String prefix);
+    Sync logs(String path);
+    Sync printToFile();
     Sync init();
     Sync start();
     Sync end();

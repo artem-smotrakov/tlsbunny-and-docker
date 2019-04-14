@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
+import static com.gypsyengineer.tlsbunny.output.Level.achtung;
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public class SyncImpl implements Sync {
@@ -23,21 +24,9 @@ public class SyncImpl implements Sync {
     private static VerboseLevel verboseLevel = VerboseLevel.valueOf(
             System.getProperty("tlsbunny.sync.output", VerboseLevel.all.name()));
 
-    private static final boolean printToFile;
-    private static final String dirName;
-    static {
-        printToFile = Boolean.valueOf(System.getProperty(
-                "tlsbunny.output.to.file", "false"));
-        dirName = String.format("logs/%s",
-                new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(new Date()));
-
-        if (printToFile) {
-            boolean success = new File(dirName).mkdirs();
-            if (!success) {
-                throw whatTheHell("could not create directories");
-            }
-        }
-    }
+    private static final boolean globalPrintToFile =
+            Boolean.valueOf(System.getProperty(
+                    "tlsbunny.output.to.file", "false"));
 
     private Client client;
     private Server server;
@@ -50,6 +39,21 @@ public class SyncImpl implements Sync {
     private long tests = 0;
     private long testStarted;
     private long testsDuration = 0;
+
+    private boolean printToFile = globalPrintToFile;
+    private String logDirectory;
+
+    @Override
+    public Sync logs(String path) {
+        logDirectory = path;
+        return this;
+    }
+
+    @Override
+    public Sync printToFile() {
+        printToFile = true;
+        return this;
+    }
 
     @Override
     public Sync logPrefix(String logPrefix) {
@@ -80,8 +84,21 @@ public class SyncImpl implements Sync {
         standardOutput.prefix("");
 
         if (printToFile) {
+            if (logDirectory == null) {
+                logDirectory = String.format("logs/%s",
+                        new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(new Date()));
+            }
+
+            File file = new File(logDirectory);
+            if (!file.exists()) {
+                boolean success = file.mkdirs();
+                if (!success) {
+                    throw whatTheHell("could not create directories");
+                }
+            }
+
             String path = String.format("%s/%s_%d.log",
-                    dirName, logPrefix, System.currentTimeMillis());
+                    logDirectory, logPrefix, System.currentTimeMillis());
             fileOutput = Output.file(path);
             fileOutput.prefix("");
         }
@@ -148,15 +165,19 @@ public class SyncImpl implements Sync {
             output.flush();
 
             if (found) {
-                standardOutput.achtung("oops!");
-                standardOutput.achtung("Looks like AddressSanitizer found something");
-                standardOutput.add(output);
+                output.achtung("oops!");
+                output.achtung("Looks like AddressSanitizer found something");
+
+                standardOutput.add(output, achtung);
 
                 if (printToFile) {
+                    fileOutput.add(output, achtung);
+                    fileOutput.flush();
+
                     String path = String.format("%s/oops_%s_%d.log",
-                            dirName, logPrefix, System.currentTimeMillis());
+                            logDirectory, logPrefix, System.currentTimeMillis());
                     try (Output oopsOutput = Output.file(path)) {
-                        oopsOutput.add(output);
+                        oopsOutput.add(output, achtung);
                     }
                 }
             } else {
@@ -170,16 +191,16 @@ public class SyncImpl implements Sync {
                 if (verboseLevel == VerboseLevel.all) {
                     standardOutput.add(output);
                 }
+
+                if (printToFile) {
+                    fileOutput.add(output);
+                    fileOutput.flush();
+                    fileOutput.clear();
+                }
             }
 
             standardOutput.flush();
             standardOutput.clear();
-
-            if (printToFile) {
-                fileOutput.add(output);
-                fileOutput.flush();
-                fileOutput.clear();
-            }
         }
 
         client.output().clear();

@@ -30,13 +30,14 @@ public class StandardOutput extends OutputWrapper {
             for (;index < lines.size(); index++) {
                 Line line = lines.get(index);
 
-                if (!line.printable(level)) {
+                if (!line.has(minLevel)) {
                     continue;
                 }
 
                 String string = line.value();
 
-                if (enableHighlighting && string.contains("achtung")) {
+                boolean isAchtung = line.level() == Level.achtung || string.contains("achtung");
+                if (enableHighlighting && isAchtung) {
                     string = String.format("%s%s%s", ansi_red, string, ansi_reset);
                 }
 

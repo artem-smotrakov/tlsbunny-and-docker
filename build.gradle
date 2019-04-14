@@ -65,6 +65,10 @@ test {
     systemProperty 'tlsbunny.picotls.docker.image',
             System.getProperty('tlsbunny.picotls.docker.image',
                     'tlsbunny_picotls_tls13')
+
+    systemProperty 'tlsbunny.gnutls.docker.image',
+            System.getProperty('tlsbunny.gnutls.docker.image',
+                    'tlsbunny_gnutls_tls13')
 }
 
 jacocoTestReport {
@@ -89,7 +93,8 @@ task checkCrashes(type: Exec) {
     commandLine 'bash', 'scripts/check_logs_for_crashes.sh',
             'tlsbunny_openssl_tls13',
             'tlsbunny_wolfssl_tls13',
-            'tlsbunny_picotls_tls13'
+            'tlsbunny_picotls_tls13',
+            'tlsbunny_gnutls_tls13'
 }
 
 // tasks for running tests for GnuTLS
@@ -99,7 +104,7 @@ task buildGnutlsDocker(type: Exec) {
             'build',
             '--no-cache',
             '--file', 'src/main/docker/gnutls/Dockerfile',
-            '--tag',  'gnutls/server/tls13',
+            '--tag',  'tlsbunny_gnutls_tls13',
             '.'
 }
 

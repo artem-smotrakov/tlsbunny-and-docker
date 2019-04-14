@@ -65,6 +65,8 @@ public interface Output extends AutoCloseable {
 
     void add(Output output);
 
+    void add(Output output, Level level);
+
     List<Line> lines();
 
     boolean contains(String line);

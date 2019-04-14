@@ -11,22 +11,43 @@ import com.gypsyengineer.tlsbunny.tls13.server.StopCondition;
 import com.gypsyengineer.tlsbunny.utils.Config;
 import com.gypsyengineer.tlsbunny.utils.Sync;
 
+import java.io.IOException;
+import java.util.*;
+
 import static com.gypsyengineer.tlsbunny.utils.WhatTheHell.whatTheHell;
 
 public abstract class BaseDockerServer extends BaseDocker implements Server {
 
-    protected boolean failed = false;
-    private int previousAcceptCounter = 0;
-    private final OutputListenerImpl listener;
+    private static final int stop_wait_delay = 1000;
 
-    public BaseDockerServer(OutputListenerImpl listener, InputStreamOutput output) {
+    private final OutputListenerImpl listener;
+    private final int dockerPort;
+    private final String dockerImage;
+
+    private int previousAcceptCounter = 0;
+    private Status status = Status.not_started;
+    protected boolean failed = false;
+    protected final Map<String, String> options = new LinkedHashMap<>();
+
+    private BaseDockerServer(OutputListenerImpl listener, InputStreamOutput output,
+                            int dockerPort, String dockerImage) {
         super(output);
         this.listener = listener;
+        this.dockerPort = dockerPort;
+        this.dockerImage = dockerImage;
         output.add(listener);
     }
 
-    public BaseDockerServer(OutputListenerImpl listener) {
-        this(listener, new InputStreamOutput());
+    public BaseDockerServer(OutputListenerImpl listener,
+                            int dockerPort, String dockerImage) {
+        this(listener, new InputStreamOutput(), dockerPort, dockerImage);
+    }
+
+    @Override
+    public Status status() {
+        synchronized (this) {
+            return status;
+        }
     }
 
     @Override
@@ -122,11 +143,123 @@ public abstract class BaseDockerServer extends BaseDocker implements Server {
             throw whatTheHell("the server has already been started!");
         }
 
+        if (mountReportDirectory) {
+            createReportDirectory(host_report_directory);
+        }
+
         Thread thread = new Thread(this);
         thread.start();
 
         return thread;
     }
+
+    @Override
+    public void run() {
+        if (status() != Status.not_started) {
+            throw whatTheHell("server can't be started twice!");
+        }
+
+        List<String> command = new ArrayList<>();
+        command.add("docker");
+        command.add("run");
+        command.add("-p");
+        command.add(String.format("%d:%d", dockerPort, dockerPort));
+
+        if (mountReportDirectory) {
+            command.add("-v");
+            command.add(String.format("%s:%s",
+                    host_report_directory, container_report_directory));
+        }
+
+        StringBuilder sb = new StringBuilder();
+        for (Map.Entry<String, String> entry : options.entrySet()) {
+            sb.append(String.format("%s %s ", entry.getKey(), entry.getValue()));
+        }
+        if (dockerEnv.containsKey("options")) {
+            output.achtung("overwrite environment variable 'options', previous value: %s",
+                    dockerEnv.get("options"));
+        }
+        dockerEnv.put("options", sb.toString());
+
+        for (Map.Entry entry : dockerEnv.entrySet()) {
+            command.add("-e");
+            command.add(String.format("%s=%s", entry.getKey(), entry.getValue()));
+        }
+
+        command.add("--name");
+        command.add(containerName);
+        command.add(dockerImage);
+
+        synchronized (this) {
+            status = Server.Status.ready;
+        }
+        try {
+            Process process = Utils.exec(output, command);
+            output.set(process.getInputStream());
+            int code = process.waitFor();
+            if (code != 0) {
+                output.achtung("the server exited with a non-zero exit code (%d)", code);
+
+                synchronized (this) {
+                    failed = true;
+                }
+            }
+        } catch (InterruptedException | IOException e) {
+            output.achtung("unexpected exception occurred", e);
+
+            synchronized (this) {
+                failed = true;
+            }
+        } finally {
+            synchronized (this) {
+                status = Server.Status.done;
+            }
+        }
+    }
+
+    @Override
+    public BaseDockerServer stop() {
+        try {
+            List<String> command = List.of(
+                    "docker",
+                    "exec",
+                    containerName,
+                    "bash",
+                    "-c",
+                    killCommand()
+            );
+
+            synchronized (this) {
+                status = Server.Status.ready;
+            }
+            try {
+                Process process = Utils.exec(output, command);
+                InputStreamOutput commandOutput = Output.create(process.getInputStream());
+                int code = process.waitFor();
+                output.add(commandOutput);
+
+                if (code != 0) {
+                    output.achtung("could not stop the server (exit code %d)", code);
+                    failed = true;
+                }
+
+                while (containerRunning()) {
+                    Utils.sleep(stop_wait_delay);
+                }
+            } finally {
+                synchronized (this) {
+                    status = Server.Status.done;
+                }
+            }
+        } catch (InterruptedException | IOException e) {
+            output.achtung("unexpected exception occurred", e);
+            failed = true;
+        }
+
+        return this;
+    }
+
+    protected abstract String killCommand();
 
     public static class OutputListenerImpl implements OutputListener {
 

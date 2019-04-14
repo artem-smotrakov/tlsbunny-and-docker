@@ -18,6 +18,9 @@ public class BaseDocker {
 
     protected static final String container_report_directory = "/var/reports";
 
+    static final String host_report_directory = String.format(
+            "%s/report", System.getProperty("user.dir"));
+
     protected final String containerName = String.format("%s_%d",
             this.getClass().getSimpleName().toLowerCase(), System.currentTimeMillis());
 
@@ -25,8 +28,15 @@ public class BaseDocker {
 
     protected Map<String, String> dockerEnv = Collections.synchronizedMap(new HashMap<>());
 
+    boolean mountReportDirectory = false;
+
     public BaseDocker(InputStreamOutput output) {
         this.output = output;
+    }
+
+    public BaseDocker mountReportDirectory() {
+        mountReportDirectory = true;
+        return this;
     }
 
     protected static void createReportDirectory(String directory) {

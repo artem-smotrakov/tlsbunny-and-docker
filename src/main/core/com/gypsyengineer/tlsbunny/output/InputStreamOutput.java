@@ -131,6 +131,13 @@ public class InputStreamOutput implements Output {
     }
 
     @Override
+    public void add(Output output, Level level) {
+        for (Line line : output.lines()) {
+            add(new Line(level, line.value()));
+        }
+    }
+
+    @Override
     synchronized public List<Line> lines() {
         update();
         return Collections.unmodifiableList(lines);
