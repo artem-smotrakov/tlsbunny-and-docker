@@ -10,3 +10,4 @@ out
 .gradle
 openssl_report
 logs
+.git
