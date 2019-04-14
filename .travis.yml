@@ -10,6 +10,7 @@ env:
     - OPENSSL_IMAGE=artemsmotrakov/tlsbunny_openssl_tls13:2019_04_02
     - WOLFSSL_IMAGE=artemsmotrakov/tlsbunny_wolfssl_tls13:2019_03_03
     - PICOTLS_IMAGE=artemsmotrakov/tlsbunny_picotls_tls13:2019_04_10
+    - GNUTLS_IMAGE=artemsmotrakov/tlsbunny_gnutls_tls13:2019_04_13
 
 before_install:
   - wget https://github.com/sormuras/bach/raw/master/install-jdk.sh
@@ -17,9 +18,11 @@ before_install:
   - docker pull ${OPENSSL_IMAGE}
   - docker pull ${WOLFSSL_IMAGE}
   - docker pull ${PICOTLS_IMAGE}
+  - docker pull ${GNUTLS_IMAGE}
   - docker run ${OPENSSL_IMAGE} /bin/bash -c "openssl version"
   - docker run ${WOLFSSL_IMAGE} /bin/bash -c "examples/server/server -h"
   - docker run ${PICOTLS_IMAGE} /bin/bash -c "/var/src/picotls/cli -h"
+  - docker run ${GNUTLS_IMAGE}  /bin/bash -c "gnutls-serv -h"
 
 matrix:
   include:
