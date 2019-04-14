@@ -4,6 +4,7 @@ import com.gypsyengineer.tlsbunny.tls.Vector;
 import com.gypsyengineer.tlsbunny.tls13.struct.ResponderID;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class ResponderIDImpl implements ResponderID {
 
@@ -20,7 +21,7 @@ public class ResponderIDImpl implements ResponderID {
 
     @Override
     public int encodingLength() {
-        return ResponderID.length_bytes;
+        return content.encodingLength();
     }
 
     @Override
@@ -31,5 +32,22 @@ public class ResponderIDImpl implements ResponderID {
     @Override
     public ResponderIDImpl copy() {
         return new ResponderIDImpl((Vector<Byte>) content.copy());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ResponderIDImpl that = (ResponderIDImpl) o;
+        return Objects.equals(content, that.content);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(content);
     }
 }

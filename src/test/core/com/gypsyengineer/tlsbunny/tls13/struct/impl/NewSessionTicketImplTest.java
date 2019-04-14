@@ -7,10 +7,9 @@ import com.gypsyengineer.tlsbunny.tls13.struct.StructFactory;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.Arrays;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public class NewSessionTicketImplTest {
 
@@ -46,7 +45,7 @@ public class NewSessionTicketImplTest {
 
         assertEquals(clone, ticket);
         assertEquals(clone.hashCode(), ticket.hashCode());
-        assertTrue(Arrays.equals(clone.encoding(), ticket.encoding()));
+        assertArrayEquals(clone.encoding(), ticket.encoding());
     }
 
     @Test
