@@ -6,6 +6,7 @@ import com.gypsyengineer.tlsbunny.tls13.struct.OCSPStatusRequest;
 import com.gypsyengineer.tlsbunny.utils.Utils;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class CertificateStatusRequestImpl implements CertificateStatusRequest {
 
@@ -44,5 +45,23 @@ public class CertificateStatusRequestImpl implements CertificateStatusRequest {
         return new CertificateStatusRequestImpl(
                 (CertificateStatusType) status_type.copy(),
                 (OCSPStatusRequest) request.copy());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        CertificateStatusRequestImpl that = (CertificateStatusRequestImpl) o;
+        return Objects.equals(status_type, that.status_type) &&
+                Objects.equals(request, that.request);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(status_type, request);
     }
 }
