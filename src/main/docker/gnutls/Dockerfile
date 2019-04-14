@@ -38,10 +38,13 @@ WORKDIR /var/src/nettle-3.4.1
 RUN ./configure --disable-openssl --enable-shared && \
         make && make install
 
+ADD . ${TLSBUNNY}
+
 WORKDIR /var/src
 RUN git clone https://gitlab.com/gnutls/gnutls.git
 RUN cd gnutls && \
     ./bootstrap && \
+    git apply ${TLSBUNNY}/src/main/gnutls/serv.c.patch && \
     LD_LIBRARY_PATH=/usr/local/lib \
             ./configure \
                 --with-included-libtasn1 \
@@ -51,7 +54,6 @@ RUN cd gnutls && \
     LD_LIBRARY_PATH=/usr/local/lib make install
 
 EXPOSE 50101
-ADD . ${TLSBUNNY}
 WORKDIR ${TLSBUNNY}
 
 ENV LD_LIBRARY_PATH /usr/local/lib:/usr/lib/x86_64-linux-gnu/
