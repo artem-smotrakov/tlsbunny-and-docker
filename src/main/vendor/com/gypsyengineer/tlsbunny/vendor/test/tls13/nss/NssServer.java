@@ -1,39 +1,31 @@
-package com.gypsyengineer.tlsbunny.vendor.test.tls13.gnutls;
+package com.gypsyengineer.tlsbunny.vendor.test.tls13.nss;
 
 import com.gypsyengineer.tlsbunny.tls13.server.Server;
 import com.gypsyengineer.tlsbunny.vendor.test.tls13.BaseDockerServer;
 
-public class GnutlsServer extends BaseDockerServer implements Server {
+public class NssServer extends BaseDockerServer implements Server {
 
-    private static final int defaultPort = 50101;
+    private static final int defaultPort = 60101;
 
     private static final String image = System.getProperty(
-            "tlsbunny.gnutls.docker.image",
-            "tlsbunny_gnutls_tls13");
+            "tlsbunny.nss.docker.image",
+            "tlsbunny_nss_tls13");
 
-    public static GnutlsServer gnutlsServer() {
-        return new GnutlsServer();
+    public static NssServer nssServer() {
+        return new NssServer();
     }
 
-    private GnutlsServer() {
+    private NssServer() {
         super(new OutputListenerImpl(
-                "HTTP Server listening on", "server is ready to accept"),
+                "selfserv: ", "About to call accept."),
                 defaultPort, image);
-        output.prefix("gnutls-server");
-        options.put("--port", String.valueOf(defaultPort));
-        options.put("--http", no_arg);
-        options.put("--x509cafile", "certs/root_cert.pem");
-        options.put("--x509keyfile", "certs/server_key.pem");
-        options.put("--x509certfile", "certs/server_cert.pem");
-        options.put("--disable-client-cert", no_arg);
-        options.put("--priority", "NORMAL:-VERS-ALL:+VERS-TLS1.3:+VERS-TLS1.2");
-        dockerEnv.put("ASAN_OPTIONS", "detect_leaks=0");
-    }
-
-    public GnutlsServer clientAuth() {
-        options.remove("--disable-client-cert");
-        options.put("--require-client-cert", no_arg);
-        return this;
+        output.prefix("nss-server");
+        options.put("-v", no_arg);
+        options.put("-d", "sql:./nssdb");
+        options.put("-p", String.valueOf(defaultPort));
+        options.put("-V", "tls1.3:tls1.3");
+        options.put("-H", "1");
+        options.put("-n", "localhost");
     }
 
     @Override
@@ -43,6 +35,6 @@ public class GnutlsServer extends BaseDockerServer implements Server {
 
     @Override
     protected String killCommand() {
-        return "rm /var/src/tlsbunny/stop.file; pidof gnutls-serv | xargs kill -SIGINT";
+        return "pidof selfserv | xargs kill -SIGINT";
     }
 }
