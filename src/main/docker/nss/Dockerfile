@@ -45,6 +45,6 @@ ENV LD_LIBRARY_PATH /var/src/dist/Linux4.4_x86_64_cc_glibc_PTH_64_OPT.OBJ/lib
 ADD . /var/src/tlsbunny
 WORKDIR /var/src/tlsbunny
 
-RUN bash src/main/vendor/nss/create_nss_db.sh
+RUN bash src/main/nss/create_nss_db.sh
 
-CMD [ "bash", "src/main/vendor/nss/start.sh" ]
+CMD [ "bash", "src/main/nss/start.sh" ]
