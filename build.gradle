@@ -219,6 +219,25 @@ task runWolfsslFuzzing(type: Test) {
     include 'com/gypsyengineer/tlsbunny/vendor/test/tls13/wolfssl/**/*Fuzzing*'
 }
 
+task runDeepGnutlsServerFuzzing(type: Test) {
+    description = 'Runs deep fuzzing for GnuTLS server'
+    group = 'gnutls'
+
+    testLogging.showStandardStreams = true
+    ignoreFailures = true
+    outputs.upToDateWhen { false }
+
+    systemProperty 'tlsbunny.fuzzer.full.configs', 'true'
+    systemProperty 'tlsbunny.output.to.file', 'true'
+    systemProperty 'tlsbunny.output.enable.highlighting', 'false'
+    systemProperty 'tlsbunny.output.standard.level', 'important'
+    systemProperty 'tlsbunny.sync.output', 'fuzzing'
+    systemProperty 'tlsbunny.output.file.level', 'important'
+
+    filter.includeTestsMatching 'com.gypsyengineer.tlsbunny.vendor.test.tls13.gnutls.server.FuzzingForGnutlsServer.deepHandshakeFuzzer'
+    filter.includeTestsMatching 'com.gypsyengineer.tlsbunny.vendor.test.tls13.gnutls.server.FuzzingForGnutlsServerWithClientAuth.deepHandshakeFuzzer'
+}
+
 task runDeepPicotlsServerFuzzing(type: Test) {
     description = 'Runs deep fuzzing for Picotls server'
     group = 'picotls'
