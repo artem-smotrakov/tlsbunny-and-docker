@@ -1,4 +1,4 @@
-package com.gypsyengineer.tlsbunny.vendor.test.tls13.gnutls.server;
+package com.gypsyengineer.tlsbunny.vendor.test.tls13.gnutls;
 
 import com.gypsyengineer.tlsbunny.tls13.server.Server;
 import com.gypsyengineer.tlsbunny.vendor.test.tls13.BaseDockerServer;

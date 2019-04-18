@@ -4,11 +4,11 @@
 # the following command builds a docker image
 # it should be run from the root of tlsbunny repository
 #
-# docker build --file src/main/docker/nss/Dockerfile --tag nss/server/tls13 .
+# docker build --file src/main/docker/nss/Dockerfile --tag tlsbunny_nss_tls13 .
 #
 # the following command starts an NSS server
 #
-# docker run -p 60101:60101 nss/server/tls13
+# docker run -p 60101:60101 tlsbunny_nss_tls13
 #
 # good luck!
 #
@@ -45,6 +45,6 @@ ENV LD_LIBRARY_PATH /var/src/dist/Linux4.4_x86_64_cc_glibc_PTH_64_OPT.OBJ/lib
 ADD . /var/src/tlsbunny
 WORKDIR /var/src/tlsbunny
 
-RUN bash scripts/create_nss_db.sh
+RUN bash src/main/nss/create_nss_db.sh
 
-CMD [ "bash", "scripts/start_nss_tls13_server.sh" ]
+CMD [ "bash", "src/main/nss/start.sh" ]

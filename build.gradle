@@ -69,6 +69,10 @@ test {
     systemProperty 'tlsbunny.gnutls.docker.image',
             System.getProperty('tlsbunny.gnutls.docker.image',
                     'tlsbunny_gnutls_tls13')
+
+    systemProperty 'tlsbunny.nss.docker.image',
+            System.getProperty('tlsbunny.nss.docker.image',
+                    'tlsbunny_nss_tls13')
 }
 
 jacocoTestReport {
@@ -83,7 +87,6 @@ task buildAllDocker() {
     dependsOn 'buildGnutlsDocker'
     dependsOn 'buildPicotlsDocker'
     dependsOn 'buildOpensslDocker'
-    dependsOn 'buildH2ODocker'
     dependsOn 'buildNssDocker'
     dependsOn 'buildWolfsslDocker'
 }
@@ -94,7 +97,8 @@ task checkCrashes(type: Exec) {
             'tlsbunny_openssl_tls13',
             'tlsbunny_wolfssl_tls13',
             'tlsbunny_picotls_tls13',
-            'tlsbunny_gnutls_tls13'
+            'tlsbunny_gnutls_tls13',
+            'tlsbunny_nss_tls13'
 }
 
 // tasks for running tests for GnuTLS
@@ -153,17 +157,6 @@ task buildPicotlsDocker(type: Exec) {
             '.'
 }
 
-// tasks for running tests for h2o + picotls
-
-task buildH2ODocker(type: Exec) {
-    commandLine 'docker',
-            'build',
-            '--no-cache',
-            '--file', 'src/main/docker/h2o/Dockerfile',
-            '--tag',  'h2o/server/tls13',
-            '.'
-}
-
 // tasks for running tests for NSS
 
 // builds a Docker images with NSS server
@@ -172,7 +165,7 @@ task buildNssDocker(type: Exec) {
             'build',
             '--no-cache',
             '--file', 'src/main/docker/nss/Dockerfile',
-            '--tag',  'nss/server/tls13',
+            '--tag',  'tlsbunny_nss_tls13',
             '.'
 }
 
@@ -217,6 +210,44 @@ task runWolfsslFuzzing(type: Test) {
     systemProperty 'tlsbunny.sync.output', 'fuzzing'
 
     include 'com/gypsyengineer/tlsbunny/vendor/test/tls13/wolfssl/**/*Fuzzing*'
+}
+
+task runDeepNssServerFuzzing(type: Test) {
+    description = 'Runs deep fuzzing for NSS server'
+    group = 'nss'
+
+    testLogging.showStandardStreams = true
+    ignoreFailures = true
+    outputs.upToDateWhen { false }
+
+    systemProperty 'tlsbunny.fuzzer.full.configs', 'true'
+    systemProperty 'tlsbunny.output.to.file', 'true'
+    systemProperty 'tlsbunny.output.enable.highlighting', 'false'
+    systemProperty 'tlsbunny.output.standard.level', 'important'
+    systemProperty 'tlsbunny.sync.output', 'fuzzing'
+    systemProperty 'tlsbunny.output.file.level', 'important'
+
+    filter.includeTestsMatching 'com.gypsyengineer.tlsbunny.vendor.test.tls13.nss.server.FuzzingForNssServer.deepHandshakeFuzzer'
+    filter.includeTestsMatching 'com.gypsyengineer.tlsbunny.vendor.test.tls13.nss.server.FuzzingForNssServerWithClientAuth.deepHandshakeFuzzer'
+}
+
+task runDeepGnutlsServerFuzzing(type: Test) {
+    description = 'Runs deep fuzzing for GnuTLS server'
+    group = 'gnutls'
+
+    testLogging.showStandardStreams = true
+    ignoreFailures = true
+    outputs.upToDateWhen { false }
+
+    systemProperty 'tlsbunny.fuzzer.full.configs', 'true'
+    systemProperty 'tlsbunny.output.to.file', 'true'
+    systemProperty 'tlsbunny.output.enable.highlighting', 'false'
+    systemProperty 'tlsbunny.output.standard.level', 'important'
+    systemProperty 'tlsbunny.sync.output', 'fuzzing'
+    systemProperty 'tlsbunny.output.file.level', 'important'
+
+    filter.includeTestsMatching 'com.gypsyengineer.tlsbunny.vendor.test.tls13.gnutls.server.FuzzingForGnutlsServer.deepHandshakeFuzzer'
+    filter.includeTestsMatching 'com.gypsyengineer.tlsbunny.vendor.test.tls13.gnutls.server.FuzzingForGnutlsServerWithClientAuth.deepHandshakeFuzzer'
 }
 
 task runDeepPicotlsServerFuzzing(type: Test) {
