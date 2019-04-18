@@ -28,6 +28,11 @@ public class NssServer extends BaseDockerServer implements Server {
         options.put("-n", "localhost");
     }
 
+    public NssServer clientAuth() {
+        options.put("-r", no_arg);
+        return this;
+    }
+
     @Override
     public int port() {
         return defaultPort;
