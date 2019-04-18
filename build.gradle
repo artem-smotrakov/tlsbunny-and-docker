@@ -83,7 +83,6 @@ task buildAllDocker() {
     dependsOn 'buildGnutlsDocker'
     dependsOn 'buildPicotlsDocker'
     dependsOn 'buildOpensslDocker'
-    dependsOn 'buildH2ODocker'
     dependsOn 'buildNssDocker'
     dependsOn 'buildWolfsslDocker'
 }
@@ -150,17 +149,6 @@ task buildPicotlsDocker(type: Exec) {
             '--no-cache',
             '--file', 'src/main/docker/picotls/Dockerfile',
             '--tag',  'tlsbunny_picotls_tls13',
-            '.'
-}
-
-// tasks for running tests for h2o + picotls
-
-task buildH2ODocker(type: Exec) {
-    commandLine 'docker',
-            'build',
-            '--no-cache',
-            '--file', 'src/main/docker/h2o/Dockerfile',
-            '--tag',  'h2o/server/tls13',
             '.'
 }
 
