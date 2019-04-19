@@ -12,6 +12,7 @@ env:
     - PICOTLS_IMAGE=artemsmotrakov/tlsbunny_picotls_tls13:2019_04_10
     - GNUTLS_IMAGE=artemsmotrakov/tlsbunny_gnutls_tls13:2019_04_13
     - NSS_IMAGE=artemsmotrakov/tlsbunny_nss_tls13:2019_04_19
+    - NSS_IMAGE=artemsmotrakov/tlsbunny_fizz_tls13:2019_04_19
 
 before_install:
   - wget https://github.com/sormuras/bach/raw/master/install-jdk.sh
@@ -21,11 +22,13 @@ before_install:
   - docker pull ${PICOTLS_IMAGE}
   - docker pull ${GNUTLS_IMAGE}
   - docker pull ${NSS_IMAGE}
+  - docker pull ${FIZZ_IMAGE}
   - docker run ${OPENSSL_IMAGE} /bin/bash -c "openssl version"
   - docker run ${WOLFSSL_IMAGE} /bin/bash -c "examples/server/server -h"
   - docker run ${PICOTLS_IMAGE} /bin/bash -c "/var/src/picotls/cli -h"
   - docker run ${GNUTLS_IMAGE}  /bin/bash -c "gnutls-serv -h"
   - docker run ${NSS_IMAGE}  /bin/bash -c "selfserv -h"
+  - docker run ${NSS_IMAGE}  /bin/bash -c "/var/src/fizz/build_/bin/fizz -h"
 
 matrix:
   include:
