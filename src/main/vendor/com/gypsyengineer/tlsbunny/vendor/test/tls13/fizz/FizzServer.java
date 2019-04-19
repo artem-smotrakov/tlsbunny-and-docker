@@ -28,6 +28,12 @@ public class FizzServer extends BaseDockerServer implements Server {
         option("-key", "certs/server_key.pem");
     }
 
+    public FizzServer clientAuth() {
+        option("-requestcert");
+        option("-cafile", "certs/root_cert.pem");
+        return this;
+    }
+
     @Override
     public int port() {
         return defaultPort;
