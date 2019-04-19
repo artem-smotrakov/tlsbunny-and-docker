@@ -16,6 +16,7 @@ FROM ubuntu
 MAINTAINER artem.smotrakov@gmail.com
 
 RUN apt-get update && apt-get install -y \
+        git \
         g++ \
         cmake \
         libboost-all-dev \
@@ -36,9 +37,6 @@ RUN apt-get update && apt-get install -y \
         libsodium-dev
 
 ENV TLSBUNNY /var/src/tlsbunny
-ENV CFLAGS "-fsanitize=address -fno-omit-frame-pointer -g -O1"
-ENV CXXFLAGS "-fsanitize=address -fno-omit-frame-pointer"
-ENV LDFLAGS "-fsanitize=address"
 
 RUN mkdir -p /var/src ${TLSBUNNY}
 
@@ -46,9 +44,13 @@ WORKDIR /var/src
 
 RUN git clone https://github.com/facebook/folly && \
     mkdir folly/build_ && cd folly/build_ && \
-    cmake .. && \
+    cmake -DFOLLY_ASAN_ENABLED=ON .. && \
     make && \
     make install
+
+ENV CFLAGS "-fsanitize=address -fno-omit-frame-pointer -g -O1"
+ENV CXXFLAGS "-fsanitize=address -fno-omit-frame-pointer"
+ENV LDFLAGS "-fsanitize=address"
 
 RUN git clone https://github.com/facebookincubator/fizz && \
     mkdir fizz/build_ && cd fizz/build_ && \
