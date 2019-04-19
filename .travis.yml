@@ -28,7 +28,6 @@ before_install:
   - docker run ${PICOTLS_IMAGE} /bin/bash -c "/var/src/picotls/cli -h"
   - docker run ${GNUTLS_IMAGE}  /bin/bash -c "gnutls-serv -h"
   - docker run ${NSS_IMAGE}     /bin/bash -c "selfserv -h"
-  - docker run ${FIZZ_IMAGE}    /bin/bash -c "/var/src/fizz/build_/bin/fizz server -h"
 
 matrix:
   include:
