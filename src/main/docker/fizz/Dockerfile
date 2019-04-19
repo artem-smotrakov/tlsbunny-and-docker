@@ -52,13 +52,16 @@ ENV CFLAGS "-fsanitize=address -fno-omit-frame-pointer -g -O1"
 ENV CXXFLAGS "-fsanitize=address -fno-omit-frame-pointer"
 ENV LDFLAGS "-fsanitize=address"
 
+ADD . ${TLSBUNNY}
+
 RUN git clone https://github.com/facebookincubator/fizz && \
-    mkdir fizz/build_ && cd fizz/build_ && \
+    cd fizz && \
+    git apply ${TLSBUNNY}/src/main/fizz/server.patch && \
+    mkdir build_ && cd build_ && \
     cmake ../fizz && \
     make && \
     make install
 
-ADD . ${TLSBUNNY}
 WORKDIR ${TLSBUNNY}
 
 EXPOSE 50101

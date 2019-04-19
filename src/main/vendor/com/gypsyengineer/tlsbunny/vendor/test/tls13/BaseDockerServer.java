@@ -43,6 +43,15 @@ public abstract class BaseDockerServer extends BaseDocker implements Server {
         this(listener, new InputStreamOutput(), dockerPort, dockerImage);
     }
 
+    protected BaseDocker option(String name, String value) {
+        options.put(name, value);
+        return this;
+    }
+
+    protected BaseDocker option(String name) {
+        return option(name, no_arg);
+    }
+
     @Override
     public Status status() {
         synchronized (this) {

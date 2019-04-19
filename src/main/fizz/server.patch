@@ -1,0 +1,20 @@
+diff --git a/fizz/tool/FizzServerCommand.cpp b/fizz/tool/FizzServerCommand.cpp
+index ca2378d..cc3d270 100644
+--- a/fizz/tool/FizzServerCommand.cpp
++++ b/fizz/tool/FizzServerCommand.cpp
+@@ -282,6 +282,7 @@ class FizzExampleServer : public AsyncFizzServer::HandshakeCallback,
+       sslSocket_.reset();
+       acceptor_->done();
+     }
++    LOG(INFO) << "Ready to accept";
+   }
+ 
+   std::shared_ptr<AsyncFizzServer> transport_;
+@@ -373,6 +374,7 @@ FizzServerAcceptor::FizzServerAcceptor(
+   socket_->addAcceptCallback(this, evb_);
+   socket_->startAccepting();
+   LOG(INFO) << "Started listening on " << socket_->getAddress();
++  LOG(INFO) << "Ready to accept";
+ }
+ 
+ void FizzServerAcceptor::connectionAccepted(
