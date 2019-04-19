@@ -231,7 +231,7 @@ task runWolfsslFuzzing(type: Test) {
 
 // run deep fuzzing
 
-task runDeepNssServerFuzzing(type: Test) {
+task runDeepFizzServerFuzzing(type: Test) {
     description = 'Runs deep fuzzing for fizz server'
     group = 'fizz'
 
