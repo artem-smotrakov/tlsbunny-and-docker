@@ -73,6 +73,10 @@ test {
     systemProperty 'tlsbunny.nss.docker.image',
             System.getProperty('tlsbunny.nss.docker.image',
                     'tlsbunny_nss_tls13')
+
+    systemProperty 'tlsbunny.fizz.docker.image',
+            System.getProperty('tlsbunny.fizz.docker.image',
+                    'tlsbunny_fizz_tls13')
 }
 
 jacocoTestReport {
@@ -89,6 +93,7 @@ task buildAllDocker() {
     dependsOn 'buildOpensslDocker'
     dependsOn 'buildNssDocker'
     dependsOn 'buildWolfsslDocker'
+    dependsOn 'buildFizzDocker'
 }
 
 // check for crashes
@@ -98,7 +103,19 @@ task checkCrashes(type: Exec) {
             'tlsbunny_wolfssl_tls13',
             'tlsbunny_picotls_tls13',
             'tlsbunny_gnutls_tls13',
-            'tlsbunny_nss_tls13'
+            'tlsbunny_nss_tls13',
+            'tlsbunny_fizz_tls13'
+}
+
+// tasks for running tests for Fizz
+
+task buildFizzDocker(type: Exec) {
+    commandLine 'docker',
+            'build',
+            '--no-cache',
+            '--file', 'src/main/docker/fizz/Dockerfile',
+            '--tag',  'tlsbunny_fizz_tls13',
+            '.'
 }
 
 // tasks for running tests for GnuTLS
@@ -211,6 +228,28 @@ task runWolfsslFuzzing(type: Test) {
 
     include 'com/gypsyengineer/tlsbunny/vendor/test/tls13/wolfssl/**/*Fuzzing*'
 }
+
+// run deep fuzzing
+
+task runDeepNssServerFuzzing(type: Test) {
+    description = 'Runs deep fuzzing for fizz server'
+    group = 'fizz'
+
+    testLogging.showStandardStreams = true
+    ignoreFailures = true
+    outputs.upToDateWhen { false }
+
+    systemProperty 'tlsbunny.fuzzer.full.configs', 'true'
+    systemProperty 'tlsbunny.output.to.file', 'true'
+    systemProperty 'tlsbunny.output.enable.highlighting', 'false'
+    systemProperty 'tlsbunny.output.standard.level', 'important'
+    systemProperty 'tlsbunny.sync.output', 'fuzzing'
+    systemProperty 'tlsbunny.output.file.level', 'important'
+
+    filter.includeTestsMatching 'com.gypsyengineer.tlsbunny.vendor.test.tls13.fizz.server.FuzzingForFizzServer.deepHandshakeFuzzer'
+    filter.includeTestsMatching 'com.gypsyengineer.tlsbunny.vendor.test.tls13.fizz.server.FuzzingForFizzServerWithClientAuth.deepHandshakeFuzzer'
+}
+
 
 task runDeepNssServerFuzzing(type: Test) {
     description = 'Runs deep fuzzing for NSS server'
